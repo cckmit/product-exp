@@ -1,0 +1,130 @@
+buildscript {
+	ext {
+		springBootVersion = '2.3.3.RELEASE'
+		gradleDockerVersion = '1.2'
+	}
+	repositories {
+		maven {
+			url 'https://nexus.tmbbank.local:8081/repository/oneapp'
+			credentials {
+				username = 'oneapp_lib'
+				password = 'ad123Tmb*'
+			}
+		}
+	}
+
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("se.transmode.gradle:gradle-docker:${gradleDockerVersion}")
+		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0"
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'docker'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
+apply plugin: org.sonarqube.gradle.SonarQubePlugin
+group = 'com.tmb.oneapp'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+if (project.hasProperty('projVersion')) {
+	project.version = project.projVersion
+} else {
+	project.version = '0.0.1'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	maven {
+		url 'https://nexus.tmbbank.local:8081/repository/oneapp'
+		credentials {
+			username = 'oneapp_lib'
+			password = 'ad123Tmb*'
+		}
+	}
+
+}
+
+springBoot {
+	buildInfo()
+}
+
+ext {
+	set('springCloudVersion', "Hoxton.SR6")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	implementation 'com.tmb.common:tmb_common_utility:0.0.33'
+	implementation 'commons-codec:commons-codec:1.15'
+	compile("io.springfox:springfox-swagger2:2.9.2")
+	compile("io.springfox:springfox-swagger-ui:2.9.2")
+	compile 'org.json:json:20171018'
+	compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+	compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.7.RELEASE'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+task buildDocker(type: Docker, dependsOn: build) {
+	push = false
+	applicationName = project.name
+	dockerfile = file('Dockerfile')
+	doFirst {
+		copy {
+			from jar
+			into stageDir
+		}
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.2"
+}
+
+jacocoTestReport {
+	reports {
+		html.enabled = true
+		xml.enabled = true
+		csv.enabled = true
+	}
+}
+
+sonarqube {
+	if (System.getProperty("sonar.host.url").equals(null)){
+		properties {
+			System.setProperty('sonar.host.url', 'http://localhost:9000')
+		}
+	}
+	properties {
+		property 'sonar.coverage.exclusions', '**/config/*,**/model/*,**/data/*,**/constant/*,**/utils/*, **/CreditCardServiceApplication.java'
+	}
+	properties {
+		property 'sonar.exclusions', '**/config/*'
+	}
+}
+test.finalizedBy jacocoTestReport
