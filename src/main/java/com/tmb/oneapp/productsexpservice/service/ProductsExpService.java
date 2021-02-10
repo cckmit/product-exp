@@ -65,7 +65,7 @@ public class ProductsExpService {
             responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
             UtilMap map = new UtilMap();
-            fundAccountRs = map.ValidateResponse(response, responseEntity);
+            fundAccountRs = map.validateTMBResponse(response, responseEntity);
         }catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return fundAccountRs;

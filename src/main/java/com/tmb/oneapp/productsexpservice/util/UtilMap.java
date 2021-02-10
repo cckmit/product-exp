@@ -21,11 +21,12 @@ public class UtilMap {
      * @param responseEntity
      * @return FundAccountRs
      */
-    public FundAccountRs ValidateResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
+    public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
-            if(StringUtils.isEmpty(response)){
+            if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)){
                 return null;
             } else{
+
                 FundAccountRs fundAccountRs = new FundAccountRs();
                 UtilMap utilMap = new UtilMap();
                 FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
