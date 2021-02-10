@@ -47,13 +47,13 @@ public class ProductsExpService {
     public FundAccountRs getFundAccountDetail(String correlationId, FundAccountRq fundAccountRq){
         FundAccountRs fundAccountRs = null;
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
-        fundAccountRequestBody.setFundCode(ProductsExpServiceConstant.FUND_CODE_ACCDETAIL);
+        fundAccountRequestBody.setFundCode(fundAccountRq.getFundCode());
         fundAccountRequestBody.setServiceType(fundAccountRq.getServiceType());
         fundAccountRequestBody.setUnitHolderNo(fundAccountRq.getUnitHolderNo());
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setFundCode(ProductsExpServiceConstant.FUND_CODE_RULE);
-        fundRuleRequestBody.setFundHouseCode(ProductsExpServiceConstant.FUND_HOUSE_CODE_RULE);
+        fundRuleRequestBody.setFundCode(fundAccountRq.getFundCode());
+        fundRuleRequestBody.setFundHouseCode(fundAccountRq.getFundHouseCode());
         fundRuleRequestBody.setTranType(fundAccountRq.getTranType());
 
         Map<String, String> invHeaderReqParameter = createHeader(correlationId);
