@@ -29,5 +29,9 @@ public class ProductsExpServiceConstant {
     public static final String FUND_HOUSE_CODE_RULE = "TFUND";
     public static final String DATA_NOT_FOUND_CODE  = "0009";
     public static final String DATA_NOT_FOUND_MESSAGE = "DATA NOT FOUND";
+	public static final String X_CORRELATION_ID = "x-correlation-id";
+	public static final String ACCOUNT_ID = "account-id";
+	public static final int ZERO = 0;
+	public static final String EMPTY = "";
 
 }
