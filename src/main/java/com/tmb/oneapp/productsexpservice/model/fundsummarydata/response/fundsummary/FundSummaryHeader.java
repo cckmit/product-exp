@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response;
+package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

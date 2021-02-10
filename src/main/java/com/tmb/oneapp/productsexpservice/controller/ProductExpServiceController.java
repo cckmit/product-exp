@@ -28,7 +28,6 @@ import java.time.Instant;
 /**
  * ProductExpServiceController request mapping will handle apis call and
  * then navigate to respective method to get MF account Detail
- *
  */
 @RequestMapping("/product")
 @RestController
@@ -39,6 +38,11 @@ public class ProductExpServiceController {
 	private ProductsExpService productsExpService;
 
 
+	/**
+	 * Instantiates a new Product exp service controller.
+	 *
+	 * @param productsExpService the products exp service
+	 */
 	@Autowired
 	public ProductExpServiceController(ProductsExpService productsExpService) {
 		this.productsExpService = productsExpService;
@@ -47,7 +51,8 @@ public class ProductExpServiceController {
 	/**
 	 * Description:- Inquiry MF Service
 	 *
-	 * @param correlationId
+	 * @param correlationId the correlation id
+	 * @param fundAccountRq the fund account rq
 	 * @return return account full details
 	 */
 	@ApiOperation(value = "Fetch Fund Detail based on Unit Holder No, Fund House Code And FundCode")
@@ -80,6 +85,13 @@ public class ProductExpServiceController {
 
 	}
 
+	/**
+	 * Gets fund summary.
+	 *
+	 * @param correlationId the correlation id
+	 * @param fundSummaryRq the fund summary rq
+	 * @return the fund summary
+	 */
 	@ApiOperation(value = "Fetch Fund Summary and Port List based on Unit Holder No and CRMID")
 	@LogAround
 	@PostMapping(value = "/fund/summary", consumes= MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)

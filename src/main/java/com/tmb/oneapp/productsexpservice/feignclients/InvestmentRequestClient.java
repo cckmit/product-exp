@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.FundSummaryData;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
@@ -52,6 +52,6 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.summary.url}")
     @ResponseBody
-    public FundSummaryData callInvestmentFundSummaryService(@RequestHeader Map<String, String> headers
+    public ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> callInvestmentFundSummaryService(@RequestHeader Map<String, String> headers
             , @RequestBody UnitHolder unitHolder);
 }

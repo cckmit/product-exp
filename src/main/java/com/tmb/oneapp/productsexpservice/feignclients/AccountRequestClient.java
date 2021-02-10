@@ -1,7 +1,4 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
-
-
-import com.tmb.oneapp.productsexpservice.model.portdata.PortData;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +18,6 @@ public interface AccountRequestClient {
      * @param cardId  the card id
      * @return the port list
      */
-    @GetMapping(value = "${customer.creditcard.service.path}", consumes = "application/json", produces = "application/json")
-    public PortData getPortList(@RequestHeader Map<String, String> headers, @PathVariable("CRM_ID") String cardId);
+    @GetMapping(value = "${account.service.account.url}", consumes = "application/json", produces = "application/json")
+    public String getPortList(@RequestHeader Map<String, String> headers, @PathVariable("CRM_ID") String cardId);
 }
