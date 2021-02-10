@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
@@ -9,11 +10,14 @@ import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryR
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.nio.file.Paths;
 
 import static org.mockito.Mockito.*;
 
@@ -34,9 +38,19 @@ public class ProductExpServiceControllerTestFundSummary {
 
     @Test
     public void testGetFundSummary() throws Exception {
-        when(productsExpService.getFundSummary(anyString(), any())).thenReturn(new FundSummaryResponse());
+        FundSummaryResponse expectedResponse = null;
+
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/invest_fundsummary.json").toFile(), FundSummaryResponse.class);
+            when(productsExpService.getFundSummary(anyString(), any())).thenReturn(expectedResponse);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> result = productExpServiceController.getFundSummary("correlationId", new FundSummaryRq());
-        Assert.assertEquals(null, result);
+        Assert.assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 }

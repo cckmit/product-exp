@@ -1,10 +1,13 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
+import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
@@ -20,6 +23,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import static org.mockito.Mockito.*;
@@ -33,6 +38,7 @@ public class ProductExpServiceControllerTest {
     private final String success_code = "0000";
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
+    private FundAccountRs fundAccountRs = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     @BeforeEach
@@ -51,7 +57,6 @@ public class ProductExpServiceControllerTest {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundRule.setIpoflag(ruleInfoList.getIpoflag());
-
             BeanUtils.copyProperties(accountDetail, accDetailBody.getDetailFund());
             List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
             List<FundOrderHistory> ordersHistories = new ArrayList<>();
@@ -95,6 +100,83 @@ public class ProductExpServiceControllerTest {
         list.setProcessFlag("N");
         fundRuleInfoList.add(list);
         fundRuleBody.setFundRuleInfoList(fundRuleInfoList);
+    }
+
+    private void initSuccessResponseAccDetail(){
+         fundAccountRs = new FundAccountRs();
+        FundAccountDetail details = new FundAccountDetail();
+        FundRule fundRule = new FundRule();
+        fundRule.setIpoflag("N");
+        fundRule.setFundAllowOtx("Y");
+        fundRule.setFundCode("TESEQDSSFX");
+        fundRule.setRiskRate("1");
+        fundRule.setFundHouseCode("TFUND");
+        fundRule.setOrderType("1");
+        fundRule.setAllotType("3");
+        fundRule.setAllowAipFlag("Y");
+        fundRule.setDateAfterIpo("20200413");
+        fundRule.setFrontEndFee("0");
+        details.setFundRule(fundRule);
+
+        AccountDetail accountDetail = new AccountDetail();
+        List<FundOrderHistory> ordersHistories = new ArrayList<>();
+        FundOrderHistory fundOrderHistory = new FundOrderHistory();
+        fundOrderHistory.setAmount("2000.00");
+        fundOrderHistory.setOrderDate("20200413");
+        fundOrderHistory.setChannelHubEN("EN");
+        fundOrderHistory.setOrderReference("EEEE");
+        fundOrderHistory.setOrderDateTemp("20200413");
+        fundOrderHistory.setEfftDate("20200413");
+        fundOrderHistory.setItemNo("1");
+        fundOrderHistory.setStatusHubEN("SS");
+        fundOrderHistory.setTranTypeHubEN("1");
+        fundOrderHistory.setTranTypeHubTH("1");
+
+        FundOrderHistory fundOrderHistoryOne = new FundOrderHistory();
+        fundOrderHistoryOne.setAmount("2000.00");
+        fundOrderHistoryOne.setOrderDate("20200413");
+        fundOrderHistoryOne.setChannelHubEN("EN");
+        fundOrderHistoryOne.setOrderReference("EEEE");
+        fundOrderHistoryOne.setOrderDateTemp("20200413");
+        fundOrderHistoryOne.setEfftDate("20200413");
+        fundOrderHistoryOne.setItemNo("2");
+        fundOrderHistoryOne.setStatusHubEN("SS");
+        fundOrderHistoryOne.setTranTypeHubEN("1");
+        fundOrderHistoryOne.setTranTypeHubTH("1");
+
+        ordersHistories.add(fundOrderHistory);
+        ordersHistories.add(fundOrderHistoryOne);
+        accountDetail.setOrdersHistories(ordersHistories);
+
+        details.setAccountDetail(accountDetail);
+        fundAccountRs.setDetails(details);
+
+    }
+
+    @Test
+    public void testgetFundAccountDetailFullReturn() throws Exception {
+        initSuccessResponseAccDetail();
+        FundAccountRq fundAccountRq = new FundAccountRq();
+        fundAccountRq.setFundCode("EEEEEEE");
+        fundAccountRq.setFundHouseCode("TTTTTTT");
+        fundAccountRq.setServiceType("1");
+        fundAccountRq.setUnitHolderNo("PT00000001111");
+        fundAccountRq.setTranType("All");
+        try {
+            when(productsExpService.getFundAccountDetail(corrID, fundAccountRq)).thenReturn(fundAccountRs);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        ResponseEntity<TmbOneServiceResponse<FundAccountRs>> actualResult = productExpServiceController
+                .getFundAccountDetail(corrID, fundAccountRq);
+        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        Assert.assertEquals(success_code, actualResult.getBody().getStatus().getCode());
+
+        FundAccountRs newResponse = actualResult.getBody().getData();
+        Assert.assertEquals(fundAccountRs, newResponse);
+        Assert.assertEquals(fundAccountRs.getDetails().getAccountDetail().getOrdersHistories().size(),
+                newResponse.getDetails().getAccountDetail().getOrdersHistories().size());
+
     }
 
     @Test
@@ -144,6 +226,27 @@ public class ProductExpServiceControllerTest {
         ResponseEntity<TmbOneServiceResponse<FundAccountRs>> actualResult = productExpServiceController
                 .getFundAccountDetail(corrID, fundAccountRq);
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        Assert.assertNotNull(actualResult.getBody().getData().getDetails());
+    }
+
+
+    @Test
+    public void testGetFundSummary() throws Exception {
+        FundSummaryResponse expectedResponse = null;
+
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/invest_fundsummary.json").toFile(), FundSummaryResponse.class);
+            when(productsExpService.getFundSummary(anyString(), any())).thenReturn(expectedResponse);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        when(productsExpService.getFundSummary(anyString(), any())).thenReturn(new FundSummaryResponse());
+
+        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> result = productExpServiceController.getFundSummary("correlationId", new FundSummaryRq());
+        Assert.assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
 

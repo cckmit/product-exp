@@ -17,11 +17,9 @@ import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestB
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
-import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
-import org.springframework.beans.BeanUtils;
+import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,11 +27,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
  * ProductsExpService class will get fund Details from MF Service
+ *
+ *
  */
 @Service
 public class ProductsExpService {
@@ -41,14 +43,8 @@ public class ProductsExpService {
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
 
-    /**
-     * Instantiates a new Products exp service.
-     *
-     * @param investmentRequestClient the investment request client
-     * @param accountRequestClient    the account request client
-     */
     @Autowired
-    public ProductsExpService(InvestmentRequestClient investmentRequestClient, AccountRequestClient accountRequestClient) {
+    public ProductsExpService(InvestmentRequestClient investmentRequestClient,AccountRequestClient accountRequestClient) {
         this.investmentRequestClient = investmentRequestClient;
         this.accountRequestClient = accountRequestClient;
     }
@@ -57,12 +53,12 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundAccDetail
      *
-     * @param correlationId the correlation id
-     * @param fundAccountRq the fund account rq
-     * @return fund account rs
+     * @param fundAccountRq
+     * @param correlationId
+     * @return
      */
     @LogAround
-    public FundAccountRs getFundAccountDetail(String correlationId, FundAccountRq fundAccountRq) {
+    public FundAccountRs getFundAccountDetail(String correlationId, FundAccountRq fundAccountRq){
         FundAccountRs fundAccountRs = null;
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
         fundAccountRequestBody.setFundCode(ProductsExpServiceConstant.FUND_CODE_ACCDETAIL);
@@ -77,24 +73,15 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response = null;
         ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = null;
-
         try {
             response = investmentRequestClient.callInvestmentFundAccDetailService(invHeaderReqParameter, fundAccountRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, response);
             responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-        } catch (Exception ex) {
+            UtilMap map = new UtilMap();
+            fundAccountRs = map.validateTMBResponse(response, responseEntity);
+        }catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-            return fundAccountRs;
-        }
-        if (!StringUtils.isEmpty(response) && !StringUtils.isEmpty(responseEntity)
-                && HttpStatus.OK.value() == response.getStatusCode().value()
-                && HttpStatus.OK.value() == responseEntity.getStatusCode().value()) {
-            fundAccountRs = new FundAccountRs();
-            FundAccountDetail fundAccountDetail = mappingResponse(response.getBody().getData(),
-                    responseEntity.getBody().getData());
-            fundAccountRs.setDetails(fundAccountDetail);
-
             return fundAccountRs;
         }
         return fundAccountRs;
@@ -107,45 +94,11 @@ public class ProductsExpService {
      * @param correlationId
      * @return
      */
-    private Map<String, String> createHeader(String correlationId) {
+    private Map<String, String> createHeader(String correlationId){
         Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
-    }
-
-
-    /**
-     * Generic Method to mappingResponse
-     *
-     * @param accDetailBody
-     * @param fundRuleBody
-     * @return FundAccountDetail
-     */
-    private FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody) {
-        FundRule fundRule = new FundRule();
-
-        List<FundRuleInfoList> fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
-        FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
-        BeanUtils.copyProperties(ruleInfoList, fundRule);
-        fundRule.setIpoflag(ruleInfoList.getIpoflag());
-
-        AccountDetail accountDetail = new AccountDetail();
-        BeanUtils.copyProperties(accountDetail, accDetailBody.getDetailFund());
-        List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
-        List<FundOrderHistory> ordersHistories = new ArrayList<>();
-
-        for (Order order : orders) {
-            FundOrderHistory fundOrderHistory = new FundOrderHistory();
-            BeanUtils.copyProperties(order, fundOrderHistory);
-            ordersHistories.add(fundOrderHistory);
-        }
-        accountDetail.setOrdersHistories(ordersHistories);
-        FundAccountDetail fundAccountDetail = new FundAccountDetail();
-        fundAccountDetail.setFundRule(fundRule);
-        fundAccountDetail.setAccountDetail(accountDetail);
-
-        return fundAccountDetail;
     }
 
 
@@ -188,4 +141,6 @@ public class ProductsExpService {
         }
 
     }
+
+
 }

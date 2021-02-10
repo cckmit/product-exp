@@ -34,18 +34,18 @@
       ]
     },
     "detailFund": {
-      "unitHolderNo": "",
+      "unitHolderNo": "FFFFF",
       "fundHouseCode": "FFFFF",
-      "fundNameEN": "",
-      "fundNameTH": "",
-      "dateAsOf": "",
-      "unit": "",
-      "nav": "",
-      "cost": "",
-      "investmentValue": "",
-      "unrealizedProfit": "",
-      "unrealizedProfitPerc": "",
-      "taxDoc": "",
-      "unitLTF5Y": ""
+      "fundNameEN": "FFFFF",
+      "fundNameTH": "FFFFF",
+      "dateAsOf": "FFFFF",
+      "unit": "FFFFF",
+      "nav": "FFFFF",
+      "cost": "FFFFF",
+      "investmentValue": "FFFFF",
+      "unrealizedProfit": "FFFFF",
+      "unrealizedProfitPerc": "FFFFF",
+      "taxDoc": "FFFFF",
+      "unitLTF5Y": "FFFFF"
     }
 }
