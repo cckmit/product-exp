@@ -54,7 +54,7 @@ public class UtilMap {
         fundRule.setIpoflag(ruleInfoList.getIpoflag());
 
         AccountDetail accountDetail = new AccountDetail();
-        BeanUtils.copyProperties(accountDetail, accDetailBody.getDetailFund());
+        BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
         List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
 
