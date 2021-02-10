@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryR
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,7 +30,7 @@ public class ProductExpServiceControllerTestFundSummary {
     @InjectMocks
     ProductExpServiceController productExpServiceController;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
@@ -38,19 +39,52 @@ public class ProductExpServiceControllerTestFundSummary {
 
     @Test
     public void testGetFundSummary() throws Exception {
-        FundSummaryResponse expectedResponse = null;
+        FundSummaryResponse expectedResponse = null ;
+        FundSummaryRq rq = new FundSummaryRq();
+        rq.setCrmId("test");
+        rq.setUnitHolderNo("PO333");
+        String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
         try {
 
             ObjectMapper mapper = new ObjectMapper();
-            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/invest_fundsummary.json").toFile(), FundSummaryResponse.class);
+            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/invest_fundsummary.json").toFile(),
+                    FundSummaryResponse.class);
             when(productsExpService.getFundSummary(anyString(), any())).thenReturn(expectedResponse);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> result = productExpServiceController.getFundSummary("correlationId", new FundSummaryRq());
+        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> result = productExpServiceController
+                .getFundSummary(corrID, rq);
         Assert.assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+        Assert.assertEquals(expectedResponse.getMutualFundAccounts().size(), result.getBody().getData().getMutualFundAccounts().size() );
+        Assert.assertEquals(expectedResponse.getData().getBody().getFundClassList().getFundClass().size(),
+                result.getBody().getData().getData().getBody().getFundClassList().getFundClass().size());
+    }
+
+
+    @Test
+    public void testGetFundSummaryNotFound() throws Exception {
+        FundSummaryResponse expectedResponse = null ;
+        FundSummaryRq rq = new FundSummaryRq();
+        rq.setCrmId("test");
+        rq.setUnitHolderNo("PO333");
+        String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+
+        try {
+
+            when(productsExpService.getFundSummary(anyString(), any())).thenReturn(expectedResponse);
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> result = productExpServiceController
+                .getFundSummary(corrID, rq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatusCode().value());
+
     }
 }

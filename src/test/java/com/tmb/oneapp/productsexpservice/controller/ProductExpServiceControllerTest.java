@@ -230,24 +230,4 @@ public class ProductExpServiceControllerTest {
     }
 
 
-    @Test
-    public void testGetFundSummary() throws Exception {
-        FundSummaryResponse expectedResponse = null;
-
-        try {
-
-            ObjectMapper mapper = new ObjectMapper();
-            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/invest_fundsummary.json").toFile(), FundSummaryResponse.class);
-            when(productsExpService.getFundSummary(anyString(), any())).thenReturn(expectedResponse);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        when(productsExpService.getFundSummary(anyString(), any())).thenReturn(new FundSummaryResponse());
-
-        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> result = productExpServiceController.getFundSummary("correlationId", new FundSummaryRq());
-        Assert.assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
-    }
-
-
 }

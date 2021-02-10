@@ -1,0 +1,184 @@
+{
+  "header": {
+    "rqUID": "233555555555555888888999999",
+    "channelID": "MIB",
+    "serviceName": "MutualFundsUnitHolderInqRs",
+    "rqDateTime": "2019-04-03T09:23:45+07:00",
+    "rsDateTime": "2021-02-05T17:59:42.7114508+07:00",
+    "status": {
+      "statusCode": "0000",
+      "severity": "Info",
+      "statusDesc": "Success"
+    }
+  },
+  "body": {
+    "percentOfFundType": {
+      "balanced": 0.00,
+      "foreignEquity": 0.00,
+      "foreignFixedIncome": 0.00,
+      "localEquity": 0.00,
+      "localFixedIncome": 87.00,
+      "others": "1"
+    },
+    "fundClassList": {
+      "fundClass": [
+        {
+          "fundClassCode": "100",
+          "fundClassNameEN": "Fixed Income",
+          "fundClassNameTH": "กองทุนตราสารหนี้",
+          "fundHouseList": [
+            {
+              "fundHouseCode": "UOBAMTH",
+              "fundList": {
+                "fund": [
+                  {
+                    "portfolioNumber": "PT000000000000000042",
+                    "fundCode": "TCMF",
+                    "fundNameEN": "Thai Cash Management Fund",
+                    "fundNameTH": "กองทุนเปิด ไทย แคช แมเนจเม้นท์ ชนิดเพื่อผู้ลงทุนทั่วไป",
+                    "fundNickNameEN": "Thai Cash Management Fund",
+                    "fundNickNameTH": "กองทุนเปิด ไทย แคช แมเนจเม้นท์ ชนิดเพื่อผู้ลงทุนทั่วไป",
+                    "fundShortName": "TCMF",
+                    "unrealizedProfit": 104289.74,
+                    "marketValue": 100104289.75,
+                    "unrealizedProfitPercent": 0.10,
+                    "accruedFee": 0.00
+                  }
+                ]
+              }
+            },
+            {
+              "fundHouseCode": "TMBAM",
+              "fundList": {
+                "fund": [
+                  {
+                    "portfolioNumber": "PT000000000000000042",
+                    "fundCode": "TMBTHANAPLUS",
+                    "fundNameEN": "TMB THANAPLUS FUND",
+                    "fundNameTH": "กองทุนเปิดทหารไทยธนพลัส",
+                    "fundNickNameEN": "TMB THANAPLUS FUND",
+                    "fundNickNameTH": "กองทุนเปิดทหารไทยธนพลัส",
+                    "fundShortName": "TMBTHANAPLUS",
+                    "unrealizedProfit": 237407.57,
+                    "marketValue": 3036523.36,
+                    "unrealizedProfitPercent": 8.48,
+                    "accruedFee": 0.00
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "fundClassCode": "300",
+          "fundClassNameEN": "Balanced",
+          "fundClassNameTH": "กองทุนผสม",
+          "fundHouseList": [
+            {
+              "fundHouseCode": "TMBAM",
+              "fundList": {
+                "fund": [
+                  {
+                    "portfolioNumber": "PT000000000000000042",
+                    "fundCode": "TMBAALF",
+                    "fundNameEN": "Asset Allocation Long Term",
+                    "fundNameTH": "ทหารไทยจัดทัพลงทุน ระยะยาว",
+                    "fundNickNameEN": "Asset Allocation Long Term",
+                    "fundNickNameTH": "ทหารไทยจัดทัพลงทุน ระยะยาว",
+                    "fundShortName": "TMBAALF",
+                    "unrealizedProfit": 0.00,
+                    "marketValue": 0.00,
+                    "unrealizedProfitPercent": 0.00,
+                    "accruedFee": 0.00
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "fundClassCode": "800",
+          "fundClassNameEN": "Super Savings Fund(SSF)/LTF",
+          "fundClassNameTH": "Super Savings Fund(SSF)/LTF",
+          "fundHouseList": [
+            {
+              "fundHouseCode": "TMBAM",
+              "fundList": {
+                "fund": [
+                  {
+                    "portfolioNumber": "PT000000000000000049",
+                    "fundCode": "JBPLTF",
+                    "fundNameEN": "JUMBO PLUS Dividend LTF",
+                    "fundNameTH": "จัมโบ้พลัส ปันผล หุ้นระยะยาว",
+                    "fundNickNameEN": "JUMBO PLUS Dividend LTF",
+                    "fundNickNameTH": "จัมโบ้พลัส ปันผล หุ้นระยะยาว",
+                    "fundShortName": "JBP LTF",
+                    "unrealizedProfit": -20941.52,
+                    "marketValue": 364058.48,
+                    "unrealizedProfitPercent": -5.44,
+                    "accruedFee": 0.00
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "fundClassCode": "900",
+          "fundClassNameEN": "Retirement Mutual Fund",
+          "fundClassNameTH": "กองทุนรวมเพื่อการเลี้ยงชีพ",
+          "fundHouseList": [
+            {
+              "fundHouseCode": "TMBAM",
+              "fundList": {
+                "fund": [
+                  {
+                    "portfolioNumber": "PT000000000000000042",
+                    "fundCode": "JB25RMF",
+                    "fundNameEN": "JUMBO 25 RMF",
+                    "fundNameTH": "จัมโบ้ 25 เพื่อการเลี้ยงชีพ",
+                    "fundNickNameEN": "JUMBO 25 RMF",
+                    "fundNickNameTH": "จัมโบ้ 25 เพื่อการเลี้ยงชีพ",
+                    "fundShortName": "JB25RMF",
+                    "unrealizedProfit": 0.00,
+                    "marketValue": 0.00,
+                    "unrealizedProfitPercent": 0.00,
+                    "accruedFee": 0.00
+                  },
+                  {
+                    "portfolioNumber": "PT000000000000000049",
+                    "fundCode": "TMBGRMF",
+                    "fundNameEN": "TMB Global Bond Fund RMF",
+                    "fundNameTH": "ทหารไทย Global Bond Fund RMF",
+                    "fundNickNameEN": "TMB Global Bond Fund RMF",
+                    "fundNickNameTH": "ทหารไทย Global Bond Fund RMF",
+                    "fundShortName": "TMBGRMF",
+                    "unrealizedProfit": 1181.98,
+                    "marketValue": 31181.98,
+                    "unrealizedProfitPercent": 3.94,
+                    "accruedFee": 0.00
+                  },
+                  {
+                    "portfolioNumber": "PT000000000000000049",
+                    "fundCode": "TMBMRMF",
+                    "fundNameEN": "TMB Money RMF",
+                    "fundNameTH": "ทหารไทยธนบดี เพื่อการเลี้ยงชีพ",
+                    "fundNickNameEN": "TMB Money RMF",
+                    "fundNickNameTH": "ทหารไทยธนบดี เพื่อการเลี้ยงชีพ",
+                    "fundShortName": "TMBMRMF",
+                    "unrealizedProfit": 8446.49,
+                    "marketValue": 193446.67,
+                    "unrealizedProfitPercent": 4.57,
+                    "accruedFee": 0.00
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "feeAsOfDate": "04/02/2021",
+    "sumAccruedFee": 0.00
+  }
+}
