@@ -75,8 +75,8 @@ public class ProductsExpService {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return fundAccountRs;
         }
-        if(!StringUtils.isEmpty(response) || !StringUtils.isEmpty(responseEntity)){
-            if( HttpStatus.OK.value() == response.getStatusCode().value()
+        if(!StringUtils.isEmpty(response) && !StringUtils.isEmpty(responseEntity)
+            && HttpStatus.OK.value() == response.getStatusCode().value()
             && HttpStatus.OK.value() == responseEntity.getStatusCode().value() ){
                 fundAccountRs = new FundAccountRs();
                 FundAccountDetail fundAccountDetail = mappingResponse(response.getBody().getData(),
@@ -84,7 +84,6 @@ public class ProductsExpService {
                 fundAccountRs.setDetails(fundAccountDetail);
 
                 return fundAccountRs;
-            }
         }
         return fundAccountRs;
     }
@@ -97,7 +96,7 @@ public class ProductsExpService {
      * @return
      */
     private Map<String, String> createHeader(String correlationId){
-        Map<String, String> invHeaderReqParameter = new HashMap<String, String>();
+        Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
