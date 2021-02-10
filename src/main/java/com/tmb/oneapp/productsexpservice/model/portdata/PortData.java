@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.portdata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tmb.common.model.Status;
 import lombok.Data;
 
 import java.util.List;
