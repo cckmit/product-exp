@@ -6,6 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
@@ -36,6 +37,7 @@ public class ProductExpServiceTest {
 
     InvestmentRequestClient investmentRequestClient;
     ProductsExpService productsExpService;
+    AccountRequestClient accountRequestClient;
 
     private final String success_code = "0000";
     private final String notfund_code = "0009";
@@ -46,8 +48,9 @@ public class ProductExpServiceTest {
     @BeforeEach
     public void setUp() {
         investmentRequestClient = mock(InvestmentRequestClient.class);
+        accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient);
     }
 
 
