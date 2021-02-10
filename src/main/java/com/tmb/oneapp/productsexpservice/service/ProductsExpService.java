@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
+import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -78,7 +79,8 @@ public class ProductsExpService {
             && HttpStatus.OK == response.getStatusCode()
             && HttpStatus.OK == responseEntity.getStatusCode()){
                 fundAccountRs = new FundAccountRs();
-                FundAccountDetail fundAccountDetail = mappingResponse(response.getBody().getData(),
+                UtilMap utilMap = new UtilMap();
+                FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
                         responseEntity.getBody().getData());
                 fundAccountRs.setDetails(fundAccountDetail);
 
@@ -99,40 +101,6 @@ public class ProductsExpService {
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
-    }
-
-
-    /**
-     * Generic Method to mappingResponse
-     *
-     * @param accDetailBody
-     * @param fundRuleBody
-     * @return FundAccountDetail
-     */
-    private FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody){
-        FundRule fundRule = new FundRule();
-
-        List<FundRuleInfoList> fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
-        FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
-        BeanUtils.copyProperties(ruleInfoList, fundRule);
-        fundRule.setIpoflag(ruleInfoList.getIpoflag());
-
-        AccountDetail accountDetail = new AccountDetail();
-        BeanUtils.copyProperties(accountDetail, accDetailBody.getDetailFund());
-        List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
-        List<FundOrderHistory> ordersHistories = new ArrayList<>();
-
-        for(Order order : orders){
-            FundOrderHistory fundOrderHistory = new FundOrderHistory();
-            BeanUtils.copyProperties(order, fundOrderHistory);
-            ordersHistories.add(fundOrderHistory);
-        }
-        accountDetail.setOrdersHistories(ordersHistories);
-        FundAccountDetail fundAccountDetail = new FundAccountDetail();
-        fundAccountDetail.setFundRule(fundRule);
-        fundAccountDetail.setAccountDetail(accountDetail);
-
-        return fundAccountDetail;
     }
 
 

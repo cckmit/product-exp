@@ -222,7 +222,6 @@ public class ProductExpServiceControllerTest {
                 .getFundAccountDetail(corrID, fundAccountRq);
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
-       // Assert.assertNull(actualResult.getBody().getData().getDetails().getAccountDetail().getOrdersHistories());
     }
 
 
