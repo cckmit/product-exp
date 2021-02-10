@@ -10,20 +10,13 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
-import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -71,20 +64,11 @@ public class ProductsExpService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, response);
             responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
+            UtilMap map = new UtilMap();
+            fundAccountRs = map.ValidateResponse(response, responseEntity);
         }catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return fundAccountRs;
-        }
-        if(!StringUtils.isEmpty(response) && !StringUtils.isEmpty(responseEntity)
-            && HttpStatus.OK == response.getStatusCode()
-            && HttpStatus.OK == responseEntity.getStatusCode()){
-                fundAccountRs = new FundAccountRs();
-                UtilMap utilMap = new UtilMap();
-                FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
-                        responseEntity.getBody().getData());
-                fundAccountRs.setDetails(fundAccountDetail);
-
-                return fundAccountRs;
         }
         return fundAccountRs;
     }
