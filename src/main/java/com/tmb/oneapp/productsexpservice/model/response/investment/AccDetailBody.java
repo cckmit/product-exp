@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.investmentrs;
+package com.tmb.oneapp.productsexpservice.model.response.investment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

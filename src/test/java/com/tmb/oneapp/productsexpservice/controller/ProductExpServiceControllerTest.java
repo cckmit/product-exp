@@ -5,10 +5,10 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.investmentrs.AccDetailBody;
-import com.tmb.oneapp.productsexpservice.model.response.investmentrs.DetailFund;
-import com.tmb.oneapp.productsexpservice.model.response.investmentrs.Order;
-import com.tmb.oneapp.productsexpservice.model.response.investmentrs.OrderToBeProcess;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
+import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
+import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,7 +114,6 @@ public class ProductExpServiceControllerTest {
                 .getFundAccountDetail(corrID, fundAccountRq);
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
-
 
     @Test
     public void testgetFundAccountDetail() throws Exception {

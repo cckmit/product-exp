@@ -11,8 +11,8 @@ import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestB
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.investmentrs.AccDetailBody;
-import com.tmb.oneapp.productsexpservice.model.response.investmentrs.Order;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

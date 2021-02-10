@@ -4,7 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.investmentrs.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
