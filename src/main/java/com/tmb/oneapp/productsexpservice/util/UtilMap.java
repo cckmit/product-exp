@@ -25,10 +25,7 @@ public class UtilMap {
                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
             if(StringUtils.isEmpty(response)){
                 return null;
-            }else if(StringUtils.isEmpty(responseEntity)){
-                return null;
             } else{
-
                 FundAccountRs fundAccountRs = new FundAccountRs();
                 UtilMap utilMap = new UtilMap();
                 FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
