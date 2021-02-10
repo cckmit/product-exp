@@ -136,7 +136,7 @@ public class ProductExpServiceTest {
         responseResponseEntity = investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody);
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
         UtilMap map = new UtilMap();
-        FundAccountRs rs = map.ValidateResponse(responseEntity, responseResponseEntity);
+        FundAccountRs rs = map.validateTMBResponse(responseEntity, responseResponseEntity);
         Assert.assertNotNull(responseResponseEntity);
         Assert.assertNotNull(responseEntity);
         FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
