@@ -25,9 +25,7 @@ public class UtilMap {
      */
     public FundAccountRs ValidateResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
-        if(!StringUtils.isEmpty(response) && !StringUtils.isEmpty(responseEntity)
-                && HttpStatus.OK == response.getStatusCode()
-                && HttpStatus.OK == responseEntity.getStatusCode()){
+        if(!StringUtils.isEmpty(response) && !StringUtils.isEmpty(responseEntity)){
             FundAccountRs fundAccountRs = new FundAccountRs();
             UtilMap utilMap = new UtilMap();
             FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
