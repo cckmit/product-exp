@@ -1,0 +1,9 @@
+{
+    "status": {
+        "code": "0009",
+        "message": "DATA NOT FOUND",
+        "service": "investment-service",
+        "description": "DATA NOT FOUND"
+    },
+    "data": {}
+}

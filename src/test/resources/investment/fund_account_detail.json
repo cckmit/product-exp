@@ -1,0 +1,51 @@
+{
+  "orderToBeProcess": {
+      "order": [
+        {
+          "orderDateTemp": "2020-10-16T14:23:00",
+          "itemNo": "1",
+          "orderReference": "O20300001209208",
+          "orderDate": "16/10/2020 14:23",
+          "efftDate": "16/10/2020",
+          "amount": "10000",
+          "unit": "0",
+          "tranTypeHubEN": "Buy",
+          "tranTypeHubTH": "ซื้อ",
+          "statusHubEN": "Waiting",
+          "statusHubTH": "รอดำเนินการ",
+          "channelHubEN": "Internet/Mobile",
+          "channelHubTH": "อินเตอร์เน็ต/โมบาย"
+        },
+        {
+          "orderDateTemp": "2020-10-16T14:23:00",
+          "itemNo": "2",
+          "orderReference": "O20300001209215",
+          "orderDate": "16/10/2020 14:23",
+          "efftDate": "16/10/2020",
+          "amount": "10000",
+          "unit": "0",
+          "tranTypeHubEN": "Buy",
+          "tranTypeHubTH": "ซื้อ",
+          "statusHubEN": "Waiting",
+          "statusHubTH": "รอดำเนินการ",
+          "channelHubEN": "Internet/Mobile",
+          "channelHubTH": "อินเตอร์เน็ต/โมบาย"
+        }
+      ]
+    },
+    "detailFund": {
+      "unitHolderNo": "FFFFF",
+      "fundHouseCode": "FFFFF",
+      "fundNameEN": "FFFFF",
+      "fundNameTH": "FFFFF",
+      "dateAsOf": "FFFFF",
+      "unit": "FFFFF",
+      "nav": "FFFFF",
+      "cost": "FFFFF",
+      "investmentValue": "FFFFF",
+      "unrealizedProfit": "FFFFF",
+      "unrealizedProfitPerc": "FFFFF",
+      "taxDoc": "FFFFF",
+      "unitLTF5Y": "FFFFF"
+    }
+}

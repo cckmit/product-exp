@@ -65,19 +65,25 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-	implementation 'com.tmb.common:tmb_common_utility:0.0.33'
-	implementation 'commons-codec:commons-codec:1.15'
-	compile("io.springfox:springfox-swagger2:2.9.2")
-	compile("io.springfox:springfox-swagger-ui:2.9.2")
 	compile 'org.json:json:20171018'
 	compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+	compile("io.springfox:springfox-swagger2:2.9.2")
+	compile("io.springfox:springfox-swagger-ui:2.9.2")
+	testCompile("junit:junit:4.12")
 	compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.7.RELEASE'
+	compile 'org.json:json:20171018'
+	compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	implementation 'com.tmb.common:tmb_common_utility:0.0.38'
+	implementation 'org.springframework.kafka:spring-kafka'
+	testCompile("junit:junit:4.12")
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+
 }
 
 dependencyManagement {
@@ -121,7 +127,7 @@ sonarqube {
 		}
 	}
 	properties {
-		property 'sonar.coverage.exclusions', '**/config/*,**/model/*,**/data/*,**/constant/*,**/utils/*, **/CreditCardServiceApplication.java'
+		property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/ProductsExpServiceApplication.java'
 	}
 	properties {
 		property 'sonar.exclusions', '**/config/*'
