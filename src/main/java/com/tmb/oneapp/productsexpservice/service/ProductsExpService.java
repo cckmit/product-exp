@@ -112,6 +112,7 @@ public class ProductsExpService {
     public FundSummaryResponse getFundSummary(String correlationId, FundSummaryRq rq) {
         FundSummaryResponse result = new FundSummaryResponse();
 
+
         String portData ;
         ResponseEntity<TmbOneServiceResponse<com.tmb.oneapp.productsexpservice.model
                 .fundsummarydata.response.fundsummary.FundSummaryResponse>> fundSummaryData = null;
@@ -130,7 +131,11 @@ public class ProductsExpService {
                 List<Port> ports = mapper.readValue(portList.toString(), new TypeReference<List<Port>>() {
                 });
                 result.setMutualFundAccounts(ports);
-                result.setData(fundSummaryData.getBody().getData());
+                var body =  fundSummaryData.getBody();
+                if(body!=null){
+                    result.setData(body.getData());
+                }
+
             }
             return result;
 
