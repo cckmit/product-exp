@@ -20,9 +20,6 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProc
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +31,8 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 
 public class ProductExpServiceTest {
-    @Mock
-    InvestmentRequestClient investmentRequestClient;
 
-    @InjectMocks
+    InvestmentRequestClient investmentRequestClient;
     ProductsExpService productsExpService;
 
     private final String success_code = "0000";
@@ -48,8 +43,11 @@ public class ProductExpServiceTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        investmentRequestClient = mock(InvestmentRequestClient.class);
+        productsExpService = mock(ProductsExpService.class);
+        productsExpService = new ProductsExpService(investmentRequestClient);
     }
+
 
     private void initAccDetailBody(){
         accDetailBody = new AccDetailBody();
@@ -80,7 +78,7 @@ public class ProductExpServiceTest {
     }
 
     private Map<String, String> createHeader(String correlationId){
-        Map<String, String> invHeaderReqParameter = new HashMap<String, String>();
+        Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
@@ -100,6 +98,7 @@ public class ProductExpServiceTest {
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setUnitHolderNo("PT000000001");
         fundAccountRq.setServiceType("1");
+        fundAccountRq.setFundCode("DDD");
 
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
@@ -114,7 +113,6 @@ public class ProductExpServiceTest {
         try {
             ObjectMapper mapper = new ObjectMapper();
             accDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccDetailBody.class);
-
             oneServiceResponse.setData(accDetailBody);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -154,6 +152,8 @@ public class ProductExpServiceTest {
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setUnitHolderNo("PT000000001");
         fundAccountRq.setServiceType("1");
+        fundAccountRq.setFundCode("DDD");
+
         TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
 
@@ -187,6 +187,7 @@ public class ProductExpServiceTest {
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setUnitHolderNo("PT000000001");
         fundAccountRq.setServiceType("1");
+        fundAccountRq.setFundCode("DDD");
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
         fundRuleRequestBody.setTranType("2");
@@ -232,14 +233,15 @@ public class ProductExpServiceTest {
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNo("PT000000001");
-        fundAccountRq.setServiceType("1");
+        fundAccountRq.setUnitHolderNo("PT000000000000138924");
+        fundAccountRq.setServiceType("2");
+        fundAccountRq.setFundCode("DDD");
 
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setTranType("2");
-        fundRuleRequestBody.setFundHouseCode("TTTTT");
-        fundRuleRequestBody.setFundCode("EEEEE");
+        fundRuleRequestBody.setTranType("1");
+        fundRuleRequestBody.setFundHouseCode("TFUND");
+        fundRuleRequestBody.setFundCode("TMB50");
 
         TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
@@ -258,6 +260,51 @@ public class ProductExpServiceTest {
             when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
+        Assert.assertNull(result);
+    }
+
+
+    @Test
+    public void testGetFundAccdetailServiceNull() throws Exception {
+        initAccDetailBody();
+        initFundRuleBody();
+        FundAccountRq fundAccountRequest = new FundAccountRq();
+        fundAccountRequest.setFundCode("EEEEEE");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+
+        FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
+        fundAccountRq.setUnitHolderNo("PT000000000000138924");
+        fundAccountRq.setServiceType("2");
+        fundAccountRq.setFundCode("DDD");
+
+
+        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
+        fundRuleRequestBody.setTranType("1");
+        fundRuleRequestBody.setFundHouseCode("TFUND");
+        fundRuleRequestBody.setFundCode("TMB50");
+
+        TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
+
+        try {
+            oneServiceResponse.setData(accDetailBody);
+            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            oneServiceResponseBody.setData(fundRuleBody);
+            oneServiceResponseBody.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+           when(productsExpService.getFundAccountDetail(corrID, fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

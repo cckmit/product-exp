@@ -65,7 +65,6 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response = null;
         ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = null;
-
         try {
             response = investmentRequestClient.callInvestmentFundAccDetailService(invHeaderReqParameter, fundAccountRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, response);
@@ -76,8 +75,8 @@ public class ProductsExpService {
             return fundAccountRs;
         }
         if(!StringUtils.isEmpty(response) && !StringUtils.isEmpty(responseEntity)
-            && HttpStatus.OK.value() == response.getStatusCode().value()
-            && HttpStatus.OK.value() == responseEntity.getStatusCode().value() ){
+            && HttpStatus.OK == response.getStatusCode()
+            && HttpStatus.OK == responseEntity.getStatusCode()){
                 fundAccountRs = new FundAccountRs();
                 FundAccountDetail fundAccountDetail = mappingResponse(response.getBody().getData(),
                         responseEntity.getBody().getData());
