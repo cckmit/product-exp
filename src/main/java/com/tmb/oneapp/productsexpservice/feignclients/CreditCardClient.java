@@ -11,7 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
 
 @FeignClient(name = "${feign.creditcard.service.name}", url = "${feign.creditcard.service.url}")
-public interface ActivateCreditCardClient {
+public interface CreditCardClient {
 	@GetMapping(value = "/apis/creditcard/creditcard-block-code/{ACCOUNT_ID}")
 	public ResponseEntity<GetCardBlockCodeResponse> getCardBlockCode(
 			@RequestHeader("X-Correlation-ID") String correlationId,

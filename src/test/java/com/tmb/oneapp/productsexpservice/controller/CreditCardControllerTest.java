@@ -19,22 +19,22 @@ import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.ActivateCreditCardClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCreditCardResponse;
 
 @RunWith(JUnit4.class)
-public class ProductsActivateCreditCardControllerTest {
-	ProductsActivateCreditCardController productsActivateCreditCardController;
+public class CreditCardControllerTest {
+	CreditCardController creditCardController;
 	@Mock
-	ActivateCreditCardClient activateCreditCardClient;
+	CreditCardClient creditCardClient;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		productsActivateCreditCardController = new ProductsActivateCreditCardController(activateCreditCardClient);
+		creditCardController = new CreditCardController(creditCardClient);
 
 	}
 
@@ -51,7 +51,7 @@ public class ProductsActivateCreditCardControllerTest {
 		handleGetCardBlockCodeResponse(getCardBlockCodeResponse, HttpStatus.OK);
 		handleGetCardResponse(getCardResponse, HttpStatus.OK);
 
-		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = productsActivateCreditCardController
+		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = creditCardController
 				.verifyCreditCardDetails(requestHeadersParameter);
 		assertEquals(200, response.getStatusCodeValue());
 
@@ -60,7 +60,7 @@ public class ProductsActivateCreditCardControllerTest {
 	@Test
 	void testVerifyCreditCardDetailsNOData() throws Exception {
 		Map<String, String> requestHeadersParameter = headerRequestParameter("", "");
-		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = productsActivateCreditCardController
+		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = creditCardController
 				.verifyCreditCardDetails(requestHeadersParameter);
 		assertEquals(400, response.getStatusCodeValue());
 
@@ -70,9 +70,9 @@ public class ProductsActivateCreditCardControllerTest {
 	void testVerifyCreditCardDetailsError() throws Exception {
 		Map<String, String> requestHeadersParameter = headerRequestParameter("c83936c284cb398fA46CF16F399C",
 				"0000000050078360018000167");
-		when(activateCreditCardClient.getCardBlockCode(anyString(), anyString())).thenThrow(RuntimeException.class);
+		when(creditCardClient.getCardBlockCode(anyString(), anyString())).thenThrow(RuntimeException.class);
 
-		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = productsActivateCreditCardController
+		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = creditCardController
 				.verifyCreditCardDetails(requestHeadersParameter);
 		assertNull(response.getBody().getData());
 
@@ -85,7 +85,7 @@ public class ProductsActivateCreditCardControllerTest {
 		GetCardBlockCodeResponse getCardBlockCodeResponse = null;
 		handleGetCardBlockCodeResponse(getCardBlockCodeResponse, HttpStatus.BAD_REQUEST);
 
-		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = productsActivateCreditCardController
+		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = creditCardController
 				.verifyCreditCardDetails(requestHeadersParameter);
 		assertEquals(400, response.getStatusCodeValue());
 
@@ -102,7 +102,7 @@ public class ProductsActivateCreditCardControllerTest {
 		handleGetCardBlockCodeResponse(getCardBlockCodeResponse, HttpStatus.OK);
 		GetCardResponse getCardResponse = null;
 		handleGetCardResponse(getCardResponse, HttpStatus.BAD_REQUEST);
-		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = productsActivateCreditCardController
+		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = creditCardController
 				.verifyCreditCardDetails(requestHeadersParameter);
 		assertEquals(400, response.getStatusCodeValue());
 
@@ -113,7 +113,7 @@ public class ProductsActivateCreditCardControllerTest {
 		oneServiceResponse.setData(getCardBlockCodeResponse);
 		ResponseEntity<GetCardBlockCodeResponse> res = new ResponseEntity<GetCardBlockCodeResponse>(
 				getCardBlockCodeResponse, status);
-		when(activateCreditCardClient.getCardBlockCode(anyString(), anyString())).thenReturn(res);
+		when(creditCardClient.getCardBlockCode(anyString(), anyString())).thenReturn(res);
 
 	}
 
@@ -121,7 +121,7 @@ public class ProductsActivateCreditCardControllerTest {
 		TmbOneServiceResponse<GetCardResponse> oneServiceResponse = new TmbOneServiceResponse<GetCardResponse>();
 		oneServiceResponse.setData(getCardResponse);
 		ResponseEntity<GetCardResponse> getCardRes = new ResponseEntity<GetCardResponse>(getCardResponse, status);
-		when(activateCreditCardClient.getCreditCardDetails(anyString(), anyString())).thenReturn(getCardRes);
+		when(creditCardClient.getCreditCardDetails(anyString(), anyString())).thenReturn(getCardRes);
 
 	}
 

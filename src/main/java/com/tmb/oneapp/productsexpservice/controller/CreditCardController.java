@@ -18,7 +18,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.ActivateCreditCardClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCreditCardResponse;
@@ -30,27 +30,27 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * ProductsActivateCreditCardController request mapping will handle apis call
+ * CreditCardController request mapping will handle apis call
  * and then navigate to respective method
  *
  */
 @RestController
 @Api(tags = "Verify Credit Card Details Api")
-public class ProductsActivateCreditCardController {
-	private final ActivateCreditCardClient activateCreditCardClient;
-	private static final TMBLogger<ProductsActivateCreditCardController> logger = new TMBLogger<>(
-			ProductsActivateCreditCardController.class);
+public class CreditCardController {
+	private final CreditCardClient creditCardClient;
+	private static final TMBLogger<CreditCardController> logger = new TMBLogger<>(
+			CreditCardController.class);
 
 	/**
 	 * Constructor
 	 * 
-	 * @param activateCreditCardClient
+	 * @param creditCardClient
 	 */
 
 	@Autowired
-	public ProductsActivateCreditCardController(ActivateCreditCardClient activateCreditCardClient) {
+	public CreditCardController(CreditCardClient creditCardClient) {
 		super();
-		this.activateCreditCardClient = activateCreditCardClient;
+		this.creditCardClient = creditCardClient;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class ProductsActivateCreditCardController {
 	 */
 	@LogAround
 	@ApiOperation(value = "Verify Credit Card Details Api")
-	@PostMapping(value = "/credit-card/verifycreditcard/get-block-code")
+	@PostMapping(value = "/credit-card/verifycreditcard")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
 			@ApiImplicitParam(name = "account-id", value = "Account Id", required = true, dataType = "string", paramType = "header", example = "0000000050078360018000167") })
@@ -75,7 +75,7 @@ public class ProductsActivateCreditCardController {
 			String accountId = requestHeadersParameter.get(ProductsExpServiceConstant.ACCOUNT_ID);
 			String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 			if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)) {
-				ResponseEntity<GetCardBlockCodeResponse> blockCodeRes = activateCreditCardClient
+				ResponseEntity<GetCardBlockCodeResponse> blockCodeRes = creditCardClient
 						.getCardBlockCode(correlationId, accountId);
 
 				if (blockCodeRes != null && blockCodeRes.getStatusCode() == HttpStatus.OK
@@ -123,7 +123,7 @@ public class ProductsActivateCreditCardController {
 		GetCardBlockCodeResponse oneBlockCodeRes = blockCodeRes.getBody();
 		String blockCode = oneBlockCodeRes.getCreditCard() != null ? oneBlockCodeRes.getCreditCard().getBlockCode()
 				: ProductsExpServiceConstant.EMPTY;
-		ResponseEntity<GetCardResponse> getCardRes = activateCreditCardClient.getCreditCardDetails(correlationId,
+		ResponseEntity<GetCardResponse> getCardRes = creditCardClient.getCreditCardDetails(correlationId,
 				accountId);
 		if (getCardRes != null && getCardRes.getStatusCode() == HttpStatus.OK
 				&& getCardRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
