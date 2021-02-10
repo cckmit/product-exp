@@ -7,10 +7,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoLis
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,16 +23,16 @@ public class UtilMap {
      */
     public FundAccountRs ValidateResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
-        if(!StringUtils.isEmpty(response) && !StringUtils.isEmpty(responseEntity)){
-            FundAccountRs fundAccountRs = new FundAccountRs();
-            UtilMap utilMap = new UtilMap();
-            FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
-                    responseEntity.getBody().getData());
-            fundAccountRs.setDetails(fundAccountDetail);
-
-            return fundAccountRs;
-        }
-        return null;
+            if(StringUtils.isEmpty(response) || StringUtils.isEmpty(responseEntity)){
+                return null;
+            }else {
+                FundAccountRs fundAccountRs = new FundAccountRs();
+                UtilMap utilMap = new UtilMap();
+                FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
+                        responseEntity.getBody().getData());
+                fundAccountRs.setDetails(fundAccountDetail);
+                return fundAccountRs;
+            }
     }
 
     /**
