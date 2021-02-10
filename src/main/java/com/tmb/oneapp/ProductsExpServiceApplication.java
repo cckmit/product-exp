@@ -10,6 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = { "com.tmb.oneapp", "com.tmb.common" })
 public class ProductsExpServiceApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(ProductsExpServiceApplication.class, args);
+		SpringApplication.run(ProductsExpServiceApplication.class);
 	}
 }

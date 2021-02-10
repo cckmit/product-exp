@@ -7,6 +7,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoLis
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import java.util.ArrayList;
@@ -23,10 +24,11 @@ public class UtilMap {
      */
     public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
-            if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)){
+            if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)
+            && HttpStatus.OK.value() != response.getStatusCode().value()
+            && HttpStatus.OK.value() != responseEntity.getStatusCode().value()){
                 return null;
             } else{
-
                 FundAccountRs fundAccountRs = new FundAccountRs();
                 UtilMap utilMap = new UtilMap();
                 FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
