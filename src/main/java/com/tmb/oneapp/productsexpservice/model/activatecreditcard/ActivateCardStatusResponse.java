@@ -10,10 +10,10 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "status_code"
+        "statusCode"
 })
 public class ActivateCardStatusResponse {
 
-    @JsonProperty("status_code")
+    @JsonProperty("statusCode")
     private Integer statusCode;
 }

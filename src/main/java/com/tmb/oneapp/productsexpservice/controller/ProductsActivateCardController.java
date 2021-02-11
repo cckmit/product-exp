@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.google.common.base.Strings;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -24,7 +25,7 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
-@Api("For activate card Api")
+@Api("Credit Card Verification Service")
 public class ProductsActivateCardController {
     private static final TMBLogger<ProductsActivateCardController> logger = new TMBLogger<>(
             ProductsActivateCardController.class);
@@ -49,32 +50,41 @@ public class ProductsActivateCardController {
         ActivateCardResponse response = new ActivateCardResponse();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<ActivateCardResponse> oneServiceRes1 = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ResponseEntity<ActivateCardResponse> activateCardResponse = creditCardClient.activateCard(headers);
-            int statusCodeValue = activateCardResponse.getStatusCodeValue();
-            HttpStatus statusCode = activateCardResponse.getStatusCode();
-            if (activateCardResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
+            String accountId = headers.get(ProductsExpServiceConstant.ACCOUNT_ID);
+            if (!Strings.isNullOrEmpty(accountId)) {
+                ResponseEntity<ActivateCardResponse> activateCardResponse = creditCardClient.activateCard(headers);
+                int statusCodeValue = activateCardResponse.getStatusCodeValue();
+                HttpStatus statusCode = activateCardResponse.getStatusCode();
+                if (activateCardResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-                oneServiceRes1
-                        .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                oneServiceRes1.setData(response);
-                return ResponseEntity.ok().headers(responseHeaders).body(oneServiceRes1);
+                    oneServiceResponse
+                            .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+                    oneServiceResponse.setData(response);
+                    return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+                } else {
+                    oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                            ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                            ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+                    return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+
+                }
             } else {
-                oneServiceRes1.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceRes1);
+                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
             }
+
         } catch (Exception e) {
             logger.error("Error while getCreditCardDetails: {}", e);
-            oneServiceRes1.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceRes1);
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
         }
 
     }
-
 }

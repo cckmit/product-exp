@@ -1,7 +1,9 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -19,10 +22,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeErrorStatus;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
 
 public class ProductsVerifyCvvControllerTest {
 
@@ -54,6 +53,32 @@ public class ProductsVerifyCvvControllerTest {
 		ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> activateCardResponse = productsVerifyCvvController
 				.verifyCvv(reqHeaders);
 		assertEquals(200, activateCardResponse.getStatusCodeValue());
+
+	}
+
+
+	@Test
+	void testVerifyCvvDetailsDataNotFound() throws Exception {
+		Map<String, String> requestHeadersParameter = headerRequestParameter("c83936c284cb398fA46CF16F399C",
+				"0000000050078360018000167","896","2506");
+		VerifyCvvResponse verifyCvvResponse = new VerifyCvvResponse();
+		verifyCvvResponse.setStatus(new SilverlakeStatus());
+		handleGetCardResponse(verifyCvvResponse, HttpStatus.BAD_REQUEST);
+		ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> res = productsVerifyCvvController
+				.verifyCvv(requestHeadersParameter);
+		assertEquals(400, res.getStatusCodeValue());
+
+	}
+
+	@Test
+	void testVerifyCvvDetailsError() throws Exception {
+		Map<String, String> requestHeadersParameter = headerRequestParameter("c83936c284cb398fA46CF16F399C",
+				"0000000050078360018000167","","");
+		when(creditCardClient.getCardBlockCode(anyString(), anyString())).thenThrow(RuntimeException.class);
+
+		ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> response = productsVerifyCvvController
+				.verifyCvv(requestHeadersParameter);
+		assertNull(response.getBody().getData());
 
 	}
 
