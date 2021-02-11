@@ -49,7 +49,7 @@ public class ProductsActivateCardController {
         ActivateCardResponse response = new ActivateCardResponse();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<ActivateCardResponse> oneServiceRes = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<ActivateCardResponse> oneServiceRes1 = new TmbOneServiceResponse<>();
 
         try {
             ResponseEntity<ActivateCardResponse> activateCardResponse = creditCardClient.activateCard(headers);
@@ -57,22 +57,22 @@ public class ProductsActivateCardController {
             HttpStatus statusCode = activateCardResponse.getStatusCode();
             if (activateCardResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-                oneServiceRes
+                oneServiceRes1
                         .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                oneServiceRes.setData(response);
-                return ResponseEntity.ok().headers(responseHeaders).body(oneServiceRes);
+                oneServiceRes1.setData(response);
+                return ResponseEntity.ok().headers(responseHeaders).body(oneServiceRes1);
             } else {
-                oneServiceRes.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                oneServiceRes1.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceRes);
+                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceRes1);
             }
         } catch (Exception e) {
             logger.error("Error while getCreditCardDetails: {}", e);
-            oneServiceRes.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+            oneServiceRes1.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceRes);
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceRes1);
         }
 
     }
