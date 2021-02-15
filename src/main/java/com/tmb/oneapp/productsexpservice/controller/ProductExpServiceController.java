@@ -10,7 +10,6 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

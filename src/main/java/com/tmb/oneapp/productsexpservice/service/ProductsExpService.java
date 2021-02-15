@@ -135,7 +135,6 @@ public class ProductsExpService {
 
 
                 String acctNbrList = ports.stream().map(Port::<String>getAcctNbr).collect(Collectors.joining(","));
-                logger.info("port list >>>" + acctNbrList);
                 unitHolder.setUnitHolderNo(acctNbrList);
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter
                         , unitHolder);
