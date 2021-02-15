@@ -19,6 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody
 import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
+import com.tmb.oneapp.productsexpservice.util.CacheService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,7 @@ public class ProductExpServiceTest {
     InvestmentRequestClient investmentRequestClient;
     ProductsExpService productsExpService;
     AccountRequestClient accountRequestClient;
+    CacheService cacheService;
 
     private final String success_code = "0000";
     private final String notfund_code = "0009";
@@ -50,7 +52,9 @@ public class ProductExpServiceTest {
         investmentRequestClient = mock(InvestmentRequestClient.class);
         accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient);
+        cacheService = mock(CacheService.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,cacheService);
+
     }
 
 
