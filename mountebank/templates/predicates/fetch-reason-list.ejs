@@ -1,0 +1,66 @@
+{
+   "predicates":[
+      {
+         "equals":{
+            "method":"GET",
+            "path":"/apis/products/credit-card/fetch-reason-list"
+         }
+      },
+      {
+         "equals":{
+            "headers":{
+             "X-Correlation-ID":"true"          
+            }
+         }
+      }
+   ],
+   "responses":[
+      {
+         "is":{
+            "statusCode":200,
+            "headers":{
+               "Content-Type":"application/json"
+            },
+            "body":{
+               "status":{
+                "code": "0000",
+                "message": "success",
+                "service": "products-exp-service",
+                "description": "success"
+               },
+               "data":{
+                             "201": {
+                    "desc_eng": "For Medical treatment",
+                    "desc_thai": "เพื่อการรักษาพยาบาล"
+                },
+                "204": {
+                    "desc_eng": "For Education",
+                    "desc_thai": "เพื่อการศึกษา"
+                },
+                "202": {
+                    "desc_eng": "For Wedding",
+                    "desc_thai": "เพื่อจัดงานแต่งงาน"
+                },
+                "208": {
+                    "desc_eng": "For Religion ceremony",
+                    "desc_thai": "เเพื่องานพิธีการทางศาสนา"
+                },
+                "200": {
+                    "desc_eng": "For Oversea Emergency",
+                    "desc_thai": "กรณีฉุกเฉินเมื่อยู่ต่างประเทศ"
+
+                },
+                "207": {
+                    "desc_eng": "For Disaster recovery",
+                    "desc_thai": "เพื่อใช้จ่ายกรณีติดภัยพิบัติ"
+                },
+                "203": {
+                    "desc_eng": "For Emergency usage",
+                    "desc_thai": "กรณีฉุกเฉินอื่น ๆ"
+                }
+               }
+            }
+         }
+      }
+   ]
+}

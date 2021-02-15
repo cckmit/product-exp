@@ -1,0 +1,44 @@
+{
+    "predicates": [
+        {
+            "equals": {
+                "method": "POST",
+                "path": "/apis/products/credit-card/set-credit-limit"
+            }
+        },
+        {
+            "equals": {
+                "body": {
+                    "mode": "permanent",
+                    "account_id": "0000000000012017890000383",
+                    "current_credit_limit":"350000",
+                    "effective_date":"2021-02-15",
+                    "expiry_date":"2021-02-25",
+                     "request_reason":"Due to Travell",
+                     "previous_credit_limit":"40000"
+                },
+                "headers": {
+                    "X-Correlation-ID": "true"
+                }
+            }
+        }
+    ],
+    "responses": [
+        {
+            "is": {
+                "statusCode": 200,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "status": {
+                        "code": "0000",
+                        "message": "success",
+                        "service": "products-exp-service",
+                        "description": "success"
+                    }
+                }
+            }
+        }
+    ]
+}
