@@ -35,4 +35,7 @@ public class ProductsExpServiceConstant {
 	public static final String EMPTY = "";
 	public static final String CVV= "cvv";
     public static final String CARD_EXPIRY="card-expiry";
+	public static final String REDIS_KEY_PORTLIST = "invesment-portlist" ;
+    public static final String REDIS_KEY_FUND_SUMMARY = "invesment-fundsummary" ;
+
 }

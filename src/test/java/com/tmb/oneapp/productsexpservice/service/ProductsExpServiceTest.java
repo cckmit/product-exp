@@ -8,16 +8,17 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.util.CacheService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -35,6 +36,8 @@ public class ProductsExpServiceTest {
     InvestmentRequestClient investmentRequestClient;
     @Mock
     AccountRequestClient accountRequestClient;
+    @Mock
+    CacheService cacheService;
     @InjectMocks
     ProductsExpService productsExpService;
 
@@ -44,21 +47,21 @@ public class ProductsExpServiceTest {
     }
 
 
-    @org.junit.jupiter.api.Test
+
+    @Test
     public void testGetFundSummary() throws Exception {
 
-        com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse expectedResponse = null ;
         FundSummaryRq rq = new FundSummaryRq();
         rq.setCrmId("test");
-        rq.setUnitHolderNo("PO333");
         String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        TmbOneServiceResponse<com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+        TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port.txt");
             String data = IOUtils.toString(fis, "UTF-8");
             ObjectMapper mapper = new ObjectMapper();
-            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/invest_fundsummary_data.json").toFile(),
+            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
                     com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse.class);
             oneServiceResponse.setData(expectedResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -68,12 +71,15 @@ public class ProductsExpServiceTest {
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(accountRequestClient.getPortList(any(), anyString())).thenReturn(data);
 
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             ex.printStackTrace();
         }
-      FundSummaryResponse result = productsExpService.getFundSummary(corrID,rq);
+        FundSummaryBody result = productsExpService.getFundSummary(corrID,rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
-                .getFundClass().size(),result.getData().getBody().getFundClassList().getFundClass().size());
+                .getFundClass().size(),result.getFundClassList().getFundClass().size());
     }
+
+
+
 }
 

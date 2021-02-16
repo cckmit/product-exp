@@ -6,10 +6,10 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -96,13 +96,13 @@ public class ProductExpServiceController {
 	@ApiOperation(value = "Fetch Fund Summary and Port List based on Unit Holder No and CRMID")
 	@LogAround
 	@PostMapping(value = "/fund/summary", consumes= MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> getFundSummary(
+	public ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> getFundSummary(
 			@ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
 			@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
 			@Valid @RequestBody FundSummaryRq fundSummaryRq) {
 
-		TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-		FundSummaryResponse fundSummaryResponse = productsExpService.getFundSummary(correlationId,fundSummaryRq);
+		TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
+		FundSummaryBody fundSummaryResponse = productsExpService.getFundSummary(correlationId,fundSummaryRq);
 
 
 		HttpHeaders responseHeaders = new HttpHeaders();
