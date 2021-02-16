@@ -65,7 +65,7 @@ public class GetCardDetailsController {
 			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID, required = true) final String correlationId) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-		TmbOneServiceResponse<GetCardResponse> oneServiceResponse = new TmbOneServiceResponse<GetCardResponse>();
+		TmbOneServiceResponse<GetCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
 			String accountId = request.getAccountId();
 			if (!Strings.isNullOrEmpty(accountId)) {

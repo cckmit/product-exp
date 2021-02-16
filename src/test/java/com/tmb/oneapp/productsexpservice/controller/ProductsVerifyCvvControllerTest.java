@@ -78,7 +78,18 @@ public class ProductsVerifyCvvControllerTest {
 
 		ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> response = productsVerifyCvvController
 				.verifyCvv(requestHeadersParameter);
-		assertNull(response.getBody().getData());
+		assertEquals(400, response.getStatusCodeValue());
+
+	}
+	
+	@Test
+	void testVerifyCvvDetailsDataNotAvailable() throws Exception {
+		Map<String, String> headers = new HashMap<>();
+		headers.put(ProductsExpServiceConstant.ACCOUNT_ID, "");
+		ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> response = productsVerifyCvvController
+				.verifyCvv(headers);
+		assertEquals(400, response.getStatusCodeValue());
+
 
 	}
 
