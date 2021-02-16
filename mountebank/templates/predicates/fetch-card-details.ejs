@@ -1,0 +1,199 @@
+{
+  "predicates": [
+    {
+      "equals": {
+        "method": "POST",
+        "path": "/apis/products/credit-card/fetch-card-details"
+      }
+    },
+    {
+      "equals": {
+        "body": {
+          "account_id": "0000000000012017890000383"
+        },
+        "headers": {
+          "X-Correlation-ID": "123"
+        }
+      }
+    }
+  ],
+  "responses": [
+    {
+      "is": {
+        "statusCode": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "status": {
+            "code": "0000",
+            "message": "success",
+            "service": "products-exp-service",
+            "description": "success"
+          },
+          "data": {
+            "credit_card": {
+              "card_id": "470686XXXXXX0286",
+              "account_id": "0000000050078360141010286",
+              "product_id": "VABSSN",
+              "direct_deposit_account": 0,
+              "direct_deposit_bank": "",
+              "customer": {
+                "rm_id": "001100000000000000000000611330",
+                "cc_id": "3008801375",
+                "birthdate": "1979-05-31",
+                "identification_id": "8555542357601"
+              },
+              "card_info": {
+                "billing_cycle": 20,
+                "card_embossing_name1": "TEST JAIDEE",
+                "card_embossing_name2": "",
+                "issued_by": "2006",
+                "expired_by": "2701",
+                "last_update_date": "2021-02 09",
+                "effective_date": "2022-01-13",
+                "created_date": "0000-00-00"
+              },
+              "card_phones": [
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                },
+                {
+                  "phone_type": "",
+                  "phone_no": "",
+                  "phone_extension": ""
+                }
+              ],
+              "card_addresses": {
+                "city": "สันกำแพงงงงงงงงงงง",
+                "postal_code": "50130",
+                "country": "TH",
+                "state_code": "C12000",
+                "state_txt": "นนทบุรี",
+                "address_1": "เลขที่ 999 อ./มบ. IBIZA CONDOO",
+                "address_2": "ซ. ซ.ศูนย์วิจัย ตำบล บางกะปิ",
+                "address_3": ""
+              },
+              "card_email": {
+                "email_address": "mibvitomega@gmail.com",
+                "email_eStatementFlag": "Y"
+              },
+              "balance_points": {
+                "point_earned": 0,
+                "point_used": 0,
+                "point_available": 0,
+                "point_remain": 0,
+                "expiry_points": 0,
+                "expiry_date": ""
+              },
+              "card_points": null,
+              "card_status": {
+                "stop_code": 0,
+                "stop_code_desc": "",
+                "account_status": "000",
+                "account_agree_status": "009",
+                "activated_date": "2022-01-13",
+                "block_code": "",
+                "previous_expiry_date": "0000",
+                "application_type": "B",
+                "stop_date": "",
+                "card_ploan_flag": "1",
+                "card_active_flag": "ACTIVE",
+                "card_role": null
+              },
+              "card_balances": {
+                "current_balance": 4280,
+                "ledger_balance": 0,
+                "available_cash_advance": 33000,
+                "available_credit_allowance": 61720,
+                "last_payment_amount": 0,
+                "last_payment_date": "0000-00-00",
+                "eptb_installment_available": 0,
+                "epai_installment_available": 0,
+                "balance_credit_limit": {
+                  "total": 66000,
+                  "available_to_transfer": 61720,
+                  "available": null,
+                  "current": 66000
+                },
+                "balance_credit_line": {
+                  "total": 90000,
+                  "available_to_transfer": null,
+                  "available": 82218.44,
+                  "current": 90000
+                }
+              },
+              "card_credit_limit": {
+                "permanent_credit_limit": 66000,
+                "temporary_c8redit_limit": {
+                  "amounts": 0,
+                  "effective_date": "0000-00-00",
+                  "expiry_date": "0000-00-00",
+                  "request_reason": "",
+                  "previous_credit_limit": 66000,
+                  "max_temp_allowance": 0,
+                  "max_temp_increase": 0
+                }
+              },
+              "customer_supp": {
+                "rm_id": "000000000000000000000000000000",
+                "cc_id": "0",
+                "birthdate": "",
+                "identification_id": ""
+              },
+              "card_cash_advance": {
+                "cash_adv_fee_rate": 3,
+                "cash_adv_fee_fixed_amt": 0,
+                "cash_adv_fee_model": "1",
+                "cash_adv_int_rate": 16,
+                "cash_adv_fee_VAT_rate": 7
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
