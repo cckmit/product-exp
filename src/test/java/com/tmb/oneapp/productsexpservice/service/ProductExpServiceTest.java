@@ -396,5 +396,43 @@ public class ProductExpServiceTest {
     }
 
 
+    @Test
+    public void testgetFundPrePaymentDetailNotfound() throws Exception {
+        FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
+        fundPaymentDetailRq.setCrmId("001100000000000000000012025950");
+        fundPaymentDetailRq.setFundCode("SCBTMF");
+        fundPaymentDetailRq.setFundHouseCode("SCBAM");
+        fundPaymentDetailRq.setTranType("1");
+
+        String responseCustomerExp = null;
+
+        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRuleEntity = null;
+        ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> hilodayEntity = null;
+        String custExp = null;
+
+        try {
+
+            responseCustomerExp = null;
+
+            when(customerExpRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(null);
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(null);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        UtilMap utilMap = new UtilMap();
+        custExp = customerExpRequestClient.callCustomerExpService(any(), anyString());
+        fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
+        hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
+
+        Assert.assertNull(custExp);
+        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, custExp);
+        Assert.assertNull(response);
+
+    }
+
+
 }
 

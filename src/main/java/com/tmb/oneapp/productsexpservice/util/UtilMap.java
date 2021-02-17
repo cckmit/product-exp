@@ -97,8 +97,8 @@ public class UtilMap {
                                                String responseCustomerExp){
         if(StringUtils.isEmpty(responseEntity)
                 || StringUtils.isEmpty(responseFundHoliday)
-                || HttpStatus.OK.value() != responseEntity.getStatusCode().value()
-                || HttpStatus.OK.value() != responseFundHoliday.getStatusCode().value()
+                || HttpStatus.OK != responseEntity.getStatusCode()
+                || HttpStatus.OK != responseFundHoliday.getStatusCode()
                 || StringUtils.isEmpty(responseCustomerExp)){
             return null;
         }else{
@@ -142,11 +142,11 @@ public class UtilMap {
                     for (int i = 0; i < size; i++) {
                         JsonNode itr = arrayNode.get(i);
                         depositAccount = new DepositAccount();
-                        depositAccount.setAccountNumber(itr.get("account_number") != null ? itr.get("account_number").textValue() : "");
-                        depositAccount.setAccountStatus(itr.get("account_status") != null ? itr.get("account_status").textValue() : "");
-                        depositAccount.setAccountType(itr.get("account_type") != null ? itr.get("account_type").textValue() : "");
-                        depositAccount.setProductNameEN(itr.get("product_name_en") != null ? itr.get("product_name_en").textValue() : "");
-                        depositAccount.setProductNameTH(itr.get("product_name_th") != null ? itr.get("product_name_th").textValue() : "");
+                        depositAccount.setAccountNumber(itr.get("account_number").textValue());
+                        depositAccount.setAccountStatus(itr.get("account_status").textValue());
+                        depositAccount.setAccountType(itr.get("account_type").textValue());
+                        depositAccount.setProductNameEN(itr.get("product_name_en").textValue());
+                        depositAccount.setProductNameTH(itr.get("product_name_th").textValue());
                         depositAccount.setAvailableBalance(new BigDecimal(itr.get("available_balance").toString()));
                         depositAccountList.add(depositAccount);
                     }
