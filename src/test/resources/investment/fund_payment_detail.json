@@ -1,0 +1,99 @@
+{
+  "fundRule": {
+    "fundHouseCode": "SCBAM",
+    "fundCode": "SCBTMF",
+    "orderType": "1",
+    "allotType": "1",
+    "riskRate": "01",
+    "tranStartDate": "20200101",
+    "timeStart": "0800",
+    "tranEndDate": "20251231",
+    "timeEnd": "1530",
+    "fundAllowOtx": "Y",
+    "trnAllowOtx": "Y",
+    "minInitAmount": "1000",
+    "maxInitAmount": "999999999999.99",
+    "minInitUnit": "0",
+    "maxInitUnit": "9999999999.9999",
+    "minAmount": "1000",
+    "maxAmount": "999999999999.99",
+    "minUnit": "0",
+    "maxUnit": "9999999999.9999",
+    "minHoldingAmount": "0",
+    "minHoldingUnit": "0",
+    "minHoldingCon": "1",
+    "timeToRed": "1",
+    "fxRisk": "N",
+    "allowAipFlag": "N",
+    "dateAfterIpo": "20090721",
+    "frontEndFee": "0",
+    "ipoFirstDate": "20090713",
+    "ipoLastDate": "20090720",
+    "secid": "F0000040YN",
+    "reserved1": "",
+    "reserved2": "",
+    "reserved3": "",
+    "reserved4": "",
+    "reserved5": "",
+    "termfundFlag": "N",
+    "processFlag": "Y",
+    "ipo_flag": "N"
+  },
+  "fundHolidayList": [
+    {
+      "fundHouseCode": "SCBAM",
+      "fundCode": "SCBTMF",
+      "holidayDate": "2021-02-11",
+      "holidayDesc": "SYS_CALENDAR"
+    },
+    {
+      "fundHouseCode": "SCBAM",
+      "fundCode": "SCBTMF",
+      "holidayDate": "2021-01-23",
+      "holidayDesc": "SYS_CALENDAR"
+    }
+  ],
+  "mutualFundAccountList": [
+    "AP000000000000587983",
+    "AP000000000000611522",
+    "PT000000000000587870",
+    "PT000000000000589067",
+    "PT000000000000611657",
+    "PT000000000000611659",
+    "PT000000000000611662"
+  ],
+  "depositAccountList": [
+    {
+      "productNameTH": "ทีเอ็มบี เบสิก",
+      "productNameEN": "TMB BASIC Account",
+      "accountNumber": "0019265651",
+      "accountStatus": "ACTIVE",
+      "accountType": "SDA",
+      "availableBalance": 97807535
+    },
+    {
+      "productNameTH": "ทีเอ็มบี ออลล์ ฟรี",
+      "productNameEN": "TMB All Free Account",
+      "accountNumber": "0242383719",
+      "accountStatus": "ACTIVE",
+      "accountType": "SDA",
+      "availableBalance": 330000.0
+    },
+    {
+      "productNameTH": "ME SAVE",
+      "productNameEN": "ME SAVE",
+      "accountNumber": "9212342837",
+      "accountStatus": "ACTIVE",
+      "accountType": "SDA",
+      "availableBalance": 0.0
+    },
+    {
+      "productNameTH": "บัญชีกระแสรายวัน",
+      "productNameEN": "Current Account",
+      "accountNumber": "1111095202",
+      "accountStatus": "ACTIVE",
+      "accountType": "DDA",
+      "availableBalance": 1000000.0
+    }
+  ]
+}
