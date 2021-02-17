@@ -3,8 +3,11 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
+import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryResponse;
@@ -227,6 +230,34 @@ public class ProductExpServiceControllerTest {
                 .getFundAccountDetail(corrID, fundAccountRq);
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
+    }
+
+
+    @Test
+    public void testgetFundPrePaymentDetail() throws Exception {
+        FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
+        fundPaymentDetailRq.setCrmId("001100000000000000000012025950");
+        fundPaymentDetailRq.setFundCode("SCBTMF");
+        fundPaymentDetailRq.setFundHouseCode("SCBAM");
+        fundPaymentDetailRq.setTranType("1");
+
+        FundPaymentDetailRs fundPaymentDetailRs = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            fundPaymentDetailRs = mapper.readValue(Paths.get("src/test/resources/investment/fund_payment_detail.json").toFile(), FundPaymentDetailRs.class);
+            when(productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq)).thenReturn(fundPaymentDetailRs);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> actualResult = productExpServiceController
+                .getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
+        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        Assert.assertNotNull(actualResult.getBody().getData().getMutualFundAccountList());
+        Assert.assertNotNull(actualResult.getBody().getData().getFundRule());
+        Assert.assertNotNull(actualResult.getBody().getData().getDepositAccountList());
+        Assert.assertNotNull(actualResult.getBody().getData().getFundHolidayList());
     }
 
 

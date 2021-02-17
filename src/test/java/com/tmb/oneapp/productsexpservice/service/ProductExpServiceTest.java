@@ -7,12 +7,16 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
@@ -27,6 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +52,7 @@ public class ProductExpServiceTest {
     private final String notfund_code = "0009";
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
+    private CustomerExpRequestClient customerExpRequestClient = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     @BeforeEach
@@ -52,8 +60,9 @@ public class ProductExpServiceTest {
         investmentRequestClient = mock(InvestmentRequestClient.class);
         accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
+        customerExpRequestClient = mock(CustomerExpRequestClient.class);
         cacheService = mock(CacheService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,cacheService);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,customerExpRequestClient,cacheService);
 
     }
 
@@ -325,6 +334,107 @@ public class ProductExpServiceTest {
 
         FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
         Assert.assertNull(result);
+    }
+
+    @Test
+    public void testgetFundPrePaymentDetail() throws Exception {
+        FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
+        fundPaymentDetailRq.setCrmId("001100000000000000000012025950");
+        fundPaymentDetailRq.setFundCode("SCBTMF");
+        fundPaymentDetailRq.setFundHouseCode("SCBAM");
+        fundPaymentDetailRq.setTranType("1");
+
+        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundHolidayBody> responseFundHoliday = new TmbOneServiceResponse<>();
+        String responseCustomerExp = null;
+
+        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRuleEntity = null;
+        ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> hilodayEntity = null;
+        String custExp = null;
+
+        FundHolidayBody fundHolidayBody = null;
+        FundRuleBody fundRuleBody = null;
+        FundPaymentDetailRs fundPaymentDetailRs = null;
+
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_holiday.json").toFile(), FundHolidayBody.class);
+
+            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+
+            responseEntity.setData(fundRuleBody);
+            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseFundHoliday.setData(fundHolidayBody);
+            responseFundHoliday.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(customerExpRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFundHoliday));
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        UtilMap utilMap = new UtilMap();
+        custExp = customerExpRequestClient.callCustomerExpService(any(), anyString());
+        fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
+        hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
+
+        Assert.assertEquals(HttpStatus.OK, fundRuleEntity.getStatusCode());
+        Assert.assertEquals(HttpStatus.OK, hilodayEntity.getStatusCode());
+        Assert.assertNotNull(custExp);
+        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, custExp);
+        Assert.assertNotNull(response);
+
+        FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
+        Assert.assertNotNull(serviceRes);
+
+    }
+
+
+    @Test
+    public void testgetFundPrePaymentDetailNotfound() throws Exception {
+        FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
+        fundPaymentDetailRq.setCrmId("001100000000000000000012025950");
+        fundPaymentDetailRq.setFundCode("SCBTMF");
+        fundPaymentDetailRq.setFundHouseCode("SCBAM");
+        fundPaymentDetailRq.setTranType("1");
+
+        String responseCustomerExp = null;
+
+        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRuleEntity = null;
+        ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> hilodayEntity = null;
+        String custExp = null;
+
+        try {
+
+            responseCustomerExp = null;
+
+            when(customerExpRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(null);
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(null);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        UtilMap utilMap = new UtilMap();
+        custExp = customerExpRequestClient.callCustomerExpService(any(), anyString());
+        fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
+        hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
+
+
+        Assert.assertNull(custExp);
+        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, custExp);
+        Assert.assertNull(response);
+
     }
 
 

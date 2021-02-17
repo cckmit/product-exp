@@ -8,15 +8,19 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.portdata.Port;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
+import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.util.CacheService;
@@ -42,13 +46,15 @@ public class ProductsExpService {
     private static TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
+    private CustomerExpRequestClient customerExpRequestClient;
     private final CacheService cacheService;
 
     @Autowired
-    public ProductsExpService(InvestmentRequestClient investmentRequestClient, AccountRequestClient accountRequestClient,
+    public ProductsExpService(InvestmentRequestClient investmentRequestClient, AccountRequestClient accountRequestClient, CustomerExpRequestClient customerExpRequestClient,
                               CacheService cacheService) {
         this.investmentRequestClient = investmentRequestClient;
         this.accountRequestClient = accountRequestClient;
+        this.customerExpRequestClient = customerExpRequestClient;
         this.cacheService = cacheService;
     }
 
@@ -152,15 +158,49 @@ public class ProductsExpService {
                 }
 
             }
-
             return result;
-
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
 
         }
+    }
 
+    /**
+     * Generic Method to call MF Service getFundAccDetail
+     *
+     * @param fundPaymentDetailRq
+     * @param correlationId
+     * @return
+     */
+    @LogAround
+    public FundPaymentDetailRs getFundPrePaymentDetail(String correlationId, FundPaymentDetailRq fundPaymentDetailRq) {
+
+        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
+        fundRuleRequestBody.setFundCode(fundPaymentDetailRq.getFundCode());
+        fundRuleRequestBody.setFundHouseCode(fundPaymentDetailRq.getFundHouseCode());
+        fundRuleRequestBody.setTranType(fundPaymentDetailRq.getTranType());
+
+        Map<String, String> invHeaderReqParameter = createHeader(correlationId);
+        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = null;
+        ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday = null;
+        String responseCustomerExp = null;
+        FundPaymentDetailRs fundPaymentDetailRs = null;
+        try {
+
+            responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
+            responseFundHoliday = investmentRequestClient.callInvestmentFundHolidayService(invHeaderReqParameter, fundPaymentDetailRq.getFundCode());
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseFundHoliday);
+            responseCustomerExp = customerExpRequestClient.callCustomerExpService(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
+            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
+            UtilMap map = new UtilMap();
+            fundPaymentDetailRs = map.mappingPaymentResponse(responseEntity, responseFundHoliday, responseCustomerExp);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            return fundPaymentDetailRs;
+        }
+        return fundPaymentDetailRs;
     }
 
 

@@ -5,14 +5,12 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
+import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
@@ -54,4 +52,15 @@ public interface InvestmentRequestClient {
     @ResponseBody
     public ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> callInvestmentFundSummaryService(@RequestHeader Map<String, String> headers
             , @RequestBody UnitHolder unitHolder);
+
+    /**
+     * Call investment fund summary service fund summary response.
+     *
+     * @param headers  the headers
+     * @param fundCode the fund code
+     * @return the fund summary response
+     */
+    @GetMapping(value = "${investment.service.fund.holiday.url}")
+    public ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> callInvestmentFundHolidayService(@RequestHeader Map<String, String> headers
+            , @PathVariable("fundCode") String fundCode);
 }

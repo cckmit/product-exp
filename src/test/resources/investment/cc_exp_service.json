@@ -1,0 +1,208 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "customers-ex-service",
+    "description": "success"
+  },
+  "data": {
+    "total_available_balance": 99137535.00,
+    "deposit_account_lists": [
+      {
+        "product_nickname": null,
+        "product_name_th": "ทีเอ็มบี เบสิก",
+        "product_name_en": "TMB BASIC Account",
+        "account_number": "0019265651",
+        "account_status": "ACTIVE",
+        "account_type": "SDA",
+        "available_balance": 97807535.00,
+        "product_icon_url": "https://firebasestorage.googleapis.com/v0/b/oneapp-vit.appspot.com/o/product%2Flogo%2Ficon_02.png?alt=media&token=bea95bb2-e8a6-4c92-bcd5-3ebc973e5d5d",
+        "product_config_sort_order": "10002",
+        "shortcuts": [
+          {
+            "name": "transfer",
+            "phrase": "button_transfer",
+            "icon_name": "transfer.png"
+          },
+          {
+            "name": "paybill",
+            "phrase": "button_paybill",
+            "icon_name": "paybill.png"
+          },
+          {
+            "name": "topup",
+            "phrase": "button_topup",
+            "icon_name": "topup.png"
+          },
+          {
+            "name": "withdraw",
+            "phrase": "button_withdraw",
+            "icon_name": "withdraw.png"
+          }
+        ]
+      },
+      {
+        "product_nickname": null,
+        "product_name_th": "ทีเอ็มบี ออลล์ ฟรี",
+        "product_name_en": "TMB All Free Account",
+        "account_number": "0242383719",
+        "account_status": "ACTIVE",
+        "account_type": "SDA",
+        "available_balance": 330000.00,
+        "product_icon_url": "https://firebasestorage.googleapis.com/v0/b/oneapp-vit.appspot.com/o/product%2Flogo%2Ficon_01.png?alt=media&token=6a163ff2-cc4a-4bb9-8f4a-645f5227d49f",
+        "product_config_sort_order": "10001",
+        "shortcuts": [
+          {
+            "name": "transfer",
+            "phrase": "button_transfer",
+            "icon_name": "transfer.png"
+          },
+          {
+            "name": "paybill",
+            "phrase": "button_paybill",
+            "icon_name": "paybill.png"
+          },
+          {
+            "name": "topup",
+            "phrase": "button_topup",
+            "icon_name": "topup.png"
+          },
+          {
+            "name": "withdraw",
+            "phrase": "button_withdraw",
+            "icon_name": "withdraw.png"
+          }
+        ]
+      },
+      {
+        "product_nickname": null,
+        "product_name_th": "ME SAVE",
+        "product_name_en": "ME SAVE",
+        "account_number": "9212342837",
+        "account_status": "ACTIVE",
+        "account_type": "SDA",
+        "available_balance": 0.00,
+        "product_icon_url": "https://firebasestorage.googleapis.com/v0/b/oneapp-vit.appspot.com/o/product%2Flogo%2Ficon_04.png?alt=media&token=08b1d4a6-2d33-48ad-8025-ddcecf83fef0",
+        "product_config_sort_order": "10023",
+        "shortcuts": [
+          {
+            "name": "transfer",
+            "phrase": "button_transfer",
+            "icon_name": "transfer.png"
+          }
+        ]
+      },
+      {
+        "product_nickname": null,
+        "product_name_th": "บัญชีกระแสรายวัน",
+        "product_name_en": "Current Account",
+        "account_number": "1111095202",
+        "account_status": "ACTIVE",
+        "account_type": "DDA",
+        "available_balance": 1000000.00,
+        "product_icon_url": "https://firebasestorage.googleapis.com/v0/b/oneapp-vit.appspot.com/o/product%2Flogo%2Ficon_02.png?alt=media&token=bea95bb2-e8a6-4c92-bcd5-3ebc973e5d5d",
+        "product_config_sort_order": "10012",
+        "shortcuts": [
+          {
+            "name": "transfer",
+            "phrase": "button_transfer",
+            "icon_name": "transfer.png"
+          },
+          {
+            "name": "paybill",
+            "phrase": "button_paybill",
+            "icon_name": "paybill.png"
+          },
+          {
+            "name": "topup",
+            "phrase": "button_topup",
+            "icon_name": "topup.png"
+          },
+          {
+            "name": "withdraw",
+            "phrase": "button_withdraw",
+            "icon_name": "withdraw.png"
+          }
+        ]
+      }
+    ],
+    "product_group_flag": [
+      {
+        "name": "saving",
+        "is_available": true,
+        "content": null
+      },
+      {
+        "name": "credit_card",
+        "is_available": false,
+        "content": {
+          "en": {
+            "label_title": "You don't have product yet",
+            "label_detail": "Come to join our bank you will happy",
+            "button_cta": "Register new card",
+            "hyper_link1_name": "Credit card information",
+            "hyper_link1_url": "https://www.tmbbank.com/en/home",
+            "hyper_link2_name": "Flash card information",
+            "hyper_link2_url": "https://www.tmbbank.com/en/home"
+          },
+          "th": {
+            "label_title": "คุณยังไม่มีผลิตภัณฑ์บัตร",
+            "label_detail": "สมัครบัตรที่ตอบโจทย์ทุกการใช้ชีวิตให้คุณได้รับสิทธิประโยชน์และบริการเหนือระดับยิ่งกว่าเดิม",
+            "button_cta": "สมัครบัตรใหม่",
+            "hyper_link1_name": "ข้อมูลบัตรเครดิต",
+            "hyper_link1_url": "https://www.tmbbank.com/home",
+            "hyper_link2_name": "ข้อมูลบัตรกดเงินสด",
+            "hyper_link2_url": "https://www.tmbbank.com/home"
+          },
+          "icon_url_ios": "https://storage.googleapis.com/oneapp-vit.appspot.com/media/common/introduction/temp/ios/1.png",
+          "icon_url_android": "https://storage.googleapis.com/oneapp-vit.appspot.com/media/common/introduction/temp/android/1.svg"
+        }
+      },
+      {
+        "name": "investment",
+        "is_available": true,
+        "content": null
+      },
+      {
+        "name": "loan",
+        "is_available": false,
+        "content": {
+          "en": {
+            "label_title": "You have no saving account yet.",
+            "label_detail": "With a special text box on the first page That reminds me like a financial friend knows Like you have a personal finance manager.That you want to meet every day ...",
+            "button_cta": "New Account",
+            "hyper_link1_name": "Saving Account",
+            "hyper_link1_url": "https://www.tmbbank.com/home",
+            "hyper_link2_name": "",
+            "hyper_link2_url": ""
+          },
+          "th": {
+            "label_title": "คุณยังไม่มีผลิตภัณฑ์เงินฝาก",
+            "label_detail": "สนใจเปิดบัญชีเงินฝากที่ออกแบบให้คุณมีการเก็บเงินที่ดีขึ้นกว่าเดิมไม่ว่าจะเพื่อใช้หรือเพื่อออม",
+            "button_cta": "เปิดบัญชีใหม่",
+            "hyper_link1_name": "ข้อมูลบัญชีเงินฝาก",
+            "hyper_link1_url": "https://www.tmbbank.com/en/home",
+            "hyper_link2_name": "",
+            "hyper_link2_url": ""
+          },
+          "icon_url_ios": "https://storage.googleapis.com/oneapp-vit.appspot.com/media/common/introduction/temp/ios/1.png",
+          "icon_url_android": "https://storage.googleapis.com/oneapp-vit.appspot.com/media/common/introduction/temp/android/1.svg"
+        }
+      },
+      {
+        "name": "insurance",
+        "is_available": true,
+        "content": null
+      }
+    ],
+    "mutual_fund_accounts": [
+      "AP000000000000587983",
+      "AP000000000000611522",
+      "PT000000000000587870",
+      "PT000000000000589067",
+      "PT000000000000611657",
+      "PT000000000000611659",
+      "PT000000000000611662"
+    ]
+  }
+}

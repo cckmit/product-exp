@@ -1,0 +1,16 @@
+{
+    "fundClassList": [
+      {
+        "fundHouseCode": "SCBAM",
+        "fundCode": "SCBTMF",
+        "holidayDate": "2021-02-11",
+        "holidayDesc": "SYS_CALENDAR"
+      },
+      {
+        "fundHouseCode": "SCBAM",
+        "fundCode": "SCBTMF",
+        "holidayDate": "2021-01-23",
+        "holidayDesc": "SYS_CALENDAR"
+      }
+    ]
+}
