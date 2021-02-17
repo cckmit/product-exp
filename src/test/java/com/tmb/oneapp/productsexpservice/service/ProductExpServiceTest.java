@@ -393,6 +393,9 @@ public class ProductExpServiceTest {
         FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, custExp);
         Assert.assertNotNull(response);
 
+        FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
+        Assert.assertNotNull(serviceRes);
+
     }
 
 
@@ -426,6 +429,7 @@ public class ProductExpServiceTest {
         custExp = customerExpRequestClient.callCustomerExpService(any(), anyString());
         fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
         hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
+
 
         Assert.assertNull(custExp);
         FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, custExp);
