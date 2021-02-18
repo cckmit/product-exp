@@ -133,14 +133,7 @@ public class UtilMap {
                         depositAccount = new DepositAccount();
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
                         depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
-                        String productGroupCode = itr.get("product_group_code").textValue();
-                        String accType = "";
-                        if(ProductsExpServiceConstant.ACC_TYPE_SDA.equals(productGroupCode)){
-                            accType = ProductsExpServiceConstant.ACC_TYPE_SAVING;
-                        }else if(ProductsExpServiceConstant.ACC_TYPE_DDA.equals(productGroupCode)){
-                            accType = ProductsExpServiceConstant.ACC_TYPE_CURRENT;
-                        }
-                        depositAccount.setAccountType(accType);
+                        depositAccount.setAccountType(convertAccountType(itr.get("product_group_code").textValue()));
                         depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
                         depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
                         depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
@@ -154,5 +147,19 @@ public class UtilMap {
 
             return fundPaymentDetailRs;
         }
+    }
+
+    public String convertAccountType(String productType){
+        String accType = "";
+        switch (productType){
+            case ProductsExpServiceConstant.ACC_TYPE_SDA :
+                accType = ProductsExpServiceConstant.ACC_TYPE_SAVING;
+                break;
+            case ProductsExpServiceConstant.ACC_TYPE_DDA :
+                accType = ProductsExpServiceConstant.ACC_TYPE_CURRENT;
+                break;
+            default: accType = "";
+        }
+        return accType;
     }
 }
