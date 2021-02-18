@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -15,6 +16,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
@@ -40,5 +42,9 @@ public interface CreditCardClient {
 	public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> fetchSetCreditLimit(
 			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID,
 			@RequestBody SetCreditLimitReq requestBodyParameter);
+
+	@GetMapping(value = "/apis/creditcard/credit-card/fetch-reason-list")
+	public ResponseEntity<TmbOneServiceResponse<List<Reason>>>  getReasonList(
+			@RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId);
 
 }
