@@ -133,7 +133,9 @@ public class UtilMap {
                         depositAccount = new DepositAccount();
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
                         depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
-                        depositAccount.setAccountType(convertAccountType(itr.get("product_group_code").textValue()));
+                        String accType = itr.get("product_group_code").textValue();
+                        depositAccount.setAccountType(convertAccountType(accType));
+                        depositAccount.setAccountTypeShort(accType);
                         depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
                         depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
                         depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
