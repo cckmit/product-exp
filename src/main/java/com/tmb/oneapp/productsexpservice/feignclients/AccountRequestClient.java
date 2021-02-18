@@ -20,4 +20,14 @@ public interface AccountRequestClient {
      */
     @GetMapping(value = "${account.service.account.url}", consumes = "application/json", produces = "application/json")
     public String getPortList(@RequestHeader Map<String, String> headers, @PathVariable("CRM_ID") String cardId);
+
+    /**
+     * Call investment fund summary service fund summary response.
+     *
+     * @param headers  the headers
+     * @param crmId the fund code
+     * @return the fund summary response
+     */
+    @GetMapping(value = "${account.service.account.list.url}")
+    public String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
 }

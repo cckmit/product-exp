@@ -8,7 +8,6 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -31,7 +30,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,15 +44,12 @@ public class ProductsExpService {
     private static TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
-    private CustomerExpRequestClient customerExpRequestClient;
     private final CacheService cacheService;
 
     @Autowired
-    public ProductsExpService(InvestmentRequestClient investmentRequestClient, AccountRequestClient accountRequestClient, CustomerExpRequestClient customerExpRequestClient,
-                              CacheService cacheService) {
+    public ProductsExpService(InvestmentRequestClient investmentRequestClient, AccountRequestClient accountRequestClient, CacheService cacheService) {
         this.investmentRequestClient = investmentRequestClient;
         this.accountRequestClient = accountRequestClient;
-        this.customerExpRequestClient = customerExpRequestClient;
         this.cacheService = cacheService;
     }
 
@@ -192,7 +187,7 @@ public class ProductsExpService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
             responseFundHoliday = investmentRequestClient.callInvestmentFundHolidayService(invHeaderReqParameter, fundPaymentDetailRq.getFundCode());
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseFundHoliday);
-            responseCustomerExp = customerExpRequestClient.callCustomerExpService(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
+            responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             UtilMap map = new UtilMap();
             fundPaymentDetailRs = map.mappingPaymentResponse(responseEntity, responseFundHoliday, responseCustomerExp);

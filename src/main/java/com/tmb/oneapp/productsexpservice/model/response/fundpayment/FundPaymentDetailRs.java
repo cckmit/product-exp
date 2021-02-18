@@ -13,6 +13,5 @@ import java.util.List;
 public class FundPaymentDetailRs {
     private FundRuleInfoList fundRule;
     private List<FundHolidayClassList> fundHolidayList;
-    private List<String> mutualFundAccountList;
     private List<DepositAccount> depositAccountList;
 }

@@ -7,7 +7,6 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,7 +50,6 @@ public class ProductExpServiceTest {
     private final String notfund_code = "0009";
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
-    private CustomerExpRequestClient customerExpRequestClient = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     @BeforeEach
@@ -60,9 +57,8 @@ public class ProductExpServiceTest {
         investmentRequestClient = mock(InvestmentRequestClient.class);
         accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
-        customerExpRequestClient = mock(CustomerExpRequestClient.class);
         cacheService = mock(CacheService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,customerExpRequestClient,cacheService);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,cacheService);
 
     }
 
@@ -374,7 +370,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(customerExpRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFundHoliday));
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
 
@@ -383,7 +379,7 @@ public class ProductExpServiceTest {
         }
 
         UtilMap utilMap = new UtilMap();
-        custExp = customerExpRequestClient.callCustomerExpService(any(), anyString());
+        custExp = accountRequestClient.callCustomerExpService(any(), anyString());
         fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
         hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
 
@@ -417,7 +413,7 @@ public class ProductExpServiceTest {
 
             responseCustomerExp = null;
 
-            when(customerExpRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(null);
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(null);
 
@@ -426,7 +422,7 @@ public class ProductExpServiceTest {
         }
 
         UtilMap utilMap = new UtilMap();
-        custExp = customerExpRequestClient.callCustomerExpService(any(), anyString());
+        custExp = accountRequestClient.callCustomerExpService(any(), anyString());
         fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
         hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
 
