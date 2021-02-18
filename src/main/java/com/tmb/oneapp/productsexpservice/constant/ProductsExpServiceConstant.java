@@ -38,5 +38,9 @@ public class ProductsExpServiceConstant {
     public static final String CARD_EXPIRY="card-expiry";
 	public static final String REDIS_KEY_PORTLIST = "invesment-portlist" ;
     public static final String REDIS_KEY_FUND_SUMMARY = "invesment-fundsummary" ;
+    public static final String ACC_TYPE_SDA = "SDA";
+    public static final String ACC_TYPE_DDA = "DDA";
+    public static final String ACC_TYPE_SAVING = "S";
+    public static final String ACC_TYPE_CURRENT = "A";
 
 }
