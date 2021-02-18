@@ -1,10 +1,8 @@
 package com.tmb.oneapp.productsexpservice.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -22,7 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -104,7 +101,6 @@ public class UtilMap {
         }else{
             FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
             FundHolidayClassList fundHolidayUnit = null;
-            List<String> mutualFundList = null;
             List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
             List<FundHolidayClassList> fundHolidayClassListRs = responseFundHoliday.getBody().getData().getFundClassList();
             for(FundHolidayClassList fundHoliday : fundHolidayClassListRs){
@@ -127,14 +123,7 @@ public class UtilMap {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = null;
                 node = mapper.readValue(responseCustomerExp, JsonNode.class);
-                JsonNode dataNode = node.get("data");
-                JsonNode mutualFundListRs = dataNode.get("mutual_fund_accounts");
-                ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
-                });
-                mutualFundList = reader.readValue(mutualFundListRs);
-                fundPaymentDetailRs.setMutualFundAccountList(mutualFundList);
-
-                ArrayNode arrayNode = (ArrayNode) dataNode.get("deposit_account_lists");
+                ArrayNode arrayNode = (ArrayNode) node.get("data");
                 int size = arrayNode.size();
                 DepositAccount depositAccount = null;
                 List<DepositAccount> depositAccountList = new ArrayList<>();
@@ -142,22 +131,19 @@ public class UtilMap {
                     for (int i = 0; i < size; i++) {
                         JsonNode itr = arrayNode.get(i);
                         depositAccount = new DepositAccount();
-                        depositAccount.setAccountNumber(itr.get("account_number").textValue());
-                        depositAccount.setAccountStatus(itr.get("account_status").textValue());
-                        depositAccount.setAccountType(itr.get("account_type").textValue());
-                        depositAccount.setProductNameEN(itr.get("product_name_en").textValue());
-                        depositAccount.setProductNameTH(itr.get("product_name_th").textValue());
-                        depositAccount.setAvailableBalance(new BigDecimal(itr.get("available_balance").toString()));
+                        depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
+                        depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
+                        depositAccount.setAccountType(itr.get("product_group_code").textValue());
+                        depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
+                        depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
+                        depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
                         depositAccountList.add(depositAccount);
                     }
                 }
                 fundPaymentDetailRs.setDepositAccountList(depositAccountList);
             } catch (JsonProcessingException e) {
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            } catch (IOException ex) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             }
-
 
             return fundPaymentDetailRs;
         }
