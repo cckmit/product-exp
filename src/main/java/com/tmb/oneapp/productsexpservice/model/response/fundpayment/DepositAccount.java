@@ -17,5 +17,6 @@ public class DepositAccount {
     private String accountNumber;
     private String accountStatus;
     private String accountType;
+    private String accountTypeShort;
     private BigDecimal availableBalance;
 }
