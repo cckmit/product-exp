@@ -149,6 +149,13 @@ public class UtilMap {
         }
     }
 
+    /**
+     * Generic Method to convert Account Type form 3 digits to 1 digit
+     *
+     *
+     * @param productType
+     * @return String Account Type
+     */
     public String convertAccountType(String productType){
         String accType = "";
         switch (productType){
