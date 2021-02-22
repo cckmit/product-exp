@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,9 +18,12 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCreditCardDetailsReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -35,6 +39,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "Fetch credit card details")
 public class GetCardDetailsController {
 	private final CreditCardClient creditCardClient;
+	private final CommonServiceClient commonServiceClient;
 	private static final TMBLogger<GetCardDetailsController> logger = new TMBLogger<>(GetCardDetailsController.class);
 
 	/**
@@ -43,9 +48,10 @@ public class GetCardDetailsController {
 	 * @param creditCardClient
 	 */
 	@Autowired
-	public GetCardDetailsController(CreditCardClient creditCardClient) {
+	public GetCardDetailsController(CreditCardClient creditCardClient, CommonServiceClient commonServiceClient) {
 		super();
 		this.creditCardClient = creditCardClient;
+		this.commonServiceClient = commonServiceClient;
 	}
 
 	/**
@@ -71,11 +77,34 @@ public class GetCardDetailsController {
 			if (!Strings.isNullOrEmpty(accountId)) {
 				ResponseEntity<GetCardResponse> getCardRes = creditCardClient.getCreditCardDetails(correlationId,
 						accountId);
-				oneServiceResponse
-						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-				oneServiceResponse.setData(getCardRes.getBody());
-				return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+				GetCardResponse getCardResponse = getCardRes.getBody();
+				if (getCardResponse != null && getCardResponse.getStatus().getStatusCode() == 0) {
+					String productId = getCardRes.getBody().getCreditCard().getProductId();
+					ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
+							.getProductConfig(correlationId);
+					List<ProductConfig> productConfigList = response.getBody().getData();
+					ProductConfig productConfig = productConfigList.stream()
+							.filter(e -> productId.equals(e.getProductCode())).findAny().orElse(null);
+					if (productConfig != null) {
+						ProductCodeData productCodeData = new ProductCodeData();
+						productCodeData.setProductNameTH(productConfig.getProductNameTH());
+						productCodeData.setProductNameEN(productConfig.getProductNameEN());
+						productCodeData.setIconId(productConfig.getIconId());
+						getCardResponse.setProductCodeData(productCodeData);
+					}
+
+					oneServiceResponse
+							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+					oneServiceResponse.setData(getCardResponse);
+					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+				} else {
+					oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+							ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+
+					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+				}
+
 			} else {
 				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
 						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
