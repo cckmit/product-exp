@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import java.time.Instant;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -61,14 +62,15 @@ public class SetCreditLimitController {
 
 	public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> setCreditLimit(
 			@RequestBody SetCreditLimitReq requestBodyParameter,
-			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID, required = true) final String correlationId) {
+			@RequestHeader Map<String, String> requestHeadersParameter) {
 		logger.info("Request Parameter fetchCreditLimit : {} ", requestBodyParameter);
 		HttpHeaders responseHeaders = new HttpHeaders();
+		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
 			ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> response = creditCardClient
-					.fetchSetCreditLimit(correlationId, requestBodyParameter);
+					.fetchSetCreditLimit(correlationId, requestBodyParameter, requestHeadersParameter);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 			oneServiceResponse.setData(response.getBody().getData());
