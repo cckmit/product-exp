@@ -15,4 +15,5 @@ import lombok.Setter;
 public class GetCardResponse {
 	private SilverlakeStatus status;
 	private CreditCardDetail creditCard;
+	private ProductCodeData  productCodeData;
 }
