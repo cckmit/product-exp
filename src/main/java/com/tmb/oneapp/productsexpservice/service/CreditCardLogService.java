@@ -85,6 +85,13 @@ public class CreditCardLogService {
 		return creditCardEvent;
 	}
 
+	/**
+	 * @param creditCardEvent
+	 * @param reqHeader
+	 * @param requestBody
+	 * @param mode
+	 * @return
+	 */
 	public CreditCardEvent onClickNextButtonLimitEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
 													   SetCreditLimitReq requestBody, String mode) {
 
@@ -104,6 +111,12 @@ public class CreditCardLogService {
 		return creditCardEvent;
 	}
 
+	/**
+	 * @param creditCardEvent
+	 * @param reqHeader
+	 * @param requestBody
+	 * @return
+	 */
 	public CreditCardEvent completeUsageListEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
 												  SetCreditLimitReq requestBody) {
 
@@ -114,6 +127,11 @@ public class CreditCardLogService {
 		return creditCardEvent;
 	}
 
+	/**
+	 * @param creditCardEvent
+	 * @param reqHeader
+	 * @return
+	 */
 	public CreditCardEvent onVerifyPinEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
