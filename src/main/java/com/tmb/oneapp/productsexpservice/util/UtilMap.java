@@ -131,8 +131,7 @@ public class UtilMap {
                 int size = arrayNode.size();
                 DepositAccount depositAccount = null;
                 List<DepositAccount> depositAccountList = new ArrayList<>();
-                if(size > 0) {
-                    for (int i = 0; i < size; i++) {
+                for (int i = 0; i < size; i++) {
                         JsonNode itr = arrayNode.get(i);
                         depositAccount = new DepositAccount();
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
@@ -144,7 +143,6 @@ public class UtilMap {
                         depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
                         depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
                         depositAccountList.add(depositAccount);
-                    }
                 }
                 fundPaymentDetailRs.setDepositAccountList(depositAccountList);
             } catch (JsonProcessingException e) {
@@ -162,7 +160,7 @@ public class UtilMap {
      * @param productType
      * @return String Account Type
      */
-    public String convertAccountType(String productType){
+    public static String convertAccountType(String productType){
         String accType = "";
         switch (productType){
             case ProductsExpServiceConstant.ACC_TYPE_SDA :
@@ -191,10 +189,14 @@ public class UtilMap {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
                 String getCurrentTime = sdf.format(cal.getTime());
-                if (isService && getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0) {
+                if (isService
+                        && getCurrentTime.compareTo(startTime) > 0
+                        && getCurrentTime.compareTo(endTime) < 0) {
                     return isClose;
-                }else if(getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0){
-                    return false;
+                }else if(!isService
+                        && getCurrentTime.compareTo(startTime) > 0
+                        && getCurrentTime.compareTo(endTime) > 0){
+                    return isClose;
                 }
             }
         }catch (Exception e){

@@ -31,7 +31,6 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentD
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
-import com.tmb.oneapp.productsexpservice.util.CacheService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +55,6 @@ public class ProductsExpService {
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
     private final KafkaProducerService kafkaProducerService;
-    private final CacheService cacheService;
     private final String investmentStartTime;
     private final String investmentEndTime;
     private final String topicName;
@@ -65,7 +63,6 @@ public class ProductsExpService {
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
-                              CacheService cacheService,
                               @Value("${investment.close.time.start}") String investmentStartTime,
                               @Value("${investment.close.time.end}") String investmentEndTime,
                               @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
@@ -75,7 +72,6 @@ public class ProductsExpService {
         this.accountRequestClient = accountRequestClient;
         this.investmentStartTime = investmentStartTime;
         this.investmentEndTime = investmentEndTime;
-        this.cacheService = cacheService;
         this.topicName = topicName;
     }
 
@@ -173,9 +169,6 @@ public class ProductsExpService {
                         result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
                         result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
                         result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
-                        String jsonInString = objectMapper.writeValueAsString(result);
-                        cacheService.set(ProductsExpServiceConstant.REDIS_KEY_FUND_SUMMARY, jsonInString);
-                        cacheService.set(ProductsExpServiceConstant.REDIS_KEY_PORTLIST, acctNbrList);
                     }
                 }
 
