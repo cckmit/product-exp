@@ -1,15 +1,5 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import java.time.Instant;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -19,38 +9,50 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
-
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * SetCreditLimitController request mapping will handle apis call and then
  * navigate to respective method
- *
  */
 @RestController
 @Api(tags = "Temporary and Permanent Credit Card Limit")
 public class SetCreditLimitController {
 	private final CreditCardClient creditCardClient;
 	private static final TMBLogger<SetCreditLimitController> logger = new TMBLogger<>(SetCreditLimitController.class);
+	private CreditCardLogService creditCardLogService;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param creditCardClient
 	 */
 	@Autowired
-	public SetCreditLimitController(CreditCardClient creditCardClient) {
+	public SetCreditLimitController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService) {
 		this.creditCardClient = creditCardClient;
+		this.creditCardLogService = creditCardLogService;
 	}
 
 	/**
 	 * Temporary and Permanent Credit Card Limit api
-	 * 
+	 *
 	 * @param requestBodyParameter
-	 * @param correlationId
 	 * @return status code
 	 */
 	@LogAround
@@ -61,23 +63,63 @@ public class SetCreditLimitController {
 
 	public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> setCreditLimit(
 			@RequestBody SetCreditLimitReq requestBodyParameter,
-			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID, required = true) final String correlationId) {
+			@RequestHeader Map<String, String> requestHeadersParameter) {
 		logger.info("Request Parameter fetchCreditLimit : {} ", requestBodyParameter);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<>();
+		String mode = requestBodyParameter.getMode();
+
+		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String activityId = ProductsExpServiceConstant.CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT;
+		String activityDate = Long.toString(System.currentTimeMillis());
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+		creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
+				requestBodyParameter);
 		try {
 			ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> response = creditCardClient
 					.fetchSetCreditLimit(correlationId, requestBodyParameter);
+
+			/* Activity log */
+			creditCardLogService.logActivity(creditCardEvent);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 			oneServiceResponse.setData(response.getBody().getData());
+			if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
+				String id = ProductsExpServiceConstant.ACTIVITY_ID_TEMP;
+				String date = Long.toString(System.currentTimeMillis());
+				CreditCardEvent event = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), date, id);
+
+				event = creditCardLogService.onClickNextButtonLimitEvent(event, requestHeadersParameter,
+						requestBodyParameter, ProductsExpServiceConstant.MODE_PERMANENT);
+
+				/* Activity log */
+				creditCardLogService.logActivity(event);
+			} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
+				String id = ProductsExpServiceConstant.ACTIVITY_ID_TEMP_REASON_OF_REQUEST;
+				String date = Long.toString(System.currentTimeMillis());
+				CreditCardEvent event = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), date, id);
+
+				event = creditCardLogService.onClickNextButtonLimitEvent(event, requestHeadersParameter,
+						requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
+
+				/* Activity log */
+				creditCardLogService.logActivity(event);
+
+			}
 			return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 		} catch (Exception ex) {
 			logger.error("Unable to fetch set credit limit response: {}", ex);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
 					ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+			creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
+					requestBodyParameter);
 
+			creditCardEvent.setFailReason(ex.getMessage());
+			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
+			/* Activity log */
+			creditCardLogService.logActivity(creditCardEvent);
 			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 		}
 

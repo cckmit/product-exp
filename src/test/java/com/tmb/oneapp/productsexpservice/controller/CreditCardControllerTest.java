@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,11 +31,13 @@ public class CreditCardControllerTest {
 	CreditCardController creditCardController;
 	@Mock
 	CreditCardClient creditCardClient;
+	@Mock
+	CreditCardLogService creditCardLogService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		creditCardController = new CreditCardController(creditCardClient);
+		creditCardController = new CreditCardController(creditCardClient, creditCardLogService);
 
 	}
 
