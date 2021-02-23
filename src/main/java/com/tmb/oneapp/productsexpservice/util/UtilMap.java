@@ -40,8 +40,8 @@ public class UtilMap {
      */
     public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                                              ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
-        if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)
-                || (HttpStatus.OK != response.getStatusCode() || HttpStatus.OK != responseEntity.getStatusCode())){
+        if((StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity))
+                && (HttpStatus.OK != response.getStatusCode() && HttpStatus.OK != responseEntity.getStatusCode())){
             return null;
         } else{
             FundAccountRs fundAccountRs = new FundAccountRs();
@@ -97,25 +97,25 @@ public class UtilMap {
                                                       ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday,
                                                       String responseCustomerExp){
         if(StringUtils.isEmpty(responseEntity)
-                || StringUtils.isEmpty(responseFundHoliday)
                 || HttpStatus.OK != responseEntity.getStatusCode()
-                || HttpStatus.OK != responseFundHoliday.getStatusCode()
                 || StringUtils.isEmpty(responseCustomerExp)){
             return null;
         }else{
             FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
-            FundHolidayClassList fundHolidayUnit = null;
-            List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
-            List<FundHolidayClassList> fundHolidayClassListRs = responseFundHoliday.getBody().getData().getFundClassList();
-            for(FundHolidayClassList fundHoliday : fundHolidayClassListRs){
-                fundHolidayUnit = new FundHolidayClassList();
-                fundHolidayUnit.setFundCode(fundHoliday.getFundCode());
-                fundHolidayUnit.setFundHouseCode(fundHoliday.getFundHouseCode());
-                fundHolidayUnit.setHolidayDate(fundHoliday.getHolidayDate());
-                fundHolidayUnit.setHolidayDesc(fundHoliday.getHolidayDesc());
-                fundHolidayClassList.add(fundHolidayUnit);
+            if(!StringUtils.isEmpty(responseFundHoliday) && HttpStatus.OK == responseFundHoliday.getStatusCode()) {
+                FundHolidayClassList fundHolidayUnit = null;
+                List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
+                List<FundHolidayClassList> fundHolidayClassListRs = responseFundHoliday.getBody().getData().getFundClassList();
+                for (FundHolidayClassList fundHoliday : fundHolidayClassListRs) {
+                    fundHolidayUnit = new FundHolidayClassList();
+                    fundHolidayUnit.setFundCode(fundHoliday.getFundCode());
+                    fundHolidayUnit.setFundHouseCode(fundHoliday.getFundHouseCode());
+                    fundHolidayUnit.setHolidayDate(fundHoliday.getHolidayDate());
+                    fundHolidayUnit.setHolidayDesc(fundHoliday.getHolidayDesc());
+                    fundHolidayClassList.add(fundHolidayUnit);
+                }
+                fundPaymentDetailRs.setFundHolidayList(fundHolidayClassList);
             }
-            fundPaymentDetailRs.setFundHolidayList(fundHolidayClassList);
 
             FundRule fundRule = new FundRule();
             List<FundRuleInfoList> fundRuleInfoList = responseEntity.getBody().getData().getFundRuleInfoList();
@@ -131,8 +131,7 @@ public class UtilMap {
                 int size = arrayNode.size();
                 DepositAccount depositAccount = null;
                 List<DepositAccount> depositAccountList = new ArrayList<>();
-                if(size > 0) {
-                    for (int i = 0; i < size; i++) {
+                for (int i = 0; i < size; i++) {
                         JsonNode itr = arrayNode.get(i);
                         depositAccount = new DepositAccount();
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
@@ -144,7 +143,6 @@ public class UtilMap {
                         depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
                         depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
                         depositAccountList.add(depositAccount);
-                    }
                 }
                 fundPaymentDetailRs.setDepositAccountList(depositAccountList);
             } catch (JsonProcessingException e) {
@@ -162,7 +160,7 @@ public class UtilMap {
      * @param productType
      * @return String Account Type
      */
-    public String convertAccountType(String productType){
+    public static String convertAccountType(String productType){
         String accType = "";
         switch (productType){
             case ProductsExpServiceConstant.ACC_TYPE_SDA :
@@ -183,7 +181,7 @@ public class UtilMap {
      * @param endTime the end HHMM
      * @return boolean
      */
-    public static boolean isBusinessClose(String startTime, String endTime, boolean isService){
+    public static boolean isBusinessClose(String startTime, String endTime){
         boolean isClose = true;
         try {
             if(!StringUtils.isEmpty(startTime)
@@ -191,10 +189,8 @@ public class UtilMap {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
                 String getCurrentTime = sdf.format(cal.getTime());
-                if (isService && getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0) {
+                if((getCurrentTime.compareTo(startTime) > 0) && (getCurrentTime.compareTo(endTime) > 0)){
                     return isClose;
-                }else if(getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0){
-                    return false;
                 }
             }
         }catch (Exception e){

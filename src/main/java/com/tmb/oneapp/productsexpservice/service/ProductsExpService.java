@@ -31,7 +31,6 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentD
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
-import com.tmb.oneapp.productsexpservice.util.CacheService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +55,6 @@ public class ProductsExpService {
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
     private final KafkaProducerService kafkaProducerService;
-    private final CacheService cacheService;
     private final String investmentStartTime;
     private final String investmentEndTime;
     private final String topicName;
@@ -65,7 +63,6 @@ public class ProductsExpService {
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
-                              CacheService cacheService,
                               @Value("${investment.close.time.start}") String investmentStartTime,
                               @Value("${investment.close.time.end}") String investmentEndTime,
                               @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
@@ -75,7 +72,6 @@ public class ProductsExpService {
         this.accountRequestClient = accountRequestClient;
         this.investmentStartTime = investmentStartTime;
         this.investmentEndTime = investmentEndTime;
-        this.cacheService = cacheService;
         this.topicName = topicName;
     }
 
@@ -154,7 +150,6 @@ public class ProductsExpService {
             portData = accountRequestClient.getPortList(invHeaderReqParameter, rq.getCrmId());
             if (!StringUtils.isEmpty(portData)) {
                 ObjectMapper mapper = new ObjectMapper();
-                ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
                 JsonNode dataNode = node.get("data");
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
@@ -173,9 +168,6 @@ public class ProductsExpService {
                         result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
                         result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
                         result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
-                        String jsonInString = objectMapper.writeValueAsString(result);
-                        cacheService.set(ProductsExpServiceConstant.REDIS_KEY_FUND_SUMMARY, jsonInString);
-                        cacheService.set(ProductsExpServiceConstant.REDIS_KEY_PORTLIST, acctNbrList);
                     }
                 }
 
@@ -209,7 +201,6 @@ public class ProductsExpService {
         String responseCustomerExp = null;
         FundPaymentDetailRs fundPaymentDetailRs = null;
         try {
-
             responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
             responseFundHoliday = investmentRequestClient.callInvestmentFundHolidayService(invHeaderReqParameter, fundPaymentDetailRq.getFundCode());
@@ -238,7 +229,7 @@ public class ProductsExpService {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
         final boolean isNotValid = true;
         boolean isStoped = false;
-        if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime, true)){
+        if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime)){
             ffsRsAndValidation.setServiceClose(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
@@ -333,7 +324,7 @@ public class ProductsExpService {
                     HttpStatus.OK == responseEntity.getStatusCode()){
                 FundRuleBody fundRuleBody = responseEntity.getBody().getData();
                 FundRuleInfoList fundRuleInfoList = fundRuleBody.getFundRuleInfoList().get(0);
-                return UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd(), false);
+                return UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd());
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

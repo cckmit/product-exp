@@ -27,11 +27,12 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody
 import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
-import com.tmb.oneapp.productsexpservice.util.CacheService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import org.apache.kafka.common.protocol.types.Field;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.exceptions.base.MockitoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,6 @@ public class ProductExpServiceTest {
     InvestmentRequestClient investmentRequestClient;
     ProductsExpService productsExpService;
     AccountRequestClient accountRequestClient;
-    CacheService cacheService;
     KafkaProducerService kafkaProducerService;
 
     private final String success_code = "0000";
@@ -66,10 +66,9 @@ public class ProductExpServiceTest {
         investmentRequestClient = mock(InvestmentRequestClient.class);
         accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
-        cacheService = mock(CacheService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
         productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService,
-                cacheService, investmentStartTime, investmentEndTime, topicName);
+                 investmentStartTime, investmentEndTime, topicName);
 
     }
 
@@ -204,6 +203,29 @@ public class ProductExpServiceTest {
         Assert.assertEquals(2,responseEntity.getBody().getData().getOrderToBeProcess().getOrder()
                 .size());
         Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
+    }
+
+    @Test
+    public void testGetFundAccdetailException() throws Exception {
+
+        FundAccountRq fundAccountRequest = new FundAccountRq();
+        fundAccountRequest.setFundCode("EEEEEE");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+
+        FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
+        fundAccountRequestBody.setFundCode(fundAccountRequest.getFundCode());
+        fundAccountRequestBody.setServiceType(fundAccountRequest.getServiceType());
+        fundAccountRequestBody.setUnitHolderNo(fundAccountRequest.getUnitHolderNo());
+
+        try {
+            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRequestBody)).thenThrow(MockitoException.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
+        Assert.assertNull(result);
     }
 
 
@@ -443,6 +465,29 @@ public class ProductExpServiceTest {
 
     }
 
+    @Test
+    public void testgetFundPrePaymentDetailNotfoundException() throws Exception {
+        FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
+        fundPaymentDetailRq.setCrmId("001100000000000000000012025950");
+        fundPaymentDetailRq.setFundCode("SCBTMF");
+        fundPaymentDetailRq.setFundHouseCode("SCBAM");
+        fundPaymentDetailRq.setTranType("1");
+        try {
+
+            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenThrow(MockitoException.class);
+            when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenThrow(MockitoException.class);
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
+        Assert.assertNull(serviceRes);
+
+
+    }
+
 
     @Test
     public void getFundFFSAndValidation() throws Exception {
@@ -489,14 +534,22 @@ public class ProductExpServiceTest {
     }
 
     @Test
+    public void convertAccountType() throws Exception {
+        String accType = UtilMap.convertAccountType(ProductsExpServiceConstant.ACC_TYPE_SDA);
+        Assert.assertEquals(ProductsExpServiceConstant.ACC_TYPE_SAVING, accType);
+        String accTypeTw = UtilMap.convertAccountType(ProductsExpServiceConstant.ACC_TYPE_DDA);
+        Assert.assertEquals(ProductsExpServiceConstant.ACC_TYPE_CURRENT, accTypeTw);
+    }
+
+    @Test
     public void testisServiceClose() throws Exception {
-        boolean isClose = UtilMap.isBusinessClose("00:01","23:59", true);
+        boolean isClose = UtilMap.isOfShelfCheck(null,null);
         Assert.assertTrue(isClose);
     }
 
     @Test
     public void testisBusinessClose() throws Exception {
-        boolean isClose = UtilMap.isBusinessClose("08:01","18:00", false);
+        boolean isClose = UtilMap.isBusinessClose("08:01","21:00");
         Assert.assertFalse(isClose);
     }
 
@@ -581,9 +634,6 @@ public class ProductExpServiceTest {
         Assert.assertEquals(true, isServiceClose);
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
-        cacheService.set("test","test");
-        cacheService.set("test","test", 1L);
-        cacheService.get("test");
     }
 
 

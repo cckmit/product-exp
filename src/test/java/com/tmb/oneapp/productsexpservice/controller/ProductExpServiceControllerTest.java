@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.exceptions.base.MockitoException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -262,6 +263,37 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
+    public void testgetFundAccountDetailNull() throws Exception {
+        initAccDetailBody();
+        initFundRuleBody();
+
+        FundAccountRs fundAccountRs = null;
+        FundAccountRq fundAccountRq = new FundAccountRq();
+        fundAccountRq.setFundCode("EEEEEEE");
+        fundAccountRq.setFundHouseCode("TTTTTTT");
+        fundAccountRq.setServiceType("1");
+        fundAccountRq.setUnitHolderNo("PT00000001111");
+        fundAccountRq.setTranType("All");
+
+        AccDetailBody accDetailBody = null;
+        FundRuleBody fundRuleBody = null;
+        try {
+            fundAccountRs = new FundAccountRs();
+
+            FundAccountDetail fundAccountDetail = mappingResponse(accDetailBody, fundRuleBody);
+            fundAccountRs.setDetails(fundAccountDetail);
+            when(productsExpService.getFundAccountDetail(corrID, fundAccountRq)).thenReturn(null);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        ResponseEntity<TmbOneServiceResponse<FundAccountRs>> actualResult = productExpServiceController
+                .getFundAccountDetail(corrID, fundAccountRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
     public void testinsertActivityLog() throws Exception {
         ActivityLogs activityLogs = null;
         activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
@@ -329,6 +361,38 @@ public class ProductExpServiceControllerTest {
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundFFSAndValidationError() throws Exception {
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setFundCode("SCBTMF");
+        ffsRequestBody.setFundHouseCode("SCBAM");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+        ffsRequestBody.setProcessFlag("N");
+        ffsRequestBody.setOrderType("1");
+
+        ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
+                .getFundFFSAndValidation(corrID, ffsRequestBody);
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundFFSAndValidationException() throws Exception {
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setFundCode("SCBTMF");
+        ffsRequestBody.setFundHouseCode("SCBAM");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+        ffsRequestBody.setProcessFlag("Y");
+        ffsRequestBody.setOrderType("1");
+
+        when(productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody)).thenThrow(MockitoException.class);
+
+        ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
+                .getFundFFSAndValidation(corrID, ffsRequestBody);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
 
