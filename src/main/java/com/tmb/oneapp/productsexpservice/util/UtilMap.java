@@ -183,7 +183,7 @@ public class UtilMap {
      * @param endTime the end HHMM
      * @return boolean
      */
-    public static boolean isBusinessClose(String startTime, String endTime){
+    public static boolean isBusinessClose(String startTime, String endTime, boolean isService){
         boolean isClose = true;
         try {
             if(!StringUtils.isEmpty(startTime)
@@ -191,8 +191,10 @@ public class UtilMap {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
                 String getCurrentTime = sdf.format(cal.getTime());
-                if (getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0) {
+                if (isService && getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0) {
                     return isClose;
+                }else if(getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0){
+                    return false;
                 }
             }
         }catch (Exception e){
