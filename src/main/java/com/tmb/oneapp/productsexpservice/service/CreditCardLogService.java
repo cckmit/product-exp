@@ -55,6 +55,11 @@ public class CreditCardLogService {
 		return creditCardEvent;
 	}
 
+	/**
+	 * @param creditCardEvent
+	 * @param reqHeader
+	 * @return
+	 */
 	public CreditCardEvent callActivityBaseEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader) {
 
 		logger.info("Inside callActivityBaseEvent");
