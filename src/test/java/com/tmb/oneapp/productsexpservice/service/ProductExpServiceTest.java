@@ -570,7 +570,7 @@ public class ProductExpServiceTest {
         boolean isBusClose = productsExpService.isBusinessClose(corrID, ffsRequestBody);
         Assert.assertEquals(true, isBusClose);
         boolean isCASADormant = productsExpService.isCASADormant(corrID, ffsRequestBody);
-        Assert.assertEquals(false, isCASADormant);
+        Assert.assertEquals(true, isCASADormant);
         boolean isServiceClose = productsExpService.isServiceClose(corrID, ffsRequestBody);
         Assert.assertEquals(true, isServiceClose);
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
