@@ -22,6 +22,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.*;
+import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundContent;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListClass;
+import org.springframework.http.MediaType;
+import java.text.SimpleDateFormat;
 
 public class UtilMap {
     private static TMBLogger<UtilMap> logger = new TMBLogger<>(UtilMap.class);
@@ -34,19 +39,18 @@ public class UtilMap {
      * @return FundAccountRs
      */
     public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
-                            ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
-            if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)
-            && HttpStatus.OK.value() != response.getStatusCode().value()
-            && HttpStatus.OK.value() != responseEntity.getStatusCode().value()){
-                return null;
-            } else{
-                FundAccountRs fundAccountRs = new FundAccountRs();
-                UtilMap utilMap = new UtilMap();
-                FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
-                        responseEntity.getBody().getData());
-                fundAccountRs.setDetails(fundAccountDetail);
-                return fundAccountRs;
-            }
+                                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
+        if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)
+                || (HttpStatus.OK != response.getStatusCode() || HttpStatus.OK != responseEntity.getStatusCode())){
+            return null;
+        } else{
+            FundAccountRs fundAccountRs = new FundAccountRs();
+            UtilMap utilMap = new UtilMap();
+            FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
+                    responseEntity.getBody().getData());
+            fundAccountRs.setDetails(fundAccountDetail);
+            return fundAccountRs;
+        }
     }
 
     /**
@@ -90,8 +94,8 @@ public class UtilMap {
      * @return FundPaymentDetailRs
      */
     public FundPaymentDetailRs mappingPaymentResponse(ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity,
-                                               ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday,
-                                               String responseCustomerExp){
+                                                      ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday,
+                                                      String responseCustomerExp){
         if(StringUtils.isEmpty(responseEntity)
                 || StringUtils.isEmpty(responseFundHoliday)
                 || HttpStatus.OK != responseEntity.getStatusCode()
@@ -171,4 +175,115 @@ public class UtilMap {
         }
         return accType;
     }
+
+    /**
+     * Generic Method to Get Current Date with Format
+     *
+     * @param startTime the start HHMM
+     * @param endTime the end HHMM
+     * @return boolean
+     */
+    public static boolean isBusinessClose(String startTime, String endTime){
+        boolean isClose = true;
+        try {
+            if(!StringUtils.isEmpty(startTime)
+                    && !StringUtils.isEmpty(endTime)) {
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
+                String getCurrentTime = sdf.format(cal.getTime());
+                if (getCurrentTime.compareTo(startTime) > 0 && getCurrentTime.compareTo(endTime) < 0) {
+                    return isClose;
+                }
+            }
+        }catch (Exception e){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+        }
+        return false;
+    }
+
+    /**
+     * Generic Method to create HTTP Header
+     *
+     * @param correlationId
+     * @return
+     */
+    public static Map<String, Object> createHeader(String correlationId, int pageSize, int pageNo) {
+        Map<String, Object> invHeaderReqParameter = new HashMap<>();
+        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
+        invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        invHeaderReqParameter.put(ProductsExpServiceConstant.PAGE_SIZE, pageSize);
+        invHeaderReqParameter.put(ProductsExpServiceConstant.PAGE_NO, pageNo);
+        return invHeaderReqParameter;
+    }
+
+    /**
+     * Generic Method to create HTTP Header
+     *
+     * @param correlationId
+     * @return
+     */
+    public static Map<String, String> createHeader(String correlationId) {
+        Map<String, String> invHeaderReqParameter = new HashMap<>();
+        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
+        invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        return invHeaderReqParameter;
+    }
+
+    /**
+     * Generic Method to create HTTP Header
+     *
+     * @param ffsRequestBody
+     * @param fundListClass
+     * @return
+     */
+    public static boolean isOfShelfCheck(FfsRequestBody ffsRequestBody, FundListClass fundListClass) {
+        boolean isFundOfShelf = true;
+        if(!StringUtils.isEmpty(fundListClass)) {
+            for (FundContent contents : fundListClass.getContent()) {
+                String fundCode = contents.getFundCode();
+                if(fundCode.equals(ffsRequestBody.getFundCode())){
+                    isFundOfShelf = false;
+                    break;
+                }
+            }
+        }
+        return isFundOfShelf;
+    }
+
+    /**
+     * Generic Method to mappingResponse
+     *
+     * @param responseCustomerExp
+     * @return boolean
+     */
+    public static boolean isCASADormant(String responseCustomerExp){
+        if(StringUtils.isEmpty(responseCustomerExp)){
+            return true;
+        }else{
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode node = null;
+                node = mapper.readValue(responseCustomerExp, JsonNode.class);
+                ArrayNode arrayNode = (ArrayNode) node.get("data");
+                int size = arrayNode.size();
+                List<Integer> countDormant = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    JsonNode itr = arrayNode.get(i);
+                    String accStatus = itr.get("account_status_text").textValue();
+                    BigDecimal balance = new BigDecimal(itr.get("current_balance").textValue());
+                    BigDecimal zeroBalance = new BigDecimal("0");
+                    if((ProductsExpServiceConstant.ACTIVE_STATUS.equals(accStatus)
+                            || ProductsExpServiceConstant.INACTIVE_STATUS.equals(accStatus))
+                            && (balance.compareTo(zeroBalance) == 0)){
+                        countDormant.add(i);
+                    }
+                }
+                return (size == countDormant.size());
+            } catch (JsonProcessingException e) {
+                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            }
+            return false;
+        }
+    }
+
 }
