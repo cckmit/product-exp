@@ -189,15 +189,14 @@ public class UtilMap {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
                 String getCurrentTime = sdf.format(cal.getTime());
-                if (isService
-                        && getCurrentTime.compareTo(startTime) > 0
-                        && getCurrentTime.compareTo(endTime) < 0) {
-                    return isClose;
-                }else if(!isService
-                        && getCurrentTime.compareTo(startTime) > 0
-                        && getCurrentTime.compareTo(endTime) > 0){
+
+                if(((isService && (getCurrentTime.compareTo(startTime) > 0))
+                        && (getCurrentTime.compareTo(endTime) < 0))
+                    || ((!isService && (getCurrentTime.compareTo(startTime) > 0))
+                        && (getCurrentTime.compareTo(endTime) > 0))){
                     return isClose;
                 }
+
             }
         }catch (Exception e){
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

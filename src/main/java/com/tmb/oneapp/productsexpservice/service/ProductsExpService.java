@@ -150,7 +150,6 @@ public class ProductsExpService {
             portData = accountRequestClient.getPortList(invHeaderReqParameter, rq.getCrmId());
             if (!StringUtils.isEmpty(portData)) {
                 ObjectMapper mapper = new ObjectMapper();
-                ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
                 JsonNode dataNode = node.get("data");
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
