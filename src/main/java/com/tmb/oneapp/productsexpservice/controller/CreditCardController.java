@@ -3,6 +3,8 @@ package com.tmb.oneapp.productsexpservice.controller;
 import java.time.Instant;
 import java.util.Map;
 
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,22 +42,25 @@ public class CreditCardController {
 	private final CreditCardClient creditCardClient;
 	private static final TMBLogger<CreditCardController> logger = new TMBLogger<>(
 			CreditCardController.class);
+	private final CreditCardLogService creditCardLogService;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param creditCardClient
+	 * @param creditCardLogService
 	 */
 
 	@Autowired
-	public CreditCardController(CreditCardClient creditCardClient) {
+	public CreditCardController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService) {
 		super();
 		this.creditCardClient = creditCardClient;
+		this.creditCardLogService = creditCardLogService;
 	}
 
 	/**
 	 * verify block code and get card details
-	 * 
+	 *
 	 * @param requestHeadersParameter
 	 * @return block code ,credit card id , expiry date
 	 */
@@ -77,6 +82,13 @@ public class CreditCardController {
 			if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)) {
 				ResponseEntity<GetCardBlockCodeResponse> blockCodeRes = creditCardClient
 						.getCardBlockCode(correlationId, accountId);
+				String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VERIFY_CARD_NO;
+				String activityDate = Long.toString(System.currentTimeMillis());
+				CreditCardEvent creditCardEvent = new CreditCardEvent(requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate, activityId);
+				creditCardEvent = creditCardLogService.callVerifyCardNoEvent(creditCardEvent, requestHeadersParameter);
+
+				/*  Activity log */
+				creditCardLogService.logActivity(creditCardEvent);
 
 				if (blockCodeRes != null && blockCodeRes.getStatusCode() == HttpStatus.OK
 						&& blockCodeRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
@@ -106,7 +118,7 @@ public class CreditCardController {
 
 	/**
 	 * Description:- handling response
-	 * 
+	 *
 	 * @param blockCodeRes
 	 * @param oneServiceResponse
 	 * @param correlationId
@@ -148,7 +160,7 @@ public class CreditCardController {
 
 	/**
 	 * Description:- handling fail response
-	 * 
+	 *
 	 * @param oneServiceResponse
 	 * @param responseHeaders
 	 *

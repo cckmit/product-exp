@@ -89,5 +89,27 @@ public class ProductsExpServiceConstant {
     public static final String INACTIVE_STATUS = "INACTIVE";
 
     public static final String PROCESS_FLAG_Y = "Y";
+    public static final String ACTIVITY_ID_TEMP= "00700200";
+    public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST= "00700201";
+    public static final String CHANGE_TEMP_CONFIRM_PIN_SUCCESS_CASE= "00700202";
+    public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT= "00700203";
+    public static final String CHANGE_TYPE_PERMANENT="change-type-permanent";
+    public static final String CHANGE_TYPE_TEMP="req-temp-limit";
+    public static final String SUCCESS="Success";
+    public static final String FAILURE="Failure";
+    public static final String X_FORWARD_FOR = "x-forward-for";
+    public static final String OS_VERSION = "os-version";
+    public static final String CHANNEL = "channel";
+    public static final String APP_VERSION = "app-version";
+    public static final String X_CRMID = "x-crmid";
+    public static final String DEVICE_ID = "device-id";
+    public static final String DEVICE_MODEL = "device-model";
+    public static final String MODE_PERMANENT = "permanent";
+    public static final String MODE_TEMPORARY = "temporary";
+    public static final String ACTIVITY_ID_VERIFY_CARD_NO="00700100";
+    public static final String ACTIVITY_ID_ENTERED_CVV_NO="00700101";
+    public static final String ACTIVITY_ID_CONFIRM_PIN_SUCCESS="00700102";
+    public static final String ACTIVITY_ID_CARD_ACTIVATION="00700103";
+    public static final String METHOD="SCAN/KEY IN";
 }
 
