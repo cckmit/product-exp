@@ -41,7 +41,7 @@ public class UtilMap {
     public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                                              ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
         if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)
-                || (HttpStatus.OK != response.getStatusCode() || HttpStatus.OK != responseEntity.getStatusCode())){
+                && (HttpStatus.OK != response.getStatusCode() && HttpStatus.OK != responseEntity.getStatusCode())){
             return null;
         } else{
             FundAccountRs fundAccountRs = new FundAccountRs();
@@ -97,25 +97,25 @@ public class UtilMap {
                                                       ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday,
                                                       String responseCustomerExp){
         if(StringUtils.isEmpty(responseEntity)
-                || StringUtils.isEmpty(responseFundHoliday)
                 || HttpStatus.OK != responseEntity.getStatusCode()
-                || HttpStatus.OK != responseFundHoliday.getStatusCode()
                 || StringUtils.isEmpty(responseCustomerExp)){
             return null;
         }else{
             FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
-            FundHolidayClassList fundHolidayUnit = null;
-            List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
-            List<FundHolidayClassList> fundHolidayClassListRs = responseFundHoliday.getBody().getData().getFundClassList();
-            for(FundHolidayClassList fundHoliday : fundHolidayClassListRs){
-                fundHolidayUnit = new FundHolidayClassList();
-                fundHolidayUnit.setFundCode(fundHoliday.getFundCode());
-                fundHolidayUnit.setFundHouseCode(fundHoliday.getFundHouseCode());
-                fundHolidayUnit.setHolidayDate(fundHoliday.getHolidayDate());
-                fundHolidayUnit.setHolidayDesc(fundHoliday.getHolidayDesc());
-                fundHolidayClassList.add(fundHolidayUnit);
+            if(!StringUtils.isEmpty(responseFundHoliday) && HttpStatus.OK == responseFundHoliday.getStatusCode()) {
+                FundHolidayClassList fundHolidayUnit = null;
+                List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
+                List<FundHolidayClassList> fundHolidayClassListRs = responseFundHoliday.getBody().getData().getFundClassList();
+                for (FundHolidayClassList fundHoliday : fundHolidayClassListRs) {
+                    fundHolidayUnit = new FundHolidayClassList();
+                    fundHolidayUnit.setFundCode(fundHoliday.getFundCode());
+                    fundHolidayUnit.setFundHouseCode(fundHoliday.getFundHouseCode());
+                    fundHolidayUnit.setHolidayDate(fundHoliday.getHolidayDate());
+                    fundHolidayUnit.setHolidayDesc(fundHoliday.getHolidayDesc());
+                    fundHolidayClassList.add(fundHolidayUnit);
+                }
+                fundPaymentDetailRs.setFundHolidayList(fundHolidayClassList);
             }
-            fundPaymentDetailRs.setFundHolidayList(fundHolidayClassList);
 
             FundRule fundRule = new FundRule();
             List<FundRuleInfoList> fundRuleInfoList = responseEntity.getBody().getData().getFundRuleInfoList();

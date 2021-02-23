@@ -209,7 +209,6 @@ public class ProductsExpService {
         String responseCustomerExp = null;
         FundPaymentDetailRs fundPaymentDetailRs = null;
         try {
-
             responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
             responseFundHoliday = investmentRequestClient.callInvestmentFundHolidayService(invHeaderReqParameter, fundPaymentDetailRq.getFundCode());
