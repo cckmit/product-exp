@@ -229,7 +229,7 @@ public class ProductsExpService {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
         final boolean isNotValid = true;
         boolean isStoped = false;
-        if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime, true)){
+        if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime)){
             ffsRsAndValidation.setServiceClose(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
@@ -324,7 +324,7 @@ public class ProductsExpService {
                     HttpStatus.OK == responseEntity.getStatusCode()){
                 FundRuleBody fundRuleBody = responseEntity.getBody().getData();
                 FundRuleInfoList fundRuleInfoList = fundRuleBody.getFundRuleInfoList().get(0);
-                return UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd(), false);
+                return UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd());
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

@@ -181,7 +181,7 @@ public class UtilMap {
      * @param endTime the end HHMM
      * @return boolean
      */
-    public static boolean isBusinessClose(String startTime, String endTime, boolean isService){
+    public static boolean isBusinessClose(String startTime, String endTime){
         boolean isClose = true;
         try {
             if(!StringUtils.isEmpty(startTime)

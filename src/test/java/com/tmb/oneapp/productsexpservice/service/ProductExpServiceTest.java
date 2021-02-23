@@ -549,7 +549,7 @@ public class ProductExpServiceTest {
 
     @Test
     public void testisBusinessClose() throws Exception {
-        boolean isClose = UtilMap.isBusinessClose("08:01","21:00", false);
+        boolean isClose = UtilMap.isBusinessClose("08:01","21:00");
         Assert.assertFalse(isClose);
     }
 
