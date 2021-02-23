@@ -40,7 +40,7 @@ public class UtilMap {
      */
     public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                                              ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
-        if(StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity)
+        if((StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity))
                 && (HttpStatus.OK != response.getStatusCode() && HttpStatus.OK != responseEntity.getStatusCode())){
             return null;
         } else{
