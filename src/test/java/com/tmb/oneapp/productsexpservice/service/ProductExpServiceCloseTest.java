@@ -11,8 +11,10 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
+import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -108,7 +110,7 @@ public class ProductExpServiceCloseTest {
         }
 
         boolean isBusClose = productsExpService.isBusinessClose(corrID, ffsRequestBody);
-        Assert.assertEquals(true, isBusClose);
+        Assert.assertEquals(false, isBusClose);
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
@@ -124,6 +126,27 @@ public class ProductExpServiceCloseTest {
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);
 
+    }
+
+    @Test
+    public void validateTMBResponse() throws Exception {
+      UtilMap utilMap = new UtilMap();
+        FundAccountRs fundAccountRs = utilMap.validateTMBResponse(null, null);
+        Assert.assertNull(fundAccountRs);
+    }
+
+    @Test
+    public void mappingPaymentResponse() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        FundPaymentDetailRs fundAccountRs = utilMap.mappingPaymentResponse(null, null, null);
+        Assert.assertNull(fundAccountRs);
+    }
+
+    @Test
+    public void isCASADormant() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        boolean  fundAccountRs = utilMap.isCASADormant(null);
+        Assert.assertTrue(fundAccountRs);
     }
 
 

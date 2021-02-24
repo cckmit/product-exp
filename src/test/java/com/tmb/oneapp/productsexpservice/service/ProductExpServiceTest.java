@@ -627,7 +627,7 @@ public class ProductExpServiceTest {
         }
 
         boolean isBusClose = productsExpService.isBusinessClose(corrID, ffsRequestBody);
-        Assert.assertEquals(true, isBusClose);
+        Assert.assertEquals(false, isBusClose);
         boolean isCASADormant = productsExpService.isCASADormant(corrID, ffsRequestBody);
         Assert.assertEquals(false, isCASADormant);
         boolean isServiceClose = productsExpService.isServiceClose(corrID, ffsRequestBody);

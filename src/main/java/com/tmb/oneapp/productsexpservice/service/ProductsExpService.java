@@ -324,13 +324,17 @@ public class ProductsExpService {
                     HttpStatus.OK == responseEntity.getStatusCode()){
                 FundRuleBody fundRuleBody = responseEntity.getBody().getData();
                 FundRuleInfoList fundRuleInfoList = fundRuleBody.getFundRuleInfoList().get(0);
-                return UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd());
+                boolean isOutofTime = UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd());
+                if(isOutofTime && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx())){
+                    return true;
+                }
+                return false;
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             return true;
         }
-        return true;
+        return false;
     }
 
 
