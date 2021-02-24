@@ -281,7 +281,7 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isServiceClose
+     * Method isOfShelfFund
      *
      * @param correlationId
      * @param ffsRequestBody
