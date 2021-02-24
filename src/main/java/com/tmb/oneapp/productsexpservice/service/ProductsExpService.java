@@ -236,7 +236,7 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
             isStoped = true;
         }
-        if(!isStoped && !StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isServiceClose(correlationId, ffsRequestBody)){
+        if(!isStoped && !StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isOfShelfFund(correlationId, ffsRequestBody)){
             ffsRsAndValidation.setFundOfShelf(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.OF_SHELF_FUND_CODE);
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.OF_SHELF_FUND_MESSAGE);
@@ -286,7 +286,7 @@ public class ProductsExpService {
      * @param correlationId
      * @param ffsRequestBody
      */
-    public boolean isServiceClose(String correlationId, FfsRequestBody ffsRequestBody){
+    public boolean isOfShelfFund(String correlationId, FfsRequestBody ffsRequestBody){
         ResponseEntity<TmbOneServiceResponse<FundListPage>> responseResponseEntity = null;
         try{
             Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(correlationId, 139, 0);

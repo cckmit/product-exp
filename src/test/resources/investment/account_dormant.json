@@ -1,0 +1,45 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "accounts-service",
+    "description": {
+      "en": "success",
+      "th": "success"
+    }
+  },
+  "data": [
+    {
+      "product_name_Eng": "TMB BASIC Account",
+      "product_name_TH": "ทีเอ็มบี เบสิก",
+      "product_code": "200",
+      "balance_currency": "THB",
+      "current_balance": "1000000000.00",
+      "account_number": "00001112403413",
+      "relationship_code": "PRIIND",
+      "account_status_code": "2",
+      "account_status_text": "DORMANT",
+      "product_group_code": "SDA",
+      "icon_id": "https://firebasestorage.googleapis.com/v0/b/oneapp-vit.appspot.com/o/product%2Flogo%2Ficon_02.png?alt=media&token=bea95bb2-e8a6-4c92-bcd5-3ebc973e5d5d",
+      "sort_order": "10002",
+      "allow_transfer_from_account": "1",
+      "allow_transfer_other_account": "1",
+      "transfer_own_tmb": [
+        "DDA",
+        "SDA",
+        "CDA"
+      ],
+      "transfer_other_tmb": [
+        "DDA",
+        "SDA"
+      ],
+      "personalized_acct_nickname": "TMB BASIC Account 3413",
+      "account_name": "น.ส. เทส เทส",
+      "isRegisterPromptpay": "1",
+      "account_number_display": "1112403413",
+      "allow_transfer_to_promptpay": "1",
+      "waive_fee_for_promptpay": "0",
+      "waive_fee_for_promptpay_account": "0"
+    }
+  ]
+}

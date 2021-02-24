@@ -274,6 +274,8 @@ public class UtilMap {
                             || ProductsExpServiceConstant.INACTIVE_STATUS.equals(accStatus))
                             && (balance.compareTo(zeroBalance) == 0)){
                         countDormant.add(i);
+                    }else if(ProductsExpServiceConstant.DORMANT_STATUS.equals(accStatus)){
+                        countDormant.add(i);
                     }
                 }
                 return (size == countDormant.size());
