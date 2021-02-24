@@ -22,6 +22,7 @@ import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.exceptions.base.MockitoException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import java.nio.charset.StandardCharsets;
@@ -287,6 +288,71 @@ public class ProductExpServiceCloseTest {
     }
 
     @Test
+    public void getFundFFSAndValidationEMpty() throws Exception {
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setFundCode("ABSM");
+        ffsRequestBody.setFundHouseCode("ABERDEEN");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+        ffsRequestBody.setProcessFlag("N");
+        ffsRequestBody.setOrderType("1");
+
+        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
+        fundRuleRequestBody.setFundCode(ffsRequestBody.getFundCode());
+        fundRuleRequestBody.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+        fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
+
+        FfsRequestBody ffsRequest = new FfsRequestBody();
+        ffsRequest.setLanguage("en");
+        ffsRequest.setFundCode("ABSM");
+        ffsRequest.setFundHouseCode("ABERDEEN");
+        ffsRequest.setOrderType("1");
+        ffsRequest.setProcessFlag("Y");
+
+
+        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundListPage> responseList = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FfsResponse> responseFfs = new TmbOneServiceResponse<>();
+        String responseCustomerExp = null;
+        Map<String, String> headers = createHeader(corrID);
+        Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(corrID, 139, 0);
+        FundListPage fundListPage = null;
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            fundListPage = mapper.readValue(Paths.get("src/test/resources/investment/fund_list_info.json").toFile(), FundListPage.class);
+            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+
+            responseEntity.setData(fundRuleBody);
+            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseList.setData(fundListPage);
+            responseList.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseFfs.setData(null);
+            responseFfs.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
+            when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            when(investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseList));
+            when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenThrow(MockitoException.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
+        Assert.assertNotNull(serviceRes);
+    }
+
+    @Test
     public void testSaveActivityLogs() throws Exception {
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
@@ -318,6 +384,28 @@ public class ProductExpServiceCloseTest {
         UtilMap utilMap = new UtilMap();
         boolean  fundAccountRs = utilMap.isCASADormant(null);
         Assert.assertTrue(fundAccountRs);
+    }
+
+    @Test
+    public void convertAccountType() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        String fundAccountRs = utilMap.convertAccountType("AAAA");
+        Assert.assertEquals("",fundAccountRs);
+    }
+
+    @Test
+    public void isCASADormantException() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        boolean  fundAccountRs = utilMap.isCASADormant("data not found");
+        Assert.assertFalse(fundAccountRs);
+    }
+
+
+    @Test
+    public void isBusinessCloseException() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        boolean  fundAccountRs = utilMap.isBusinessClose("yyy", "xxx");
+        Assert.assertFalse(fundAccountRs);
     }
 
 
