@@ -1,8 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary;
 
 import lombok.Data;
-import org.apache.kafka.clients.consumer.StickyAssignor;
-
 import java.math.BigDecimal;
 import java.util.List;
 

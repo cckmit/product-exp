@@ -157,7 +157,7 @@ public class ProductsExpService {
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
                 List<Port> ports = mapper.readValue(portList.toString(), new TypeReference<List<Port>>() {
                 });
-                List<String> myPorts  = new ArrayList<>();;
+                List<String> myPorts  = new ArrayList<>();
                 for(Port port : ports){
                     myPorts.add(port.getAcctNbr());
                 }
