@@ -385,7 +385,7 @@ public class ProductsExpService {
         activityData.setReason(failReason);
         activityData.setFundCode(ffsRequestBody.getFundCode());
         if(!StringUtils.isEmpty(ffsRequestBody.getUnitHolderNo())){
-            activityData.setUnitHolderNo(ffsRequestBody.getFundCode());
+            activityData.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
         }else{
             activityData.setUnitHolderNo(ProductsExpServiceConstant.UNIT_HOLDER);
         }
