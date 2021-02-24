@@ -236,7 +236,7 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
             isStoped = true;
         }
-        if(!isStoped && !StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isServiceClose(correlationId, ffsRequestBody)){
+        if(!isStoped && !StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isOfShelfFund(correlationId, ffsRequestBody)){
             ffsRsAndValidation.setFundOfShelf(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.OF_SHELF_FUND_CODE);
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.OF_SHELF_FUND_MESSAGE);
@@ -281,12 +281,12 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isServiceClose
+     * Method isOfShelfFund
      *
      * @param correlationId
      * @param ffsRequestBody
      */
-    public boolean isServiceClose(String correlationId, FfsRequestBody ffsRequestBody){
+    public boolean isOfShelfFund(String correlationId, FfsRequestBody ffsRequestBody){
         ResponseEntity<TmbOneServiceResponse<FundListPage>> responseResponseEntity = null;
         try{
             Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(correlationId, 139, 0);
@@ -296,11 +296,11 @@ public class ProductsExpService {
                     HttpStatus.OK == responseResponseEntity.getStatusCode()) {
                 return UtilMap.isOfShelfCheck(ffsRequestBody, responseResponseEntity.getBody().getData().getFundClassList());
             }
+            return true;
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             return true;
         }
-        return true;
     }
 
     /**
@@ -324,13 +324,14 @@ public class ProductsExpService {
                     HttpStatus.OK == responseEntity.getStatusCode()){
                 FundRuleBody fundRuleBody = responseEntity.getBody().getData();
                 FundRuleInfoList fundRuleInfoList = fundRuleBody.getFundRuleInfoList().get(0);
-                return UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd());
+                return (UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd())
+                        && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx()));
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             return true;
         }
-        return true;
+        return false;
     }
 
 

@@ -41,7 +41,7 @@ public class UtilMap {
     public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
                                              ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
         if((StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity))
-                && (HttpStatus.OK != response.getStatusCode() && HttpStatus.OK != responseEntity.getStatusCode())){
+                || (HttpStatus.OK != response.getStatusCode() && HttpStatus.OK != responseEntity.getStatusCode())){
             return null;
         } else{
             FundAccountRs fundAccountRs = new FundAccountRs();
@@ -270,10 +270,15 @@ public class UtilMap {
                     String accStatus = itr.get("account_status_text").textValue();
                     BigDecimal balance = new BigDecimal(itr.get("current_balance").textValue());
                     BigDecimal zeroBalance = new BigDecimal("0");
-                    if((ProductsExpServiceConstant.ACTIVE_STATUS.equals(accStatus)
-                            || ProductsExpServiceConstant.INACTIVE_STATUS.equals(accStatus))
-                            && (balance.compareTo(zeroBalance) == 0)){
-                        countDormant.add(i);
+                    switch (accStatus) {
+                        case ProductsExpServiceConstant.ACTIVE_STATUS :
+                        case ProductsExpServiceConstant.INACTIVE_STATUS :
+                            if((balance.compareTo(zeroBalance) == 0)) countDormant.add(i);
+                            break;
+                        case ProductsExpServiceConstant.DORMANT_STATUS :
+                            countDormant.add(i);
+                            break;
+                        default: break;
                     }
                 }
                 return (size == countDormant.size());
@@ -283,5 +288,6 @@ public class UtilMap {
             return false;
         }
     }
+
 
 }

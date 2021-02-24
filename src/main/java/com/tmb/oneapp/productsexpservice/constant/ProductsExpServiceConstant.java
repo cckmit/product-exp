@@ -87,8 +87,10 @@ public class ProductsExpServiceConstant {
 
     public static final String ACTIVE_STATUS = "ACTIVE";
     public static final String INACTIVE_STATUS = "INACTIVE";
+    public static final String DORMANT_STATUS = "DORMANT";
 
     public static final String PROCESS_FLAG_Y = "Y";
+    public static final String BUSINESS_HR_CLOSE = "N";
     public static final String ACTIVITY_ID_TEMP= "00700200";
     public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST= "00700201";
     public static final String CHANGE_TEMP_CONFIRM_PIN_SUCCESS_CASE= "00700202";
