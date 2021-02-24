@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
@@ -214,6 +215,73 @@ public class ProductExpServiceCloseTest {
 
         boolean isBusClose = productsExpService.isCASADormant(corrID, ffsRequestBody);
         Assert.assertEquals(true, isBusClose);
+        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
+        Assert.assertNotNull(serviceRes);
+    }
+
+    @Test
+    public void getFundFFSAndValidationSuccess() throws Exception {
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setFundCode("ABSM");
+        ffsRequestBody.setFundHouseCode("ABERDEEN");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+        ffsRequestBody.setProcessFlag("N");
+        ffsRequestBody.setOrderType("1");
+
+        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
+        fundRuleRequestBody.setFundCode(ffsRequestBody.getFundCode());
+        fundRuleRequestBody.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+        fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
+
+        FfsRequestBody ffsRequest = new FfsRequestBody();
+        ffsRequest.setLanguage("en");
+        ffsRequest.setFundCode("ABSM");
+        ffsRequest.setFundHouseCode("ABERDEEN");
+        ffsRequest.setOrderType("1");
+        ffsRequest.setProcessFlag("Y");
+
+
+
+        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundListPage> responseList = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FfsResponse> responseFfs = new TmbOneServiceResponse<>();
+        String responseCustomerExp = null;
+        Map<String, String> headers = createHeader(corrID);
+        Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(corrID, 139, 0);
+        FundListPage fundListPage = null;
+        FfsResponse ffsResponse = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            fundListPage = mapper.readValue(Paths.get("src/test/resources/investment/fund_list_info.json").toFile(), FundListPage.class);
+            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+            ffsResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_factsheet.json").toFile(), FfsResponse.class);
+
+            responseEntity.setData(fundRuleBody);
+            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseList.setData(fundListPage);
+            responseList.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseFfs.setData(ffsResponse);
+            responseFfs.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
+            when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            when(investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseList));
+            when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFfs));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
