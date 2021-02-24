@@ -367,9 +367,8 @@ public class ProductsExpService {
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId, String status,
                                                                   String failReason,
-                                                                  String crmId,
                                                                   String activityType,
-                                                                  String processFlag){
+                                                                  FfsRequestBody ffsRequestBody){
         ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()),
                 ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING);
         activityData.setActivityStatus(status);
@@ -377,9 +376,15 @@ public class ProductsExpService {
         activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
         activityData.setFailReason(failReason);
         activityData.setActivityType(activityType);
-        activityData.setCrmId(crmId);
-        activityData.setVerifyFlag(processFlag);
+        activityData.setCrmId(ffsRequestBody.getCrmId());
+        activityData.setVerifyFlag(ffsRequestBody.getProcessFlag());
         activityData.setReason(failReason);
+        activityData.setFundCode(ffsRequestBody.getFundCode());
+        if(!StringUtils.isEmpty(ffsRequestBody.getUnitHolderNo())){
+            activityData.setUnitHolderNo(ffsRequestBody.getFundCode());
+        }else{
+            activityData.setUnitHolderNo(ProductsExpServiceConstant.UNIT_HOLDER);
+        }
         return activityData;
     }
 

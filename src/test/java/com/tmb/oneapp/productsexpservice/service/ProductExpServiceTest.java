@@ -673,11 +673,16 @@ public class ProductExpServiceTest {
 
     @Test
     public void testinsertActivityLog() throws Exception {
-        ActivityLogs activityLogs = null;
-        activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setProcessFlag("N");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setFundCode("TMONEY");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+
+        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
                 ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                "001100000000000000000012025950", ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-                "Y");
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
+
         Assert.assertNotNull(activityLogs);
     }
 
