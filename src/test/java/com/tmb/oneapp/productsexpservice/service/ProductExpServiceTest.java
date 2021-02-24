@@ -10,11 +10,13 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
@@ -484,25 +486,19 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void isServiceCloseException() throws Exception {
+    public void getFundSummaryException() throws Exception {
 
-        FfsRequestBody  fundAccountRequest = new FfsRequestBody ();
-        fundAccountRequest.setFundCode("EEEEEE");
-        fundAccountRequest.setFundHouseCode("TTTTTTT");
-        fundAccountRequest.setCrmId("00000000001234666788");
-        fundAccountRequest.setLanguage("en");
-        fundAccountRequest.setProcessFlag("Y");
-        fundAccountRequest.setOrderType("1");
+        FundSummaryRq fundAccountRequest = new FundSummaryRq  ();
+        fundAccountRequest.setCrmId("001100000000000000000012025950");
 
         try {
-            when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getPortList(any(),any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        boolean isOfshelf = productsExpService.isServiceClose(corrID, fundAccountRequest);
-        Assert.assertTrue(isOfshelf);
+        FundSummaryBody getFundSummary = productsExpService.getFundSummary(corrID, fundAccountRequest);
+        Assert.assertNull(getFundSummary);
     }
-
 
 
     @Test

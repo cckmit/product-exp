@@ -296,11 +296,11 @@ public class ProductsExpService {
                     HttpStatus.OK == responseResponseEntity.getStatusCode()) {
                 return UtilMap.isOfShelfCheck(ffsRequestBody, responseResponseEntity.getBody().getData().getFundClassList());
             }
+            return true;
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             return true;
         }
-        return true;
     }
 
     /**
@@ -324,12 +324,8 @@ public class ProductsExpService {
                     HttpStatus.OK == responseEntity.getStatusCode()){
                 FundRuleBody fundRuleBody = responseEntity.getBody().getData();
                 FundRuleInfoList fundRuleInfoList = fundRuleBody.getFundRuleInfoList().get(0);
-                boolean isOutofTime = UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd());
-                if(isOutofTime && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx())){
-                    return true;
-                }else {
-                    return false;
-                }
+                return (UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd())
+                        && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx()));
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
