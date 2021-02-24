@@ -169,8 +169,8 @@ public class ProductExpServiceCloseTest {
     @Test
     public void getFundFFSAndValidationCASADormant() throws Exception {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
-        ffsRequestBody.setFundCode("AAAAA");
-        ffsRequestBody.setFundHouseCode("SCBAM");
+        ffsRequestBody.setFundCode("ABSM");
+        ffsRequestBody.setFundHouseCode("ABERDEEN");
         ffsRequestBody.setLanguage("en");
         ffsRequestBody.setCrmId("001100000000000000000012025950");
         ffsRequestBody.setProcessFlag("N");
