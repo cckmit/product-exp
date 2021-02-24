@@ -40,6 +40,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,8 +157,11 @@ public class ProductsExpService {
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
                 List<Port> ports = mapper.readValue(portList.toString(), new TypeReference<List<Port>>() {
                 });
-
-
+                List<String> myPorts  = new ArrayList<>();;
+                for(Port port : ports){
+                    myPorts.add(port.getAcctNbr());
+                }
+                result.setPortsUnitHolder(myPorts);
                 String acctNbrList = ports.stream().map(Port::<String>getAcctNbr).collect(Collectors.joining(","));
                 unitHolder.setUnitHolderNo(acctNbrList);
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter
@@ -361,9 +366,8 @@ public class ProductsExpService {
      * @param correlationId
      * @param status
      * @param failReason
-     * @param crmId
      * @param activityType
-     * @param processFlag
+     * @param ffsRequestBody
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId, String status,
                                                                   String failReason,
