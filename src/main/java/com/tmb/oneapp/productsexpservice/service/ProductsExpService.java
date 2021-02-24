@@ -327,8 +327,9 @@ public class ProductsExpService {
                 boolean isOutofTime = UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd());
                 if(isOutofTime && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx())){
                     return true;
+                }else {
+                    return false;
                 }
-                return false;
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

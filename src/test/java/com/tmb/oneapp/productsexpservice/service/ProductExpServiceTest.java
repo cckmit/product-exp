@@ -205,29 +205,6 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
     }
 
-    @Test
-    public void testGetFundAccdetailException() throws Exception {
-
-        FundAccountRq fundAccountRequest = new FundAccountRq();
-        fundAccountRequest.setFundCode("EEEEEE");
-        fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
-        fundAccountRequest.setFundHouseCode("TTTTTTT");
-
-        FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
-        fundAccountRequestBody.setFundCode(fundAccountRequest.getFundCode());
-        fundAccountRequestBody.setServiceType(fundAccountRequest.getServiceType());
-        fundAccountRequestBody.setUnitHolderNo(fundAccountRequest.getUnitHolderNo());
-
-        try {
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRequestBody)).thenThrow(MockitoException.class);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
-        Assert.assertNull(result);
-    }
-
 
     @Test
     public void testGetFundRule() throws Exception {
@@ -485,8 +462,47 @@ public class ProductExpServiceTest {
         FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
         Assert.assertNull(serviceRes);
 
-
     }
+
+    @Test
+    public void testGetFundAccdetailException() throws Exception {
+
+        FundAccountRq fundAccountRequest = new FundAccountRq();
+        fundAccountRequest.setFundCode("EEEEEE");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+
+        try {
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
+            when(investmentRequestClient.callInvestmentFundAccDetailService(any(), any())).thenThrow(MockitoException.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
+        Assert.assertNull(result);
+    }
+
+    @Test
+    public void isServiceCloseException() throws Exception {
+
+        FfsRequestBody  fundAccountRequest = new FfsRequestBody ();
+        fundAccountRequest.setFundCode("EEEEEE");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+        fundAccountRequest.setCrmId("00000000001234666788");
+        fundAccountRequest.setLanguage("en");
+        fundAccountRequest.setProcessFlag("Y");
+        fundAccountRequest.setOrderType("1");
+
+        try {
+            when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenThrow(MockitoException.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        boolean isOfshelf = productsExpService.isServiceClose(corrID, fundAccountRequest);
+        Assert.assertTrue(isOfshelf);
+    }
+
 
 
     @Test
