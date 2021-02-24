@@ -445,6 +445,35 @@ public class ProductExpServiceTest {
     }
 
     @Test
+    public void isBusinessClose() throws Exception {
+
+        FfsRequestBody fundAccountRequest = new FfsRequestBody();
+        fundAccountRequest.setCrmId("001100000000000000000012025950");
+        fundAccountRequest.setFundCode("SCBTMF");
+        fundAccountRequest.setFundHouseCode("SCBAM");
+        fundAccountRequest.setLanguage("en");
+        fundAccountRequest.setProcessFlag("Y");
+        fundAccountRequest.setOrderType("1");
+        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+
+            responseEntity.setData(fundRuleBody);
+            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        boolean getFundSummary = productsExpService.isBusinessClose(corrID, fundAccountRequest);
+        Assert.assertFalse(getFundSummary);
+    }
+
+    @Test
     public void testgetFundPrePaymentDetailNotfoundException() throws Exception {
         FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
         fundPaymentDetailRq.setCrmId("001100000000000000000012025950");
@@ -498,6 +527,46 @@ public class ProductExpServiceTest {
         }
         FundSummaryBody getFundSummary = productsExpService.getFundSummary(corrID, fundAccountRequest);
         Assert.assertNull(getFundSummary);
+    }
+
+    @Test
+    public void isBusinessCloseException() throws Exception {
+
+        FfsRequestBody fundAccountRequest = new FfsRequestBody();
+        fundAccountRequest.setCrmId("001100000000000000000012025950");
+        fundAccountRequest.setFundCode("SCBTMF");
+        fundAccountRequest.setFundHouseCode("SCBAM");
+        fundAccountRequest.setLanguage("en");
+        fundAccountRequest.setProcessFlag("Y");
+        fundAccountRequest.setOrderType("1");
+
+        try {
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        boolean getFundSummary = productsExpService.isBusinessClose(corrID, fundAccountRequest);
+        Assert.assertTrue(getFundSummary);
+    }
+
+    @Test
+    public void isCASADormantException() throws Exception {
+
+        FfsRequestBody fundAccountRequest = new FfsRequestBody();
+        fundAccountRequest.setCrmId("001100000000000000000012025950");
+        fundAccountRequest.setFundCode("SCBTMF");
+        fundAccountRequest.setFundHouseCode("SCBAM");
+        fundAccountRequest.setLanguage("en");
+        fundAccountRequest.setProcessFlag("Y");
+        fundAccountRequest.setOrderType("1");
+
+        try {
+            when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        boolean getFundSummary = productsExpService.isCASADormant(corrID, fundAccountRequest);
+        Assert.assertTrue(getFundSummary);
     }
 
 
