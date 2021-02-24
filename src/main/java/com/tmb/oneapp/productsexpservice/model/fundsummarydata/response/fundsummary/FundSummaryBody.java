@@ -1,8 +1,8 @@
 package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary;
 
 import lombok.Data;
-
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class FundSummaryBody {
@@ -10,4 +10,6 @@ public class FundSummaryBody {
     private String feeAsOfDate;
     private BigDecimal sumAccruedFee;
     private PercentOfFundType percentOfFundType;
+    private List<String> portsUnitHolder;
+
 }

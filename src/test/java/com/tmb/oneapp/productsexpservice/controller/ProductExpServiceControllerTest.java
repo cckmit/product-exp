@@ -293,15 +293,6 @@ public class ProductExpServiceControllerTest {
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
-    @Test
-    public void testinsertActivityLog() throws Exception {
-        ActivityLogs activityLogs = null;
-        activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.SUCCESS_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_SUCCESS,
-                "0000000012345666", ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-                "N");
-        Assert.assertNull(activityLogs);
-    }
 
 
     @Test

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.constant;
 
+
 /**
  * Constant class for Application
  *
@@ -113,5 +114,6 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_CONFIRM_PIN_SUCCESS="00700102";
     public static final String ACTIVITY_ID_CARD_ACTIVATION="00700103";
     public static final String METHOD="SCAN/KEY IN";
+    public static final String UNIT_HOLDER="PT000000000000587870";
 }
 

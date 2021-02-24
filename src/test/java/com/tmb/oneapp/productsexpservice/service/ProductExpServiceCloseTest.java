@@ -354,11 +354,33 @@ public class ProductExpServiceCloseTest {
 
     @Test
     public void testSaveActivityLogs() throws Exception {
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setProcessFlag("N");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setFundCode("TMONEY");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+        ffsRequestBody.setUnitHolderNo("PT000000000000587870");
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
                 ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                "000000000123234445444", ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-                "N");
+                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
+
+        productsExpService.logactivity(activityLogs);
+        Assert.assertNotNull(activityLogs);
+
+    }
+
+    @Test
+    public void testSaveActivityLogsNullUnit() throws Exception {
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setProcessFlag("N");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setFundCode("TMONEY");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+
+        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
+                ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
 
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);

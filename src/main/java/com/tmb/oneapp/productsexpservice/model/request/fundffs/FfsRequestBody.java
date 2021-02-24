@@ -20,4 +20,5 @@ public class FfsRequestBody {
     private String orderType;
     @NotNull
     private String crmId;
+    private String unitHolderNo;
 }

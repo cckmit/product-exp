@@ -40,6 +40,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,8 +157,11 @@ public class ProductsExpService {
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
                 List<Port> ports = mapper.readValue(portList.toString(), new TypeReference<List<Port>>() {
                 });
-
-
+                List<String> myPorts  = new ArrayList<>();
+                for(Port port : ports){
+                    myPorts.add(port.getAcctNbr());
+                }
+                result.setPortsUnitHolder(myPorts);
                 String acctNbrList = ports.stream().map(Port::<String>getAcctNbr).collect(Collectors.joining(","));
                 unitHolder.setUnitHolderNo(acctNbrList);
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter
@@ -361,15 +366,13 @@ public class ProductsExpService {
      * @param correlationId
      * @param status
      * @param failReason
-     * @param crmId
      * @param activityType
-     * @param processFlag
+     * @param ffsRequestBody
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId, String status,
                                                                   String failReason,
-                                                                  String crmId,
                                                                   String activityType,
-                                                                  String processFlag){
+                                                                  FfsRequestBody ffsRequestBody){
         ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()),
                 ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING);
         activityData.setActivityStatus(status);
@@ -377,9 +380,15 @@ public class ProductsExpService {
         activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
         activityData.setFailReason(failReason);
         activityData.setActivityType(activityType);
-        activityData.setCrmId(crmId);
-        activityData.setVerifyFlag(processFlag);
+        activityData.setCrmId(ffsRequestBody.getCrmId());
+        activityData.setVerifyFlag(ffsRequestBody.getProcessFlag());
         activityData.setReason(failReason);
+        activityData.setFundCode(ffsRequestBody.getFundCode());
+        if(!StringUtils.isEmpty(ffsRequestBody.getUnitHolderNo())){
+            activityData.setUnitHolderNo(ffsRequestBody.getFundCode());
+        }else{
+            activityData.setUnitHolderNo(ProductsExpServiceConstant.UNIT_HOLDER);
+        }
         return activityData;
     }
 

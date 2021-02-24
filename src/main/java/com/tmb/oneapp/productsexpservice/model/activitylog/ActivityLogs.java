@@ -19,5 +19,7 @@ public class ActivityLogs extends BaseEvent {
     private String reason;
     @JsonProperty("verify_flag")
     private String verifyFlag;
+    private String fundCode;
+    private String unitHolderNo;
 
 }

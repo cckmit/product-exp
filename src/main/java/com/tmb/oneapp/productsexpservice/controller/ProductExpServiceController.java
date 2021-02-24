@@ -192,8 +192,7 @@ public class ProductExpServiceController {
 
 					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
 							ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-							ffsRequestBody.getCrmId(), ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-							ffsRequestBody.getProcessFlag()));
+							 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody));
 
 					oneServiceResponse.setStatus(new TmbStatus(ffsRsAndValidation.getErrorCode(),
 							ffsRsAndValidation.getErrorMsg(),
@@ -203,8 +202,8 @@ public class ProductExpServiceController {
 				} else {
 					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
 							ProductsExpServiceConstant.SUCCESS_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_SUCCESS,
-							ffsRequestBody.getCrmId(), ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-							ffsRequestBody.getProcessFlag()));
+							ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
+							ffsRequestBody));
 
 					FfsResponse ffsResponse = new FfsResponse();
 					ffsResponse.setBody(ffsRsAndValidation.getBody());
@@ -217,8 +216,7 @@ public class ProductExpServiceController {
 			}else{
 				productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
 						ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-						ffsRequestBody.getCrmId(), ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-						ffsRequestBody.getProcessFlag()));
+						ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody));
 
 				oneServiceResponse.setData(null);
 				oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE,
