@@ -1,0 +1,167 @@
+{
+  "predicates": [
+    {
+      "equals": {
+        "method": "POST",
+        "path": "/apis/products/credit-card/statement/get-billed-statement"
+      }
+    },
+    {
+      "equals": {
+        "body": {
+          "account_id": "0000000050078680787001090",
+          "more_records": "N",
+          "search_keys": ""
+        },
+        "headers": {
+          "X-Correlation-ID": "123"
+        }
+      }
+    }
+  ],
+  "responses": [
+    {
+      "is": {
+        "statusCode": 0,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "status": {
+            "code": "0000",
+            "message": "success",
+            "service": "products-exp-service",
+            "description": "success"
+          },
+          "data": {
+            "card_statement": {
+              "total_unbilled_amounts": 0,
+              "full_payment_amounts": -54526.91,
+              "min_payment_amounts": 0,
+              "total_amount_due": 0,
+              "minimum_due": 0,
+              "interests": 16,
+              "cash_advance_fee": 0,
+              "total_cash_installment_records": 0,
+              "total_spending_installment_records": 9,
+              "due_date": "2021-12-15",
+              "statement_date": "2021-11-20",
+              "promotion_flag": "",
+              "point_earned": 28656,
+              "point_available": 0,
+              "point_remain": null,
+              "expiry_points": null,
+              "expiry_date": null,
+              "statement_transactions": [
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 3999,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-10",
+                  "mcc_code": "",
+                  "transaction_description": "TBANK RETAIL MERCHANT   BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 21142,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-13",
+                  "mcc_code": "",
+                  "transaction_description": "TBANK RETAIL MERCHANT   BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 19665,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-17",
+                  "mcc_code": "",
+                  "transaction_description": "TBANK RETAIL MERCHANT   BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 21235,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-18",
+                  "mcc_code": "",
+                  "transaction_description": "TEST TBANK MERCH        BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 12355,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-21",
+                  "mcc_code": "",
+                  "transaction_description": "TMB TOUCH* 03           BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 7654,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-23",
+                  "mcc_code": "",
+                  "transaction_description": "TEST TBANK MERCH        BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 3000,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-24",
+                  "mcc_code": "",
+                  "transaction_description": "TMB TOUCH* 03           BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 17412,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-10-26",
+                  "mcc_code": "",
+                  "transaction_description": "TMB TOUCH* 03           BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 5,
+                  "transaction_amounts": 33112,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-11-01",
+                  "mcc_code": "",
+                  "transaction_description": "TEST TBANK MERCH        BANGKOK      TH",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                },
+                {
+                  "transaction_code": 1624,
+                  "transaction_amounts": 3707.33,
+                  "posted_date": "2021-11-02",
+                  "transaction_date": "2021-11-02",
+                  "mcc_code": "",
+                  "transaction_description": "TEST TBANK MERCH        BANGKOK 002/003",
+                  "transaction_currency": "THB",
+                  "transaction_type": null
+                }
+              ]
+            },
+            "total_records": 10,
+            "max_records": 10,
+            "more_records": "N",
+            "search_keys": ""
+          }
+        }
+      }
+    }
+  ]
+}
