@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatem
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Api(tags = "Controller for build and unbilled statement")
 public class UnbilledStatementController {
+    @Autowired
     private final CreditCardClient creditCardClient;
 
 
