@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property resource="bootstrap.properties" />
-    <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+    <property name="LOGS" value="./logs" />
+	<property resource="bootstrap.properties" />
+	<appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd}T%d{HH:mm:ss}Z [${spring.application.name}] app 6 [%t][%level] %logger{36} - %X{correlationId} %m%n</pattern>
+            <pattern>%d{yyyy-MM-dd}T%d{HH:mm:ss}+07:00 ${spring.application.name} %replace(%t){'\s', ''} %level %logger{36} [%X{correlationId}] - %m%n</pattern>
         </encoder>
     </appender>
 
+    <appender name="FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd}T%d{HH:mm:ss}+07:00 ${spring.application.name} %replace(%t){'\s', ''} %level %logger{36} [%X{correlationId}] - %m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+    </appender>
+    
     <root level="info">
         <appender-ref ref="CONSOLE_APPENDER"/>
+        <appender-ref ref="FILE_APPENDER"/>
     </root>
 
 </configuration>

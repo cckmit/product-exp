@@ -237,8 +237,8 @@ public class ProductsExpService {
         if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime)){
             ffsRsAndValidation.setServiceClose(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
-            ffsRsAndValidation.setErrorMsg(investmentStartTime);
-            ffsRsAndValidation.setErrorDesc(investmentEndTime);
+            ffsRsAndValidation.setErrorMsg(UtilMap.addColonDateFormat(investmentStartTime));
+            ffsRsAndValidation.setErrorDesc(UtilMap.addColonDateFormat(investmentEndTime));
             isStoped = true;
         }
         if(!isStoped && !StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isOfShelfFund(correlationId, ffsRequestBody)){
