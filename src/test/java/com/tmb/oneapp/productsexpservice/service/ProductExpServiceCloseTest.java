@@ -430,5 +430,26 @@ public class ProductExpServiceCloseTest {
         Assert.assertFalse(fundAccountRs);
     }
 
+    @Test
+    public void addColonDateFormat() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        String  fundAccountRs = utilMap.addColonDateFormat("0600");
+        Assert.assertEquals("06:00",fundAccountRs);
+    }
+
+    @Test
+    public void addColonDateFormatStart() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        String  fundAccountRs = utilMap.addColonDateFormat("2330");
+        Assert.assertEquals("23:30",fundAccountRs);
+    }
+
+    @Test
+    public void addColonDateFormatFail() throws Exception {
+        UtilMap utilMap = new UtilMap();
+        String  fundAccountRs = utilMap.addColonDateFormat("");
+        Assert.assertEquals("",fundAccountRs);
+    }
+
 
 }

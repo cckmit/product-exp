@@ -289,5 +289,21 @@ public class UtilMap {
         }
     }
 
+    /**
+     * Generic Method to mappingResponse
+     *
+     * @param timeHHmm
+     * @return String
+     */
+    public static String addColonDateFormat(String timeHHmm){
+        String changeTime = "";
+        if(!StringUtils.isEmpty(timeHHmm)){
+           String strTime = timeHHmm.substring(0,2);
+           String endTime = timeHHmm.substring(2,4);
+           return strTime.concat(":").concat(endTime);
+        }
+        return changeTime;
+    }
+
 
 }
