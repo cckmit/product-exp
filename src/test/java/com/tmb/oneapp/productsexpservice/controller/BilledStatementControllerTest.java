@@ -34,9 +34,6 @@ public class BilledStatementControllerTest {
 
     @Mock
     CreditCardClient creditCardClient;
-    @Mock
-    TMBLogger<UnbilledStatementController> logger;
-
 
     @InjectMocks
     BilledStatementController billedStatementController;
@@ -49,8 +46,8 @@ public class BilledStatementControllerTest {
 
     }
 
-   @org.junit.jupiter.api.Test
-    void getBuildStatementDetailsSuccessTest() throws JsonProcessingException, TMBCommonException {
+   @Test
+    void getBuildStatementDetailsSuccessTest()  {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
         String accountId = "0000000050078680472000929";
 
@@ -66,7 +63,7 @@ public class BilledStatementControllerTest {
        Assertions.assertEquals(0, Objects.requireNonNull(billedStatement.getBody()).getStatus().getStatusCode());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testGetUnBilledStatement()  {
         SilverlakeStatus silverlakeStatus= new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
@@ -74,19 +71,14 @@ public class BilledStatementControllerTest {
         new BilledStatementResponse().setCardStatement(new CardStatement());
         BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
         billedStatementResponse.setStatus(silverlakeStatus);
-        when(creditCardClient.getUnBilledStatement(anyString(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
+        when(creditCardClient.getBilledStatement(anyString(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
 
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController.getBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement", "cardId", "moreRecords", "searchKeys"));
-
-        TmbOneServiceResponse<BilledStatementResponse> body = result.getBody();
-
-        BilledStatementResponse data = new BilledStatementResponse();
-        data.setStatus(silverlakeStatus);
-        assertEquals(new Integer(0),data.getStatus().getStatusCode());
+        assertEquals(200,result.getStatusCode().value());
     }
 
-    @org.junit.jupiter.api.Test
-    void getBilledStatementSuccessShouldReturnBilledStatementResponseTest() throws JsonProcessingException, TMBCommonException {
+    @Test
+    void getBilledStatementSuccessShouldReturnBilledStatementResponseTest()  {
         String correlationId = "123";
         String accountId = "0000000050078680472000929";
 
