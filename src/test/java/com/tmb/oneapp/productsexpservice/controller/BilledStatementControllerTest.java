@@ -49,6 +49,22 @@ public class BilledStatementControllerTest {
 
     }
 
+   @org.junit.jupiter.api.Test
+    void getBuildStatementDetailsSuccessTest() throws JsonProcessingException, TMBCommonException {
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        String accountId = "0000000050078680472000929";
+
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(0);
+
+        BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
+        billedStatementResponse.setStatus(silverlakeStatus);
+        Mockito.when(creditCardClient.getBilledStatement(correlationId,accountId)).thenReturn(new ResponseEntity(billedStatementResponse,HttpStatus.OK ));
+
+       ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatement(correlationId, accountId);
+
+       Assertions.assertEquals(0, Objects.requireNonNull(billedStatement.getBody()).getStatus().getStatusCode());
+    }
 
     @org.junit.jupiter.api.Test
     public void testGetUnBilledStatement()  {
@@ -69,7 +85,29 @@ public class BilledStatementControllerTest {
         assertEquals(new Integer(0),data.getStatus().getStatusCode());
     }
 
-  
+    @org.junit.jupiter.api.Test
+    void getBilledStatementSuccessShouldReturnBilledStatementResponseTest() throws JsonProcessingException, TMBCommonException {
+        String correlationId = "123";
+        String accountId = "0000000050078680472000929";
+
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(0);
+        BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
+        setCreditLimitResp.setStatus(silverlakeStatus);
+        setCreditLimitResp.setTotalRecords(10);
+        setCreditLimitResp.setMaxRecords(100);
+        setCreditLimitResp.setMoreRecords("100");
+        setCreditLimitResp.setSearchKeys("N");
+        CardStatement cardStatement = new CardStatement();
+        cardStatement.setPromotionFlag("Y");
+        setCreditLimitResp.setCardStatement(cardStatement);
+        ResponseEntity<BilledStatementResponse> value = new ResponseEntity<>(setCreditLimitResp,HttpStatus.OK);
+
+        Mockito.when(creditCardClient.getBilledStatement(any(),any())).thenReturn(value);
+
+        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatement(correlationId, accountId);
+        assertEquals(200, billedStatement.getStatusCode().value());
+    }
 
     @Test
     public void testHandlingFailedResponse()  {

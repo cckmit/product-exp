@@ -57,7 +57,7 @@ public class BilledStatementController {
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK
                         && billedStatementRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
 
-                    return handlingResponseData(response,
+                    return handlingResponseData(billedStatementRes, response,
                          responseHeaders);
 
                 } else {
@@ -96,13 +96,11 @@ public class BilledStatementController {
      * @return
      */
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> handlingResponseData(
-
+            ResponseEntity<BilledStatementResponse> billedStatementRes,
             TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse,
             HttpHeaders responseHeaders) {
 
-        BilledStatementResponse response = new BilledStatementResponse();
-
-
+        BilledStatementResponse response = billedStatementRes.getBody();
 
             String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
                     : ProductsExpServiceConstant.EMPTY;
