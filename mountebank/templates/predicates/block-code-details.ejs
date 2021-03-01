@@ -1,0 +1,43 @@
+{
+    "predicates": [
+        {
+            "equals": {
+                "method": "POST",
+                "path": "/apis/products/credit-card/block-card"
+            }
+        },
+        {
+            "equals": {
+                "body": {
+           			"account_id": "0000000000012017890000383",
+                    "block_reason":"L"
+                },
+                "headers": {
+                    "X-Correlation-ID": "true"
+                }
+            }
+        }
+    ],
+    "responses": [
+        {
+            "is": {
+                "statusCode": 200,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "status": {
+                        "code": "0000",
+                        "message": "success",
+                        "service": "products-exp-service",
+                        "description": "success"
+                    },
+                    "data": {
+                    "date": "3/01/2021",
+             		 "txnId": "1234567654354546656456"
+                    }
+                }
+            }
+        }
+    ]
+}
