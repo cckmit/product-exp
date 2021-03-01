@@ -6,8 +6,8 @@
      <% include predicates/set-credit-limit.ejs %>,
      <% include predicates/fetch-reason-list.ejs %>,
      <% include predicates/fetch-card-details.ejs %>,
-
-    {
+     <% include predicates/block-code-details.ejs %>,
+     {
        "responses": [{
          "proxy": {
            "to": "http://localhost",
