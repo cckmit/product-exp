@@ -75,7 +75,7 @@ public class UnbilledStatementController {
             }
 
         } catch (Exception ex) {
-            logger.error("Unable to fetch verify block code and get card details : {}", ex);
+            logger.error("Unable to fetch unbilled statement for this accountId : {}", ex);
             oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
                     ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
 
@@ -84,12 +84,23 @@ public class UnbilledStatementController {
         return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
     }
 
+    /**
+     * @param oneServiceResponse
+     * @param responseHeaders
+     * @return
+     */
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> handlingFailedResponse(
             TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse, HttpHeaders responseHeaders) {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService()));
         return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
     }
+    /**
+     * @param response
+     * @param oneServiceResponse
+     * @param responseHeaders
+     * @return
+     */
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> handlingResponseData(
            ResponseEntity <BilledStatementResponse> response,
             TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse,

@@ -42,7 +42,7 @@ public class BilledStatementController {
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getBilledStatement(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody GetBilledStatementQuery requestBody)  {
-        logger.info("Get Verify Cvv Details for correlationId: {}", correlationId);
+        logger.info("Get billed statement for correlation id: {}", correlationId);
         TmbOneServiceResponse<BilledStatementResponse> response = new TmbOneServiceResponse<>();
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -69,7 +69,7 @@ public class BilledStatementController {
             }
 
         } catch (Exception ex) {
-            logger.error("Unable to fetch verify block code and get card details : {}", ex);
+            logger.error("Unable to fetch billed statement for this account ID: {}", ex);
             response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
                     ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
 
@@ -78,6 +78,11 @@ public class BilledStatementController {
         return ResponseEntity.badRequest().headers(responseHeaders).body(response);
     }
 
+    /**
+     * @param oneServiceResponse
+     * @param responseHeaders
+     * @return
+     */
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> handlingFailedResponse(
             TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse, HttpHeaders responseHeaders) {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
@@ -85,6 +90,11 @@ public class BilledStatementController {
         return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
     }
 
+    /**
+     * @param oneServiceResponse
+     * @param responseHeaders
+     * @return
+     */
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> handlingResponseData(
 
             TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse,
