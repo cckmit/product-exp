@@ -163,7 +163,7 @@ public class ProductExpServiceCloseTest {
         }
 
         boolean isBusClose = productsExpService.isBusinessClose(corrID, ffsRequestBody);
-        Assert.assertEquals(false, isBusClose);
+        Assert.assertEquals(true, isBusClose);
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
