@@ -1,0 +1,76 @@
+{
+  "predicates": [
+    {
+      "equals": {
+        "method": "POST",
+        "path": "/apis/products/credit-card/statement/get-unbilled-statement"
+      }
+    },
+    {
+      "equals": {
+        "body": {
+          "account_id": "0000000050078680787001090",
+          "more_records": "N",
+          "search_keys": ""
+        },
+        "headers": {
+          "X-Correlation-ID": "123"
+        }
+      }
+    }
+  ],
+  "responses": [
+    {
+      "is": {
+        "statusCode": 0,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "status": {
+            "code": "0000",
+            "message": "success",
+            "service": "products-exp-service",
+            "description": "success"
+          },
+          "data": {
+            "card_statement": {
+              "total_unbilled_amounts": 30400.00,
+              "full_payment_amounts": 0.00,
+              "min_payment_amounts": 0.00,
+              "total_amount_due": 0.00,
+              "minimum_due": 0.00,
+              "interests": 0.000,
+              "cash_advance_fee": 0.00,
+              "total_cash_installment_records": 0,
+              "total_spending_installment_records": 0,
+              "due_date": "0000-00-00",
+              "statement_date": "2022-04-20",
+              "promotion_flag": "",
+              "point_available": 0.00,
+              "statement_transactions": [
+                {
+                  "transaction_code": 0,
+                  "transaction_amounts": 0.00,
+                  "posted_date": "",
+                  "transaction_type": "",
+                  "transaction_date": "",
+                  "mcc_code": "",
+                  "transaction_description": "",
+                  "transaction_currency": ""
+                }
+              ],
+              "point_remain": 0.00,
+              "expiry_date": "",
+              "expiry_points": 0.00
+            },
+            "total_records": 0,
+            "max_records": 1,
+            "more_records": "N",
+            "search_keys": ""
+          }
+        }
+      }
+    }
+  ]
+}
