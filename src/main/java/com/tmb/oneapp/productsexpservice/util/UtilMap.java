@@ -321,7 +321,6 @@ public class UtilMap {
                     FundList fundList = fundHouse.getFundList();
                     List<Fund> fund = fundList.getFund();
                     fundHouse.setFund(fund);
-                  //  fundHouse.setFundList(null);
                 }
                 fundClassData.add(fundClassLoop);
             }
