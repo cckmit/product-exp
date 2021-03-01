@@ -1,10 +1,13 @@
 package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary;
 
-import lombok.Data;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundClassList {
     private List<FundClass> fundClass;
 }

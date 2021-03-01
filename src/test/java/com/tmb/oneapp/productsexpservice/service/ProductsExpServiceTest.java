@@ -70,10 +70,8 @@ public class ProductsExpServiceTest {
         }
         FundSummaryBody result = productsExpService.getFundSummary(corrID,rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
-                .getFundClass().size(),result.getFundClassList().getFundClass().size());
+                .getFundClass().size(),result.getFundClass().size());
     }
-
-
 
 }
 
