@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
@@ -303,6 +304,68 @@ public class UtilMap {
            return strTime.concat(":").concat(endTime);
         }
         return changeTime;
+    }
+
+    /**
+     * Generic Method to mappingResponse
+     *
+     * @param fundClass
+     * @return List<FundClass>
+     */
+    public static List<FundClass> mappingFundListData(List<FundClass> fundClass){
+        List<FundClass> fundClassData = new ArrayList<>();
+        try {
+            for (FundClass fundClassLoop : fundClass) {
+                List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
+                for (FundHouse fundHouse : fundHouseList) {
+                    FundList fundList = fundHouse.getFundList();
+                    List<Fund> fund = fundList.getFund();
+                    fundHouse.setFund(fund);
+                  //  fundHouse.setFundList(null);
+                }
+                fundClassData.add(fundClassLoop);
+            }
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+        }
+        return fundClassData;
+    }
+
+    /**
+     * Generic Method to mappingResponse
+     *
+     * @param fundClass
+     * @return List<FundSearch>
+     */
+    public static List<FundSearch>  mappingFundSearchListData(List<FundClass> fundClass){
+        List<FundSearch> searchList = new ArrayList<>();
+        FundSearch fundSearch = null;
+        try {
+            for (FundClass fundClassLoop : fundClass) {
+                List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
+                for (FundHouse fundHouse : fundHouseList) {
+                    fundSearch = new FundSearch();
+                    fundSearch.setFundCode(fundHouse.getFundHouseCode());
+                    FundList fundList = fundHouse.getFundList();
+                    List<Fund> fund = fundList.getFund();
+                    fundHouse.setFund(fund);
+                    for (Fund fundLoop : fundHouse.getFundList().getFund()) {
+                        fundSearch.setFundShortName(fundLoop.getFundShortName());
+                        fundSearch.setFundNameEN(fundLoop.getFundNameEN());
+                        fundSearch.setFundNameTH(fundLoop.getFundNameTH());
+                        fundSearch.setFundNickNameEN(fundLoop.getFundNickNameEN());
+                        fundSearch.setFundNickNameTH(fundLoop.getFundNickNameTH());
+                        fundSearch.setFundCode(fundLoop.getFundCode());
+                        fundSearch.setPortfolioNumber(fundLoop.getPortfolioNumber());
+                    }
+                    fundHouse.setFundList(null);
+                    searchList.add(fundSearch);
+                }
+            }
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+        }
+        return searchList;
     }
 
 

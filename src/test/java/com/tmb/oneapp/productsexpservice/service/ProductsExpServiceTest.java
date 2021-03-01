@@ -73,7 +73,5 @@ public class ProductsExpServiceTest {
                 .getFundClass().size(),result.getFundClass().size());
     }
 
-
-
 }
 

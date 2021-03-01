@@ -169,38 +169,14 @@ public class ProductsExpService {
                 if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                     var body = fundSummaryData.getBody();
                     if (body != null) {
-                        List<FundSearch> searchList = new ArrayList<>();
-                        FundSearch fundSearch = null;
-                        FundClassList fundClassListData = new FundClassList();
                         FundClassList fundClassList = body.getData().getBody().getFundClassList();
                         List<FundClass> fundClass = fundClassList.getFundClass();
-                        List<FundClass> fundClassData = new ArrayList<>();
-                        for(FundClass fundClassLoop : fundClass){
-                            List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
-                            for(FundHouse fundHouse : fundHouseList){
-                                fundSearch = new FundSearch();
-                                fundSearch.setFundCode(fundHouse.getFundHouseCode());
-                                FundList fundList = fundHouse.getFundList();
-                                List<Fund> fund = fundList.getFund();
-                                fundHouse.setFund(fund);
-                                for(Fund fundLoop : fundHouse.getFundList().getFund()){
-                                    fundSearch.setFundShortName(fundLoop.getFundShortName());
-                                    fundSearch.setFundNameEN(fundLoop.getFundNameEN());
-                                    fundSearch.setFundNameTH(fundLoop.getFundNameTH());
-                                    fundSearch.setFundNickNameEN(fundLoop.getFundNickNameEN());
-                                    fundSearch.setFundNickNameTH(fundLoop.getFundNickNameTH());
-                                    fundSearch.setFundCode(fundLoop.getFundCode());
-                                    fundSearch.setPortfolioNumber(fundLoop.getPortfolioNumber());
-                                }
-                                fundHouse.setFundList(null);
-                                searchList.add(fundSearch);
-                            }
-                            fundClassData.add(fundClassLoop);
-                        }
-                        fundClassListData.setFundClass(null);
+                        List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
+                        List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
+
                         result.setFundClass(fundClassData);
                         result.setSearchList(searchList);
-                        result.setFundClassList(fundClassListData);
+                        result.setFundClassList(null);
                         result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
                         result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
                         result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
