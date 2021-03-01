@@ -1,25 +1,15 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
+import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @FeignClient(name = "${feign.creditcard.service.name}", url = "${feign.creditcard.service.url}")
 public interface CreditCardClient {
@@ -46,5 +36,15 @@ public interface CreditCardClient {
 	@GetMapping(value = "/apis/creditcard/credit-card/fetch-reason-list")
 	public ResponseEntity<TmbOneServiceResponse<List<Reason>>>  getReasonList(
 			@RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId);
+
+	@GetMapping(value = "/apis/creditcard/creditcard-billed-statement/{ACCOUNT_ID}")
+	public ResponseEntity<BilledStatementResponse> getBilledStatement(
+			 @RequestHeader("X-Correlation-ID") String correlationId,
+			 @PathVariable(value = "ACCOUNT_ID") String accountId);
+
+	@GetMapping(value = "/apis/creditcard/creditcard-unbilled-statement/{ACCOUNT_ID}")
+	public ResponseEntity<BilledStatementResponse> getUnBilledStatement(
+			@RequestHeader("X-Correlation-ID") String correlationId,
+			@PathVariable(value = "ACCOUNT_ID") String accountId);
 
 }
