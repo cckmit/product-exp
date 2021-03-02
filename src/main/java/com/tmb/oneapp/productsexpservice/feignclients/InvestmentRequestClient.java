@@ -64,8 +64,7 @@ public interface InvestmentRequestClient {
      * @return the fund summary response
      */
     @GetMapping(value = "${investment.service.fund.holiday.url}")
-    public ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> callInvestmentFundHolidayService(@RequestHeader Map<String, String> headers
-            , @PathVariable("fundCode") String fundCode);
+    public ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> callInvestmentFundHolidayService(@RequestHeader Map<String, String> headers, @PathVariable("fundCode") String fundCode);
 
 
     /**
