@@ -96,6 +96,11 @@ public class CreditCardController {
 							responseHeaders);
 
 				} else {
+
+					creditCardEvent = creditCardLogService.callVerifyCardNoEvent(creditCardEvent, requestHeadersParameter);
+
+					/*  Activity log */
+					creditCardLogService.logActivity(creditCardEvent);
 					return this.handlingFailedResponse(oneServiceResponse, responseHeaders);
 				}
 
@@ -167,6 +172,7 @@ public class CreditCardController {
 	 */
 	public ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> handlingFailedResponse(
 			TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse, HttpHeaders responseHeaders) {
+
 		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 				ResponseCode.FAILED.getService()));
 		return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
