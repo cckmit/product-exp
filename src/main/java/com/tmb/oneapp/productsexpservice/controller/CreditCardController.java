@@ -116,10 +116,6 @@ public class CreditCardController {
 			}
 
 		} catch (Exception ex) {
-			/*  Activity log */
-			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-			creditCardLogService.logActivity(creditCardEvent);
-			creditCardEvent.setFailReason(ex.getMessage());
 			logger.error("Unable to fetch verify block code and get card details : {}", ex);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
 					ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
