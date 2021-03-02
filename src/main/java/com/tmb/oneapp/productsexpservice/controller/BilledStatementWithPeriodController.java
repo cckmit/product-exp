@@ -102,26 +102,26 @@ public class BilledStatementWithPeriodController {
             TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse,
             HttpHeaders responseHeaders) {
 
-        BilledStatementResponse response = billedStatementRes.getBody();
+        BilledStatementResponse billedStatementResponse = billedStatementRes.getBody();
 
-        String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
+        String moreRecords = billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getMoreRecords()
                 : ProductsExpServiceConstant.EMPTY;
-        String searchKeys = response.getCardStatement() != null
-                ? response.getSearchKeys()
+        String searchKeys = billedStatementResponse.getCardStatement() != null
+                ? billedStatementResponse.getSearchKeys()
                 : ProductsExpServiceConstant.EMPTY;
-        Integer totalRecords =response.getCardStatement() != null ? response.getTotalRecords()
+        Integer totalRecords =billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getTotalRecords()
                 : ProductsExpServiceConstant.ZERO;
-        Integer maxRecords =response.getCardStatement() != null ? response.getMaxRecords()
+        Integer maxRecords =billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getMaxRecords()
                 : ProductsExpServiceConstant.ZERO;
-        CardStatement cardStatement =response.getCardStatement();
-        response.setCardStatement(cardStatement);
-        response.setMaxRecords(maxRecords);
-        response.setMoreRecords(moreRecords);
-        response.setSearchKeys(searchKeys);
-        response.setTotalRecords(totalRecords);
+        CardStatement cardStatement =billedStatementResponse.getCardStatement();
+        billedStatementResponse.setCardStatement(cardStatement);
+        billedStatementResponse.setMaxRecords(maxRecords);
+        billedStatementResponse.setMoreRecords(moreRecords);
+        billedStatementResponse.setSearchKeys(searchKeys);
+        billedStatementResponse.setTotalRecords(totalRecords);
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-        oneServiceResponse.setData(response);
+        oneServiceResponse.setData(billedStatementResponse);
         return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
     }
 
