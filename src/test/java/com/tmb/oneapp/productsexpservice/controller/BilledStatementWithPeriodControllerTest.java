@@ -1,7 +1,5 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -11,6 +9,7 @@ import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatem
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,60 +25,68 @@ import org.springframework.http.ResponseEntity;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 @RunWith(JUnit4.class)
-public class BilledStatementControllerTest {
+public class BilledStatementWithPeriodControllerTest {
 
     @Mock
     CreditCardClient creditCardClient;
 
     @InjectMocks
-    BilledStatementController billedStatementController;
-
+    BilledStatementWithPeriodController billedStatementWithPeriodController;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-        billedStatementController = new BilledStatementController(creditCardClient);
+        billedStatementWithPeriodController = new BilledStatementWithPeriodController(creditCardClient);
 
     }
 
-   @Test
-    void getBuildStatementDetailsSuccessTest()  {
+    @Test
+    void getBilledStatementWithPeriodDetailsSuccessTest()  {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
         String accountId = "0000000050078680472000929";
 
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
-
+        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929","1","Y","");
         BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
         billedStatementResponse.setStatus(silverlakeStatus);
-        Mockito.when(creditCardClient.getBilledStatement(correlationId,accountId)).thenReturn(new ResponseEntity(billedStatementResponse,HttpStatus.OK ));
+        Mockito.when(creditCardClient.getBilledStatementWithPeriod(correlationId,accountId,billedStatementQuery)).thenReturn(new ResponseEntity(billedStatementResponse, HttpStatus.OK ));
 
-       ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatement(correlationId, accountId);
+        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId,billedStatementQuery);
 
-       Assertions.assertEquals(0, Objects.requireNonNull(billedStatement.getBody()).getStatus().getStatusCode());
+        Assertions.assertEquals(0, Objects.requireNonNull(billedStatement.getBody()).getStatus().getStatusCode());
     }
 
-   @Test
-   public void testGetBilledStatement()  {
-       SilverlakeStatus silverlakeStatus= new SilverlakeStatus();
-       silverlakeStatus.setStatusCode(0);
-        new BilledStatementResponse().setStatus(silverlakeStatus);
-       new BilledStatementResponse().setCardStatement(new CardStatement());
-       BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
-       billedStatementResponse.setStatus(silverlakeStatus);
-      when(creditCardClient.getBilledStatement(any(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController.getBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement", "moreRecords", "searchKeys"));
-       assertEquals(200,result.getStatusCode().value());
-   }
-
     @Test
+    public void testGetBilledStatement()  {
+        SilverlakeStatus silverlakeStatus= new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(0);
+        new BilledStatementResponse().setStatus(silverlakeStatus);
+        new BilledStatementResponse().setCardStatement(new CardStatement());
+        BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
+        billedStatementResponse.setStatus(silverlakeStatus);
+        billedStatementResponse.setMoreRecords("Y");
+        billedStatementResponse.setSearchKeys("N");
+        billedStatementResponse.setTotalRecords(10);
+        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery();
+        billedStatementQuery.setPeriodStatement("2");
+        billedStatementQuery.setSearchKeys("N");
+        billedStatementQuery.setMoreRecords("Y");
+        billedStatementQuery.setAccountId("0000000050078680472000929");
+        when(creditCardClient.getBilledStatementWithPeriod(anyString(), anyString(),any())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController.getBilledStatementWithPeriod("32fbd3b2-3f97-4a89-ar39-b4f628fbc8da",billedStatementQuery);
+        assertEquals(200,result.getStatusCode().value());
+    }
+
+    @org.junit.jupiter.api.Test
     void getBilledStatementSuccessShouldReturnBilledStatementResponseTest()  {
         String correlationId = "123";
+
         String accountId = "0000000050078680472000929";
+        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929","1","Y","");
 
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
@@ -94,9 +101,9 @@ public class BilledStatementControllerTest {
         setCreditLimitResp.setCardStatement(cardStatement);
         ResponseEntity<BilledStatementResponse> value = new ResponseEntity<>(setCreditLimitResp,HttpStatus.OK);
 
-        Mockito.when(creditCardClient.getBilledStatement(any(),any())).thenReturn(value);
+        Mockito.when(creditCardClient.getBilledStatementWithPeriod(any(),any(),any())).thenReturn(value);
 
-        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatement(correlationId, accountId);
+        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId,billedStatementQuery);
         assertEquals(200, billedStatement.getStatusCode().value());
     }
 
@@ -117,9 +124,9 @@ public class BilledStatementControllerTest {
         oneServiceResponse.setData(setCreditLimitResp);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
-        when(creditCardClient.getUnBilledStatement(any(),any())).thenThrow(new
+        when(creditCardClient.getBilledStatementWithPeriod(any(),any(),any())).thenThrow(new
                 IllegalStateException("Error occurred"));
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController
                 .handlingFailedResponse(oneServiceResponse,responseHeaders);
 
         Assert.assertEquals("0001", result.getBody().getStatus().getCode());

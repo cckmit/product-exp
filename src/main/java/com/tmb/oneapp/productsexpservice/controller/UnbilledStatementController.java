@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@Api(tags = "Controller for build and unbilled statement")
+@Api(tags = "Controller for unbilled statement")
 public class UnbilledStatementController {
     @Autowired
     private final CreditCardClient creditCardClient;
@@ -35,11 +35,11 @@ public class UnbilledStatementController {
             UnbilledStatementController.class);
 
     public UnbilledStatementController(CreditCardClient creditCardClient) {
-        this.creditCardClient = creditCardClient;
+        this.creditCardClient = creditCardClient; 
     }
 
     @LogAround
-    @ApiOperation(value = "get billed statement ")
+    @ApiOperation(value = "get unbilled statement ")
     @PostMapping(value = "credit-card/statement/get-unbilled-statement")
     @ApiImplicitParams({
             @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
