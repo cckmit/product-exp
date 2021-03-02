@@ -63,19 +63,18 @@ public class BilledStatementControllerTest {
        Assertions.assertEquals(0, Objects.requireNonNull(billedStatement.getBody()).getStatus().getStatusCode());
     }
 
-    @Test
-    public void testGetUnBilledStatement()  {
-        SilverlakeStatus silverlakeStatus= new SilverlakeStatus();
-        silverlakeStatus.setStatusCode(0);
+   @Test
+   public void testGetBilledStatement()  {
+       SilverlakeStatus silverlakeStatus= new SilverlakeStatus();
+       silverlakeStatus.setStatusCode(0);
         new BilledStatementResponse().setStatus(silverlakeStatus);
-        new BilledStatementResponse().setCardStatement(new CardStatement());
-        BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
-        billedStatementResponse.setStatus(silverlakeStatus);
-        when(creditCardClient.getBilledStatement(anyString(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
-
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController.getBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement", "cardId", "moreRecords", "searchKeys"));
-        assertEquals(200,result.getStatusCode().value());
-    }
+       new BilledStatementResponse().setCardStatement(new CardStatement());
+       BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
+       billedStatementResponse.setStatus(silverlakeStatus);
+      when(creditCardClient.getBilledStatement(any(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController.getBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement", "moreRecords", "searchKeys"));
+       assertEquals(200,result.getStatusCode().value());
+   }
 
     @Test
     void getBilledStatementSuccessShouldReturnBilledStatementResponseTest()  {

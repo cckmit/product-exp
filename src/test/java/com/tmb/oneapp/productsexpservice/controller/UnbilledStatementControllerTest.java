@@ -64,16 +64,16 @@ public class UnbilledStatementControllerTest {
     }
 
     @Test
-    public void testGetUnBilledStatement()  {
+    public void testGetUnBilledStatement()  {       
         SilverlakeStatus silverlakeStatus= new SilverlakeStatus();
-        silverlakeStatus.setStatusCode(0);
+       silverlakeStatus.setStatusCode(0);
         new BilledStatementResponse().setStatus(silverlakeStatus);
         new BilledStatementResponse().setCardStatement(new CardStatement());
         BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
-        billedStatementResponse.setStatus(silverlakeStatus);
-        when(creditCardClient.getUnBilledStatement(anyString(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
+       billedStatementResponse.setStatus(silverlakeStatus);
+       when(creditCardClient.getUnBilledStatement(anyString(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
 
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.getUnBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement", "cardId", "moreRecords", "searchKeys"));
+       ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.getUnBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement","moreRecords", "searchKeys"));
 
         assertEquals(200,result.getStatusCode().value());
     }
