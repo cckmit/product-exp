@@ -76,15 +76,16 @@ public class CreditCardController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VERIFY_CARD_NO;
+		String activityDate = Long.toString(System.currentTimeMillis());
+		CreditCardEvent creditCardEvent = new CreditCardEvent(requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate, activityId);
 		try {
 			String accountId = requestHeadersParameter.get(ProductsExpServiceConstant.ACCOUNT_ID);
 			String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 			if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)) {
 				ResponseEntity<GetCardBlockCodeResponse> blockCodeRes = creditCardClient
 						.getCardBlockCode(correlationId, accountId);
-				String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VERIFY_CARD_NO;
-				String activityDate = Long.toString(System.currentTimeMillis());
-				CreditCardEvent creditCardEvent = new CreditCardEvent(requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate, activityId);
+
 				creditCardEvent = creditCardLogService.callVerifyCardNoEvent(creditCardEvent, requestHeadersParameter);
 
 				/*  Activity log */
@@ -96,15 +97,18 @@ public class CreditCardController {
 							responseHeaders);
 
 				} else {
-
 					creditCardEvent = creditCardLogService.callVerifyCardNoEvent(creditCardEvent, requestHeadersParameter);
-
+					creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
 					/*  Activity log */
 					creditCardLogService.logActivity(creditCardEvent);
 					return this.handlingFailedResponse(oneServiceResponse, responseHeaders);
 				}
 
 			} else {
+				creditCardEvent = creditCardLogService.callVerifyCardNoEvent(creditCardEvent, requestHeadersParameter);
+                creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+				/*  Activity log */
+				creditCardLogService.logActivity(creditCardEvent);
 				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
 						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
 						ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
@@ -112,6 +116,10 @@ public class CreditCardController {
 			}
 
 		} catch (Exception ex) {
+			/*  Activity log */
+			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+			creditCardLogService.logActivity(creditCardEvent);
+			creditCardEvent.setFailReason(ex.getMessage());
 			logger.error("Unable to fetch verify block code and get card details : {}", ex);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
 					ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
