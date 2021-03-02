@@ -1,5 +1,13 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.google.common.base.Strings;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -11,54 +19,48 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
-import io.swagger.annotations.*;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
-@Api(tags = "Controller for billed statement")
-public class BilledStatementController {
-
+@Api(tags = "Controller for getting billed statement with period")
+public class BilledStatementWithPeriodController {
     private final CreditCardClient creditCardClient;
-    private static final TMBLogger<BilledStatementController> logger = new TMBLogger<>(
-            BilledStatementController.class);
+    private static final TMBLogger<BilledStatementWithPeriodController> logger = new TMBLogger<>(
+            BilledStatementWithPeriodController.class);
 
-    public BilledStatementController(CreditCardClient creditCardClient) {
+    public BilledStatementWithPeriodController(CreditCardClient creditCardClient) {
         this.creditCardClient = creditCardClient;
     }
-
     @LogAround
-    @ApiOperation(value = "get billed statement ")
-    @PostMapping(value = "credit-card/statement/get-billed-statement")
+    @ApiOperation(value = "get billed statement with period")
+    @PostMapping(value = "/creditcard-billed-statement-period")
     @ApiImplicitParams({
             @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
     })
-    public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getBilledStatement(
+    public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getBilledStatementWithPeriod(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody GetBilledStatementQuery requestBody)  {
         logger.info("Get billed statement for correlation id: {}", correlationId);
         TmbOneServiceResponse<BilledStatementResponse> response = new TmbOneServiceResponse<>();
 
         HttpHeaders responseHeaders = new HttpHeaders();
+        logger.info("Get creditcard-billed-statement for period for correlation-ID: {}", correlationId);
+
         try {
-            String accountId = requestBody.getAccountId();
 
-            if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)) {
-                ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient
-                       .getBilledStatement(correlationId,accountId);
-
+            if (requestBody !=null && !Strings.isNullOrEmpty(requestBody.getAccountId()) && !Strings.isNullOrEmpty(correlationId)) {
+                ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient.getBilledStatementWithPeriod(correlationId,requestBody.getAccountId(),requestBody);
 
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK
                         && billedStatementRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
 
                     return handlingResponseData(billedStatementRes, response,
-                         responseHeaders);
+                            responseHeaders);
 
                 } else {
                     return this.handlingFailedResponse(response, responseHeaders);
@@ -102,26 +104,26 @@ public class BilledStatementController {
 
         BilledStatementResponse response = billedStatementRes.getBody();
 
-            String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
-                    : ProductsExpServiceConstant.EMPTY;
-            String searchKeys = response.getCardStatement() != null
-                    ? response.getSearchKeys()
-                    : ProductsExpServiceConstant.EMPTY;
-            Integer totalRecords =response.getCardStatement() != null ? response.getTotalRecords()
-                    : ProductsExpServiceConstant.ZERO;
-            Integer maxRecords =response.getCardStatement() != null ? response.getMaxRecords()
-                    : ProductsExpServiceConstant.ZERO;
-            CardStatement cardStatement =response.getCardStatement();
-            response.setCardStatement(cardStatement);
-            response.setMaxRecords(maxRecords);
-            response.setMoreRecords(moreRecords);
-            response.setSearchKeys(searchKeys);
-            response.setTotalRecords(totalRecords);
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-            oneServiceResponse.setData(response);
-            return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-        }
-
+        String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
+                : ProductsExpServiceConstant.EMPTY;
+        String searchKeys = response.getCardStatement() != null
+                ? response.getSearchKeys()
+                : ProductsExpServiceConstant.EMPTY;
+        Integer totalRecords =response.getCardStatement() != null ? response.getTotalRecords()
+                : ProductsExpServiceConstant.ZERO;
+        Integer maxRecords =response.getCardStatement() != null ? response.getMaxRecords()
+                : ProductsExpServiceConstant.ZERO;
+        CardStatement cardStatement =response.getCardStatement();
+        response.setCardStatement(cardStatement);
+        response.setMaxRecords(maxRecords);
+        response.setMoreRecords(moreRecords);
+        response.setSearchKeys(searchKeys);
+        response.setTotalRecords(totalRecords);
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        oneServiceResponse.setData(response);
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
     }
+
+}
 
