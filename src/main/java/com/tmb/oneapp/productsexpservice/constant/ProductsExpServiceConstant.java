@@ -115,5 +115,12 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_CARD_ACTIVATION="00700103";
     public static final String METHOD="SCAN/KEY IN";
     public static final String UNIT_HOLDER="PT000000000000587870";
+
+    public static final String SERVICE_TYPE_ID_CST="CST";
+    public static final String CASE_STATUS_IN_PROGRESS="In Progress";
+    public static final String CASE_STATUS_CLOSED="Closed";
+
+    public static final int ERROR_CODE_404 = 404;
+
 }
 
