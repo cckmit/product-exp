@@ -118,6 +118,14 @@ class CaseServiceTest {
     }
 
     @Test
+    void getCaseStatus() {
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
+                .thenThrow(new IllegalArgumentException());
+
+        assertThrows(TMBCommonException.class, () -> caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST"));
+    }
+
+    @Test
     void getFirstTimeUsage_generalException() {
         Request request = Request.create(Request.HttpMethod.GET,
                 "",

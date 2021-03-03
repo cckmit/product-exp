@@ -37,39 +37,48 @@ public class CaseService {
      */
     public CaseStatusResponse getCaseStatus(String correlationId, String crmId, String deviceId, String serviceTypeId) throws TMBCommonException {
 
-        //GET /apis/customers/firstTimeUsage
-        logger.info("Calling GET /apis/customers/firstTimeUsage.");
-        CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId, serviceTypeId);
-        logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
+        try {
+            //GET /apis/customers/firstTimeUsage
+            logger.info("Calling GET /apis/customers/firstTimeUsage.");
+            CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId, serviceTypeId);
+            logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
 
-        //POST /apis/customers/firstTimeUsage
-        if (null == customerFirstUsage) {
-            logger.info("Calling POST /apis/customers/firstTimeUsage.");
-            asyncPostFirstTime(crmId, deviceId, serviceTypeId);
+            //POST /apis/customers/firstTimeUsage
+            if (customerFirstUsage == null) {
+                logger.info("Calling POST /apis/customers/firstTimeUsage.");
+                asyncPostFirstTime(crmId, deviceId, serviceTypeId);
+            }
+
+            //GET /apis/customer/case/status/{CRM_ID}.
+            logger.info("Calling GET /apis/customer/case/status/{CRM_ID}");
+            List<CaseStatusCase> caseStatusList = getCaseStatus(correlationId, crmId);
+            logger.info("GET /apis/customer/case/status/{CRM_ID} response: {}", caseStatusList);
+
+            //Separate According to Status
+            List<CaseStatusCase> inProgress = new ArrayList<>();
+            List<CaseStatusCase> completed = new ArrayList<>();
+
+            caseStatusList.forEach(caseStatusCase -> {
+                if (caseStatusCase.getStatus().equals(CASE_STATUS_IN_PROGRESS)) {
+                    inProgress.add(caseStatusCase);
+                } else if (caseStatusCase.getStatus().equals(CASE_STATUS_CLOSED)) {
+                    completed.add(caseStatusCase);
+                }
+            });
+
+            return new CaseStatusResponse()
+                    .setServiceTypeId(serviceTypeId)
+                    .setFirstUsageExperience(customerFirstUsage == null)
+                    .setInProgress(inProgress)
+                    .setCompleted(completed);
+
+        } catch (Exception e) {
+            logger.error("Error calling GET /case/status : {}", e);
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
 
-        //GET /apis/customer/case/status/{CRM_ID}.
-        logger.info("Calling GET /apis/customer/case/status/{CRM_ID}");
-        List<CaseStatusCase> caseStatusList = getCaseStatus(correlationId, crmId);
-        logger.info("GET /apis/customer/case/status/{CRM_ID} response: {}", caseStatusList);
-
-        //Separate According to Status
-        List<CaseStatusCase> inProgress = new ArrayList<>();
-        List<CaseStatusCase> completed = new ArrayList<>();
-
-        caseStatusList.forEach(caseStatusCase -> {
-            if (caseStatusCase.getStatus().equals(CASE_STATUS_IN_PROGRESS)) {
-                inProgress.add(caseStatusCase);
-            } else if (caseStatusCase.getStatus().equals(CASE_STATUS_CLOSED)) {
-                completed.add(caseStatusCase);
-            }
-        });
-
-        return new CaseStatusResponse()
-                .setServiceTypeId(serviceTypeId)
-                .setFirstUsageExperience(null == customerFirstUsage)
-                .setInProgress(inProgress)
-                .setCompleted(completed);
     }
 
     /**
@@ -92,7 +101,7 @@ public class CaseService {
             }
             return null;
         } catch (FeignException e) {
-            if (ERROR_CODE_404 == e.status()) {
+            if (e.status() == ERROR_CODE_404) {
                 logger.info("Data not found in database. crmId: {}, deviceId {}", crmId, deviceId);
                 return null;
             } else {

@@ -38,6 +38,14 @@ public class CaseController {
         this.caseService = caseService;
     }
 
+    /**
+     * Check customer first time use
+     *
+     * @param correlationId used as requestId for salesforce
+     * @param crmId    customer Id
+     * @param deviceId device Id
+     * @return CustomerFirstUsage information of first time use
+     */
     @LogAround
     @ApiOperation(value = "Get Case status data")
     @GetMapping(value = "/case/status")
