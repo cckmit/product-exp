@@ -35,7 +35,7 @@ public class CaseService {
      * @param deviceId device Id
      * @return CaseStatusResponse all case statuses belonging to customer Id
      */
-    public CaseStatusResponse getCaseStatus(String crmId, String deviceId) throws TMBCommonException {
+    public CaseStatusResponse getCaseStatus(String correlationId, String crmId, String deviceId) throws TMBCommonException {
 
         //GET /apis/customers/firstTimeUsage
         logger.info("Calling GET /apis/customers/firstTimeUsage.");
@@ -50,7 +50,7 @@ public class CaseService {
 
         //GET /apis/customer/case/status/{CRM_ID}.
         logger.info("Calling GET /apis/customer/case/status/{CRM_ID}");
-        List<CaseStatusCase> caseStatusList = getCaseStatus(crmId);
+        List<CaseStatusCase> caseStatusList = getCaseStatus(correlationId, crmId);
         logger.info("GET /apis/customer/case/status/{CRM_ID} response: {}", caseStatusList);
 
         //Separate According to Status
@@ -83,7 +83,7 @@ public class CaseService {
     public CustomerFirstUsage getFirstTimeUsage(String crmId, String deviceId) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<CustomerFirstUsage>> getFirstTimeUsageResponse =
-                    customerServiceClient.getFirstTimeUsage(crmId, SERVICE_TYPE_ID_CST, deviceId);
+                    customerServiceClient.getFirstTimeUsage(crmId, deviceId, SERVICE_TYPE_ID_CST);
 
             if (getFirstTimeUsageResponse.getBody() != null &&
                     getFirstTimeUsageResponse.getBody().getStatus() != null &&
@@ -119,7 +119,7 @@ public class CaseService {
     public void asyncPostFirstTime(String crmId, String deviceId) {
         try {
             ResponseEntity<TmbOneServiceResponse<String>> response =
-                    customerServiceClient.postFirstTimeUsage(crmId, SERVICE_TYPE_ID_CST, deviceId);
+                    customerServiceClient.postFirstTimeUsage(crmId, deviceId, SERVICE_TYPE_ID_CST);
 
             if (response != null && response.getStatusCode() == HttpStatus.OK) {
                 logger.info("Async call to insert first time usage completed successfully. " +
@@ -139,10 +139,10 @@ public class CaseService {
      * @return list of all case status
      */
     @SuppressWarnings("all")
-    public List<CaseStatusCase> getCaseStatus(String crmId) throws TMBCommonException {
+    public List<CaseStatusCase> getCaseStatus(String correlationId, String crmId) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<List<CaseStatusCase>>> getCaseStatusResponse =
-                    customerServiceClient.getCaseStatus(crmId);
+                    customerServiceClient.getCaseStatus(correlationId, crmId);
 
             if (getCaseStatusResponse.getBody() != null &&
                     getCaseStatusResponse.getBody().getStatus() != null &&

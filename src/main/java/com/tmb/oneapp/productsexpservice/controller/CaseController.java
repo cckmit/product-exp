@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.DEVICE_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
 /**
  * CaseController request mapping will handle apis call
@@ -42,17 +41,20 @@ public class CaseController {
     @ApiOperation(value = "Get Case status data")
     @GetMapping(value = "/case/status")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = X_CORRELATION_ID, value = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
             @ApiImplicitParam(name = X_CRMID, value = "001100000000000000000001184383", required = true, dataType = "string", paramType = "header"),
             @ApiImplicitParam(name = DEVICE_ID, value = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true)
+
     })
     public ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> getCaseStatus(
+            @RequestHeader(X_CORRELATION_ID) String correlationId,
             @RequestHeader(X_CRMID) String crmId,
             @RequestHeader(DEVICE_ID) String deviceId
     ) {
         TmbOneServiceResponse<CaseStatusResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            CaseStatusResponse caseStatusResponse = caseService.getCaseStatus(crmId, deviceId);
+            CaseStatusResponse caseStatusResponse = caseService.getCaseStatus(correlationId, crmId, deviceId);
 
             response.setData(caseStatusResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),

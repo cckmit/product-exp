@@ -44,7 +44,7 @@ class CaseServiceTest {
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
         mockGetFirstTimeUsageResponse.setData(null);
 
-        when(customerServiceClient.getFirstTimeUsage(anyString(), eq("CST"), anyString()))
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetFirstTimeUsageResponse));
 
@@ -55,7 +55,7 @@ class CaseServiceTest {
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
         mockPostFirstTimeUsageResponse.setData("1");
 
-        when(customerServiceClient.postFirstTimeUsage(anyString(), eq("CST"), anyString()))
+        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockPostFirstTimeUsageResponse));
 
@@ -72,12 +72,12 @@ class CaseServiceTest {
                 new CaseStatusCase().setStatus("Closed")
         ));
 
-        when(customerServiceClient.getCaseStatus(anyString()))
+        when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
         CaseStatusResponse response =
-                caseService.getCaseStatus("crmId", "deviceId");
+                caseService.getCaseStatus("correlationId", "crmId", "deviceId");
 
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("CST", response.getServiceTypeId());
@@ -96,19 +96,19 @@ class CaseServiceTest {
                 null,
                 new RequestTemplate());
 
-        when(customerServiceClient.getFirstTimeUsage(anyString(), eq("CST"), anyString()))
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenThrow(new FeignException.FeignClientException(404, "Data not found", request, null));
 
         //postFirstTimeUsage
-        when(customerServiceClient.postFirstTimeUsage(anyString(), eq("CST"), anyString()))
+        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenThrow(new IllegalArgumentException());
 
         //getCastStatus
-        when(customerServiceClient.getCaseStatus(anyString()))
+        when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenThrow(new FeignException.FeignClientException(404, "Data not found", request, null));
 
         CaseStatusResponse response =
-                caseService.getCaseStatus("crmId", "deviceId");
+                caseService.getCaseStatus("correlationId", "crmId", "deviceId");
 
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("CST", response.getServiceTypeId());
@@ -125,7 +125,7 @@ class CaseServiceTest {
                 null,
                 new RequestTemplate());
 
-        when(customerServiceClient.getFirstTimeUsage(anyString(), eq("CST"), anyString()))
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenThrow(new FeignException.FeignClientException(401, "Unauthorized", request, null));
 
         assertThrows(TMBCommonException.class, () ->
@@ -136,7 +136,7 @@ class CaseServiceTest {
 
     @Test
     void getFirstTimeUsage_unexpectedError() {
-        when(customerServiceClient.getFirstTimeUsage(anyString(), eq("CST"), anyString()))
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenThrow(IllegalArgumentException.class);
 
         assertThrows(TMBCommonException.class, () ->
@@ -147,7 +147,7 @@ class CaseServiceTest {
 
     @Test
     void getFirstTimeUsage_null() throws TMBCommonException {
-        when(customerServiceClient.getFirstTimeUsage(anyString(), eq("CST"), anyString()))
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(null));
 
@@ -159,22 +159,22 @@ class CaseServiceTest {
 
     @Test
     void getCaseStatus_null() throws TMBCommonException {
-        when(customerServiceClient.getCaseStatus(anyString()))
+        when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(null));
 
-        List<CaseStatusCase> response = caseService.getCaseStatus(anyString());
+        List<CaseStatusCase> response = caseService.getCaseStatus(anyString(), anyString());
 
         assertEquals(new ArrayList<>(), response);
     }
 
     @Test
     void getCaseStatus_generalException() {
-        when(customerServiceClient.getCaseStatus(anyString()))
+        when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenThrow(new IllegalArgumentException());
 
         assertThrows(TMBCommonException.class, () ->
-                caseService.getCaseStatus(anyString())
+                caseService.getCaseStatus(anyString(), anyString())
         );
     }
 
@@ -186,11 +186,11 @@ class CaseServiceTest {
                 null,
                 new RequestTemplate());
 
-        when(customerServiceClient.getCaseStatus(anyString()))
+        when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenThrow(new FeignException.FeignClientException(401, "Unauthorized", request, null));
 
         assertThrows(TMBCommonException.class, () ->
-                caseService.getCaseStatus(anyString())
+                caseService.getCaseStatus(anyString(), anyString())
         );
     }
 
