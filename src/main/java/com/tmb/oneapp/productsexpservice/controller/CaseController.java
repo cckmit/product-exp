@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
@@ -49,12 +50,13 @@ public class CaseController {
     public ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> getCaseStatus(
             @RequestHeader(X_CORRELATION_ID) String correlationId,
             @RequestHeader(X_CRMID) String crmId,
-            @RequestHeader(DEVICE_ID) String deviceId
+            @RequestHeader(DEVICE_ID) String deviceId,
+            @RequestParam("service_type_id") String serviceTypeId
     ) {
         TmbOneServiceResponse<CaseStatusResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            CaseStatusResponse caseStatusResponse = caseService.getCaseStatus(correlationId, crmId, deviceId);
+            CaseStatusResponse caseStatusResponse = caseService.getCaseStatus(correlationId, crmId, deviceId, serviceTypeId);
 
             response.setData(caseStatusResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),

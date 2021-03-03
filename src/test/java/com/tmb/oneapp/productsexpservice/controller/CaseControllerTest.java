@@ -25,11 +25,11 @@ class CaseControllerTest {
     @Test
     void getCaseStatus_success() throws TMBCommonException {
 
-        when(caseService.getCaseStatus(anyString(), anyString(), anyString()))
+        when(caseService.getCaseStatus(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new CaseStatusResponse());
 
         ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> response =
-                caseController.getCaseStatus("correlationId", "crmId", "deviceId");
+                caseController.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -39,11 +39,11 @@ class CaseControllerTest {
     @Test
     void getCaseStatus_fail() throws TMBCommonException {
 
-        when(caseService.getCaseStatus(anyString(), anyString(), anyString()))
+        when(caseService.getCaseStatus(anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new TMBCommonException("fail"));
 
         ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> response =
-                caseController.getCaseStatus("correlationId", "crmId", "deviceId");
+                caseController.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 

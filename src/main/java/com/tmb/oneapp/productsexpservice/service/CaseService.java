@@ -35,17 +35,17 @@ public class CaseService {
      * @param deviceId device Id
      * @return CaseStatusResponse all case statuses belonging to customer Id
      */
-    public CaseStatusResponse getCaseStatus(String correlationId, String crmId, String deviceId) throws TMBCommonException {
+    public CaseStatusResponse getCaseStatus(String correlationId, String crmId, String deviceId, String serviceTypeId) throws TMBCommonException {
 
         //GET /apis/customers/firstTimeUsage
         logger.info("Calling GET /apis/customers/firstTimeUsage.");
-        CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId);
+        CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId, serviceTypeId);
         logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
 
         //POST /apis/customers/firstTimeUsage
         if (null == customerFirstUsage) {
             logger.info("Calling POST /apis/customers/firstTimeUsage.");
-            asyncPostFirstTime(crmId, deviceId);
+            asyncPostFirstTime(crmId, deviceId, serviceTypeId);
         }
 
         //GET /apis/customer/case/status/{CRM_ID}.
@@ -66,7 +66,7 @@ public class CaseService {
         });
 
         return new CaseStatusResponse()
-                .setServiceTypeId(SERVICE_TYPE_ID_CST)
+                .setServiceTypeId(serviceTypeId)
                 .setFirstUsageExperience(null == customerFirstUsage)
                 .setInProgress(inProgress)
                 .setCompleted(completed);
@@ -80,10 +80,10 @@ public class CaseService {
      * @return CustomerFirstUsage information of first time use
      */
     @SuppressWarnings("all")
-    public CustomerFirstUsage getFirstTimeUsage(String crmId, String deviceId) throws TMBCommonException {
+    public CustomerFirstUsage getFirstTimeUsage(String crmId, String deviceId, String serviceTypeId) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<CustomerFirstUsage>> getFirstTimeUsageResponse =
-                    customerServiceClient.getFirstTimeUsage(crmId, deviceId, SERVICE_TYPE_ID_CST);
+                    customerServiceClient.getFirstTimeUsage(crmId, deviceId, serviceTypeId);
 
             if (getFirstTimeUsageResponse.getBody() != null &&
                     getFirstTimeUsageResponse.getBody().getStatus() != null &&
@@ -116,10 +116,10 @@ public class CaseService {
      * @param deviceId device Id
      */
     @Async
-    public void asyncPostFirstTime(String crmId, String deviceId) {
+    public void asyncPostFirstTime(String crmId, String deviceId, String serviceTypeId) {
         try {
             ResponseEntity<TmbOneServiceResponse<String>> response =
-                    customerServiceClient.postFirstTimeUsage(crmId, deviceId, SERVICE_TYPE_ID_CST);
+                    customerServiceClient.postFirstTimeUsage(crmId, deviceId, serviceTypeId);
 
             if (response != null && response.getStatusCode() == HttpStatus.OK) {
                 logger.info("Async call to insert first time usage completed successfully. " +

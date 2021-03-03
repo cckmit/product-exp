@@ -77,7 +77,7 @@ class CaseServiceTest {
                         .body(mockGetCaseStatusResponse));
 
         CaseStatusResponse response =
-                caseService.getCaseStatus("correlationId", "crmId", "deviceId");
+                caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
 
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("CST", response.getServiceTypeId());
@@ -108,7 +108,7 @@ class CaseServiceTest {
                 .thenThrow(new FeignException.FeignClientException(404, "Data not found", request, null));
 
         CaseStatusResponse response =
-                caseService.getCaseStatus("correlationId", "crmId", "deviceId");
+                caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
 
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("CST", response.getServiceTypeId());
@@ -129,7 +129,7 @@ class CaseServiceTest {
                 .thenThrow(new FeignException.FeignClientException(401, "Unauthorized", request, null));
 
         assertThrows(TMBCommonException.class, () ->
-                caseService.getFirstTimeUsage("crmId", "deviceId")
+                caseService.getFirstTimeUsage("crmId", "deviceId", "CST")
         );
 
     }
@@ -140,7 +140,7 @@ class CaseServiceTest {
                 .thenThrow(IllegalArgumentException.class);
 
         assertThrows(TMBCommonException.class, () ->
-                caseService.getFirstTimeUsage("crmId", "deviceId")
+                caseService.getFirstTimeUsage("crmId", "deviceId", "CST")
         );
 
     }
@@ -151,7 +151,7 @@ class CaseServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(null));
 
-        CustomerFirstUsage response = caseService.getFirstTimeUsage("crmId", "deviceId");
+        CustomerFirstUsage response = caseService.getFirstTimeUsage("crmId", "deviceId", "CST");
 
         assertNull(response);
 
