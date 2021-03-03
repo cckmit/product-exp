@@ -1,10 +1,8 @@
 package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.util.List;
 

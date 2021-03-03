@@ -14,5 +14,4 @@ public class FundPaymentDetailRs {
     private FundRuleInfoList fundRule;
     private List<FundHolidayClassList> fundHolidayList;
     private List<DepositAccount> depositAccountList;
-    private String holdingFlag;
 }
