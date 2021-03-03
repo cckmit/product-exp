@@ -13,7 +13,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.portdata.Port;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
@@ -169,13 +169,19 @@ public class ProductsExpService {
                 if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                     var body = fundSummaryData.getBody();
                     if (body != null) {
-                        result.setFundClassList(body.getData().getBody().getFundClassList());
+                        FundClassList fundClassList = body.getData().getBody().getFundClassList();
+                        List<FundClass> fundClass = fundClassList.getFundClass();
+                        List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
+                        List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
+
+                        result.setFundClass(fundClassData);
+                        result.setSearchList(searchList);
+                        result.setFundClassList(null);
                         result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
                         result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
                         result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
                     }
                 }
-
             }
             return result;
         } catch (Exception ex) {

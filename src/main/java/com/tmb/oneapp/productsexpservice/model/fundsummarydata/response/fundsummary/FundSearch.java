@@ -3,15 +3,17 @@ package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsum
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.List;
-
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FundHouse {
+public class FundSearch {
+    private String portfolioNumber;
+    private String fundCode;
+    private String fundNameEN;
+    private String fundNameTH;
+    private String fundNickNameEN;
+    private String fundNickNameTH;
+    private String fundShortName;
     private String fundHouseCode;
-    private List<Fund> fund;
-    private FundList fundList;
-
 }
