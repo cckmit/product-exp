@@ -149,10 +149,10 @@ public class UtilMap {
             } catch (JsonProcessingException e) {
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             }
-
             return fundPaymentDetailRs;
         }
     }
+
 
     /**
      * Generic Method to convert Account Type form 3 digits to 1 digit
@@ -343,12 +343,12 @@ public class UtilMap {
             for (FundClass fundClassLoop : fundClass) {
                 List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
                 for (FundHouse fundHouse : fundHouseList) {
-                    fundSearch = new FundSearch();
-                    fundSearch.setFundCode(fundHouse.getFundHouseCode());
                     FundList fundList = fundHouse.getFundList();
                     List<Fund> fund = fundList.getFund();
                     fundHouse.setFund(fund);
                     for (Fund fundLoop : fundHouse.getFundList().getFund()) {
+                        fundSearch = new FundSearch();
+                        fundSearch.setFundHouseCode(fundHouse.getFundHouseCode());
                         fundSearch.setFundShortName(fundLoop.getFundShortName());
                         fundSearch.setFundNameEN(fundLoop.getFundNameEN());
                         fundSearch.setFundNameTH(fundLoop.getFundNameTH());
@@ -356,9 +356,9 @@ public class UtilMap {
                         fundSearch.setFundNickNameTH(fundLoop.getFundNickNameTH());
                         fundSearch.setFundCode(fundLoop.getFundCode());
                         fundSearch.setPortfolioNumber(fundLoop.getPortfolioNumber());
+                        searchList.add(fundSearch);
                     }
                     fundHouse.setFundList(null);
-                    searchList.add(fundSearch);
                 }
             }
         }catch (Exception ex){
