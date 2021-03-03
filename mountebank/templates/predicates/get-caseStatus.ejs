@@ -1,0 +1,52 @@
+{
+    "predicates": [{
+        "equals": {
+            "path": "/apis/product/case/status/",
+            "query": {
+                "service_type_id": "serviceTypeId"
+            },
+            "method": "GET",
+            "headers": {
+                "device-id": "deviceId"
+            }
+        }
+    }],
+    "responses": [{
+        "is": {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": {
+                "status": {
+                    "code": "0000",
+                    "message": "success",
+                    "service": "customers-exp-service",
+                    "description": "success"
+                },
+                "data": {
+                    "first_usage_experience": true,
+                    "service_type_id": "CST",
+                    "in_progress": [{
+                            "status": "inProgress",
+                            "product_name_th" "บัญขีเงินฝาก",
+                            "product_name_en" "Saving Account",
+                            "issue": "ร้องเรียนขั้นตอนการตรวจสอบตัวตน",
+                            "reference_no": "123456789",
+                            "issue_date" "2020-01-02",
+                            "expected_finish_date" "2021-06-18"
+                     }],
+                    "complete": [{
+                            "status": "complete",
+                            "product_name_th" "บัญขีเงินฝาก",
+                            "product_name_en" "Saving Account",
+                            "issue": "ร้องเรียนขั้นตอนการตรวจสอบตัวตน",
+                            "reference_no": "123456788",
+                            "issue_date" "2020-01-02",
+                            "finish_date" "2021-15-02"
+                    }]
+                }
+            }
+        }
+    }]
+}
