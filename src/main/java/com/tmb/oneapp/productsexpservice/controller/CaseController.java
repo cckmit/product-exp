@@ -42,8 +42,8 @@ public class CaseController {
     @ApiOperation(value = "Get Case status data")
     @GetMapping(value = "/case/status")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = X_CRMID, value = "Crm Id", defaultValue = "001100000000000000000001184383", required = true, dataType = "string", paramType = "header"),
-            @ApiImplicitParam(name = DEVICE_ID, value = "device_Id", defaultValue = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true)
+            @ApiImplicitParam(name = X_CRMID, value = "001100000000000000000001184383", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = DEVICE_ID, value = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true)
     })
     public ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> getCaseStatus(
             @RequestHeader(X_CRMID) String crmId,
