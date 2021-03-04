@@ -18,15 +18,14 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
 class CaseServiceTest {
@@ -83,37 +82,6 @@ class CaseServiceTest {
         assertEquals("CST", response.getServiceTypeId());
         assertEquals(2, response.getCompleted().size());
         assertEquals(3, response.getInProgress().size());
-
-    }
-
-    @Test
-    void getCaseStatus_noData_exceptions_success() throws TMBCommonException {
-
-        //getFirstTimeUsage
-        Request request = Request.create(Request.HttpMethod.GET,
-                "",
-                new HashMap<>(),
-                null,
-                new RequestTemplate());
-
-        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
-                .thenThrow(new FeignException.FeignClientException(404, "Data not found", request, null));
-
-        //postFirstTimeUsage
-        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("CST")))
-                .thenThrow(new IllegalArgumentException());
-
-        //getCastStatus
-        when(customerServiceClient.getCaseStatus(anyString(), anyString()))
-                .thenThrow(new FeignException.FeignClientException(404, "Data not found", request, null));
-
-        CaseStatusResponse response =
-                caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
-
-        assertEquals(true, response.getFirstUsageExperience());
-        assertEquals("CST", response.getServiceTypeId());
-        assertEquals(0, response.getCompleted().size());
-        assertEquals(0, response.getInProgress().size());
 
     }
 
@@ -201,5 +169,51 @@ class CaseServiceTest {
                 caseService.getCaseStatus(anyString(), anyString())
         );
     }
+
+    @SuppressWarnings("all")
+    @Test
+    void mapTmbOneServiceResponse() {
+
+        String req = "{\"status\":{\"code\":\"0009\",\"message\":\"DATA NOT FOUND\",\"service\":\"customers-service\",\"description\":null},\"data\":null}";
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(req.getBytes(StandardCharsets.UTF_8));
+        Optional<ByteBuffer> optionalByteBuffer = java.util.Optional.of(byteBuffer);
+
+        TmbOneServiceResponse tmbOneServiceResponse = caseService.mapTmbOneServiceResponse(optionalByteBuffer);
+        assertEquals("0009", tmbOneServiceResponse.getStatus().getCode());
+    }
+
+    @SuppressWarnings("all")
+    @Test
+    void mapTmbOneServiceResponse_notPresent() {
+        Optional<ByteBuffer> optionalByteBuffer = java.util.Optional.empty();
+
+        TmbOneServiceResponse tmbOneServiceResponse = caseService.mapTmbOneServiceResponse(optionalByteBuffer);
+        assertNull(tmbOneServiceResponse);
+    }
+
+    @SuppressWarnings("all")
+    @Test
+    void mapTmbOneServiceResponse_badResponse() {
+        String req = "badString";
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(req.getBytes(StandardCharsets.UTF_8));
+        Optional<ByteBuffer> optionalByteBuffer = java.util.Optional.of(byteBuffer);
+
+        TmbOneServiceResponse tmbOneServiceResponse = caseService.mapTmbOneServiceResponse(optionalByteBuffer);
+        assertNull(tmbOneServiceResponse);
+    }
+
+    @Test
+    void asyncPostFirstTime_exception() {
+        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("CST")))
+                .thenThrow(new IllegalArgumentException());
+
+        caseService.asyncPostFirstTime("crmId", "deviceId", "CST");
+
+        verify(customerServiceClient, times(1)).postFirstTimeUsage(anyString(), anyString(), eq("CST"));
+
+    }
+
 
 }

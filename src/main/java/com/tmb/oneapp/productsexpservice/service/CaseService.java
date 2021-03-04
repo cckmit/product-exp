@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
@@ -14,10 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
+import static com.tmb.oneapp.productsexpservice.constant.ResponseCode.DATA_NOT_FOUND_ERROR;
 
 @Service
 public class CaseService {
@@ -101,7 +106,9 @@ public class CaseService {
             }
             return null;
         } catch (FeignException e) {
-            if (e.status() == ERROR_CODE_404) {
+            TmbOneServiceResponse response = mapTmbOneServiceResponse(e.responseBody());
+
+            if (response != null && response.getStatus() != null && DATA_NOT_FOUND_ERROR.getCode().equals(response.getStatus().getCode())) {
                 logger.info("Data not found in database. crmId: {}, deviceId {}", crmId, deviceId);
                 return null;
             } else {
@@ -160,7 +167,9 @@ public class CaseService {
             }
             return new ArrayList<>();
         } catch (FeignException e) {
-            if (ERROR_CODE_404 == e.status()) {
+            TmbOneServiceResponse response = mapTmbOneServiceResponse(e.responseBody());
+
+            if (response != null && response.getStatus() != null && DATA_NOT_FOUND_ERROR.getCode().equals(response.getStatus().getCode())) {
                 logger.info("Data not found. crmId: {}", crmId);
                 return new ArrayList<>();
             } else {
@@ -176,5 +185,21 @@ public class CaseService {
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
     }
+
+    @SuppressWarnings("all")
+    public TmbOneServiceResponse mapTmbOneServiceResponse(Optional<ByteBuffer> optionalResponse) {
+        try {
+            if(!optionalResponse.isPresent()){
+                return null;
+            }
+
+            String respBody = StandardCharsets.UTF_8.decode(optionalResponse.get()).toString();
+            return (TmbOneServiceResponse) TMBUtils.convertStringToJavaObj(respBody, TmbOneServiceResponse.class);
+        } catch (Exception e) {
+            logger.error("Unexpected error received, cannot parse.");
+            return null;
+        }
+    }
+
 }
 
