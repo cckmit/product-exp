@@ -108,7 +108,7 @@ public class CaseService {
         } catch (FeignException e) {
             TmbOneServiceResponse response = mapTmbOneServiceResponse(e.responseBody());
 
-            if (response != null && response.getStatus().getCode().equals(DATA_NOT_FOUND_ERROR.getCode())) {
+            if (response != null && response.getStatus() != null && DATA_NOT_FOUND_ERROR.getCode().equals(response.getStatus().getCode())) {
                 logger.info("Data not found in database. crmId: {}, deviceId {}", crmId, deviceId);
                 return null;
             } else {
@@ -169,7 +169,7 @@ public class CaseService {
         } catch (FeignException e) {
             TmbOneServiceResponse response = mapTmbOneServiceResponse(e.responseBody());
 
-            if (response != null && response.getStatus().getCode().equals(DATA_NOT_FOUND_ERROR.getCode())) {
+            if (response != null && response.getStatus() != null && DATA_NOT_FOUND_ERROR.getCode().equals(response.getStatus().getCode())) {
                 logger.info("Data not found. crmId: {}", crmId);
                 return new ArrayList<>();
             } else {
