@@ -59,6 +59,11 @@ public class ProductsExpServiceConstant {
     public static final String OF_SHELF_FUND_MESSAGE = "NOT ALLOW TO PURCHASE";
     public static final String OF_SHELF_FUND_DESC = "FUND DO NOT ALLOW TO PURCHASE";
 
+    /* SUITABILITY EXPIRED */
+    public static final String SUITABILITY_EXPIRED_CODE  = "MSG#04";
+    public static final String SUITABILITY_EXPIRED_MESSAGE = "SUITABILITY EXPIRED";
+    public static final String SUITABILITY_EXPIRED_DESC = "Error";
+
     /* FUND RULE RETURN NOT FOUND */
     public static final String SERVICE_NOT_FOUND  = "MSG999";
     public static final String SERVICE_NOT_FOUND_MESSAGE = "DATA NOT FOUND";
@@ -115,6 +120,7 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_CARD_ACTIVATION="00700103";
     public static final String METHOD="SCAN/KEY IN";
     public static final String UNIT_HOLDER="PT000000000000587870";
+    public static final String SUITABILITY_EXPIRED = "2";
 
     public static final String SERVICE_TYPE_ID_CST="CST";
     public static final String CASE_STATUS_IN_PROGRESS="In Progress";

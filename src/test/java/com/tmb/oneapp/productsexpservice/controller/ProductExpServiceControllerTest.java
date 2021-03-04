@@ -351,7 +351,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
-        Assert.assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
+        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
     @Test

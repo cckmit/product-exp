@@ -17,6 +17,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -247,6 +248,21 @@ public class UtilMap {
             }
         }
         return isFundOfShelf;
+    }
+
+    /**
+     * Generic Method to create HTTP Header
+     *
+     * @param suitabilityInfo
+     * @return
+     */
+    public static boolean isSuitabilityExpire(SuitabilityInfo suitabilityInfo) {
+        boolean isExpire = true;
+        if(!StringUtils.isEmpty(suitabilityInfo)
+                && suitabilityInfo.getSuitValidation().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED)) {
+            return isExpire;
+        }
+        return false;
     }
 
     /**
