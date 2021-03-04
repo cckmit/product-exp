@@ -21,6 +21,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
+import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
@@ -31,6 +32,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentD
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -240,34 +242,14 @@ public class ProductsExpService {
         final boolean isNotValid = true;
         boolean isStoped = false;
         if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime)){
-            ffsRsAndValidation.setServiceClose(isNotValid);
+            ffsRsAndValidation.setError(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
             ffsRsAndValidation.setErrorMsg(UtilMap.addColonDateFormat(investmentStartTime));
             ffsRsAndValidation.setErrorDesc(UtilMap.addColonDateFormat(investmentEndTime));
             isStoped = true;
         }
-        if(!isStoped && !StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isOfShelfFund(correlationId, ffsRequestBody)){
-            ffsRsAndValidation.setFundOfShelf(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.OF_SHELF_FUND_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.OF_SHELF_FUND_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.OF_SHELF_FUND_DESC);
-            isStoped = true;
-        }
-        if(!isStoped && isBusinessClose(correlationId, ffsRequestBody)){
-            ffsRsAndValidation.setNotBusinessOur(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
-            isStoped = true;
-        }
-        if(!isStoped && isCASADormant(correlationId, ffsRequestBody)){
-            ffsRsAndValidation.setNotBusinessOur(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
-            isStoped = true;
-        }
-        if(!isStoped){
+        ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
+        if(!isStoped && !ffsRsAndValidation.isError()){
             ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
             try {
                 Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
@@ -286,6 +268,50 @@ public class ProductsExpService {
             }catch (Exception e){
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             }
+        }
+        return ffsRsAndValidation;
+    }
+
+
+    /**
+     * Generic Method to call MF Service getFundAccDetail
+     *
+     * @param ffsRequestBody
+     * @param correlationId
+     * @param ffsRsAndValidation
+     * @return FfsRsAndValidation
+     */
+    @LogAround
+    public FfsRsAndValidation validationAlternativeFlow(String correlationId, FfsRequestBody ffsRequestBody,
+                                                        FfsRsAndValidation ffsRsAndValidation) {
+        final boolean isNotValid = true;
+        boolean isStoped = false;
+        if(!StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isOfShelfFund(correlationId, ffsRequestBody)){
+            ffsRsAndValidation.setError(isNotValid);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.OF_SHELF_FUND_CODE);
+            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.OF_SHELF_FUND_MESSAGE);
+            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.OF_SHELF_FUND_DESC);
+            isStoped = true;
+        }
+        if(!isStoped && isBusinessClose(correlationId, ffsRequestBody)){
+            ffsRsAndValidation.setError(isNotValid);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
+            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
+            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
+            isStoped = true;
+        }
+        if(!isStoped && isCASADormant(correlationId, ffsRequestBody)){
+            ffsRsAndValidation.setError(isNotValid);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
+            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
+            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
+            isStoped = true;
+        }
+        if(!isStoped && isSuitabilityExpired(correlationId, ffsRequestBody)){
+            ffsRsAndValidation.setError(isNotValid);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
+            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
+            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
         }
         return ffsRsAndValidation;
     }
@@ -363,6 +389,29 @@ public class ProductsExpService {
             return true;
         }
     }
+
+    /**
+     * Method isOfShelfFund
+     *
+     * @param correlationId
+     * @param ffsRequestBody
+     */
+    public boolean isSuitabilityExpired(String correlationId, FfsRequestBody ffsRequestBody){
+        ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity = null;
+        try{
+            SuitabilityBody suitabilityBody = new SuitabilityBody();
+            suitabilityBody.setRmNumber(ffsRequestBody.getCrmId());
+            Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+            responseResponseEntity = investmentRequestClient.callInvestmentFundSuitabilityService(invHeaderReqParameter, suitabilityBody);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
+            return UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            return true;
+        }
+    }
+
+
 
 
     /**

@@ -8,11 +8,6 @@ import lombok.Setter;
 @Setter
 public class FfsRsAndValidation {
     private FfsData body;
-    private boolean isServiceClose;
-    private boolean isUnderRiskLevel;
-    private boolean isFundOfShelf;
-    private boolean isNotBusinessOur;
-    private boolean isCasaDormant;
     private boolean isError;
     private String errorCode;
     private String errorMsg;
