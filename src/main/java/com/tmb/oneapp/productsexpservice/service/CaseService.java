@@ -15,9 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 import static com.tmb.oneapp.productsexpservice.constant.ResponseCode.DATA_NOT_FOUND_ERROR;
@@ -104,8 +106,7 @@ public class CaseService {
             }
             return null;
         } catch (FeignException e) {
-            String respBody = StandardCharsets.UTF_8.decode(e.responseBody().get()).toString();
-            TmbOneServiceResponse response = mapTmbOneServiceResponse(respBody);
+            TmbOneServiceResponse response = mapTmbOneServiceResponse(e.responseBody());
 
             if (response != null && response.getStatus().getCode().equals(DATA_NOT_FOUND_ERROR.getCode())) {
                 logger.info("Data not found in database. crmId: {}, deviceId {}", crmId, deviceId);
@@ -166,8 +167,7 @@ public class CaseService {
             }
             return new ArrayList<>();
         } catch (FeignException e) {
-            String respBody = StandardCharsets.UTF_8.decode(e.responseBody().get()).toString();
-            TmbOneServiceResponse response = mapTmbOneServiceResponse(respBody);
+            TmbOneServiceResponse response = mapTmbOneServiceResponse(e.responseBody());
 
             if (response != null && response.getStatus().getCode().equals(DATA_NOT_FOUND_ERROR.getCode())) {
                 logger.info("Data not found. crmId: {}", crmId);
@@ -187,15 +187,19 @@ public class CaseService {
     }
 
     @SuppressWarnings("all")
-    public TmbOneServiceResponse mapTmbOneServiceResponse(String respBody) {
-
+    public TmbOneServiceResponse mapTmbOneServiceResponse(Optional<ByteBuffer> optionalResponse) {
         try {
+            if(!optionalResponse.isPresent()){
+                return null;
+            }
+
+            String respBody = StandardCharsets.UTF_8.decode(optionalResponse.get()).toString();
             return (TmbOneServiceResponse) TMBUtils.convertStringToJavaObj(respBody, TmbOneServiceResponse.class);
         } catch (Exception e) {
             logger.error("Unexpected error received, cannot parse.");
+            return null;
         }
-
-        return null;
     }
+
 }
 
