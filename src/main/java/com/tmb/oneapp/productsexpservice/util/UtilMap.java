@@ -258,9 +258,13 @@ public class UtilMap {
      */
     public static boolean isSuitabilityExpire(SuitabilityInfo suitabilityInfo) {
         boolean isExpire = true;
-        if(!StringUtils.isEmpty(suitabilityInfo)
-                && suitabilityInfo.getSuitValidation().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED)) {
-            return isExpire;
+        try {
+            if (!StringUtils.isEmpty(suitabilityInfo)
+                    && suitabilityInfo.getSuitValidation().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED)) {
+                return isExpire;
+            }
+        }catch (Exception e){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }
         return false;
     }
