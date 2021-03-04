@@ -338,7 +338,7 @@ public class ProductExpServiceControllerTest {
         FfsRsAndValidation fundRsAndValidation = null;
         try {
             fundRsAndValidation = new FfsRsAndValidation();
-            fundRsAndValidation.setServiceClose(true);
+            fundRsAndValidation.setError(true);
             fundRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
             fundRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
             fundRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
@@ -351,7 +351,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
-        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
     }
 
     @Test
