@@ -291,7 +291,7 @@ public class ProductsExpService {
                                                         FfsRsAndValidation ffsRsAndValidation) {
         final boolean isNotValid = true;
         boolean isStoped = false;
-        if(!isStoped && isCASADormant(correlationId, ffsRequestBody)){
+        if(isCASADormant(correlationId, ffsRequestBody)){
             ffsRsAndValidation.setError(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
@@ -323,7 +323,6 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
-            isStoped = true;
         }
         return ffsRsAndValidation;
     }
