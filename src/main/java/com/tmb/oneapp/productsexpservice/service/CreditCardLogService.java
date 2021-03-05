@@ -79,7 +79,7 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent onClickNextButtonEvent(CreditCardEvent creditCardEvent,
-												  Map<String, String> requestHeadersParameter, SetCreditLimitReq requestBody) {
+			Map<String, String> requestHeadersParameter, SetCreditLimitReq requestBody) {
 
 		populateBaseEvents(creditCardEvent, requestHeadersParameter);
 		creditCardEvent
@@ -98,7 +98,7 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent onClickNextButtonLimitEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
-													   SetCreditLimitReq requestBody, String mode) {
+			SetCreditLimitReq requestBody, String mode) {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
@@ -123,7 +123,7 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent completeUsageListEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
-												  SetCreditLimitReq requestBody) {
+			SetCreditLimitReq requestBody) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
@@ -196,6 +196,25 @@ public class CreditCardLogService {
 		} catch (Exception e) {
 			logger.info("Unable to process the request : {}", e);
 		}
+	}
+
+	/**
+	 * Activity log for finish block card
+	 *
+	 * @param status
+	 * @param activityId
+	 * @param correlationId
+	 * @param activityDate
+	 * @param accountId
+	 */
+	@Async
+	@LogAround
+	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
+			String accountId) {
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+		creditCardEvent.setCardNumber(accountId.substring(21, 25));
+		creditCardEvent.setActivityStatus(status);
+		logActivity(creditCardEvent);
 	}
 
 }
