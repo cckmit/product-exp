@@ -402,7 +402,7 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isOfShelfFund
+     * Method isSuitabilityExpired
      *
      * @param correlationId
      * @param ffsRequestBody
@@ -423,7 +423,7 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isOfShelfFund
+     * Method isCustIDExpired
      *
      * @param ffsRequestBody
      */
