@@ -107,8 +107,9 @@ public class CreditCardLogService {
 			creditCardEvent.setCurrentLimit(requestBody.getCurrentCreditLimit());
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
+			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setExpiryDateForTempRequest(requestBody.getExpiryDate());
-			creditCardEvent.setType(ProductsExpServiceConstant.CHANGE_TYPE_TEMP);
+			creditCardEvent.setType(requestBody.getType());
 			creditCardEvent.setReasonForRequest(requestBody.getRequestReason());
 		}
 		populateBaseEvents(creditCardEvent, reqHeader);
