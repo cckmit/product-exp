@@ -134,6 +134,7 @@ public class ProductsExpServiceConstant {
 
     public static final int ERROR_CODE_404 = 404;
     public static final String CUST_CRMID = "crmId";
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
 
 }
 
