@@ -74,8 +74,8 @@ public class UnbilledStatementController {
                 this.handlingFailedResponse(oneServiceResponse, responseHeaders);
             }
 
-        } catch (Exception ex) {
-            logger.error("Unable to fetch unbilled statement for this accountId : {}", ex);
+        } catch (Exception e) {
+            logger.error("Unable to fetch unbilled statement for this accountId : {}", e);
             oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
                     ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
 
