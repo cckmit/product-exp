@@ -75,11 +75,12 @@ public class UtilMap {
         BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
         List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
-
-        for(Order order : orders){
-            FundOrderHistory fundOrderHistory = new FundOrderHistory();
-            BeanUtils.copyProperties(order, fundOrderHistory);
-            ordersHistories.add(fundOrderHistory);
+        if(!StringUtils.isEmpty(orders)) {
+            for (Order order : orders) {
+                FundOrderHistory fundOrderHistory = new FundOrderHistory();
+                BeanUtils.copyProperties(order, fundOrderHistory);
+                ordersHistories.add(fundOrderHistory);
+            }
         }
         accountDetail.setOrdersHistories(ordersHistories);
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
