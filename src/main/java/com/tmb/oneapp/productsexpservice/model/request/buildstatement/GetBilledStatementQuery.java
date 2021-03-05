@@ -18,10 +18,10 @@ import lombok.Setter;
 public class GetBilledStatementQuery {
     @ApiModelProperty(notes = "accountId", required=true, example="0000000050078680472000929")
     private String accountId;
-    @ApiModelProperty(notes = "periodStatement", required=true, example="1")
+    @ApiModelProperty(notes = "periodStatement", example="1")
     private String periodStatement;
-    @ApiModelProperty(notes = "moreRecords", required=true, example="Y")
+    @ApiModelProperty(notes = "moreRecords", example="Y")
     private String moreRecords;
-    @ApiModelProperty(notes = "searchKeys", required=true, example=" ")
+    @ApiModelProperty(notes = "searchKeys", example=" ")
     private String searchKeys;
 }
