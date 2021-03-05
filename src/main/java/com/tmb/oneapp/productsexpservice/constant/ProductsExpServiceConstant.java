@@ -46,6 +46,7 @@ public class ProductsExpServiceConstant {
     public static final String FAILED_MESSAGE = "failed";
 
     public static final String MF_TIME_HHMM = "HHmm";
+    public static final String MF_DATE_YYYYMMDD = "yyyy-MM-dd";
     public static final String PAGE_SIZE = "pageSize";
     public static final String PAGE_NO = "pageNo";
 
@@ -63,6 +64,11 @@ public class ProductsExpServiceConstant {
     public static final String SUITABILITY_EXPIRED_CODE  = "MSG#04";
     public static final String SUITABILITY_EXPIRED_MESSAGE = "SUITABILITY EXPIRED";
     public static final String SUITABILITY_EXPIRED_DESC = "Error";
+
+    /* ID EXPIRED */
+    public static final String ID_EXPIRED_CODE  = "MSG#09";
+    public static final String ID_EXPIRED_MESSAGE = "ID CARD EXPIRED";
+    public static final String ID_EXPIRED_DESC = "Error";
 
     /* FUND RULE RETURN NOT FOUND */
     public static final String SERVICE_NOT_FOUND  = "MSG999";
@@ -127,6 +133,7 @@ public class ProductsExpServiceConstant {
     public static final String CASE_STATUS_CLOSED="Closed";
 
     public static final int ERROR_CODE_404 = 404;
+    public static final String CUST_CRMID = "crmId";
 
 }
 

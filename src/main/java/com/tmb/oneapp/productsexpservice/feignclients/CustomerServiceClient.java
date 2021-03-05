@@ -1,13 +1,15 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
+import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.response.CaseStatusCase;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Map;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
@@ -55,5 +57,17 @@ public interface CustomerServiceClient {
             @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @PathVariable("CRM_ID") String crmId
     );
+
+
+    /**
+     * @param crmId                   getCustDetails method consume crmId from
+     *                                customers-service
+     * @param requestHeadersParameter getCustomerDetails method consume request
+     *                                parameter from customers-service
+     */
+    @GetMapping(value = "/apis/customers/{crmId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getCustomerProfile(
+            @RequestHeader Map<String, String> requestHeadersParameter, @RequestHeader(name = "crmId") String crmId);
+
 
 }

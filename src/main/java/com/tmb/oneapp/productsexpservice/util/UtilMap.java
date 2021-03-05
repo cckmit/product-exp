@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
@@ -262,6 +263,26 @@ public class UtilMap {
             if (!StringUtils.isEmpty(suitabilityInfo)
                     && suitabilityInfo.getSuitValidation().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED)) {
                 return isExpire;
+            }
+        }catch (Exception e){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+        }
+        return false;
+    }
+
+    /**
+     * Generic Method to create HTTP Header
+     *
+     * @param customerProfileResponseData
+     * @return
+     */
+    public static boolean isCustIDExpired(CustomerProfileResponseData customerProfileResponseData) {
+        try {
+            if (!StringUtils.isEmpty(customerProfileResponseData) && customerProfileResponseData.getIdExpireDate() != null) {
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_DATE_YYYYMMDD);
+                String getCurrentTime = sdf.format(cal.getTime());
+                return getCurrentTime.compareTo(customerProfileResponseData.getIdExpireDate()) > 0;
             }
         }catch (Exception e){
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

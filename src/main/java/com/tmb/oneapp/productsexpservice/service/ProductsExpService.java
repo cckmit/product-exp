@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
@@ -57,6 +59,7 @@ public class ProductsExpService {
     private static TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
+    private CustomerServiceClient customerServiceClient;
     private final KafkaProducerService kafkaProducerService;
     private final String investmentStartTime;
     private final String investmentEndTime;
@@ -66,11 +69,13 @@ public class ProductsExpService {
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
+                              CustomerServiceClient customerServiceClient,
                               @Value("${investment.close.time.start}") String investmentStartTime,
                               @Value("${investment.close.time.end}") String investmentEndTime,
                               @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
 
         this.investmentRequestClient = investmentRequestClient;
+        this.customerServiceClient = customerServiceClient;
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
         this.investmentStartTime = investmentStartTime;
@@ -286,6 +291,26 @@ public class ProductsExpService {
                                                         FfsRsAndValidation ffsRsAndValidation) {
         final boolean isNotValid = true;
         boolean isStoped = false;
+        if(!isStoped && isCASADormant(correlationId, ffsRequestBody)){
+            ffsRsAndValidation.setError(isNotValid);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
+            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
+            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
+            isStoped = true;
+        }
+        if(!isStoped && isSuitabilityExpired(correlationId, ffsRequestBody)){
+            ffsRsAndValidation.setError(isNotValid);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
+            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
+            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
+        }
+        if(!isStoped && isCustIDExpired(ffsRequestBody)){
+            ffsRsAndValidation.setError(isNotValid);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.ID_EXPIRED_CODE);
+            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.ID_EXPIRED_MESSAGE);
+            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_DESC);
+            isStoped = true;
+        }
         if(!StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isOfShelfFund(correlationId, ffsRequestBody)){
             ffsRsAndValidation.setError(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.OF_SHELF_FUND_CODE);
@@ -299,19 +324,6 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
             isStoped = true;
-        }
-        if(!isStoped && isCASADormant(correlationId, ffsRequestBody)){
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
-            isStoped = true;
-        }
-        if(!isStoped && isSuitabilityExpired(correlationId, ffsRequestBody)){
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
         }
         return ffsRsAndValidation;
     }
@@ -405,6 +417,24 @@ public class ProductsExpService {
             responseResponseEntity = investmentRequestClient.callInvestmentFundSuitabilityService(invHeaderReqParameter, suitabilityBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
             return UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            return true;
+        }
+    }
+
+    /**
+     * Method isOfShelfFund
+     *
+     * @param ffsRequestBody
+     */
+    public boolean isCustIDExpired(FfsRequestBody ffsRequestBody){
+        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>>  responseResponseEntity = null;
+        try{
+            Map<String, String> requestHeadersParameter = new HashMap<>();
+            responseResponseEntity = customerServiceClient.getCustomerProfile(requestHeadersParameter, ffsRequestBody.getCrmId());
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity.getBody().getData().getIdNo());
+            return UtilMap.isCustIDExpired(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             return true;
