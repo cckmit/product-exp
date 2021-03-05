@@ -7,6 +7,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -42,6 +43,7 @@ public class ProductExpServiceCloseTest {
     ProductsExpService productsExpService;
     AccountRequestClient accountRequestClient;
     KafkaProducerService kafkaProducerService;
+    CustomerServiceClient customerServiceClient;
 
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
@@ -56,7 +58,8 @@ public class ProductExpServiceCloseTest {
         accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService,
+        customerServiceClient = mock(CustomerServiceClient.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient,
                 investmentStartTime, investmentEndTime, topicName);
 
     }
