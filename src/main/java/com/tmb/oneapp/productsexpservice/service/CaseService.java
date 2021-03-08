@@ -48,12 +48,6 @@ public class CaseService {
             CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId, serviceTypeId);
             logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
 
-            //POST /apis/customers/firstTimeUsage
-            if (customerFirstUsage == null) {
-                logger.info("Calling POST /apis/customers/firstTimeUsage.");
-                asyncPostFirstTime(crmId, deviceId, serviceTypeId);
-            }
-
             //GET /apis/customer/case/status/{CRM_ID}.
             logger.info("Calling GET /apis/customer/case/status/{CRM_ID}");
             List<CaseStatusCase> caseStatusList = getCaseStatus(correlationId, crmId);
@@ -70,6 +64,12 @@ public class CaseService {
                     completed.add(caseStatusCase);
                 }
             });
+
+            //POST /apis/customers/firstTimeUsage
+            if (customerFirstUsage == null) {
+                logger.info("Calling POST /apis/customers/firstTimeUsage.");
+                asyncPostFirstTime(crmId, deviceId, serviceTypeId);
+            }
 
             return new CaseStatusResponse()
                     .setServiceTypeId(serviceTypeId)
