@@ -107,6 +107,12 @@ public class SetCreditLimitController {
 			return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 		} catch (Exception ex) {
 			logger.error("Unable to fetch set credit limit response: {}", ex);
+			CreditCardEvent creditCardEvent1 = new CreditCardEvent(correlationId, activityDate, ProductsExpServiceConstant.CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT);
+			creditCardEvent1 = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), activityDate, ProductsExpServiceConstant.ACTIVITY_ID_TEMP_REASON_OF_REQUEST);
+			
+			creditCardEvent1 = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent, requestHeadersParameter,
+					requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
+
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
 					ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
 
