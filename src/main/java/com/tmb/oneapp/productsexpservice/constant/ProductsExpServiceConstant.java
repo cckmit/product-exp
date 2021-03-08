@@ -51,22 +51,22 @@ public class ProductsExpServiceConstant {
     public static final String PAGE_NO = "pageNo";
 
     /* SERVICE OUR CLOSE */
-    public static final String SERVICE_OUR_CLOSE  = "MSG#01";
+    public static final String SERVICE_OUR_CLOSE  = "msg_al_01";
     public static final String SERVICE_OUR_CLOSE_MESSAGE = "NOT ALLOW TO PROCESSING";
     public static final String SERVICE_OUR_CLOSE_DESC = "Error";
 
     /* OF SHELF */
-    public static final String OF_SHELF_FUND_CODE  = "MSG#05";
+    public static final String OF_SHELF_FUND_CODE  = "msg_al_05";
     public static final String OF_SHELF_FUND_MESSAGE = "NOT ALLOW TO PURCHASE";
     public static final String OF_SHELF_FUND_DESC = "FUND DO NOT ALLOW TO PURCHASE";
 
     /* SUITABILITY EXPIRED */
-    public static final String SUITABILITY_EXPIRED_CODE  = "MSG#04";
+    public static final String SUITABILITY_EXPIRED_CODE  = "msg_al_04";
     public static final String SUITABILITY_EXPIRED_MESSAGE = "SUITABILITY EXPIRED";
     public static final String SUITABILITY_EXPIRED_DESC = "Error";
 
     /* ID EXPIRED */
-    public static final String ID_EXPIRED_CODE  = "MSG#09";
+    public static final String ID_EXPIRED_CODE  = "msg_al_09";
     public static final String ID_EXPIRED_MESSAGE = "ID CARD EXPIRED";
     public static final String ID_EXPIRED_DESC = "Error";
 
@@ -77,12 +77,12 @@ public class ProductsExpServiceConstant {
     public static final String FUND_RULE_NOT_FOUND_DESC = "FUND RULE NOT FOUND";
 
     /* BUSINESS OUR CLOSE */
-    public static final String BUSINESS_HOURS_CLOSE_CODE  = "MSG#06";
+    public static final String BUSINESS_HOURS_CLOSE_CODE  = "msg_al_06";
     public static final String BUSINESS_HOURS_CLOSE_MESSAGE = "NOT ALLOW TO DO";
     public static final String BUSINESS_HOURS_CLOSE_DESC = "TRANSACTION DO NOT ALLOW TO PROCESS";
 
     /* CASA DORMANT OUR CLOSE */
-    public static final String CASA_DORMANT_ACCOUNT_CODE  = "MSG#03";
+    public static final String CASA_DORMANT_ACCOUNT_CODE  = "msg_al_03";
     public static final String CASA_DORMANT_ACCOUNT_MESSAGE = "ACCOUNT NOT FOUND";
     public static final String CASA_DORMANT_ACCOUNT_DESC = "ACCOUNT NOT FOUND OR NOT READY TO DO THE TRANSACTION";
 
