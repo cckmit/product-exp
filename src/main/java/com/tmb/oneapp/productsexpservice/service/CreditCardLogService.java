@@ -101,10 +101,10 @@ public class CreditCardLogService {
 			SetCreditLimitReq requestBody, String mode) {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
-			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-			creditCardEvent.setType(ProductsExpServiceConstant.CHANGE_TYPE_PERMANENT);
+		        creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setNewLimit(requestBody.getCurrentCreditLimit());
-			creditCardEvent.setCurrentLimit(requestBody.getCurrentCreditLimit());
+			creditCardEvent.setCurrentLimit(requestBody.getPreviousCreditLimit());
+			creditCardEvent.setType(requestBody.getType());
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
