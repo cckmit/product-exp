@@ -102,14 +102,15 @@ public class CreditCardLogService {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-			creditCardEvent.setType(ProductsExpServiceConstant.CHANGE_TYPE_PERMANENT);
 			creditCardEvent.setNewLimit(requestBody.getCurrentCreditLimit());
-			creditCardEvent.setCurrentLimit(requestBody.getCurrentCreditLimit());
+			creditCardEvent.setCurrentLimit(requestBody.getPreviousCreditLimit());
+			creditCardEvent.setType(requestBody.getType());
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
+			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setExpiryDateForTempRequest(requestBody.getExpiryDate());
-			creditCardEvent.setType(ProductsExpServiceConstant.CHANGE_TYPE_TEMP);
 			creditCardEvent.setReasonForRequest(requestBody.getRequestReason());
+			creditCardEvent.setType(requestBody.getType());
 		}
 		populateBaseEvents(creditCardEvent, reqHeader);
 
