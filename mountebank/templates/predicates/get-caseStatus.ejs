@@ -1,13 +1,15 @@
 {
     "predicates": [{
         "equals": {
-            "path": "/apis/product/case/status/",
+            "path": "/apis/product/case/status",
             "query": {
                 "service_type_id": "serviceTypeId"
             },
             "method": "GET",
             "headers": {
-                "device-id": "deviceId"
+                "device-id": "deviceId",
+                "x-crmid":"001100000000000000000012004043",
+                "X-Correlation-ID": "mockCorrelationId"
             }
         }
     }],
