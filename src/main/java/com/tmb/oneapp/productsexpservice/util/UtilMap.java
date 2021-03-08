@@ -381,6 +381,7 @@ public class UtilMap {
      */
     public static List<FundSearch>  mappingFundSearchListData(List<FundClass> fundClass){
         List<FundSearch> searchList = new ArrayList<>();
+        List<FundSearch> fundListDistinctByFundCode = new ArrayList<>();
         FundSearch fundSearch = null;
         try {
             for (FundClass fundClassLoop : fundClass) {
@@ -405,9 +406,7 @@ public class UtilMap {
                 }
             }
             Set<String> nameSet = new HashSet<>();
-            List<FundSearch> fundListDistinctByFundCode = searchList.stream()
-                    .filter(e -> nameSet.add(e.getFundCode()))
-                    .collect(Collectors.toList());
+            fundListDistinctByFundCode = searchList.stream().filter(e -> nameSet.add(e.getFundCode())).collect(Collectors.toList());
             return fundListDistinctByFundCode;
         }catch (Exception ex){
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
