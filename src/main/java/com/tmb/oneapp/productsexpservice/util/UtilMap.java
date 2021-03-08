@@ -30,6 +30,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundContent
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListClass;
 import org.springframework.http.MediaType;
 import java.text.SimpleDateFormat;
+import java.util.stream.Collectors;
 
 public class UtilMap {
     private static TMBLogger<UtilMap> logger = new TMBLogger<>(UtilMap.class);
@@ -380,6 +381,7 @@ public class UtilMap {
      */
     public static List<FundSearch>  mappingFundSearchListData(List<FundClass> fundClass){
         List<FundSearch> searchList = new ArrayList<>();
+        List<FundSearch> fundListDistinctByFundCode = new ArrayList<>();
         FundSearch fundSearch = null;
         try {
             for (FundClass fundClassLoop : fundClass) {
@@ -403,6 +405,9 @@ public class UtilMap {
                     fundHouse.setFundList(null);
                 }
             }
+            Set<String> nameSet = new HashSet<>();
+            fundListDistinctByFundCode = searchList.stream().filter(e -> nameSet.add(e.getFundCode())).collect(Collectors.toList());
+            return fundListDistinctByFundCode;
         }catch (Exception ex){
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
