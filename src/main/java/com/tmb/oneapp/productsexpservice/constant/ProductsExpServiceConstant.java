@@ -46,18 +46,29 @@ public class ProductsExpServiceConstant {
     public static final String FAILED_MESSAGE = "failed";
 
     public static final String MF_TIME_HHMM = "HHmm";
+    public static final String MF_DATE_YYYYMMDD = "yyyy-MM-dd";
     public static final String PAGE_SIZE = "pageSize";
     public static final String PAGE_NO = "pageNo";
 
     /* SERVICE OUR CLOSE */
-    public static final String SERVICE_OUR_CLOSE  = "MSG#01";
+    public static final String SERVICE_OUR_CLOSE  = "msg_al_01";
     public static final String SERVICE_OUR_CLOSE_MESSAGE = "NOT ALLOW TO PROCESSING";
     public static final String SERVICE_OUR_CLOSE_DESC = "Error";
 
     /* OF SHELF */
-    public static final String OF_SHELF_FUND_CODE  = "MSG#05";
+    public static final String OF_SHELF_FUND_CODE  = "msg_al_05";
     public static final String OF_SHELF_FUND_MESSAGE = "NOT ALLOW TO PURCHASE";
     public static final String OF_SHELF_FUND_DESC = "FUND DO NOT ALLOW TO PURCHASE";
+
+    /* SUITABILITY EXPIRED */
+    public static final String SUITABILITY_EXPIRED_CODE  = "msg_al_04";
+    public static final String SUITABILITY_EXPIRED_MESSAGE = "SUITABILITY EXPIRED";
+    public static final String SUITABILITY_EXPIRED_DESC = "Error";
+
+    /* ID EXPIRED */
+    public static final String ID_EXPIRED_CODE  = "msg_al_09";
+    public static final String ID_EXPIRED_MESSAGE = "ID CARD EXPIRED";
+    public static final String ID_EXPIRED_DESC = "Error";
 
     /* FUND RULE RETURN NOT FOUND */
     public static final String SERVICE_NOT_FOUND  = "MSG999";
@@ -66,12 +77,12 @@ public class ProductsExpServiceConstant {
     public static final String FUND_RULE_NOT_FOUND_DESC = "FUND RULE NOT FOUND";
 
     /* BUSINESS OUR CLOSE */
-    public static final String BUSINESS_HOURS_CLOSE_CODE  = "MSG#06";
+    public static final String BUSINESS_HOURS_CLOSE_CODE  = "msg_al_06";
     public static final String BUSINESS_HOURS_CLOSE_MESSAGE = "NOT ALLOW TO DO";
     public static final String BUSINESS_HOURS_CLOSE_DESC = "TRANSACTION DO NOT ALLOW TO PROCESS";
 
     /* CASA DORMANT OUR CLOSE */
-    public static final String CASA_DORMANT_ACCOUNT_CODE  = "MSG#03";
+    public static final String CASA_DORMANT_ACCOUNT_CODE  = "msg_al_03";
     public static final String CASA_DORMANT_ACCOUNT_MESSAGE = "ACCOUNT NOT FOUND";
     public static final String CASA_DORMANT_ACCOUNT_DESC = "ACCOUNT NOT FOUND OR NOT READY TO DO THE TRANSACTION";
 
@@ -115,12 +126,15 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_CARD_ACTIVATION="00700103";
     public static final String METHOD="SCAN/KEY IN";
     public static final String UNIT_HOLDER="PT000000000000587870";
+    public static final String SUITABILITY_EXPIRED = "2";
 
     public static final String SERVICE_TYPE_ID_CST="CST";
     public static final String CASE_STATUS_IN_PROGRESS="In Progress";
     public static final String CASE_STATUS_CLOSED="Closed";
 
     public static final int ERROR_CODE_404 = 404;
+    public static final String CUST_CRMID = "crmId";
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
 
 }
 

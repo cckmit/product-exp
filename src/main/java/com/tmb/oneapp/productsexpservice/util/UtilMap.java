@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
@@ -17,6 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundContent
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListClass;
 import org.springframework.http.MediaType;
 import java.text.SimpleDateFormat;
+import java.util.stream.Collectors;
 
 public class UtilMap {
     private static TMBLogger<UtilMap> logger = new TMBLogger<>(UtilMap.class);
@@ -73,11 +76,12 @@ public class UtilMap {
         BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
         List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
-
-        for(Order order : orders){
-            FundOrderHistory fundOrderHistory = new FundOrderHistory();
-            BeanUtils.copyProperties(order, fundOrderHistory);
-            ordersHistories.add(fundOrderHistory);
+        if(!StringUtils.isEmpty(orders)) {
+            for (Order order : orders) {
+                FundOrderHistory fundOrderHistory = new FundOrderHistory();
+                BeanUtils.copyProperties(order, fundOrderHistory);
+                ordersHistories.add(fundOrderHistory);
+            }
         }
         accountDetail.setOrdersHistories(ordersHistories);
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
@@ -250,6 +254,45 @@ public class UtilMap {
     }
 
     /**
+     * Generic Method to create HTTP Header
+     *
+     * @param suitabilityInfo
+     * @return
+     */
+    public static boolean isSuitabilityExpire(SuitabilityInfo suitabilityInfo) {
+        boolean isExpire = true;
+        try {
+            if (!StringUtils.isEmpty(suitabilityInfo)
+                    && suitabilityInfo.getSuitValidation().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED)) {
+                return isExpire;
+            }
+        }catch (Exception e){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+        }
+        return false;
+    }
+
+    /**
+     * Generic Method to create HTTP Header
+     *
+     * @param customerProfileResponseData
+     * @return
+     */
+    public static boolean isCustIDExpired(CustomerProfileResponseData customerProfileResponseData) {
+        try {
+            if (!StringUtils.isEmpty(customerProfileResponseData) && customerProfileResponseData.getIdExpireDate() != null) {
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_DATE_YYYYMMDD);
+                String getCurrentTime = sdf.format(cal.getTime());
+                return getCurrentTime.compareTo(customerProfileResponseData.getIdExpireDate()) > 0;
+            }
+        }catch (Exception e){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+        }
+        return false;
+    }
+
+    /**
      * Generic Method to mappingResponse
      *
      * @param responseCustomerExp
@@ -338,6 +381,7 @@ public class UtilMap {
      */
     public static List<FundSearch>  mappingFundSearchListData(List<FundClass> fundClass){
         List<FundSearch> searchList = new ArrayList<>();
+        List<FundSearch> fundListDistinctByFundCode = new ArrayList<>();
         FundSearch fundSearch = null;
         try {
             for (FundClass fundClassLoop : fundClass) {
@@ -361,6 +405,9 @@ public class UtilMap {
                     fundHouse.setFundList(null);
                 }
             }
+            Set<String> nameSet = new HashSet<>();
+            fundListDistinctByFundCode = searchList.stream().filter(e -> nameSet.add(e.getFundCode())).collect(Collectors.toList());
+            return fundListDistinctByFundCode;
         }catch (Exception ex){
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }

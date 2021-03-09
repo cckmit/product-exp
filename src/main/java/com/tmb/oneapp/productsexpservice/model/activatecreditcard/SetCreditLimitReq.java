@@ -25,4 +25,6 @@ public class SetCreditLimitReq {
 	private String requestReason;
 	@JsonProperty("previous_credit_limit")
 	private String previousCreditLimit;
+	@JsonProperty("type")
+	private String type;
 }

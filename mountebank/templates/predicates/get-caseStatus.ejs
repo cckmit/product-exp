@@ -1,14 +1,11 @@
 {
     "predicates": [{
         "equals": {
-            "path": "/apis/product/case/status/",
+            "path": "/apis/products/case/status",
             "query": {
                 "service_type_id": "serviceTypeId"
             },
-            "method": "GET",
-            "headers": {
-                "device-id": "deviceId"
-            }
+            "method": "GET"
         }
     }],
     "responses": [{
@@ -28,22 +25,26 @@
                     "first_usage_experience": true,
                     "service_type_id": "CST",
                     "in_progress": [{
-                            "status": "inProgress",
-                            "product_name_th" "บัญขีเงินฝาก",
-                            "product_name_en" "Saving Account",
-                            "issue": "ร้องเรียนขั้นตอนการตรวจสอบตัวตน",
-                            "reference_no": "123456789",
-                            "issue_date" "2020-01-02",
-                            "expected_finish_date" "2021-06-18"
+                        "reference_no": "00308295",
+                        "status": "In progress",
+                        "product_name_th": "บัญขีเงินฝาก",
+                        "product_name_en": "Complaint",
+                        "issue_th": "ร้องเรียนขั้นตอนการตรวจสอบตัวตน",
+                        "issue_en": "Identity verification",
+                        "issue_date": "2021-01-21",
+                        "expected_finish_date": "2021-01-26",
+                        "finish_date": ""
                      }],
                     "complete": [{
-                            "status": "complete",
-                            "product_name_th" "บัญขีเงินฝาก",
-                            "product_name_en" "Saving Account",
-                            "issue": "ร้องเรียนขั้นตอนการตรวจสอบตัวตน",
-                            "reference_no": "123456788",
-                            "issue_date" "2020-01-02",
-                            "finish_date" "2021-15-02"
+                        "reference_no": "00308274",
+                        "status": "Complete",
+                        "product_name_th": "บัญขีเงินฝาก",
+                        "product_name_en": "Complaint",
+                        "issue_th": "ร้องเรียนขั้นตอนการตรวจสอบตัวตน",
+                        "issue_en": "Identity verification",
+                        "issue_date": "2021-01-21",
+                        "expected_finish_date": "2021-01-26",
+                        "finish_date": "2021-01-26"
                     }]
                 }
             }

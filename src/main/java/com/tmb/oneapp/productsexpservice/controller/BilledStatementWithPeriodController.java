@@ -70,8 +70,8 @@ public class BilledStatementWithPeriodController {
                 this.handlingFailedResponse(response, responseHeaders);
             }
 
-        } catch (Exception ex) {
-            logger.error("Unable to fetch billed statement for this account ID: {}", ex);
+        } catch (Exception exception) {
+            logger.error("Unable to fetch billed statement for this account ID: {}", exception);
             response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
                     ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
 

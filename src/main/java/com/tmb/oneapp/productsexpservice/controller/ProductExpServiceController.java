@@ -186,9 +186,7 @@ public class ProductExpServiceController {
 		try {
 			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
 				ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
-				if (ffsRsAndValidation.isServiceClose() || ffsRsAndValidation.isFundOfShelf()
-						|| ffsRsAndValidation.isNotBusinessOur() || ffsRsAndValidation.isCasaDormant()
-						|| ffsRsAndValidation.isError()) {
+				if (ffsRsAndValidation.isError()) {
 
 					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
 							ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,

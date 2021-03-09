@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -234,7 +235,7 @@ public class ProductExpServiceControllerTest {
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
     }
-
+    
 
     @Test
     public void testgetFundPrePaymentDetail() throws Exception {
@@ -338,7 +339,7 @@ public class ProductExpServiceControllerTest {
         FfsRsAndValidation fundRsAndValidation = null;
         try {
             fundRsAndValidation = new FfsRsAndValidation();
-            fundRsAndValidation.setServiceClose(true);
+            fundRsAndValidation.setError(true);
             fundRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
             fundRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
             fundRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
@@ -371,6 +372,7 @@ public class ProductExpServiceControllerTest {
 
     @Test
     public void getFundFFSAndValidationException() throws Exception {
+        CustomerProfileResponseData data = new CustomerProfileResponseData();
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
         ffsRequestBody.setFundCode("SCBTMF");
         ffsRequestBody.setFundHouseCode("SCBAM");

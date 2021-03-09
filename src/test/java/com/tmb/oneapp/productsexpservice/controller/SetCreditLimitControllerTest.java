@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,6 +107,8 @@ public class SetCreditLimitControllerTest {
 		CreditCardEvent creditCardEvent = new CreditCardEvent("123", "123", "1234");
 		when(creditCardLogService.completeUsageListEvent(any(), any(), any())).thenReturn(creditCardEvent);
 		when(creditCardClient.fetchSetCreditLimit(anyString(), any())).thenThrow(new
+				IllegalStateException("Error occurred"));
+		when(creditCardLogService.onClickNextButtonEvent(any(), any(), any())).thenThrow(new
 				IllegalStateException("Error occurred"));
 		ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> res = setCreditLimitController
 				.setCreditLimit(requestBodyParameter, requestHeadersParameter);

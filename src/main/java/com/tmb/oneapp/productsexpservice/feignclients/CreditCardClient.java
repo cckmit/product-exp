@@ -20,6 +20,8 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
+import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
+import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 
@@ -65,5 +67,8 @@ public interface CreditCardClient {
 			@RequestHeader("X-Correlation-ID") String correlationId,
 			@PathVariable(value = "ACCOUNT_ID") String accountId,
 			@RequestBody GetBilledStatementQuery billedStatementPeriodQuery);
+	
+	@PostMapping(value = "/apis/creditcard/block-card")
+	public ResponseEntity<BlockCardResponse> getBlockCardDetails(@RequestBody BlockCardRequest requestBodyParameter);
 
 }
