@@ -23,6 +23,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
@@ -34,6 +35,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentD
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,16 +107,25 @@ public class ProductsExpService {
         fundRuleRequestBody.setFundHouseCode(fundAccountRq.getFundHouseCode());
         fundRuleRequestBody.setTranType(fundAccountRq.getTranType());
 
+        OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
+        orderStmtByPortRq.setPortfolioNumber(fundAccountRq.getUnitHolderNo());
+        orderStmtByPortRq.setFundCode(fundAccountRq.getFundCode());
+        orderStmtByPortRq.setRowStart(ProductsExpServiceConstant.FIXED_START_PAGE);
+        orderStmtByPortRq.setRowEnd(ProductsExpServiceConstant.FIXED_END_PAGE);
+
         Map<String, String> invHeaderReqParameter = createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response = null;
         ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = null;
+        ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseStmt = null;
         try {
             response = investmentRequestClient.callInvestmentFundAccDetailService(invHeaderReqParameter, fundAccountRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, response);
             responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
+            responseStmt = investmentRequestClient.callInvestmentStmtByPortService(invHeaderReqParameter, orderStmtByPortRq);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
             UtilMap map = new UtilMap();
-            fundAccountRs = map.validateTMBResponse(response, responseEntity);
+            fundAccountRs = map.validateTMBResponse(response, responseEntity, responseStmt);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return fundAccountRs;

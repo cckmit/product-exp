@@ -393,7 +393,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void validateTMBResponse() throws Exception {
       UtilMap utilMap = new UtilMap();
-        FundAccountRs fundAccountRs = utilMap.validateTMBResponse(null, null);
+        FundAccountRs fundAccountRs = utilMap.validateTMBResponse(null, null, null);
         Assert.assertNull(fundAccountRs);
     }
 

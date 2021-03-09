@@ -6,12 +6,14 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -102,5 +104,19 @@ public interface InvestmentRequestClient {
     @ResponseBody
     public ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> callInvestmentFundSuitabilityService(@RequestHeader Map<String, String> headers
             , @RequestBody SuitabilityBody suitabilityBody);
+
+
+
+    /**
+     * Call investment fund summary service fund summary response.
+     *
+     * @param headers the headers
+     * @param orderStmtByPortRq the rmID
+     * @return the Suitability response
+     */
+    @PostMapping(value = "${investment.service.fund.stmtbyport.url}")
+    @ResponseBody
+    public ResponseEntity<TmbOneServiceResponse<StatementResponse>> callInvestmentStmtByPortService(@RequestHeader Map<String, String> headers
+            , @RequestBody OrderStmtByPortRq orderStmtByPortRq);
 
 }
