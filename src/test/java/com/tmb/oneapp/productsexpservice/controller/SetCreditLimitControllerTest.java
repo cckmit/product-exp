@@ -8,6 +8,9 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimit
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Status;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+
+import feign.FeignException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -99,6 +102,7 @@ public class SetCreditLimitControllerTest {
 		status.setStatusCode("0");
 		SetCreditLimitResp setCreditLimitResp = new SetCreditLimitResp();
 		setCreditLimitResp.setStatus(status);
+		CreditCardEvent creditCardTempLimit = new CreditCardEvent("c83936c284cb398fA46CF16F399C", "03/09/2021", "00700201");
 		TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<SetCreditLimitResp>();
 		oneServiceResponse.setData(setCreditLimitResp);
 		ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> response = new ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>>(
@@ -106,14 +110,11 @@ public class SetCreditLimitControllerTest {
 		Map<String, String> requestHeadersParameter = headerRequestParameter();
 		CreditCardEvent creditCardEvent = new CreditCardEvent("123", "123", "1234");
 		when(creditCardLogService.completeUsageListEvent(any(), any(), any())).thenReturn(creditCardEvent);
-		when(creditCardClient.fetchSetCreditLimit(anyString(), any())).thenThrow(new
-				IllegalStateException("Error occurred"));
-		when(creditCardLogService.onClickNextButtonEvent(any(), any(), any())).thenThrow(new
-				IllegalStateException("Error occurred"));
+		when(creditCardLogService.onClickNextButtonLimitEvent(any(), any(), any(),anyString())).thenReturn(creditCardTempLimit);
 		ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> res = setCreditLimitController
 				.setCreditLimit(requestBodyParameter, requestHeadersParameter);
 		assertNull(res.getBody().getData());
-
+		
 	}
 
 	public Map<String, String> headerRequestParameter() {
