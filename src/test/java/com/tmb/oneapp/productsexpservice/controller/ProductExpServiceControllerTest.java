@@ -130,26 +130,12 @@ public class ProductExpServiceControllerTest {
         FundOrderHistory fundOrderHistory = new FundOrderHistory();
         fundOrderHistory.setAmount("2000.00");
         fundOrderHistory.setOrderDate("20200413");
-        fundOrderHistory.setChannelHubEN("EN");
-        fundOrderHistory.setOrderReference("EEEE");
-        fundOrderHistory.setOrderDateTemp("20200413");
-        fundOrderHistory.setEfftDate("20200413");
-        fundOrderHistory.setItemNo("1");
-        fundOrderHistory.setStatusHubEN("SS");
-        fundOrderHistory.setTranTypeHubEN("1");
-        fundOrderHistory.setTranTypeHubTH("1");
+
 
         FundOrderHistory fundOrderHistoryOne = new FundOrderHistory();
         fundOrderHistoryOne.setAmount("2000.00");
         fundOrderHistoryOne.setOrderDate("20200413");
-        fundOrderHistoryOne.setChannelHubEN("EN");
-        fundOrderHistoryOne.setOrderReference("EEEE");
-        fundOrderHistoryOne.setOrderDateTemp("20200413");
-        fundOrderHistoryOne.setEfftDate("20200413");
-        fundOrderHistoryOne.setItemNo("2");
-        fundOrderHistoryOne.setStatusHubEN("SS");
-        fundOrderHistoryOne.setTranTypeHubEN("1");
-        fundOrderHistoryOne.setTranTypeHubTH("1");
+
 
         ordersHistories.add(fundOrderHistory);
         ordersHistories.add(fundOrderHistoryOne);

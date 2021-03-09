@@ -18,6 +18,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
+import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementList;
+import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -43,7 +45,8 @@ public class UtilMap {
      * @return FundAccountRs
      */
     public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
-                                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity){
+                                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity,
+                                             ResponseEntity<TmbOneServiceResponse<StatementResponse>> statementRs){
         if((StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity))
                 || (HttpStatus.OK != response.getStatusCode() && HttpStatus.OK != responseEntity.getStatusCode())){
             return null;
@@ -51,7 +54,7 @@ public class UtilMap {
             FundAccountRs fundAccountRs = new FundAccountRs();
             UtilMap utilMap = new UtilMap();
             FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
-                    responseEntity.getBody().getData());
+                    responseEntity.getBody().getData(), statementRs.getBody().getData());
             fundAccountRs.setDetails(fundAccountDetail);
             return fundAccountRs;
         }
@@ -64,7 +67,7 @@ public class UtilMap {
      * @param fundRuleBody
      * @return FundAccountDetail
      */
-    public FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody){
+    public FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse){
         FundRule fundRule = new FundRule();
 
         List<FundRuleInfoList> fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
@@ -74,14 +77,13 @@ public class UtilMap {
 
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
-        List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
-        if(!StringUtils.isEmpty(orders)) {
-            for (Order order : orders) {
-                FundOrderHistory fundOrderHistory = new FundOrderHistory();
-                BeanUtils.copyProperties(order, fundOrderHistory);
-                ordersHistories.add(fundOrderHistory);
-            }
+        List<StatementList> statementList = statementResponse.getStatementList();
+        FundOrderHistory order = null;
+        for(StatementList stmt : statementList) {
+            order = new FundOrderHistory();
+            BeanUtils.copyProperties(stmt, order);
+            ordersHistories.add(order);
         }
         accountDetail.setOrdersHistories(ordersHistories);
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
