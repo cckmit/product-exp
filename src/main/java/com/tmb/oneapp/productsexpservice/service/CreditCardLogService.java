@@ -109,7 +109,7 @@ public class CreditCardLogService {
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setExpiryDateForTempRequest(requestBody.getExpiryDate());
-			creditCardEvent.setReasonForRequest(requestBody.getRequestReason());
+			creditCardEvent.setReasonForRequest(requestBody.getReasonDescEn());
 			creditCardEvent.setType(requestBody.getType());
 		}
 		populateBaseEvents(creditCardEvent, reqHeader);
