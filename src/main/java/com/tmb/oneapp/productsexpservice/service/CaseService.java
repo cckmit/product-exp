@@ -58,9 +58,9 @@ public class CaseService {
             List<CaseStatusCase> completed = new ArrayList<>();
 
             caseStatusList.forEach(caseStatusCase -> {
-                if (caseStatusCase.getStatus().equals(CASE_STATUS_IN_PROGRESS)) {
+                if (caseStatusCase.getStatus().equalsIgnoreCase(CASE_STATUS_IN_PROGRESS)) {
                     inProgress.add(caseStatusCase);
-                } else if (caseStatusCase.getStatus().equals(CASE_STATUS_CLOSED)) {
+                } else if (caseStatusCase.getStatus().equalsIgnoreCase(CASE_STATUS_CLOSED)) {
                     completed.add(caseStatusCase);
                 }
             });
