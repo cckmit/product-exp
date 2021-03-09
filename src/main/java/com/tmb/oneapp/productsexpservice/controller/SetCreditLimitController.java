@@ -112,7 +112,6 @@ public class SetCreditLimitController {
 
 			creditCardEvent1 = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent, requestHeadersParameter,
 					requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
-            creditCardEvent1.setFailReason(ex.getMessage());
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
 					ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
 
