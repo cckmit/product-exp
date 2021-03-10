@@ -155,18 +155,19 @@ public class ProductsExpService {
      * @param rq            the rq
      * @return the fund summary response
      */
+    @LogAround
     public FundSummaryBody getFundSummary(String correlationId, FundSummaryRq rq) {
         FundSummaryBody result = new FundSummaryBody();
 
 
         String portData;
-        ResponseEntity<TmbOneServiceResponse<com.tmb.oneapp.productsexpservice.model
-                .fundsummarydata.response.fundsummary.FundSummaryResponse>> fundSummaryData = null;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData = null;
         UnitHolder unitHolder = new UnitHolder();
 
         Map<String, String> invHeaderReqParameter = createHeader(correlationId);
         try {
             portData = accountRequestClient.getPortList(invHeaderReqParameter, rq.getCrmId());
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
             if (!StringUtils.isEmpty(portData)) {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
@@ -181,8 +182,8 @@ public class ProductsExpService {
                 result.setPortsUnitHolder(myPorts);
                 String acctNbrList = ports.stream().map(Port::<String>getAcctNbr).collect(Collectors.joining(","));
                 unitHolder.setUnitHolderNo(acctNbrList);
-                fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter
-                        , unitHolder);
+                fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
+                logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, fundSummaryData);
                 if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                     var body = fundSummaryData.getBody();
                     if (body != null) {
@@ -204,7 +205,6 @@ public class ProductsExpService {
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
-
         }
     }
 
@@ -344,6 +344,7 @@ public class ProductsExpService {
      * @param correlationId
      * @param ffsRequestBody
      */
+    @LogAround
     public boolean isOfShelfFund(String correlationId, FfsRequestBody ffsRequestBody){
         ResponseEntity<TmbOneServiceResponse<FundListPage>> responseResponseEntity = null;
         try{
@@ -367,6 +368,7 @@ public class ProductsExpService {
      * @param correlationId
      * @param ffsRequestBody
      */
+    @LogAround
     public boolean isBusinessClose(String correlationId, FfsRequestBody ffsRequestBody){
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
         fundRuleRequestBody.setFundCode(ffsRequestBody.getFundCode());
@@ -399,6 +401,7 @@ public class ProductsExpService {
      * @param correlationId
      * @param ffsRequestBody
      */
+    @LogAround
     public boolean isCASADormant(String correlationId, FfsRequestBody ffsRequestBody){
         String responseCustomerExp = null;
         try{
@@ -418,6 +421,7 @@ public class ProductsExpService {
      * @param correlationId
      * @param ffsRequestBody
      */
+    @LogAround
     public boolean isSuitabilityExpired(String correlationId, FfsRequestBody ffsRequestBody){
         ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity = null;
         try{
@@ -438,6 +442,7 @@ public class ProductsExpService {
      *
      * @param ffsRequestBody
      */
+    @LogAround
     public boolean isCustIDExpired(FfsRequestBody ffsRequestBody){
         ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>>  responseResponseEntity = null;
         try{
