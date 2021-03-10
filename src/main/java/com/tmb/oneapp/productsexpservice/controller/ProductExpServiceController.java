@@ -31,7 +31,6 @@ import org.springframework.http.HttpHeaders;
 import java.time.Instant;
 
 
-
 /**
  * ProductExpServiceController request mapping will handle apis call and
  * then navigate to respective method to get MF account Detail
@@ -74,10 +73,7 @@ public class ProductExpServiceController {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-		FundAccountRs fundAccountRs = null;
-
-		try {
-			 fundAccountRs = productsExpService.getFundAccountDetail(correlationId, fundAccountRq);
+		FundAccountRs fundAccountRs = productsExpService.getFundAccountDetail(correlationId, fundAccountRq);
 			if(!StringUtils.isEmpty(fundAccountRs)){
 				oneServiceResponse.setData(fundAccountRs);
 				oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -91,16 +87,6 @@ public class ProductExpServiceController {
 				oneServiceResponse.setData(null);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
 			}
-		} catch (Exception e) {
-			logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-			oneServiceResponse.setData(null);
-			oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-					ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-					ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-
-		}
-
 	}
 	/**
 	 * Gets fund summary.
@@ -117,13 +103,11 @@ public class ProductExpServiceController {
 			@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
 			@Valid @RequestBody FundSummaryRq fundSummaryRq) {
 
-		TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
-		FundSummaryBody fundSummaryResponse = null;
+			TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
-		try {
-				HttpHeaders responseHeaders = new HttpHeaders();
-				responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-				fundSummaryResponse = productsExpService.getFundSummary(correlationId,fundSummaryRq);
+				FundSummaryBody fundSummaryResponse = productsExpService.getFundSummary(correlationId,fundSummaryRq);
 				if(!StringUtils.isEmpty(fundSummaryResponse)){
 					oneServiceResponse.setData(fundSummaryResponse);
 					oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -137,16 +121,6 @@ public class ProductExpServiceController {
 					oneServiceResponse.setData(null);
 					return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
 				}
-		} catch (Exception e) {
-			logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-			oneServiceResponse.setData(null);
-			oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-					ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-					ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-
-		}
-
 	}
 
 	/**
@@ -167,9 +141,7 @@ public class ProductExpServiceController {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-		FundPaymentDetailRs fundPaymentDetailRs = null;
-		try {
-			 fundPaymentDetailRs = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRq);
+		FundPaymentDetailRs fundPaymentDetailRs = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRq);
 			if (!StringUtils.isEmpty(fundPaymentDetailRs)) {
 				oneServiceResponse.setData(fundPaymentDetailRs);
 				oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -183,15 +155,6 @@ public class ProductExpServiceController {
 				oneServiceResponse.setData(null);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
 			}
-		} catch (Exception e) {
-			logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-			oneServiceResponse.setData(null);
-			oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-					ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-					ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-
-		}
 	}
 
 	/**
