@@ -211,8 +211,12 @@ public class CreditCardLogService {
 	@Async
 	@LogAround
 	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId) {
+			String accountId, String failReason) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE)) {
+			creditCardEvent.setFailReason(failReason);
+		}
+
 		creditCardEvent.setCardNumber(accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
 		logActivity(creditCardEvent);
