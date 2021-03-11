@@ -283,6 +283,7 @@ public class ProductsExpService {
                 }
             }catch (Exception e){
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+                return null;
             }
         }
         return ffsRsAndValidation;
@@ -290,7 +291,7 @@ public class ProductsExpService {
 
 
     /**
-     * Generic Method to call MF Service getFundAccDetail
+     * To validate Alternative case and verify expire-citizen id
      *
      * @param ffsRequestBody
      * @param correlationId
@@ -339,16 +340,15 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isOfShelfFund
+     * Method isOfShelfFund for get all fund list and check with fund code
      *
      * @param correlationId
      * @param ffsRequestBody
      */
-    @LogAround
     public boolean isOfShelfFund(String correlationId, FfsRequestBody ffsRequestBody){
         ResponseEntity<TmbOneServiceResponse<FundListPage>> responseResponseEntity = null;
         try{
-            Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(correlationId, 139, 0);
+            Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(correlationId, 0, 0);
             responseResponseEntity = investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
             if (!StringUtils.isEmpty(responseResponseEntity) &&
@@ -363,12 +363,11 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isBusinessClose for check service our
+     * Method isBusinessClose for check cut of time from fundRule
      *
      * @param correlationId
      * @param ffsRequestBody
      */
-    @LogAround
     public boolean isBusinessClose(String correlationId, FfsRequestBody ffsRequestBody){
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
         fundRuleRequestBody.setFundCode(ffsRequestBody.getFundCode());
@@ -396,12 +395,11 @@ public class ProductsExpService {
 
 
     /**
-     * Method isCASADormant
+     * Method isCASADormant get Customer account and check dormant status
      *
      * @param correlationId
      * @param ffsRequestBody
      */
-    @LogAround
     public boolean isCASADormant(String correlationId, FfsRequestBody ffsRequestBody){
         String responseCustomerExp = null;
         try{
@@ -416,12 +414,11 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isSuitabilityExpired
+     * Method isSuitabilityExpired Call MF service to check suitability is expire.
      *
      * @param correlationId
      * @param ffsRequestBody
      */
-    @LogAround
     public boolean isSuitabilityExpired(String correlationId, FfsRequestBody ffsRequestBody){
         ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity = null;
         try{
@@ -438,7 +435,7 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isCustIDExpired
+     * Method isCustIDExpired call to customer-info and get id_expire_date to verify with current date
      *
      * @param ffsRequestBody
      */

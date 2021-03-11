@@ -234,7 +234,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to create HTTP Header
+     * Method to check cut of time from fund rule with current date time.
      *
      * @param ffsRequestBody
      * @param fundListClass
@@ -255,7 +255,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to create HTTP Header
+     * Method to check suitability is expire from MF service
      *
      * @param suitabilityInfo
      * @return
@@ -274,7 +274,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to create HTTP Header
+     * Method to check citizen id expire with current date
      *
      * @param customerProfileResponseData
      * @return
@@ -294,7 +294,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingResponse
+     * Method to check account status is dormant and acc balance is not 0
      *
      * @param responseCustomerExp
      * @return boolean
@@ -335,7 +335,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingResponse
+     * Generic Method to add Colon to time
      *
      * @param timeHHmm
      * @return String
@@ -351,7 +351,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingResponse
+     * Generic Method to mappingFundListData
      *
      * @param fundClass
      * @return List<FundClass>
@@ -375,7 +375,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingResponse
+     * Generic Method to mappingFundSearchListData
      *
      * @param fundClass
      * @return List<FundSearch>
