@@ -1,15 +1,21 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.kafka.service.KafkaProducerService;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.BaseEvent;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
+import com.tmb.oneapp.productsexpservice.model.activitylog.CustomerServiceActivity;
 import com.tmb.oneapp.productsexpservice.model.response.CaseStatusCase;
 import com.tmb.oneapp.productsexpservice.model.response.CaseStatusResponse;
 import feign.FeignException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -28,9 +34,15 @@ import static com.tmb.oneapp.productsexpservice.constant.ResponseCode.DATA_NOT_F
 public class CaseService {
     private static final TMBLogger<CaseService> logger = new TMBLogger<>(CaseService.class);
     private final CustomerServiceClient customerServiceClient;
+    private final String topicName;
+    private final KafkaProducerService kafkaProducerService;
 
-    public CaseService(CustomerServiceClient customerServiceClient) {
+    public CaseService(CustomerServiceClient customerServiceClient,
+                       KafkaProducerService kafkaProducerService,
+                       @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
         this.customerServiceClient = customerServiceClient;
+        this.kafkaProducerService = kafkaProducerService;
+        this.topicName = topicName;
     }
 
     /**
@@ -65,12 +77,34 @@ public class CaseService {
                 }
             });
 
+            //Send Activity Log
+            if (customerFirstUsage == null) {
+                //101500201
+                logActivity(new CustomerServiceActivity(correlationId,
+                        String.valueOf(System.currentTimeMillis()),
+                        CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
+                        .setScreenName("tutorial case tracking"));
+            }
+
+            if (caseStatusList.isEmpty()) {
+                //101500202
+                logActivity(new CustomerServiceActivity(correlationId,
+                        String.valueOf(System.currentTimeMillis()),
+                        CASE_TRACKING_EMPTY_ACTIVITY_ID)
+                        .setScreenName("empty case tracking"));
+            } else {
+                //101500203
+                logActivity(new CustomerServiceActivity(correlationId,
+                        String.valueOf(System.currentTimeMillis()),
+                        CASE_TRACKING_ACTIVITY_ID)
+                        .setScreenName("case tracking"));
+            }
+
             //POST /apis/customers/firstTimeUsage
             if (customerFirstUsage == null) {
                 logger.info("Calling POST /apis/customers/firstTimeUsage.");
                 asyncPostFirstTime(crmId, deviceId, serviceTypeId);
             }
-
             return new CaseStatusResponse()
                     .setServiceTypeId(serviceTypeId)
                     .setFirstUsageExperience(customerFirstUsage == null)
@@ -189,7 +223,7 @@ public class CaseService {
     @SuppressWarnings("all")
     public TmbOneServiceResponse mapTmbOneServiceResponse(Optional<ByteBuffer> optionalResponse) {
         try {
-            if(!optionalResponse.isPresent()){
+            if (!optionalResponse.isPresent()) {
                 return null;
             }
 
@@ -198,6 +232,26 @@ public class CaseService {
         } catch (Exception e) {
             logger.error("Unexpected error received, cannot parse.");
             return null;
+        }
+    }
+
+    /**
+     * Method logActivity
+     *
+     * @param baseEvent base event
+     */
+    @Async
+    @LogAround
+    public void logActivity(BaseEvent baseEvent) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String output = mapper.writeValueAsString(baseEvent);
+            logger.info("Activity Data request is  {} : ", output);
+            logger.info("Activity Data request topicName is  {} : ", topicName);
+            kafkaProducerService.sendMessageAsync(topicName, output);
+            logger.info("callPostEventService -  data posted to activity_service : {}", System.currentTimeMillis());
+        } catch (Exception e) {
+            logger.info("Unable to log the activity request : {}", e.toString());
         }
     }
 
