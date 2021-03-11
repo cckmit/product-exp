@@ -127,13 +127,14 @@ public class ProductsExpServiceConstant {
 	public static final String UNIT_HOLDER = "PT000000000000587870";
 	public static final String SUITABILITY_EXPIRED = "2";
 
-	public static final String SERVICE_TYPE_ID_CST = "CST";
 	public static final String CASE_STATUS_IN_PROGRESS = "In Progress";
 	public static final String CASE_STATUS_CLOSED = "Closed";
 
-	public static final int ERROR_CODE_404 = 404;
-	public static final String CUST_CRMID = "crmId";
+	//ACTIVITY IDs
 	public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
+	public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
+	public static final String CASE_TRACKING_EMPTY_ACTIVITY_ID = "101500202";
+	public static final String CASE_TRACKING_ACTIVITY_ID = "101500203";
 
 	public static final String FIXED_START_PAGE = "1";
 	public static final String FIXED_END_PAGE = "5";

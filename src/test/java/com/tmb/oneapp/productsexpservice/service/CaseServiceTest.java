@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -31,7 +32,9 @@ import static org.mockito.Mockito.*;
 class CaseServiceTest {
 
     private final CustomerServiceClient customerServiceClient = Mockito.mock(CustomerServiceClient.class);
-    private final CaseService caseService = new CaseService(customerServiceClient);
+    private final KafkaProducerService kafkaProducerService = Mockito.mock(KafkaProducerService.class);
+    private final CaseService caseService = new CaseService(customerServiceClient,
+            kafkaProducerService, "activityLog");
 
     @Test
     void getCaseStatus_firstTime_success() throws TMBCommonException {
@@ -58,7 +61,7 @@ class CaseServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockPostFirstTimeUsageResponse));
 
-        //getCastStatus
+        //getCaseStatus
         TmbOneServiceResponse<List<CaseStatusCase>> mockGetCaseStatusResponse
                 = new TmbOneServiceResponse<>();
         mockGetCaseStatusResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
@@ -71,6 +74,13 @@ class CaseServiceTest {
                 new CaseStatusCase().setStatus("Closed")
         ));
 
+        //activityLogging
+        doNothing().when(kafkaProducerService)
+                .sendMessageAsync(anyString(), contains("101500201"));
+
+        doNothing().when(kafkaProducerService)
+                .sendMessageAsync(anyString(), contains("101500203"));
+
         when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
@@ -82,6 +92,64 @@ class CaseServiceTest {
         assertEquals("CST", response.getServiceTypeId());
         assertEquals(2, response.getCompleted().size());
         assertEquals(3, response.getInProgress().size());
+        verify(kafkaProducerService, times(1)).
+                sendMessageAsync(anyString(), contains("101500201"));
+        verify(kafkaProducerService, times(1)).
+                sendMessageAsync(anyString(), contains("101500203"));
+
+    }
+
+    @Test
+    void getCaseStatus_firstTime_empty() throws TMBCommonException {
+
+        //getFirstTimeUsage
+        TmbOneServiceResponse<CustomerFirstUsage> mockGetFirstTimeUsageResponse
+                = new TmbOneServiceResponse<>();
+        mockGetFirstTimeUsageResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK)
+                        .body(mockGetFirstTimeUsageResponse));
+
+        //postFirstTimeUsage
+        TmbOneServiceResponse<String> mockPostFirstTimeUsageResponse
+                = new TmbOneServiceResponse<>();
+        mockPostFirstTimeUsageResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        mockPostFirstTimeUsageResponse.setData("1");
+
+        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("CST")))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK)
+                        .body(mockPostFirstTimeUsageResponse));
+
+        //getCaseStatus
+        TmbOneServiceResponse<List<CaseStatusCase>> mockGetCaseStatusResponse
+                = new TmbOneServiceResponse<>();
+        mockGetCaseStatusResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        mockGetCaseStatusResponse.setData(new ArrayList<>());
+
+        //activityLogging
+        doThrow(new IllegalArgumentException()).when(kafkaProducerService)
+                .sendMessageAsync(anyString(), contains("101500201"));
+
+        doNothing().when(kafkaProducerService)
+                .sendMessageAsync(anyString(), contains("101500202"));
+
+        when(customerServiceClient.getCaseStatus(anyString(), anyString()))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK)
+                        .body(mockGetCaseStatusResponse));
+
+        CaseStatusResponse response =
+                caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
+
+        assertEquals(true, response.getFirstUsageExperience());
+        assertEquals("CST", response.getServiceTypeId());
+        assertTrue(response.getCompleted().isEmpty());
+        assertTrue(response.getInProgress().isEmpty());
+        verify(kafkaProducerService, times(1)).
+                sendMessageAsync(anyString(), contains("101500202"));
 
     }
 
@@ -214,6 +282,5 @@ class CaseServiceTest {
         verify(customerServiceClient, times(1)).postFirstTimeUsage(anyString(), anyString(), eq("CST"));
 
     }
-
 
 }
