@@ -57,7 +57,7 @@ public class CaseService {
         try {
             //GET /apis/customers/firstTimeUsage
             logger.info("Calling GET /apis/customers/firstTimeUsage.");
-            CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId, serviceTypeId);
+            CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(correlationId, crmId, deviceId, serviceTypeId);
             logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
 
             //GET /apis/customer/case/status/{CRM_ID}.
@@ -80,24 +80,30 @@ public class CaseService {
             //Send Activity Log
             if (customerFirstUsage == null) {
                 //101500201
-                logActivity(new CustomerServiceActivity(correlationId,
-                        String.valueOf(System.currentTimeMillis()),
-                        CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
-                        .setScreenName("tutorial case tracking"));
+                logActivityCST(new CustomerServiceActivity(correlationId,
+                                String.valueOf(System.currentTimeMillis()),
+                                CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
+                                .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
+                        ACTIVITY_LOG_SUCCESS,
+                        "");
             }
 
             if (caseStatusList.isEmpty()) {
                 //101500202
-                logActivity(new CustomerServiceActivity(correlationId,
-                        String.valueOf(System.currentTimeMillis()),
-                        CASE_TRACKING_EMPTY_ACTIVITY_ID)
-                        .setScreenName("empty case tracking"));
+                logActivityCST(new CustomerServiceActivity(correlationId,
+                                String.valueOf(System.currentTimeMillis()),
+                                CASE_TRACKING_EMPTY_ACTIVITY_ID)
+                                .setScreenName(ACTIVITY_SCREEN_NAME_EMPTY_CST),
+                        ACTIVITY_LOG_SUCCESS,
+                        "");
             } else {
                 //101500203
-                logActivity(new CustomerServiceActivity(correlationId,
-                        String.valueOf(System.currentTimeMillis()),
-                        CASE_TRACKING_ACTIVITY_ID)
-                        .setScreenName("case tracking"));
+                logActivityCST(new CustomerServiceActivity(correlationId,
+                                String.valueOf(System.currentTimeMillis()),
+                                CASE_TRACKING_ACTIVITY_ID)
+                                .setScreenName(ACTIVITY_SCREEN_NAME_CST),
+                        ACTIVITY_LOG_SUCCESS,
+                        "");
             }
 
             //POST /apis/customers/firstTimeUsage
@@ -128,7 +134,7 @@ public class CaseService {
      * @return CustomerFirstUsage information of first time use
      */
     @SuppressWarnings("all")
-    public CustomerFirstUsage getFirstTimeUsage(String crmId, String deviceId, String serviceTypeId) throws TMBCommonException {
+    public CustomerFirstUsage getFirstTimeUsage(String correlationId, String crmId, String deviceId, String serviceTypeId) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<CustomerFirstUsage>> getFirstTimeUsageResponse =
                     customerServiceClient.getFirstTimeUsage(crmId, deviceId, serviceTypeId);
@@ -147,12 +153,24 @@ public class CaseService {
                 return null;
             } else {
                 logger.error("Unexpected error occured : {}", e);
+                logActivityCST(new CustomerServiceActivity(correlationId,
+                                String.valueOf(System.currentTimeMillis()),
+                                CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
+                                .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
+                        FAILURE,
+                        "Feign Error occured when calling GET /apis/customers/firstTimeUsage : " + e.toString());
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getMessage(),
                         ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
             }
         } catch (Exception e) {
             logger.error("Error getting first time usage data. crmId: {}, deviceId {}, error: {}", crmId, deviceId, e);
+            logActivityCST(new CustomerServiceActivity(correlationId,
+                            String.valueOf(System.currentTimeMillis()),
+                            CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
+                            .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
+                    FAILURE,
+                    "Unexpected Error occured when calling GET /apis/customers/firstTimeUsage : " + e.toString());
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
@@ -208,12 +226,24 @@ public class CaseService {
                 return new ArrayList<>();
             } else {
                 logger.error("Unexpected error occured : {}", e);
+                logActivityCST(new CustomerServiceActivity(correlationId,
+                                String.valueOf(System.currentTimeMillis()),
+                                CASE_TRACKING_ACTIVITY_ID)
+                                .setScreenName(ACTIVITY_SCREEN_NAME_CST),
+                        FAILURE,
+                        "Feign Error occured when calling GET /apis/customers/case/status/{CRM_ID}. : " + e.toString());
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getMessage(),
                         ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
             }
         } catch (Exception e) {
             logger.error("Unexpected error occured : {}", e);
+            logActivityCST(new CustomerServiceActivity(correlationId,
+                            String.valueOf(System.currentTimeMillis()),
+                            CASE_TRACKING_ACTIVITY_ID)
+                            .setScreenName(ACTIVITY_SCREEN_NAME_CST),
+                    FAILURE,
+                    "Unexpected Error occured when calling GET /apis/customers/case/status/{CRM_ID}. : " + e.toString());
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
@@ -242,8 +272,11 @@ public class CaseService {
      */
     @Async
     @LogAround
-    public void logActivity(BaseEvent baseEvent) {
+    public void logActivityCST(BaseEvent baseEvent, String activityStatus, String failReason) {
         try {
+            baseEvent.setActivityStatus(activityStatus);
+            baseEvent.setFailReason(failReason);
+
             ObjectMapper mapper = new ObjectMapper();
             String output = mapper.writeValueAsString(baseEvent);
             logger.info("Activity Data request is  {} : ", output);
