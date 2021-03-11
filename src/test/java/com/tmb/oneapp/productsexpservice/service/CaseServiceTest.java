@@ -173,7 +173,7 @@ class CaseServiceTest {
                 .thenThrow(new FeignException.FeignClientException(401, "Unauthorized", request, null));
 
         assertThrows(TMBCommonException.class, () ->
-                caseService.getFirstTimeUsage("crmId", "deviceId", "CST")
+                caseService.getFirstTimeUsage("correlationId", "crmId", "deviceId", "CST")
         );
 
     }
@@ -184,7 +184,7 @@ class CaseServiceTest {
                 .thenThrow(IllegalArgumentException.class);
 
         assertThrows(TMBCommonException.class, () ->
-                caseService.getFirstTimeUsage("crmId", "deviceId", "CST")
+                caseService.getFirstTimeUsage("correlationId", "crmId", "deviceId", "CST")
         );
 
     }
@@ -195,7 +195,7 @@ class CaseServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(null));
 
-        CustomerFirstUsage response = caseService.getFirstTimeUsage("crmId", "deviceId", "CST");
+        CustomerFirstUsage response = caseService.getFirstTimeUsage("correlationId", "crmId", "deviceId", "CST");
 
         assertNull(response);
 

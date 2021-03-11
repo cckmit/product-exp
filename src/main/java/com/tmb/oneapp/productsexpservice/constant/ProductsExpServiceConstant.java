@@ -136,6 +136,11 @@ public class ProductsExpServiceConstant {
 	public static final String CASE_TRACKING_EMPTY_ACTIVITY_ID = "101500202";
 	public static final String CASE_TRACKING_ACTIVITY_ID = "101500203";
 
+	//Case status screen names
+	public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";
+	public static final String ACTIVITY_SCREEN_NAME_CST = "case tracking";
+	public static final String ACTIVITY_SCREEN_NAME_EMPTY_CST = "empty case tracking";
+
 	public static final String FIXED_START_PAGE = "1";
 	public static final String FIXED_END_PAGE = "5";
 	public static final String INTERNAL_SERVER = "Internal Server Error";
