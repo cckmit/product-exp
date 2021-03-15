@@ -85,8 +85,13 @@ class CaseServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
         CaseStatusResponse response =
-                caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
+                caseService.getCaseStatus(header, "CST");
 
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("CST", response.getServiceTypeId());
@@ -141,8 +146,13 @@ class CaseServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
         CaseStatusResponse response =
-                caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST");
+                caseService.getCaseStatus(header, "CST");
 
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("CST", response.getServiceTypeId());
@@ -158,7 +168,12 @@ class CaseServiceTest {
         when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenThrow(new IllegalArgumentException());
 
-        assertThrows(TMBCommonException.class, () -> caseService.getCaseStatus("correlationId", "crmId", "deviceId", "CST"));
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
+        assertThrows(TMBCommonException.class, () -> caseService.getCaseStatus(header, "CST"));
     }
 
     @Test
@@ -172,8 +187,13 @@ class CaseServiceTest {
         when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenThrow(new FeignException.FeignClientException(401, "Unauthorized", request, null));
 
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
         assertThrows(TMBCommonException.class, () ->
-                caseService.getFirstTimeUsage("correlationId", "crmId", "deviceId", "CST")
+                caseService.getFirstTimeUsage(header, "CST")
         );
 
     }
@@ -183,8 +203,13 @@ class CaseServiceTest {
         when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("CST")))
                 .thenThrow(IllegalArgumentException.class);
 
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
         assertThrows(TMBCommonException.class, () ->
-                caseService.getFirstTimeUsage("correlationId", "crmId", "deviceId", "CST")
+                caseService.getFirstTimeUsage(header, "CST")
         );
 
     }
@@ -195,7 +220,12 @@ class CaseServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(null));
 
-        CustomerFirstUsage response = caseService.getFirstTimeUsage("correlationId", "crmId", "deviceId", "CST");
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
+        CustomerFirstUsage response = caseService.getFirstTimeUsage(header, "CST");
 
         assertNull(response);
 
@@ -207,7 +237,12 @@ class CaseServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(null));
 
-        List<CaseStatusCase> response = caseService.getCaseStatus(anyString(), anyString());
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
+        List<CaseStatusCase> response = caseService.getCaseStatus(header);
 
         assertEquals(new ArrayList<>(), response);
     }
@@ -218,7 +253,7 @@ class CaseServiceTest {
                 .thenThrow(new IllegalArgumentException());
 
         assertThrows(TMBCommonException.class, () ->
-                caseService.getCaseStatus(anyString(), anyString())
+                caseService.getCaseStatus(anyMap())
         );
     }
 
@@ -233,8 +268,13 @@ class CaseServiceTest {
         when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenThrow(new FeignException.FeignClientException(401, "Unauthorized", request, null));
 
+        Map<String, String> header = new HashMap<>();
+        header.put("x-correlation-id", "correlationId");
+        header.put("x-crmid", "crmId");
+        header.put("device-id", "deviceId");
+
         assertThrows(TMBCommonException.class, () ->
-                caseService.getCaseStatus(anyString(), anyString())
+                caseService.getCaseStatus(header)
         );
     }
 

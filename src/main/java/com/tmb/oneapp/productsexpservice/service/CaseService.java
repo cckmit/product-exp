@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
@@ -48,21 +49,24 @@ public class CaseService {
     /**
      * Get case status and first time use info for customer
      *
-     * @param crmId    customer Id
-     * @param deviceId device Id
+     * @param requestHeaders crmId deviceId correlationId
      * @return CaseStatusResponse all case statuses belonging to customer Id
      */
-    public CaseStatusResponse getCaseStatus(String correlationId, String crmId, String deviceId, String serviceTypeId) throws TMBCommonException {
+    public CaseStatusResponse getCaseStatus(Map<String, String> requestHeaders, String serviceTypeId) throws TMBCommonException {
 
         try {
+            String correlationId = requestHeaders.get(X_CORRELATION_ID);
+            String crmId = requestHeaders.get(X_CRMID);
+            String deviceId = requestHeaders.get(DEVICE_ID);
+
             //GET /apis/customers/firstTimeUsage
             logger.info("Calling GET /apis/customers/firstTimeUsage.");
-            CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(correlationId, crmId, deviceId, serviceTypeId);
+            CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(requestHeaders, serviceTypeId);
             logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
 
             //GET /apis/customer/case/status/{CRM_ID}.
             logger.info("Calling GET /apis/customer/case/status/{CRM_ID}");
-            List<CaseStatusCase> caseStatusList = getCaseStatus(correlationId, crmId);
+            List<CaseStatusCase> caseStatusList = getCaseStatus(requestHeaders);
             logger.info("GET /apis/customer/case/status/{CRM_ID} response: {}", caseStatusList);
 
             //Separate According to Status
@@ -84,6 +88,7 @@ public class CaseService {
                                 String.valueOf(System.currentTimeMillis()),
                                 CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
+                        requestHeaders,
                         ACTIVITY_LOG_SUCCESS,
                         "");
             }
@@ -94,6 +99,7 @@ public class CaseService {
                                 String.valueOf(System.currentTimeMillis()),
                                 CASE_TRACKING_EMPTY_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_EMPTY_CST),
+                        requestHeaders,
                         ACTIVITY_LOG_SUCCESS,
                         "");
             } else {
@@ -102,6 +108,7 @@ public class CaseService {
                                 String.valueOf(System.currentTimeMillis()),
                                 CASE_TRACKING_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_CST),
+                        requestHeaders,
                         ACTIVITY_LOG_SUCCESS,
                         "");
             }
@@ -134,7 +141,11 @@ public class CaseService {
      * @return CustomerFirstUsage information of first time use
      */
     @SuppressWarnings("all")
-    public CustomerFirstUsage getFirstTimeUsage(String correlationId, String crmId, String deviceId, String serviceTypeId) throws TMBCommonException {
+    public CustomerFirstUsage getFirstTimeUsage(Map<String, String> requestHeaders, String serviceTypeId) throws TMBCommonException {
+        String correlationId = requestHeaders.get(X_CORRELATION_ID);
+        String crmId = requestHeaders.get(X_CRMID);
+        String deviceId = requestHeaders.get(DEVICE_ID);
+
         try {
             ResponseEntity<TmbOneServiceResponse<CustomerFirstUsage>> getFirstTimeUsageResponse =
                     customerServiceClient.getFirstTimeUsage(crmId, deviceId, serviceTypeId);
@@ -157,6 +168,7 @@ public class CaseService {
                                 String.valueOf(System.currentTimeMillis()),
                                 CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
+                        requestHeaders,
                         FAILURE,
                         "Feign Error occured when calling GET /apis/customers/firstTimeUsage : " + e.toString());
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -169,6 +181,7 @@ public class CaseService {
                             String.valueOf(System.currentTimeMillis()),
                             CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
                             .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
+                    requestHeaders,
                     FAILURE,
                     "Unexpected Error occured when calling GET /apis/customers/firstTimeUsage : " + e.toString());
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -207,7 +220,10 @@ public class CaseService {
      * @return list of all case status
      */
     @SuppressWarnings("all")
-    public List<CaseStatusCase> getCaseStatus(String correlationId, String crmId) throws TMBCommonException {
+    public List<CaseStatusCase> getCaseStatus(Map<String, String> requestHeaders) throws TMBCommonException {
+        String correlationId = requestHeaders.get(X_CORRELATION_ID);
+        String crmId = requestHeaders.get(X_CRMID);
+
         try {
             ResponseEntity<TmbOneServiceResponse<List<CaseStatusCase>>> getCaseStatusResponse =
                     customerServiceClient.getCaseStatus(correlationId, crmId);
@@ -230,6 +246,7 @@ public class CaseService {
                                 String.valueOf(System.currentTimeMillis()),
                                 CASE_TRACKING_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_CST),
+                        requestHeaders,
                         FAILURE,
                         "Feign Error occured when calling GET /apis/customers/case/status/{CRM_ID}. : " + e.toString());
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -242,6 +259,7 @@ public class CaseService {
                             String.valueOf(System.currentTimeMillis()),
                             CASE_TRACKING_ACTIVITY_ID)
                             .setScreenName(ACTIVITY_SCREEN_NAME_CST),
+                    requestHeaders,
                     FAILURE,
                     "Unexpected Error occured when calling GET /apis/customers/case/status/{CRM_ID}. : " + e.toString());
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -272,10 +290,20 @@ public class CaseService {
      */
     @Async
     @LogAround
-    public void logActivityCST(BaseEvent baseEvent, String activityStatus, String failReason) {
+    public void logActivityCST(BaseEvent baseEvent, Map<String, String> requestHeaders, String activityStatus, String failReason) {
         try {
             baseEvent.setActivityStatus(activityStatus);
             baseEvent.setFailReason(failReason);
+
+            baseEvent.setActivityDate(String.valueOf(System.currentTimeMillis()));
+            baseEvent.setCrmId(requestHeaders.get(X_CRMID));
+            baseEvent.setDeviceId(requestHeaders.get(DEVICE_ID));
+            baseEvent.setCorrelationId(requestHeaders.get(X_CORRELATION_ID));
+            baseEvent.setChannel(requestHeaders.get(CHANNEL));
+            baseEvent.setAppVersion(requestHeaders.get(APP_VERSION));
+            baseEvent.setIpAddress(requestHeaders.get(X_FORWARD_FOR));
+            baseEvent.setDeviceModel(requestHeaders.get(DEVICE_MODEL));
+            baseEvent.setOsVersion(requestHeaders.get(OS_VERSION));
 
             ObjectMapper mapper = new ObjectMapper();
             String output = mapper.writeValueAsString(baseEvent);
