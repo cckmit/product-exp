@@ -366,7 +366,8 @@ public class ProductExpServiceCloseTest {
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
                 ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
+                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody.getCrmId(),
+                ffsRequestBody.getProcessFlag(), ffsRequestBody.getFundHouseCode(), ffsRequestBody.getLanguage(), ffsRequestBody.getFundHouseCode());
 
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);
@@ -383,7 +384,9 @@ public class ProductExpServiceCloseTest {
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
                 ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody.getCrmId(),
+                ffsRequestBody.getProcessFlag(), ffsRequestBody.getFundCode(), ffsRequestBody.getFundCode(),
+                ffsRequestBody.getFundHouseCode());
 
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);
