@@ -14,6 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -722,9 +723,16 @@ public class ProductExpServiceTest {
         ffsRequestBody.setFundCode("TMONEY");
         ffsRequestBody.setCrmId("001100000000000000000012025950");
 
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setCrmId(ffsRequestBody.getCrmId());
+        alternativeRq.setFundCode(ffsRequestBody.getFundCode());
+        alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
+        alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
+        alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
+                ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
         Assert.assertNotNull(activityLogs);
     }

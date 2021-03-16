@@ -6,12 +6,14 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
@@ -373,6 +375,69 @@ public class ProductExpServiceControllerTest {
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+
+    @Test
+    public void validateAlternativeSaleAndSwitchException() throws Exception {
+
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setFundCode("SCBTMF");
+        alternativeRq.setFundHouseCode("SCBAM");
+        alternativeRq.setCrmId("001100000000000000000012025950");
+        alternativeRq.setProcessFlag("Y");
+        alternativeRq.setOrderType("2");
+
+        when(productsExpService.validateAlternativeSaleAndSwitch(corrID, alternativeRq)).thenThrow(MockitoException.class);
+
+        ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
+                .validateAlternativeSaleAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void validateAlternativeSaleAndSwitchError() throws Exception {
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setFundCode("SCBTMF");
+        alternativeRq.setFundHouseCode("SCBAM");
+        alternativeRq.setCrmId("001100000000000000000012025950");
+        alternativeRq.setProcessFlag("Y");
+        alternativeRq.setOrderType("2");
+        alternativeRq.setUnitHolderNo("PT00000000000");
+
+        ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
+                .validateAlternativeSaleAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void validateAlternativeSaleAndSwitch() throws Exception {
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setFundCode("SCBTMF");
+        alternativeRq.setFundHouseCode("SCBAM");
+        alternativeRq.setCrmId("001100000000000000000012025950");
+        alternativeRq.setProcessFlag("Y");
+        alternativeRq.setOrderType("2");
+        alternativeRq.setUnitHolderNo("PT00000000000");
+
+
+        FundResponse fundRsAndValidation = null;
+        try {
+            fundRsAndValidation = new FundResponse();
+            fundRsAndValidation.setError(false);
+            fundRsAndValidation.setErrorCode("0000");
+            fundRsAndValidation.setErrorDesc("success");
+            fundRsAndValidation.setErrorMsg("success");
+
+            when(productsExpService.validateAlternativeSaleAndSwitch(corrID, alternativeRq)).thenReturn(fundRsAndValidation);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
+                .validateAlternativeSaleAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
 

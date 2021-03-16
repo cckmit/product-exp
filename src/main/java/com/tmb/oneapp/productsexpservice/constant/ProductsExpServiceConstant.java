@@ -86,7 +86,11 @@ public class ProductsExpServiceConstant {
 	public static final String CASA_DORMANT_ACCOUNT_DESC = "ACCOUNT NOT FOUND OR NOT READY TO DO THE TRANSACTION";
 
 	public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING = "101000101";
+	public static final String ACTIVITY_ID_INVESTMENT_SALE_STATUS_TRACKING = "101000301";
+	public static final String ACTIVITY_ID_INVESTMENT_SWITCH_STATUS_TRACKING = "101000401";
 	public static final String ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
+	public static final String ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING = "Sale fund ";
+	public static final String ACTIVITY_TYPE_INVESTMENT_SWITCH_STATUS_TRACKING = "Switch fund ";
 	public static final String ACTIVITY_LOG_CHANNEL = "mb";
 	public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
 	public static final String ACTIVITY_LOG_SUCCESS = "Success";

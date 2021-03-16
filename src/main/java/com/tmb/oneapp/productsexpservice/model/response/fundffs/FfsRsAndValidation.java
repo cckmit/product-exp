@@ -6,10 +6,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FfsRsAndValidation {
+public class FfsRsAndValidation extends FundResponse {
     private FfsData body;
-    private boolean isError;
-    private String errorCode;
-    private String errorMsg;
-    private String errorDesc;
 }

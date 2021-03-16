@@ -19,6 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.portdata.Port;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -29,6 +30,7 @@ import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
@@ -246,7 +248,7 @@ public class ProductsExpService {
 
 
     /**
-     * Generic Method to call MF Service getFundAccDetail
+     * Generic Method to call MF Service getFundFFSAndValidation
      *
      * @param ffsRequestBody
      * @param correlationId
@@ -287,6 +289,38 @@ public class ProductsExpService {
             }
         }
         return ffsRsAndValidation;
+    }
+
+    /**
+     * Generic Method to validate AlternativeSaleAndSwitch
+     *
+     * @param alternativeRq
+     * @param correlationId
+     * @return FundResponse
+     */
+    @LogAround
+    public FundResponse validateAlternativeSaleAndSwitch(String correlationId, AlternativeRq alternativeRq) {
+        FundResponse fundResponse = new FundResponse();
+        final boolean isNotValid = true;
+        if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime)){
+            fundResponse.setError(isNotValid);
+            fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
+            fundResponse.setErrorMsg(UtilMap.addColonDateFormat(investmentStartTime));
+            fundResponse.setErrorDesc(UtilMap.addColonDateFormat(investmentEndTime));
+        }else{
+            FfsRequestBody ffsRequestBody = new FfsRequestBody();
+            ffsRequestBody.setUnitHolderNo(alternativeRq.getUnitHolderNo());
+            ffsRequestBody.setProcessFlag(alternativeRq.getProcessFlag());
+            ffsRequestBody.setCrmId(alternativeRq.getCrmId());
+            fundResponse = validationAlternativeSaleAndSwitchFlow(correlationId, ffsRequestBody, fundResponse);
+            if(!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()){
+                fundResponse.setError(false);
+                fundResponse.setErrorCode(ProductsExpServiceConstant.SUCCESS_CODE);
+                fundResponse.setErrorMsg(ProductsExpServiceConstant.SUCCESS_MESSAGE);
+                fundResponse.setErrorDesc(ProductsExpServiceConstant.SUCCESS);
+            }
+        }
+        return fundResponse;
     }
 
 
@@ -337,6 +371,36 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
         }
         return ffsRsAndValidation;
+    }
+
+
+    /**
+     * To validate Alternative case and verify expire-citizen id
+     *
+     * @param ffsRequestBody
+     * @param correlationId
+     * @param fundResponse
+     * @return FundResponse
+     */
+    @LogAround
+    public FundResponse validationAlternativeSaleAndSwitchFlow(String correlationId, FfsRequestBody ffsRequestBody,
+                                                                     FundResponse fundResponse) {
+        final boolean isNotValid = true;
+        boolean isStoped = false;
+        if(isSuitabilityExpired(correlationId, ffsRequestBody)){
+            fundResponse.setError(isNotValid);
+            fundResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
+            fundResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
+            fundResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
+            isStoped = true;
+        }
+        if(!isStoped && isCustIDExpired(ffsRequestBody)){
+            fundResponse.setError(isNotValid);
+            fundResponse.setErrorCode(ProductsExpServiceConstant.ID_EXPIRED_CODE);
+            fundResponse.setErrorMsg(ProductsExpServiceConstant.ID_EXPIRED_MESSAGE);
+            fundResponse.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_DESC);
+        }
+        return fundResponse;
     }
 
     /**
@@ -460,28 +524,30 @@ public class ProductsExpService {
      * Method constructActivityLogDataForBuyHoldingFund
      *
      * @param correlationId
-     * @param status
-     * @param failReason
      * @param activityType
-     * @param ffsRequestBody
+     * @param trackingStatus
+     * @param alternativeRq
      */
-    public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId, String status,
-                                                                  String failReason,
+    public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId,
                                                                   String activityType,
-                                                                  FfsRequestBody ffsRequestBody){
-        ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()),
-                ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING);
-        activityData.setActivityStatus(status);
+                                                                  String trackingStatus,
+                                                                  AlternativeRq alternativeRq) {
+        String failReason = alternativeRq.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
+                ProductsExpServiceConstant.SUCCESS_MESSAGE : ProductsExpServiceConstant.FAILED_MESSAGE ;
+
+
+        ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()), trackingStatus);
+        activityData.setActivityStatus(failReason);
         activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_CHANNEL);
         activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
         activityData.setFailReason(failReason);
         activityData.setActivityType(activityType);
-        activityData.setCrmId(ffsRequestBody.getCrmId());
-        activityData.setVerifyFlag(ffsRequestBody.getProcessFlag());
+        activityData.setCrmId(alternativeRq.getCrmId());
+        activityData.setVerifyFlag(alternativeRq.getProcessFlag());
         activityData.setReason(failReason);
-        activityData.setFundCode(ffsRequestBody.getFundCode());
-        if(!StringUtils.isEmpty(ffsRequestBody.getUnitHolderNo())){
-            activityData.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
+        activityData.setFundCode(alternativeRq.getFundCode());
+        if(!StringUtils.isEmpty(alternativeRq.getUnitHolderNo())){
+            activityData.setUnitHolderNo(alternativeRq.getUnitHolderNo());
         }else{
             activityData.setUnitHolderNo(ProductsExpServiceConstant.UNIT_HOLDER);
         }
