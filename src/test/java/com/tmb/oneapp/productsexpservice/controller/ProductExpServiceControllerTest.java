@@ -74,7 +74,8 @@ public class ProductExpServiceControllerTest {
                 ordersHistories.add(fundOrderHistory);
             }
             accountDetail.setOrdersHistories(ordersHistories);
-            fundAccountDetail.setFundRule(fundRule);
+
+            fundAccountDetail.setFundRuleInfoList(fundRuleInfoList);
             fundAccountDetail.setAccountDetail(accountDetail);
         }
 
@@ -123,7 +124,7 @@ public class ProductExpServiceControllerTest {
         fundRule.setAllowAipFlag("Y");
         fundRule.setDateAfterIpo("20200413");
         fundRule.setFrontEndFee("0");
-        details.setFundRule(fundRule);
+        details.setFundRuleInfoList(null);
 
         AccountDetail accountDetail = new AccountDetail();
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
