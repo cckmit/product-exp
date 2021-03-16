@@ -9,6 +9,9 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStat
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
+
+import feign.FeignException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +32,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -162,5 +166,6 @@ public class BilledStatementWithPeriodControllerTest {
 		assertEquals(400, billedStatement.getStatusCodeValue());
 
 	}
+	
 }
 

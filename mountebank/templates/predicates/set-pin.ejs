@@ -1,0 +1,36 @@
+{
+  "predicates": [
+    {
+      "equals": {
+        "method": "POST",
+        "path": "/apis/products/creditcard/set-pin"
+      }
+    },
+    {
+      "equals": {
+        "body": {
+          "account_id": "0000000000012017890000383",
+          "pin": "FE19C46DC8AD9F61"
+        },
+        "headers": {
+          "X-Correlation-ID": "123"
+        }
+      }
+    }
+  ],
+  "responses": [
+    {
+      "is": {
+        "statusCode": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "status": {
+            "status_code": "0"
+          }
+        }
+      }
+    }
+  ]
+}

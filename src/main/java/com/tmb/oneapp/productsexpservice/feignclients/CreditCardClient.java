@@ -3,6 +3,9 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import java.util.List;
 import java.util.Map;
 
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
+import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,4 +74,8 @@ public interface CreditCardClient {
 	@PostMapping(value = "/apis/creditcard/block-card")
 	public ResponseEntity<BlockCardResponse> getBlockCardDetails(@RequestBody BlockCardRequest requestBodyParameter);
 
+	@PostMapping(value = "/apis/creditcard/set-pin")
+	ResponseEntity<SetPinResponse> setPin(
+			@RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
+			@RequestBody SetPinQuery requestBodyParameter);
 }
