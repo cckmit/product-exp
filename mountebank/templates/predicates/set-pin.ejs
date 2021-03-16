@@ -1,0 +1,41 @@
+{
+    "predicates": [
+        {
+            "equals": {
+                "method": "POST",
+                "path": "/apis/products/creditcard/set-pin"
+            }
+        },
+        {
+            "equals": {
+                "body": {
+                     "account_id": "0000000000012017890000383",
+         			 "e2eesid": "00012ZPqZMFO",
+         			 "rpin":"66558BF2FBA2F11B7F143CDB1F5B766C",
+         			  "anb":"123456789012"
+                },
+                "headers": {
+                    "X-Correlation-ID": "true"
+                }
+            }
+        }
+    ],
+    "responses": [
+        {
+            "is": {
+                "statusCode": 200,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "status": {
+                        "code": "0000",
+                        "message": "success",
+                        "service": "products-exp-service",
+                        "description": "success"
+                    }
+                }
+            }
+        }
+    ]
+}
