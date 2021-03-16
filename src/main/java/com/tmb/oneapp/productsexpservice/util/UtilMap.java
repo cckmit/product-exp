@@ -67,12 +67,6 @@ public class UtilMap {
      * @return FundAccountDetail
      */
     public FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse){
-        FundRule fundRule = new FundRule();
-
-        List<FundRuleInfoList> fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
-        FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
-        BeanUtils.copyProperties(ruleInfoList, fundRule);
-        fundRule.setIpoflag(ruleInfoList.getIpoflag());
 
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
@@ -85,8 +79,9 @@ public class UtilMap {
             ordersHistories.add(order);
         }
         accountDetail.setOrdersHistories(ordersHistories);
+        Collections.sort(fundRuleBody.getFundRuleInfoList(), (o1, o2) -> o1.getOrderType().compareTo(o2.getOrderType()));
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
-        fundAccountDetail.setFundRule(fundRule);
+        fundAccountDetail.setFundRuleInfoList(fundRuleBody.getFundRuleInfoList());
         fundAccountDetail.setAccountDetail(accountDetail);
 
         return fundAccountDetail;
