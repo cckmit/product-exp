@@ -313,7 +313,7 @@ public class ProductsExpService {
             ffsRequestBody.setProcessFlag(alternativeRq.getProcessFlag());
             ffsRequestBody.setCrmId(alternativeRq.getCrmId());
             fundResponse = validationAlternativeSaleAndSwitchFlow(correlationId, ffsRequestBody, fundResponse);
-            if(StringUtils.isEmpty(fundResponse)){
+            if(!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()){
                 fundResponse.setError(false);
                 fundResponse.setErrorCode(ProductsExpServiceConstant.SUCCESS_CODE);
                 fundResponse.setErrorMsg(ProductsExpServiceConstant.SUCCESS_MESSAGE);
@@ -524,13 +524,9 @@ public class ProductsExpService {
      * Method constructActivityLogDataForBuyHoldingFund
      *
      * @param correlationId
-     * @param status
-     * @param failReason
      * @param activityType
-     * @param crmID
-     * @param processFlag
-     * @param fundCode
-     * @param unitHolder
+     * @param trackingStatus
+     * @param alternativeRq
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId,
                                                                   String activityType,

@@ -16,7 +16,7 @@ public class AlternativeRq {
     @NotNull
     private String crmId;
     private String unitHolderNo;
+    @NotNull
     private String orderType;
-    private String tranType;
     private String processFlag;
 }

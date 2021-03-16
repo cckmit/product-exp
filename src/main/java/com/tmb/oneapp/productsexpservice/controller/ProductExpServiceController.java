@@ -186,6 +186,7 @@ public class ProductExpServiceController {
 			alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
 			alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
 			alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+			alternativeRq.setOrderType(ffsRequestBody.getOrderType());
 			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
 				ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
 				if (ffsRsAndValidation.isError()) {
@@ -253,10 +254,10 @@ public class ProductExpServiceController {
 		FundResponse fundResponse = null;
 
 		try {
-			String trackingStatus = alternativeRq.getTranType().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED) ?
+			String trackingStatus = alternativeRq.getOrderType().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED) ?
 			ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_SALE_STATUS_TRACKING : ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_SWITCH_STATUS_TRACKING ;
 
-			String activityType = alternativeRq.getTranType().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED) ?
+			String activityType = alternativeRq.getOrderType().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED) ?
 			ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING : ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_SWITCH_STATUS_TRACKING ;
 
 			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRq.getProcessFlag())) {
