@@ -1,0 +1,69 @@
+{
+    "predicates": [{
+        "equals": {
+            "path": "/apis/products/application/status",
+            "query": {
+                "service_type_id": "serviceTypeId"
+            },
+            "method": "GET"
+        }
+    }],
+    "responses": [{
+        "is": {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": {
+                "status": {
+                    "code": "0000",
+                    "message": "success",
+                    "service": "customers-exp-service",
+                    "description": "success"
+                },
+                "data": {
+                    "service_type_id": "",
+                    "first_usage_experience": "",
+                    "in_progress": [{
+                        "status": "In Progress",
+                        "main_product_type": "Card",
+                        "product_type_th": "บัตรกดเงินสด แฟลช",
+                        "product_type_en": "FLASH Card",
+                        "product_detail_th": "",
+                        "product_detail_en": "",
+                        "reference_no": "026PL63186306",
+                        "image_url": "/smth/smth/",
+                        "current_node": "1",
+                        "node_text_th": ["ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว", "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร", "อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ", "ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว"],
+                        "node_text_en": ["TMB has received your application", "Verifying Information and document in progress", "Approval process in progress", "Your application has been approved"],
+                        "top_remark_th": "Test Top Remark Th",
+                        "top_remark_en": "Test Top Remark En",
+                        "bottom_remark_th": "Test Bottom Remark Th",
+                        "bottom_remark_en": "Test Bottom Remark En",
+                        "start_date": "2020-07-17",
+                        "end_date": ""
+                    }],
+                    "completed": [{
+                        "status": "Completed",
+                        "main_product_type": "Card",
+                        "product_type_th": "บัตรกดเงินสด แฟลช",
+                        "product_type_en": "FLASH Card",
+                        "product_detail_th": "",
+                        "product_detail_en": "",
+                        "reference_no": "026PL63186306",
+                        "image_url": "/smth/smth/",
+                        "current_node": "4",
+                        "node_text_th": ["ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว", "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร", "อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ", "ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว"],
+                        "node_text_en": ["TMB has received your application", "Verifying Information and document in progress", "Approval process in progress", "Your application has been approved"],
+                        "top_remark_th": "Test Top Remark Th",
+                        "top_remark_en": "Test Top Remark En",
+                        "bottom_remark_th": "Test Bottom Remark Th",
+                        "bottom_remark_en": "Test Bottom Remark En",
+                        "start_date": "2020-07-17",
+                        "end_date": "2021-03-14"
+                    }]
+                }
+            }
+        }
+    }]
+}
