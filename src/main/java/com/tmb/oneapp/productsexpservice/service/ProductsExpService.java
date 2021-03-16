@@ -387,7 +387,7 @@ public class ProductsExpService {
                                                                      FundResponse fundResponse) {
         final boolean isNotValid = true;
         boolean isStoped = false;
-        if(!isStoped && isSuitabilityExpired(correlationId, ffsRequestBody)){
+        if(isSuitabilityExpired(correlationId, ffsRequestBody)){
             fundResponse.setError(isNotValid);
             fundResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
             fundResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
@@ -533,26 +533,25 @@ public class ProductsExpService {
      * @param unitHolder
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId,
-                                                                  String status,
-                                                                  String failReason,
                                                                   String activityType,
-                                                                  String crmID,
-                                                                  String processFlag,
-                                                                  String fundCode,
-                                                                  String unitHolder,
-                                                                  String trackingStatus) {
+                                                                  String trackingStatus,
+                                                                  AlternativeRq alternativeRq) {
+        String failReason = alternativeRq.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
+                ProductsExpServiceConstant.SUCCESS_MESSAGE : ProductsExpServiceConstant.FAILED_MESSAGE ;
+
+
         ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()), trackingStatus);
-        activityData.setActivityStatus(status);
+        activityData.setActivityStatus(failReason);
         activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_CHANNEL);
         activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
         activityData.setFailReason(failReason);
         activityData.setActivityType(activityType);
-        activityData.setCrmId(crmID);
-        activityData.setVerifyFlag(processFlag);
+        activityData.setCrmId(alternativeRq.getCrmId());
+        activityData.setVerifyFlag(alternativeRq.getProcessFlag());
         activityData.setReason(failReason);
-        activityData.setFundCode(fundCode);
-        if(!StringUtils.isEmpty(unitHolder)){
-            activityData.setUnitHolderNo(unitHolder);
+        activityData.setFundCode(alternativeRq.getFundCode());
+        if(!StringUtils.isEmpty(alternativeRq.getUnitHolderNo())){
+            activityData.setUnitHolderNo(alternativeRq.getUnitHolderNo());
         }else{
             activityData.setUnitHolderNo(ProductsExpServiceConstant.UNIT_HOLDER);
         }
