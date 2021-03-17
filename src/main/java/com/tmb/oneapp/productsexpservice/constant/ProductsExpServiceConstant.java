@@ -134,6 +134,7 @@ public class ProductsExpServiceConstant {
 	public static final String METHOD = "SCAN/KEY IN";
 	public static final String UNIT_HOLDER = "PT000000000000587870";
 	public static final String SUITABILITY_EXPIRED = "2";
+	public static final String INVESTMENT_MODULE_VALUE = "investment_module";
 
 	public static final String CASE_STATUS_IN_PROGRESS = "In Progress";
 	public static final String CASE_STATUS_CLOSED = "Closed";

@@ -3,11 +3,13 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -45,10 +47,9 @@ import org.springframework.http.ResponseEntity;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class ProductExpServiceTest {
@@ -58,6 +59,7 @@ public class ProductExpServiceTest {
     AccountRequestClient accountRequestClient;
     KafkaProducerService kafkaProducerService;
     CustomerServiceClient customerServiceClient;
+    CommonServiceClient commonServiceClient;
 
     private final String success_code = "0000";
     private final String notfund_code = "0009";
@@ -75,7 +77,8 @@ public class ProductExpServiceTest {
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient,
+        commonServiceClient = mock(CommonServiceClient.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,
                  investmentStartTime, investmentEndTime, topicName);
 
     }
@@ -396,18 +399,48 @@ public class ProductExpServiceTest {
         fundPaymentDetailRq.setFundHouseCode("SCBAM");
         fundPaymentDetailRq.setTranType("1");
 
+        List<String> eligibleAcc = Arrays.asList("200",
+                "205",
+                "212",
+                "212",
+                "219",
+                "221",
+                "225",
+                "207",
+                "208",
+                "251",
+                "252",
+                "253",
+                "255",
+                "101",
+                "107",
+                "108",
+                "109",
+                "151",
+                "152",
+                "153",
+                "154",
+                "155",
+                "171",
+                "172",
+                "173");
+
+
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundHolidayBody> responseFundHoliday = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         String responseCustomerExp = null;
 
         ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRuleEntity = null;
         ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> hilodayEntity = null;
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonRs = null;
         String custExp = null;
 
         FundHolidayBody fundHolidayBody = null;
         FundRuleBody fundRuleBody = null;
         FundPaymentDetailRs fundPaymentDetailRs = null;
-
+        CommonData commonData = new CommonData();
+        List<CommonData> commonDataList = new ArrayList<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -415,6 +448,9 @@ public class ProductExpServiceTest {
             fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_holiday.json").toFile(), FundHolidayBody.class);
 
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+
+            commonData.setEligibleAccountCodeBuy(eligibleAcc);
+            commonDataList.add(commonData);
 
             responseEntity.setData(fundRuleBody);
             responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -426,10 +462,15 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+            responseCommon.setData(commonDataList);
+            responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFundHoliday));
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -438,11 +479,12 @@ public class ProductExpServiceTest {
         custExp = accountRequestClient.callCustomerExpService(any(), anyString());
         fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
         hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
+        commonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
 
         Assert.assertEquals(HttpStatus.OK, fundRuleEntity.getStatusCode());
         Assert.assertEquals(HttpStatus.OK, hilodayEntity.getStatusCode());
         Assert.assertNotNull(custExp);
-        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, custExp);
+        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, commonRs, custExp);
         Assert.assertNotNull(response);
 
         FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
@@ -463,6 +505,7 @@ public class ProductExpServiceTest {
 
         ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRuleEntity = null;
         ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> hilodayEntity = null;
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonRs = null;
         String custExp = null;
 
         try {
@@ -472,6 +515,7 @@ public class ProductExpServiceTest {
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(null);
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(null);
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(null);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -481,9 +525,10 @@ public class ProductExpServiceTest {
         custExp = accountRequestClient.callCustomerExpService(any(), anyString());
         fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
         hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
+        commonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
 
         Assert.assertNull(custExp);
-        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, custExp);
+        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, commonRs, custExp);
         Assert.assertNull(response);
 
     }

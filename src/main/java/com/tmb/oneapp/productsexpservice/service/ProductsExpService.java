@@ -7,10 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -64,6 +66,7 @@ public class ProductsExpService {
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
     private CustomerServiceClient customerServiceClient;
+    private CommonServiceClient commonServiceClient;
     private final KafkaProducerService kafkaProducerService;
     private final String investmentStartTime;
     private final String investmentEndTime;
@@ -74,6 +77,7 @@ public class ProductsExpService {
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
                               CustomerServiceClient customerServiceClient,
+                              CommonServiceClient commonServiceClient,
                               @Value("${investment.close.time.start}") String investmentStartTime,
                               @Value("${investment.close.time.end}") String investmentEndTime,
                               @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
@@ -82,6 +86,7 @@ public class ProductsExpService {
         this.customerServiceClient = customerServiceClient;
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
+        this.commonServiceClient = commonServiceClient;
         this.investmentStartTime = investmentStartTime;
         this.investmentEndTime = investmentEndTime;
         this.topicName = topicName;
@@ -228,6 +233,7 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = null;
         ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday = null;
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
         String responseCustomerExp = null;
         FundPaymentDetailRs fundPaymentDetailRs = null;
         try {
@@ -237,8 +243,10 @@ public class ProductsExpService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseFundHoliday);
             responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
+            responseCommon = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
             UtilMap map = new UtilMap();
-            fundPaymentDetailRs = map.mappingPaymentResponse(responseEntity, responseFundHoliday, responseCustomerExp);
+            fundPaymentDetailRs = map.mappingPaymentResponse(responseEntity, responseFundHoliday, responseCommon, responseCustomerExp);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return fundPaymentDetailRs;

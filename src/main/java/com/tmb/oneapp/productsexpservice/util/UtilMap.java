@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -96,6 +97,7 @@ public class UtilMap {
      */
     public FundPaymentDetailRs mappingPaymentResponse(ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity,
                                                       ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday,
+                                                      ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon,
                                                       String responseCustomerExp){
         if(StringUtils.isEmpty(responseEntity)
                 || HttpStatus.OK != responseEntity.getStatusCode()
@@ -131,19 +133,26 @@ public class UtilMap {
                 ArrayNode arrayNode = (ArrayNode) node.get("data");
                 int size = arrayNode.size();
                 DepositAccount depositAccount = null;
+                List<CommonData> commonData = responseCommon.getBody().getData();
+                List<String> eligibleAccountCodeBuy = commonData.get(0).getEligibleAccountCodeBuy();
                 List<DepositAccount> depositAccountList = new ArrayList<>();
                 for (int i = 0; i < size; i++) {
-                        JsonNode itr = arrayNode.get(i);
-                        depositAccount = new DepositAccount();
-                        depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
-                        depositAccount.setAccountStatus(itr.get("account_status").textValue());
-                        String accType = itr.get("product_group_code").textValue();
-                        depositAccount.setAccountType(convertAccountType(accType));
-                        depositAccount.setAccountTypeShort(accType);
-                        depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
-                        depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
-                        depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
-                        depositAccountList.add(depositAccount);
+                    JsonNode itr = arrayNode.get(i);
+                    String accCode = itr.get("product_code").textValue();
+                        for(String productCode : eligibleAccountCodeBuy) {
+                            if(productCode.equals(accCode)) {
+                                depositAccount = new DepositAccount();
+                                depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
+                                depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
+                                String accType = itr.get("product_group_code").textValue();
+                                depositAccount.setAccountType(convertAccountType(accType));
+                                depositAccount.setAccountTypeShort(accType);
+                                depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
+                                depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
+                                depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
+                                depositAccountList.add(depositAccount);
+                            }
+                        }
                 }
                 fundPaymentDetailRs.setDepositAccountList(depositAccountList);
             } catch (JsonProcessingException e) {
@@ -307,7 +316,7 @@ public class UtilMap {
                 List<Integer> countDormant = new ArrayList<>();
                 for (int i = 0; i < size; i++) {
                     JsonNode itr = arrayNode.get(i);
-                    String accStatus = itr.get("account_status").textValue();
+                    String accStatus = itr.get("account_status_code").textValue();
                     BigDecimal balance = new BigDecimal(itr.get("current_balance").textValue());
                     BigDecimal zeroBalance = new BigDecimal("0");
                     switch (accStatus) {

@@ -7,6 +7,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -45,6 +46,7 @@ public class ProductExpServiceCloseTest {
     AccountRequestClient accountRequestClient;
     KafkaProducerService kafkaProducerService;
     CustomerServiceClient customerServiceClient;
+    CommonServiceClient commonServiceClient;
 
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
@@ -60,7 +62,8 @@ public class ProductExpServiceCloseTest {
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient,
+        commonServiceClient = mock(CommonServiceClient.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,
                 investmentStartTime, investmentEndTime, topicName);
 
     }
@@ -415,7 +418,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void mappingPaymentResponse() throws Exception {
         UtilMap utilMap = new UtilMap();
-        FundPaymentDetailRs fundAccountRs = utilMap.mappingPaymentResponse(null, null, null);
+        FundPaymentDetailRs fundAccountRs = utilMap.mappingPaymentResponse(null, null, null, null);
         Assert.assertNull(fundAccountRs);
     }
 
