@@ -66,8 +66,6 @@ public class ProductExpServiceTest {
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-    private final String investmentStartTime = "08:00";
-    private final String investmentEndTime = "08:30";
     private final String  topicName = "activity";
 
     @BeforeEach
@@ -78,8 +76,7 @@ public class ProductExpServiceTest {
         kafkaProducerService = mock(KafkaProducerService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
         commonServiceClient = mock(CommonServiceClient.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,
-                 investmentStartTime, investmentEndTime, topicName);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,topicName);
 
     }
 

@@ -51,8 +51,6 @@ public class ProductExpServiceCloseTest {
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-    private final String investmentStartTime = "00:01";
-    private final String investmentEndTime = "23:59";
     private final String  topicName = "activity";
 
     @BeforeEach
@@ -64,7 +62,7 @@ public class ProductExpServiceCloseTest {
         customerServiceClient = mock(CustomerServiceClient.class);
         commonServiceClient = mock(CommonServiceClient.class);
         productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,
-                investmentStartTime, investmentEndTime, topicName);
+                topicName);
 
     }
 
@@ -454,21 +452,21 @@ public class ProductExpServiceCloseTest {
     @Test
     public void addColonDateFormat() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.addColonDateFormat("0600");
-        Assert.assertEquals("06:00",fundAccountRs);
+        String  fundAccountRs = utilMap.deleteColonDateFormat("06:00");
+        Assert.assertEquals("0600",fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatStart() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.addColonDateFormat("2330");
-        Assert.assertEquals("23:30",fundAccountRs);
+        String  fundAccountRs = utilMap.deleteColonDateFormat("23:30");
+        Assert.assertEquals("2330",fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatFail() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.addColonDateFormat("");
+        String  fundAccountRs = utilMap.deleteColonDateFormat("");
         Assert.assertEquals("",fundAccountRs);
     }
 

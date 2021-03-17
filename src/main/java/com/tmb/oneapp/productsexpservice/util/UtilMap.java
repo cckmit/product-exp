@@ -199,7 +199,8 @@ public class UtilMap {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
                 String getCurrentTime = sdf.format(cal.getTime());
-                if((getCurrentTime.compareTo(startTime) > 0) && (getCurrentTime.compareTo(endTime) > 0)){
+                if((getCurrentTime.compareTo(deleteColonDateFormat(startTime)) > 0) &&
+                        (getCurrentTime.compareTo(deleteColonDateFormat(endTime)) > 0)){
                     return isClose;
                 }
             }
@@ -344,12 +345,10 @@ public class UtilMap {
      * @param timeHHmm
      * @return String
      */
-    public static String addColonDateFormat(String timeHHmm){
+    public static String deleteColonDateFormat(String timeHHmm){
         String changeTime = "";
         if(!StringUtils.isEmpty(timeHHmm)){
-           String strTime = timeHHmm.substring(0,2);
-           String endTime = timeHHmm.substring(2,4);
-           return strTime.concat(":").concat(endTime);
+           return timeHHmm.replace(":", "");
         }
         return changeTime;
     }

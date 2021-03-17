@@ -8,6 +8,7 @@ import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -68,8 +69,6 @@ public class ProductsExpService {
     private CustomerServiceClient customerServiceClient;
     private CommonServiceClient commonServiceClient;
     private final KafkaProducerService kafkaProducerService;
-    private final String investmentStartTime;
-    private final String investmentEndTime;
     private final String topicName;
 
     @Autowired
@@ -78,8 +77,6 @@ public class ProductsExpService {
                               KafkaProducerService kafkaProducerService,
                               CustomerServiceClient customerServiceClient,
                               CommonServiceClient commonServiceClient,
-                              @Value("${investment.close.time.start}") String investmentStartTime,
-                              @Value("${investment.close.time.end}") String investmentEndTime,
                               @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
 
         this.investmentRequestClient = investmentRequestClient;
@@ -87,8 +84,6 @@ public class ProductsExpService {
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
         this.commonServiceClient = commonServiceClient;
-        this.investmentStartTime = investmentStartTime;
-        this.investmentEndTime = investmentEndTime;
         this.topicName = topicName;
     }
 
@@ -265,62 +260,57 @@ public class ProductsExpService {
     @LogAround
     public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
-        final boolean isNotValid = true;
-        boolean isStoped = false;
-        if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime)){
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
-            ffsRsAndValidation.setErrorMsg(UtilMap.addColonDateFormat(investmentStartTime));
-            ffsRsAndValidation.setErrorDesc(UtilMap.addColonDateFormat(investmentEndTime));
-            isStoped = true;
-        }
-        ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
-        if(!isStoped && !ffsRsAndValidation.isError()){
-            ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
-            try {
-                Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-                responseEntity = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, ffsRequestBody);
-                logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-                if (!StringUtils.isEmpty(responseEntity) && responseEntity.getStatusCode() == HttpStatus.OK) {
-                    FfsData ffsData = new FfsData();
-                    ffsData.setFactSheetData(responseEntity.getBody().getData().getBody().getFactSheetData());
-                    ffsRsAndValidation.setBody(ffsData);
-                } else {
-                    ffsRsAndValidation.setError(true);
-                    ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
-                    ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
-                    ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+        FundResponse fundResponse = null;
+        fundResponse = isServiceHour(correlationId, fundResponse);
+        if(StringUtils.isEmpty(fundResponse)) {
+            ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
+            if (!ffsRsAndValidation.isError()) {
+                ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
+                try {
+                    Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+                    responseEntity = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, ffsRequestBody);
+                    logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
+                    if (!StringUtils.isEmpty(responseEntity) && responseEntity.getStatusCode() == HttpStatus.OK) {
+                        FfsData ffsData = new FfsData();
+                        ffsData.setFactSheetData(responseEntity.getBody().getData().getBody().getFactSheetData());
+                        ffsRsAndValidation.setBody(ffsData);
+                    } else {
+                        ffsRsAndValidation.setError(true);
+                        ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
+                        ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+                        ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+                    }
+                } catch (Exception e) {
+                    logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+                    return null;
                 }
-            }catch (Exception e){
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-                return null;
             }
+        }else{
+            ffsRsAndValidation.setError(true);
+            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
+            ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
+            ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
         }
         return ffsRsAndValidation;
     }
 
     /**
-     * Generic Method to validate AlternativeSaleAndSwitch
+     * Generic Method to validate AlternativeSellAndSwitch
      *
      * @param alternativeRq
      * @param correlationId
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validateAlternativeSaleAndSwitch(String correlationId, AlternativeRq alternativeRq) {
+    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq) {
         FundResponse fundResponse = new FundResponse();
-        final boolean isNotValid = true;
-        if(UtilMap.isBusinessClose(investmentStartTime, investmentEndTime)){
-            fundResponse.setError(isNotValid);
-            fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
-            fundResponse.setErrorMsg(UtilMap.addColonDateFormat(investmentStartTime));
-            fundResponse.setErrorDesc(UtilMap.addColonDateFormat(investmentEndTime));
-        }else{
+        fundResponse = isServiceHour(correlationId, fundResponse);
+         if(!fundResponse.isError()){
             FfsRequestBody ffsRequestBody = new FfsRequestBody();
             ffsRequestBody.setUnitHolderNo(alternativeRq.getUnitHolderNo());
             ffsRequestBody.setProcessFlag(alternativeRq.getProcessFlag());
             ffsRequestBody.setCrmId(alternativeRq.getCrmId());
-            fundResponse = validationAlternativeSaleAndSwitchFlow(correlationId, ffsRequestBody, fundResponse);
+            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse);
             if(!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()){
                 fundResponse.setError(false);
                 fundResponse.setErrorCode(ProductsExpServiceConstant.SUCCESS_CODE);
@@ -391,7 +381,7 @@ public class ProductsExpService {
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validationAlternativeSaleAndSwitchFlow(String correlationId, FfsRequestBody ffsRequestBody,
+    public FundResponse validationAlternativeSellAndSwitchFlow(String correlationId, FfsRequestBody ffsRequestBody,
                                                                      FundResponse fundResponse) {
         final boolean isNotValid = true;
         boolean isStoped = false;
@@ -410,6 +400,41 @@ public class ProductsExpService {
         }
         return fundResponse;
     }
+
+    /**
+     * Method isServiceHour Query service hour from common-service
+     *
+     * @param correlationId
+     * @param fundResponse
+     */
+    public FundResponse isServiceHour(String correlationId, FundResponse fundResponse){
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
+        try{
+            responseCommon = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
+            if(!StringUtils.isEmpty(responseCommon)){
+                List<CommonData> commonDataList = responseCommon.getBody().getData();
+                CommonData commonData = commonDataList.get(0);
+                CommonTime noneServiceHour = commonData.getNoneServiceHour();
+                if(UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
+                    fundResponse.setError(true);
+                    fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
+                    fundResponse.setErrorMsg(noneServiceHour.getStart());
+                    fundResponse.setErrorDesc(noneServiceHour.getEnd());
+                }
+            }
+            return fundResponse;
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            return fundResponse;
+        }
+    }
+
+
+    /*
+
+
+     */
 
     /**
      * Method isOfShelfFund for get all fund list and check with fund code
