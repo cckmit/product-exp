@@ -131,7 +131,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingResponse
+     * Generic Method to mappingAccount
      *
      * @param responseCommon
      * @param responseCustomerExp
