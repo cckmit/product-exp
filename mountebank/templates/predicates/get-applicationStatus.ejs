@@ -1,75 +1,121 @@
 {
-    "predicates": [{
-        "equals": {
-            "path": "/apis/products/application/status",
-            "query": {
-                "service_type_id": "serviceTypeId"
-            },
-            "method": "GET"
-        }
-    }],
-    "responses": [{
-        "is": {
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json"
-            },
-            "body": {
-                "status": {
-                    "code": "0000",
-                    "message": "success",
-                    "service": "customers-exp-service",
-                    "description": "success"
-                },
-                "data": {
-                    "service_type_id": "AST",
-                    "first_usage_experience": true,
-                    "in_progress": [{
-                        "status": "In Progress",
-                        "product_category_th": "บัตรเครดิต",
-                        "product_category_en": "Credit Card",
-                        "product_type_th": "บัตรกดเงินสด แฟลช",
-                        "product_type_en": "FLASH Card",
-                        "product_detail_th": "",
-                        "product_detail_en": "",
-                        "reference_no": "026PL63186306",
-                        "image_url": "/product/credit_card/cards_flash.svg",
-                        "current_node": "1",
-                        "node_text_th": ["ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว", "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร", "อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ", "ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว"],
-                        "node_text_en": ["TMB has received your application", "Verifying Information and document in progress", "Approval process in progress", "Your application has been approved"],
-                        "top_remark_th": "Test Top Remark Th",
-                        "top_remark_en": "Test Top Remark En",
-                        "bottom_remark_th": "Test Bottom Remark Th",
-                        "bottom_remark_en": "Test Bottom Remark En",
-                        "application_date": "2020-07-17",
-                        "last_update_date": "2021-03-12",
-                        "isApproved": false,
-                        "isRejected": false
-                    }],
-                    "completed": [{
-                        "status": "Completed",
-                        "product_category_th": "บัตรเครดิต",
-                        "product_category_en": "Credit Card",
-                        "product_type_th": "บัตรกดเงินสด แฟลช",
-                        "product_type_en": "FLASH Card",
-                        "product_detail_th": "",
-                        "product_detail_en": "",
-                        "reference_no": "026PL63186306",
-                        "image_url": "/product/credit_card/cards_flash.svg",
-                        "current_node": "4",
-                        "node_text_th": ["ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว", "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร", "อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ", "ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว"],
-                        "node_text_en": ["TMB has received your application", "Verifying Information and document in progress", "Approval process in progress", "Your application has been approved"],
-                        "top_remark_th": "Test Top Remark Th",
-                        "top_remark_en": "Test Top Remark En",
-                        "bottom_remark_th": "Test Bottom Remark Th",
-                        "bottom_remark_en": "Test Bottom Remark En",
-                        "application_date": "2020-07-17",
-                        "last_update_date": "2021-03-14",
-                        "isApproved": false,
-                        "isRejected": false
-                    }]
-                }
-            }
-        }
-    }]
+	"predicates": [{
+		"equals": {
+			"path": "/apis/products/application/status",
+			"query": {
+				"service_type_id": "serviceTypeId"
+			},
+			"method": "GET"
+		}
+	}],
+	"responses": [{
+		"is": {
+			"statusCode": 200,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"body": {
+				"status": {
+					"code": "0000",
+					"message": "success",
+					"service": "customers-exp-service",
+					"description": "success"
+				},
+				"data": {
+					"service_type_id": "AST",
+					"first_usage_experience": true,
+					"in_progress": [{
+						"status": "In Progress",
+						"product_code": "RC",
+						"product_category_th": "สินเชื่อบุคคล",
+						"product_category_en": "Personal loan",
+						"product_type_th": "บัตรกดเงินสด แฟลช",
+						"product_type_en": "FLASH Card",
+						"product_detail_th": "",
+						"product_detail_en": "",
+						"reference_no": "026PL63186306",
+						"image_url": "/product/credit_card/cards_flash.svg",
+						"current_node": "1",
+						"node_text_th": ["ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว", "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร", "อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ", "ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว"],
+						"node_text_en": ["TMB has received your application", "Verifying Information and document in progress", "Approval process in progress", "Your application has been approved"],
+						"top_remark_th": "Test Top Remark Th",
+						"top_remark_en": "Test Top Remark En",
+						"bottom_remark_th": "Test Bottom Remark Th",
+						"bottom_remark_en": "Test Bottom Remark En",
+						"application_date": "2020-07-17",
+						"last_update_date": "2021-03-12",
+						"isApproved": false,
+						"isRejected": false
+					}],
+					"completed": [{
+						"status": "Completed",
+						"product_code": "RC",
+						"product_category_th": "สินเชื่อบุคคล",
+						"product_category_en": "Personal loan",
+						"product_type_th": "บัตรกดเงินสด แฟลช",
+						"product_type_en": "FLASH Card",
+						"product_detail_th": "",
+						"product_detail_en": "",
+						"reference_no": "026PL63186306",
+						"image_url": "/product/credit_card/cards_flash.svg",
+						"current_node": "4",
+						"node_text_th": ["ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว", "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร", "อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ", "ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว"],
+						"node_text_en": ["TMB has received your application", "Verifying Information and document in progress", "Approval process in progress", "Your application has been approved"],
+						"top_remark_th": "Test Top Remark Th",
+						"top_remark_en": "Test Top Remark En",
+						"bottom_remark_th": "",
+						"bottom_remark_en": "",
+						"application_date": "2020-07-17",
+						"last_update_date": "2021-03-14",
+						"isApproved": false,
+						"isRejected": false
+					}, {
+						"status": "Completed",
+						"product_code": "VM",
+						"product_category_th": "บัตรเครดิต",
+						"product_category_en": "Credit Card",
+						"product_type_th": "TMB So Smart",
+						"product_type_en": "TMB So Smart",
+						"product_detail_th": "",
+						"product_detail_en": "",
+						"reference_no": "026PL63186307",
+						"image_url": "/product/credit_card/cards_sosmart.png",
+						"current_node": "4",
+						"node_text_th": ["ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว", "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร", "อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ", "ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว"],
+						"node_text_en": ["TMB has received your application", "Verifying Information and document in progress", "Approval process in progress", "Your application has been approved"],
+						"top_remark_th": "",
+						"top_remark_en": "",
+						"bottom_remark_th": "Test Bottom Remark Th",
+						"bottom_remark_en": "Test Bottom Remark En",
+						"application_date": "2020-07-17",
+						"last_update_date": "2021-03-14",
+						"isApproved": false,
+						"isRejected": false
+					}, {
+						"status": "Completed",
+						"product_code": null,
+						"product_category_th": "สินเชื่อเช่าซื้อ",
+						"product_category_en": "Hire-purchase",
+						"product_type_th": "สินเชื่อเช่าซื้อ",
+						"product_type_en": "Hire-purchase",
+						"product_detail_th": "Toyota C-HR",
+						"product_detail_en": "Toyota C-HR",
+						"reference_no": "24639192228",
+						"image_url": null,
+						"current_node": "4",
+						"node_text_th": ["ธนาคารได้รับเรื่องขอสินเชื่อรถยนต์ของท่านแล้ว", "ดำเนินการพิจารณาสินเชื่อรถยนต์ของท่าน", "ได้รับอนุมัติ เตรียมดำเนินการด้านทะเบียนรถยนต์", "แจ้งเลขที่สัญญา"],
+						"node_text_en": ["Application received", "Documents in review", "Loan approved", "Contract Confirmation"],
+						"top_remark_th": null,
+						"top_remark_en": null,
+						"bottom_remark_th": "สัญญาเช่าซื้อเลขที่ 24639192228",
+						"bottom_remark_en": "Contract confirmation number is 24639192228",
+						"application_date": "2021-03-14",
+						"last_update_date": "2021-03-14",
+						"isApproved": null,
+						"isRejected": null
+					}]
+				}
+			}
+		}
+	}]
 }
