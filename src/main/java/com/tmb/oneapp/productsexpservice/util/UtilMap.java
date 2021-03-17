@@ -125,41 +125,55 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailRs.setFundRule(fundRule);
-
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = null;
-                node = mapper.readValue(responseCustomerExp, JsonNode.class);
-                ArrayNode arrayNode = (ArrayNode) node.get("data");
-                int size = arrayNode.size();
-                DepositAccount depositAccount = null;
-                List<CommonData> commonData = responseCommon.getBody().getData();
-                List<String> eligibleAccountCodeBuy = commonData.get(0).getEligibleAccountCodeBuy();
-                List<DepositAccount> depositAccountList = new ArrayList<>();
-                for (int i = 0; i < size; i++) {
-                    JsonNode itr = arrayNode.get(i);
-                    String accCode = itr.get("product_code").textValue();
-                        for(String productCode : eligibleAccountCodeBuy) {
-                            if(productCode.equals(accCode)) {
-                                depositAccount = new DepositAccount();
-                                depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
-                                depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
-                                String accType = itr.get("product_group_code").textValue();
-                                depositAccount.setAccountType(convertAccountType(accType));
-                                depositAccount.setAccountTypeShort(accType);
-                                depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
-                                depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
-                                depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
-                                depositAccountList.add(depositAccount);
-                            }
-                        }
-                }
-                fundPaymentDetailRs.setDepositAccountList(depositAccountList);
-            } catch (JsonProcessingException e) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            }
+            fundPaymentDetailRs = mappingAccount(responseCommon, responseCustomerExp, fundPaymentDetailRs);
             return fundPaymentDetailRs;
         }
+    }
+
+    /**
+     * Generic Method to mappingResponse
+     *
+     * @param responseCommon
+     * @param responseCustomerExp
+     * @param fundPaymentDetailRs
+     * @return FundPaymentDetailRs
+     */
+    public FundPaymentDetailRs mappingAccount(ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon,
+                                              String responseCustomerExp,
+                                              FundPaymentDetailRs fundPaymentDetailRs){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = null;
+            node = mapper.readValue(responseCustomerExp, JsonNode.class);
+            ArrayNode arrayNode = (ArrayNode) node.get("data");
+            int size = arrayNode.size();
+            DepositAccount depositAccount = null;
+            List<CommonData> commonData = responseCommon.getBody().getData();
+            List<String> eligibleAccountCodeBuy = commonData.get(0).getEligibleAccountCodeBuy();
+            List<DepositAccount> depositAccountList = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                JsonNode itr = arrayNode.get(i);
+                String accCode = itr.get("product_code").textValue();
+                for(String productCode : eligibleAccountCodeBuy) {
+                    if(productCode.equals(accCode)) {
+                        depositAccount = new DepositAccount();
+                        depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
+                        depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
+                        String accType = itr.get("product_group_code").textValue();
+                        depositAccount.setAccountType(convertAccountType(accType));
+                        depositAccount.setAccountTypeShort(accType);
+                        depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
+                        depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
+                        depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
+                        depositAccountList.add(depositAccount);
+                    }
+                }
+            }
+            fundPaymentDetailRs.setDepositAccountList(depositAccountList);
+        } catch (JsonProcessingException e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+        }
+        return fundPaymentDetailRs;
     }
 
 

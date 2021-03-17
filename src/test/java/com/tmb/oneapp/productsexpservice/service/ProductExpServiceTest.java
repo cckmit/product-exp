@@ -4,6 +4,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
@@ -25,6 +26,7 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
@@ -557,6 +559,37 @@ public class ProductExpServiceTest {
         }
         boolean getFundSummary = productsExpService.isBusinessClose(corrID, fundAccountRequest);
         Assert.assertFalse(getFundSummary);
+    }
+
+    @Test
+    public void isServiceClose() throws Exception {
+
+        FundResponse fundResponse = new FundResponse();
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommonRs = null;
+        CommonData commonData = new CommonData();
+        CommonTime commonTime = new CommonTime();
+        List<CommonData> commonDataList = new ArrayList<>();
+        try {
+            commonTime.setStart("06:00");
+            commonTime.setEnd("23:00");
+            commonData.setNoneServiceHour(commonTime);
+            commonDataList.add(commonData);
+
+            responseCommon.setData(commonDataList);
+            responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        responseCommonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
+        fundResponse = productsExpService.isServiceHour(corrID, fundResponse);
+        Assert.assertNotNull(responseCommonRs);
+        Assert.assertNotNull(fundResponse);
     }
 
     @Test

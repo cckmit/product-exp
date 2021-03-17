@@ -190,7 +190,6 @@ public class ProductExpServiceController {
 			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
 				ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
 				if (ffsRsAndValidation.isError()) {
-
 					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
 							 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
 							trackingStatus, alternativeRq));
