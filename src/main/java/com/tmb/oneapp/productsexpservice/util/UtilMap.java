@@ -354,7 +354,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to add Colon to time
+     * Generic Method to delete Colon from time
      *
      * @param timeHHmm
      * @return String
