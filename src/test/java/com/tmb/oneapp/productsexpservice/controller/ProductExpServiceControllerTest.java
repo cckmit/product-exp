@@ -388,10 +388,10 @@ public class ProductExpServiceControllerTest {
         alternativeRq.setProcessFlag("Y");
         alternativeRq.setOrderType("2");
 
-        when(productsExpService.validateAlternativeSaleAndSwitch(corrID, alternativeRq)).thenThrow(MockitoException.class);
+        when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq)).thenThrow(MockitoException.class);
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
-                .validateAlternativeSaleAndSwitch(corrID, alternativeRq);
+                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
@@ -406,7 +406,7 @@ public class ProductExpServiceControllerTest {
         alternativeRq.setUnitHolderNo("PT00000000000");
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
-                .validateAlternativeSaleAndSwitch(corrID, alternativeRq);
+                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
@@ -429,14 +429,14 @@ public class ProductExpServiceControllerTest {
             fundRsAndValidation.setErrorDesc("success");
             fundRsAndValidation.setErrorMsg("success");
 
-            when(productsExpService.validateAlternativeSaleAndSwitch(corrID, alternativeRq)).thenReturn(fundRsAndValidation);
+            when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq)).thenReturn(fundRsAndValidation);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
-                .validateAlternativeSaleAndSwitch(corrID, alternativeRq);
+                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 

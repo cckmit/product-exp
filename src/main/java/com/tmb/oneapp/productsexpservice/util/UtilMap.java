@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -96,6 +97,7 @@ public class UtilMap {
      */
     public FundPaymentDetailRs mappingPaymentResponse(ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity,
                                                       ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday,
+                                                      ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon,
                                                       String responseCustomerExp){
         if(StringUtils.isEmpty(responseEntity)
                 || HttpStatus.OK != responseEntity.getStatusCode()
@@ -123,17 +125,37 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailRs.setFundRule(fundRule);
+            fundPaymentDetailRs = mappingAccount(responseCommon, responseCustomerExp, fundPaymentDetailRs);
+            return fundPaymentDetailRs;
+        }
+    }
 
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = null;
-                node = mapper.readValue(responseCustomerExp, JsonNode.class);
-                ArrayNode arrayNode = (ArrayNode) node.get("data");
-                int size = arrayNode.size();
-                DepositAccount depositAccount = null;
-                List<DepositAccount> depositAccountList = new ArrayList<>();
-                for (int i = 0; i < size; i++) {
-                        JsonNode itr = arrayNode.get(i);
+    /**
+     * Generic Method to mappingAccount
+     *
+     * @param responseCommon
+     * @param responseCustomerExp
+     * @param fundPaymentDetailRs
+     * @return FundPaymentDetailRs
+     */
+    public FundPaymentDetailRs mappingAccount(ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon,
+                                              String responseCustomerExp,
+                                              FundPaymentDetailRs fundPaymentDetailRs){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = null;
+            node = mapper.readValue(responseCustomerExp, JsonNode.class);
+            ArrayNode arrayNode = (ArrayNode) node.get("data");
+            int size = arrayNode.size();
+            DepositAccount depositAccount = null;
+            List<CommonData> commonData = responseCommon.getBody().getData();
+            List<String> eligibleAccountCodeBuy = commonData.get(0).getEligibleAccountCodeBuy();
+            List<DepositAccount> depositAccountList = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                JsonNode itr = arrayNode.get(i);
+                String accCode = itr.get("product_code").textValue();
+                for(String productCode : eligibleAccountCodeBuy) {
+                    if(productCode.equals(accCode)) {
                         depositAccount = new DepositAccount();
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
                         depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
@@ -144,13 +166,14 @@ public class UtilMap {
                         depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
                         depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
                         depositAccountList.add(depositAccount);
+                    }
                 }
-                fundPaymentDetailRs.setDepositAccountList(depositAccountList);
-            } catch (JsonProcessingException e) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             }
-            return fundPaymentDetailRs;
+            fundPaymentDetailRs.setDepositAccountList(depositAccountList);
+        } catch (JsonProcessingException e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }
+        return fundPaymentDetailRs;
     }
 
 
@@ -190,7 +213,8 @@ public class UtilMap {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
                 String getCurrentTime = sdf.format(cal.getTime());
-                if((getCurrentTime.compareTo(startTime) > 0) && (getCurrentTime.compareTo(endTime) > 0)){
+                if((getCurrentTime.compareTo(deleteColonDateFormat(startTime)) > 0) &&
+                        (getCurrentTime.compareTo(deleteColonDateFormat(endTime)) > 0)){
                     return isClose;
                 }
             }
@@ -307,15 +331,15 @@ public class UtilMap {
                 List<Integer> countDormant = new ArrayList<>();
                 for (int i = 0; i < size; i++) {
                     JsonNode itr = arrayNode.get(i);
-                    String accStatus = itr.get("account_status_text").textValue();
+                    String accStatus = itr.get("account_status_code").textValue();
                     BigDecimal balance = new BigDecimal(itr.get("current_balance").textValue());
                     BigDecimal zeroBalance = new BigDecimal("0");
                     switch (accStatus) {
-                        case ProductsExpServiceConstant.ACTIVE_STATUS :
-                        case ProductsExpServiceConstant.INACTIVE_STATUS :
+                        case ProductsExpServiceConstant.ACTIVE_STATUS_CODE :
+                        case ProductsExpServiceConstant.INACTIVE_STATUS_CODE :
                             if((balance.compareTo(zeroBalance) == 0)) countDormant.add(i);
                             break;
-                        case ProductsExpServiceConstant.DORMANT_STATUS :
+                        case ProductsExpServiceConstant.DORMANT_STATUS_CODE :
                             countDormant.add(i);
                             break;
                         default: break;
@@ -330,17 +354,15 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to add Colon to time
+     * Generic Method to delete Colon from time
      *
      * @param timeHHmm
      * @return String
      */
-    public static String addColonDateFormat(String timeHHmm){
+    public static String deleteColonDateFormat(String timeHHmm){
         String changeTime = "";
         if(!StringUtils.isEmpty(timeHHmm)){
-           String strTime = timeHHmm.substring(0,2);
-           String endTime = timeHHmm.substring(2,4);
-           return strTime.concat(":").concat(endTime);
+           return timeHHmm.replace(":", "");
         }
         return changeTime;
     }

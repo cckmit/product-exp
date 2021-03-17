@@ -190,7 +190,6 @@ public class ProductExpServiceController {
 			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
 				ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
 				if (ffsRsAndValidation.isError()) {
-
 					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
 							 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
 							trackingStatus, alternativeRq));
@@ -242,8 +241,8 @@ public class ProductExpServiceController {
 	 */
 	@ApiOperation(value = "Validation alternative case for Sale and Switch")
 	@LogAround
-	@PostMapping(value = "/alternative/saleAndSwitch", consumes= MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TmbOneServiceResponse<FundResponse>> validateAlternativeSaleAndSwitch(
+	@PostMapping(value = "/alternative/sellAndSwitch", consumes= MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TmbOneServiceResponse<FundResponse>> validateAlternativeSellAndSwitch(
 			@ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
 			@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
 			@Valid @RequestBody AlternativeRq alternativeRq) {
@@ -261,7 +260,7 @@ public class ProductExpServiceController {
 			ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING : ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_SWITCH_STATUS_TRACKING ;
 
 			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRq.getProcessFlag())) {
-				fundResponse = productsExpService.validateAlternativeSaleAndSwitch(correlationId, alternativeRq);
+				fundResponse = productsExpService.validateAlternativeSellAndSwitch(correlationId, alternativeRq);
 				if (fundResponse.isError()) {
 
 					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
