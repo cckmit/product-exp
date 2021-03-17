@@ -89,7 +89,7 @@ public class ProductsExpServiceConstant {
 	public static final String ACTIVITY_ID_INVESTMENT_SALE_STATUS_TRACKING = "101000301";
 	public static final String ACTIVITY_ID_INVESTMENT_SWITCH_STATUS_TRACKING = "101000401";
 	public static final String ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
-	public static final String ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING = "Sale fund ";
+	public static final String ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING = "Sell fund ";
 	public static final String ACTIVITY_TYPE_INVESTMENT_SWITCH_STATUS_TRACKING = "Switch fund ";
 	public static final String ACTIVITY_LOG_CHANNEL = "mb";
 	public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
@@ -103,6 +103,10 @@ public class ProductsExpServiceConstant {
 	public static final String ACTIVE_STATUS = "ACTIVE";
 	public static final String INACTIVE_STATUS = "INACTIVE";
 	public static final String DORMANT_STATUS = "DORMANT";
+
+	public static final String ACTIVE_STATUS_CODE = "0";
+	public static final String INACTIVE_STATUS_CODE = "1";
+	public static final String DORMANT_STATUS_CODE = "2";
 
 	public static final String PROCESS_FLAG_Y = "Y";
 	public static final String BUSINESS_HR_CLOSE = "N";

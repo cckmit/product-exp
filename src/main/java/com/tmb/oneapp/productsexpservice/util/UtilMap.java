@@ -136,7 +136,7 @@ public class UtilMap {
                         JsonNode itr = arrayNode.get(i);
                         depositAccount = new DepositAccount();
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
-                        depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
+                        depositAccount.setAccountStatus(itr.get("account_status").textValue());
                         String accType = itr.get("product_group_code").textValue();
                         depositAccount.setAccountType(convertAccountType(accType));
                         depositAccount.setAccountTypeShort(accType);
@@ -307,15 +307,15 @@ public class UtilMap {
                 List<Integer> countDormant = new ArrayList<>();
                 for (int i = 0; i < size; i++) {
                     JsonNode itr = arrayNode.get(i);
-                    String accStatus = itr.get("account_status_text").textValue();
+                    String accStatus = itr.get("account_status").textValue();
                     BigDecimal balance = new BigDecimal(itr.get("current_balance").textValue());
                     BigDecimal zeroBalance = new BigDecimal("0");
                     switch (accStatus) {
-                        case ProductsExpServiceConstant.ACTIVE_STATUS :
-                        case ProductsExpServiceConstant.INACTIVE_STATUS :
+                        case ProductsExpServiceConstant.ACTIVE_STATUS_CODE :
+                        case ProductsExpServiceConstant.INACTIVE_STATUS_CODE :
                             if((balance.compareTo(zeroBalance) == 0)) countDormant.add(i);
                             break;
-                        case ProductsExpServiceConstant.DORMANT_STATUS :
+                        case ProductsExpServiceConstant.DORMANT_STATUS_CODE :
                             countDormant.add(i);
                             break;
                         default: break;
