@@ -260,9 +260,9 @@ public class ProductsExpService {
     @LogAround
     public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
-        FundResponse fundResponse = null;
+        FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
-        if(StringUtils.isEmpty(fundResponse)) {
+        if(!fundResponse.isError()) {
             ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
             if (!ffsRsAndValidation.isError()) {
                 ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
