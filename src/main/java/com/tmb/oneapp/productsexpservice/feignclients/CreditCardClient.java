@@ -66,11 +66,6 @@ public interface CreditCardClient {
 	@PostMapping(value = "/apis/creditcard/block-card")
 	public ResponseEntity<BlockCardResponse> getBlockCardDetails(@RequestBody BlockCardRequest requestBodyParameter);
 
-	@PostMapping(value = "/apis/creditcard/set-pin")
-	ResponseEntity<SetPinResponse> setPin(
-			@RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
-			@RequestBody SetPinQuery requestBodyParameter);
-
 	@PostMapping(value = "/apis/creditcard/creditcard/get-campaign-transactions")
 	public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCampaignTransactionsDetails(@RequestHeader("X-Correlation-ID") String correlationId,
 																										 @RequestBody CampaignTransactionQuery requestBodyParameter);

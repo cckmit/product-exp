@@ -53,7 +53,7 @@ public class CampaignTransactionsController {
 
     @LogAround
     @ApiOperation(value = "Get Campaign Transactions Api")
-    @PostMapping(value = "creditcard/get-campaign-transactions")
+    @PostMapping(value = "/creditcard/get-campaign-transactions")
     @ApiImplicitParams({
             @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header")
 

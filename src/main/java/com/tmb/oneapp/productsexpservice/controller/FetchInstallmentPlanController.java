@@ -67,8 +67,9 @@ public class FetchInstallmentPlanController{
                                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
                 return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
             } else {
-                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-                        ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
 
                 return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
             }
