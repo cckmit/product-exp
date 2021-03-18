@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Admin
- *
  */
 @RestController
 @Api(tags = "Card Installment Api")
@@ -36,6 +35,7 @@ public class CardInstallmentController {
 
     /**
      * Constructor
+     *
      * @param
      * @param creditCardClient
      */
@@ -46,66 +46,65 @@ public class CardInstallmentController {
     }
 
     /**
-         * campaign transaction api
-         * @param requestBodyParameter
-         * @return campaign transaction response
-         */
+     * campaign transaction api
+     *
+     * @param requestBodyParameter
+     * @return campaign transaction response
+     */
 
 
-        @LogAround
-        @ApiOperation(value = "Campaign Transactions Api")
-        @PostMapping(value = "/creditcard/card-installment-confirm")
-        public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCardInstallmentDetails(
-                @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
-                @RequestBody CardInstallmentQuery requestBodyParameter)
-                throws TMBCommonException {
-            logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
-        
-            HttpHeaders responseHeaders = new HttpHeaders();
-            TmbOneServiceResponse<CardInstallmentResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-            try {
-                String modelType =requestBodyParameter.getCardInstallment().getModelType();
-                String amounts= requestBodyParameter.getCardInstallment().getAmounts();
-                String transactionKey = requestBodyParameter.getCardInstallment().getTransactionKey();
-                String promotionModelNo = requestBodyParameter.getCardInstallment().getPromotionModelNo();
-             if(!Strings.isNullOrEmpty(modelType) && !Strings.isNullOrEmpty(amounts)
-                     && !Strings.isNullOrEmpty(transactionKey)   && !Strings.isNullOrEmpty(promotionModelNo)
-             ) {
-                 ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentResponse = creditCardClient.getCardInstallmentDetails(correlationId,requestBodyParameter);
-                 TmbOneServiceResponse<CardInstallmentResponse> body = cardInstallmentResponse.getBody();
-                 if (body != null) {
-                     Status status = new Status();
-                     status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
-                     String code = body.getStatus().getCode();
-                      if (code == "0") {
-      					
-      					oneServiceResponse
-      							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-      									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-      				} else {
-      					oneServiceResponse.setData(body.getData());
-      					oneServiceResponse.setStatus(
-      							new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
-      									ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
-      					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-      				}
-                 }
-             }
-             else
-             {
-                 oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                         ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                 return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-             }
-            } catch (Exception e) {
-                logger.error("Error while getBlockCardDetails: {}", e);
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.OK, null);
+    @LogAround
+    @ApiOperation(value = "Campaign Transactions Api")
+    @PostMapping(value = "/creditcard/card-installment-confirm")
+    public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCardInstallmentDetails(
+            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestBody CardInstallmentQuery requestBodyParameter)
+            throws TMBCommonException {
+        logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        TmbOneServiceResponse<CardInstallmentResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            String modelType = requestBodyParameter.getCardInstallment().getModelType();
+            String amounts = requestBodyParameter.getCardInstallment().getAmounts();
+            String transactionKey = requestBodyParameter.getCardInstallment().getTransactionKey();
+            String promotionModelNo = requestBodyParameter.getCardInstallment().getPromotionModelNo();
+            if (!Strings.isNullOrEmpty(modelType) && !Strings.isNullOrEmpty(amounts)
+                    && !Strings.isNullOrEmpty(transactionKey) && !Strings.isNullOrEmpty(promotionModelNo)
+            ) {
+                ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentResponse = creditCardClient.getCardInstallmentDetails(correlationId, requestBodyParameter);
+                TmbOneServiceResponse<CardInstallmentResponse> body = cardInstallmentResponse.getBody();
+                if (body != null) {
+                    Status status = new Status();
+                    status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
+                    String code = body.getStatus().getCode();
+                    if (code == "0") {
+
+                        oneServiceResponse
+                                .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                                        ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+                    } else {
+                        oneServiceResponse.setData(body.getData());
+                        oneServiceResponse.setStatus(
+                                new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
+                                        ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
+                        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                    }
+                }
+            } else {
+                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
             }
-
-            return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-
+        } catch (Exception e) {
+            logger.error("Error while getBlockCardDetails: {}", e);
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.OK, null);
         }
+
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+
+    }
 
 }
