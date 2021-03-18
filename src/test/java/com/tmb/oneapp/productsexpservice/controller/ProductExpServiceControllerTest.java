@@ -6,12 +6,14 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
@@ -74,7 +76,8 @@ public class ProductExpServiceControllerTest {
                 ordersHistories.add(fundOrderHistory);
             }
             accountDetail.setOrdersHistories(ordersHistories);
-            fundAccountDetail.setFundRule(fundRule);
+
+            fundAccountDetail.setFundRuleInfoList(fundRuleInfoList);
             fundAccountDetail.setAccountDetail(accountDetail);
         }
 
@@ -123,33 +126,19 @@ public class ProductExpServiceControllerTest {
         fundRule.setAllowAipFlag("Y");
         fundRule.setDateAfterIpo("20200413");
         fundRule.setFrontEndFee("0");
-        details.setFundRule(fundRule);
+        details.setFundRuleInfoList(null);
 
         AccountDetail accountDetail = new AccountDetail();
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
         FundOrderHistory fundOrderHistory = new FundOrderHistory();
         fundOrderHistory.setAmount("2000.00");
         fundOrderHistory.setOrderDate("20200413");
-        fundOrderHistory.setChannelHubEN("EN");
-        fundOrderHistory.setOrderReference("EEEE");
-        fundOrderHistory.setOrderDateTemp("20200413");
-        fundOrderHistory.setEfftDate("20200413");
-        fundOrderHistory.setItemNo("1");
-        fundOrderHistory.setStatusHubEN("SS");
-        fundOrderHistory.setTranTypeHubEN("1");
-        fundOrderHistory.setTranTypeHubTH("1");
+
 
         FundOrderHistory fundOrderHistoryOne = new FundOrderHistory();
         fundOrderHistoryOne.setAmount("2000.00");
         fundOrderHistoryOne.setOrderDate("20200413");
-        fundOrderHistoryOne.setChannelHubEN("EN");
-        fundOrderHistoryOne.setOrderReference("EEEE");
-        fundOrderHistoryOne.setOrderDateTemp("20200413");
-        fundOrderHistoryOne.setEfftDate("20200413");
-        fundOrderHistoryOne.setItemNo("2");
-        fundOrderHistoryOne.setStatusHubEN("SS");
-        fundOrderHistoryOne.setTranTypeHubEN("1");
-        fundOrderHistoryOne.setTranTypeHubTH("1");
+
 
         ordersHistories.add(fundOrderHistory);
         ordersHistories.add(fundOrderHistoryOne);
@@ -386,6 +375,69 @@ public class ProductExpServiceControllerTest {
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+
+    @Test
+    public void validateAlternativeSaleAndSwitchException() throws Exception {
+
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setFundCode("SCBTMF");
+        alternativeRq.setFundHouseCode("SCBAM");
+        alternativeRq.setCrmId("001100000000000000000012025950");
+        alternativeRq.setProcessFlag("Y");
+        alternativeRq.setOrderType("2");
+
+        when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq)).thenThrow(MockitoException.class);
+
+        ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
+                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void validateAlternativeSaleAndSwitchError() throws Exception {
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setFundCode("SCBTMF");
+        alternativeRq.setFundHouseCode("SCBAM");
+        alternativeRq.setCrmId("001100000000000000000012025950");
+        alternativeRq.setProcessFlag("Y");
+        alternativeRq.setOrderType("2");
+        alternativeRq.setUnitHolderNo("PT00000000000");
+
+        ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
+                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void validateAlternativeSaleAndSwitch() throws Exception {
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setFundCode("SCBTMF");
+        alternativeRq.setFundHouseCode("SCBAM");
+        alternativeRq.setCrmId("001100000000000000000012025950");
+        alternativeRq.setProcessFlag("Y");
+        alternativeRq.setOrderType("2");
+        alternativeRq.setUnitHolderNo("PT00000000000");
+
+
+        FundResponse fundRsAndValidation = null;
+        try {
+            fundRsAndValidation = new FundResponse();
+            fundRsAndValidation.setError(false);
+            fundRsAndValidation.setErrorCode("0000");
+            fundRsAndValidation.setErrorDesc("success");
+            fundRsAndValidation.setErrorMsg("success");
+
+            when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq)).thenReturn(fundRsAndValidation);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
+                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
 

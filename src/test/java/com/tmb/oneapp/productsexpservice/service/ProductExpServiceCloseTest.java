@@ -7,9 +7,11 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
@@ -44,12 +46,11 @@ public class ProductExpServiceCloseTest {
     AccountRequestClient accountRequestClient;
     KafkaProducerService kafkaProducerService;
     CustomerServiceClient customerServiceClient;
+    CommonServiceClient commonServiceClient;
 
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-    private final String investmentStartTime = "00:01";
-    private final String investmentEndTime = "23:59";
     private final String  topicName = "activity";
 
     @BeforeEach
@@ -59,8 +60,9 @@ public class ProductExpServiceCloseTest {
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient,
-                investmentStartTime, investmentEndTime, topicName);
+        commonServiceClient = mock(CommonServiceClient.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,
+                topicName);
 
     }
 
@@ -364,9 +366,16 @@ public class ProductExpServiceCloseTest {
         ffsRequestBody.setCrmId("001100000000000000000012025950");
         ffsRequestBody.setUnitHolderNo("PT000000000000587870");
 
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setCrmId(ffsRequestBody.getCrmId());
+        alternativeRq.setFundCode(ffsRequestBody.getFundCode());
+        alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
+        alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
+        alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
+                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq );
 
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);
@@ -381,9 +390,16 @@ public class ProductExpServiceCloseTest {
         ffsRequestBody.setFundCode("TMONEY");
         ffsRequestBody.setCrmId("001100000000000000000012025950");
 
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setCrmId(ffsRequestBody.getCrmId());
+        alternativeRq.setFundCode(ffsRequestBody.getFundCode());
+        alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
+        alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
+        alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.FAILED_MESSAGE, ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, ffsRequestBody);
+              ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);
@@ -393,14 +409,14 @@ public class ProductExpServiceCloseTest {
     @Test
     public void validateTMBResponse() throws Exception {
       UtilMap utilMap = new UtilMap();
-        FundAccountRs fundAccountRs = utilMap.validateTMBResponse(null, null);
+        FundAccountRs fundAccountRs = utilMap.validateTMBResponse(null, null, null);
         Assert.assertNull(fundAccountRs);
     }
 
     @Test
     public void mappingPaymentResponse() throws Exception {
         UtilMap utilMap = new UtilMap();
-        FundPaymentDetailRs fundAccountRs = utilMap.mappingPaymentResponse(null, null, null);
+        FundPaymentDetailRs fundAccountRs = utilMap.mappingPaymentResponse(null, null, null, null);
         Assert.assertNull(fundAccountRs);
     }
 
@@ -436,21 +452,21 @@ public class ProductExpServiceCloseTest {
     @Test
     public void addColonDateFormat() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.addColonDateFormat("0600");
-        Assert.assertEquals("06:00",fundAccountRs);
+        String  fundAccountRs = utilMap.deleteColonDateFormat("06:00");
+        Assert.assertEquals("0600",fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatStart() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.addColonDateFormat("2330");
-        Assert.assertEquals("23:30",fundAccountRs);
+        String  fundAccountRs = utilMap.deleteColonDateFormat("23:30");
+        Assert.assertEquals("2330",fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatFail() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.addColonDateFormat("");
+        String  fundAccountRs = utilMap.deleteColonDateFormat("");
         Assert.assertEquals("",fundAccountRs);
     }
 

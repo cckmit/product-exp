@@ -15,7 +15,7 @@ public class CaseStatusCase {
     private String issueTh;
     private String issueEn;
     private String referenceNo;
-    private String issuedDate;
+    private String issueDate;
     private String expectedFinishDate;
     private String finishDate;
 
