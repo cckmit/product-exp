@@ -295,7 +295,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            serviceResponseStmt.setData(null);
+            serviceResponseStmt.setData(statementResponse);
             serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
