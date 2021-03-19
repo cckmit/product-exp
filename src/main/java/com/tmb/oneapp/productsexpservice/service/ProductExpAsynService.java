@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-
+/**
+ * ProductExpAsynService class this clasee use for asyn process
+ */
 @Service
 public class ProductExpAsynService {
     private static final TMBLogger<ProductExpAsynService> logger = new TMBLogger<>(ProductExpAsynService.class);
@@ -52,6 +54,13 @@ public class ProductExpAsynService {
 
 
 
+    /**
+     * Method fetchFundAccDetail get Fund account detail
+     *
+     * @param invHeaderReqParameter
+     * @param fundAccountRequestBody
+     * @return CompletableFuture<AccDetailBody>
+     */
     @LogAround
     @Async
     public CompletableFuture<AccDetailBody> fetchFundAccDetail(Map<String, String> invHeaderReqParameter, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
@@ -71,7 +80,13 @@ public class ProductExpAsynService {
     }
 
 
-
+    /**
+     * Method fetchFundRule get Fund rule
+     *
+     * @param invHeaderReqParameter
+     * @param fundRuleRequestBody
+     * @return CompletableFuture<FundRuleBody>
+     */
     @LogAround
     @Async
     public CompletableFuture<FundRuleBody> fetchFundRule(Map<String, String> invHeaderReqParameter, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
@@ -91,6 +106,13 @@ public class ProductExpAsynService {
     }
 
 
+    /**
+     * Method fetchStmtByPort get order statement
+     *
+     * @param invHeaderReqParameter
+     * @param orderStmtByPortRq
+     * @return CompletableFuture<StatementResponse>
+     */
     @LogAround
     @Async
     public CompletableFuture<StatementResponse> fetchStmtByPort(Map<String, String> invHeaderReqParameter, OrderStmtByPortRq orderStmtByPortRq) throws TMBCommonException {
@@ -110,6 +132,14 @@ public class ProductExpAsynService {
     }
 
 
+
+    /**
+     * Method fetchFundHoliday get fund holiday
+     *
+     * @param invHeaderReqParameter
+     * @param fundCode
+     * @return CompletableFuture<FundHolidayBody>
+     */
     @LogAround
     @Async
     public CompletableFuture<FundHolidayBody> fetchFundHoliday(Map<String, String> invHeaderReqParameter, String fundCode) throws TMBCommonException {
@@ -128,6 +158,13 @@ public class ProductExpAsynService {
         }
     }
 
+    /**
+     * Method fetchCustomerExp get customer account
+     *
+     * @param invHeaderReqParameter
+     * @param crmID
+     * @return CompletableFuture<String>
+     */
     @LogAround
     @Async
     public CompletableFuture<String> fetchCustomerExp(Map<String, String> invHeaderReqParameter, String crmID) throws TMBCommonException {
@@ -144,7 +181,13 @@ public class ProductExpAsynService {
         }
     }
 
-
+    /**
+     * Method fetchCommonConfigByModule get common config
+     *
+     * @param correlationId
+     * @param module
+     * @return CompletableFuture<CommonData>
+     */
     @LogAround
     @Async
     public CompletableFuture<List<CommonData>> fetchCommonConfigByModule(String correlationId, String module) throws TMBCommonException {
@@ -162,6 +205,13 @@ public class ProductExpAsynService {
         }
     }
 
+    /**
+     * Method fetchCustomerProfile get customer profile
+     *
+     * @param invHeaderReqParameter
+     * @param crmID
+     * @return CompletableFuture<CustomerProfileResponseData>
+     */
     @LogAround
     @Async
     public CompletableFuture<CustomerProfileResponseData> fetchCustomerProfile(Map<String, String> invHeaderReqParameter, String crmID) throws TMBCommonException {
