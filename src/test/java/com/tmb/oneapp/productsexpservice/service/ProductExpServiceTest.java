@@ -52,6 +52,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -122,77 +123,44 @@ public class ProductExpServiceTest {
 
     @Test
     public void testGetFundAccdetailAndFundRule() throws Exception {
-
-        FundAccountRq fundAccountRequest = new FundAccountRq();
-        fundAccountRequest.setFundCode("EEEEEE");
-        fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
-        fundAccountRequest.setFundHouseCode("TTTTTTT");
-
-        ResponseEntity<TmbOneServiceResponse<AccDetailBody>> responseEntity = null;
-        FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNo("PT000000001");
-        fundAccountRq.setServiceType("1");
-        fundAccountRq.setFundCode("DDD");
-
-
-        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setTranType("2");
-        fundRuleRequestBody.setFundHouseCode("TTTTT");
-        fundRuleRequestBody.setFundCode("EEEEE");
-
-        OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
-        orderStmtByPortRq.setPortfolioNumber("PT0000000032534");
-        orderStmtByPortRq.setRowEnd("5");
-        orderStmtByPortRq.setRowStart("1");
-        orderStmtByPortRq.setFundCode("EEEE");
-
-        TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<StatementResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
-        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseResponseEntity = null;
-        ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseResponseEntity1 = null;
         StatementResponse statementResponse = null;
+        FundAccountRq fundAccountRq = new FundAccountRq();
+        fundAccountRq.setFundHouseCode("ABCC");
+        fundAccountRq.setTranType("2");
+        fundAccountRq.setFundCode("ABCC");
+        fundAccountRq.setServiceType("1");
+        fundAccountRq.setUnitHolderNo("PT0000000000123");
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             accDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccDetailBody.class);
-            oneServiceResponse.setData(accDetailBody);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule.json").toFile(), FundRuleBody.class);
-
             statementResponse = mapper.readValue(Paths.get("src/test/resources/investment/investment_stmt.json").toFile(), StatementResponse.class);
 
-            oneServiceResponseBody.setData(fundRuleBody);
-            oneServiceResponseBody.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            serviceResponseStmt.setData(statementResponse);
-            serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
-            when(investmentRequestClient.callInvestmentStmtByPortService(createHeader(corrID), orderStmtByPortRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
-
+            when(productExpAsynService.fetchFundAccDetail(any(), any())).thenReturn(CompletableFuture.completedFuture(accDetailBody));
+            when(productExpAsynService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
+            when(productExpAsynService.fetchStmtByPort(any(), any())).thenReturn(CompletableFuture.completedFuture(statementResponse));
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        responseResponseEntity = investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody);
-        responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
-        responseResponseEntity1 = investmentRequestClient.callInvestmentStmtByPortService(createHeader(corrID),orderStmtByPortRq);
-        UtilMap map = new UtilMap();
-   //     FundAccountRs rs = map.validateTMBResponse(responseEntity, responseResponseEntity, responseResponseEntity1);
-    //    Assert.assertNotNull(responseResponseEntity);
-   //     Assert.assertNotNull(responseEntity);
-   //     FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
-   //     Assert.assertNull(result);
+
+        CompletableFuture<AccDetailBody> fetchFundAccDetail =  productExpAsynService.fetchFundAccDetail(any(), any());
+        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
+        CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStmtByPort(any(), any());
+        CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
+
+        AccDetailBody accDetailBody = fetchFundAccDetail.get();
+        FundRuleBody fundRuleBody = fetchFundRule.get();
+        StatementResponse statementRs = fetchStmtByPort.get();
+
+        FundAccountRs fundAccountRs = UtilMap.validateTMBResponse(accDetailBody, fundRuleBody, statementRs);
+
+         Assert.assertNotNull(fundAccountRs);
+         Assert.assertNotNull(accDetailBody);
+        Assert.assertNotNull(statementRs);
+         FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRq);
+         Assert.assertNotNull(result);
     }
 
     @Test
