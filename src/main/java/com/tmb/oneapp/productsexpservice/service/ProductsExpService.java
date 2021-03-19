@@ -14,7 +14,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
@@ -46,7 +45,6 @@ import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -55,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
@@ -66,8 +65,8 @@ public class ProductsExpService {
     private static TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
     private InvestmentRequestClient investmentRequestClient;
     private AccountRequestClient accountRequestClient;
-    private CustomerServiceClient customerServiceClient;
     private CommonServiceClient commonServiceClient;
+    private ProductExpAsynService productExpAsynService;
     private final KafkaProducerService kafkaProducerService;
     private final String topicName;
 
@@ -75,15 +74,15 @@ public class ProductsExpService {
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
-                              CustomerServiceClient customerServiceClient,
                               CommonServiceClient commonServiceClient,
+                              ProductExpAsynService productExpAsynService,
                               @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
 
         this.investmentRequestClient = investmentRequestClient;
-        this.customerServiceClient = customerServiceClient;
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
         this.commonServiceClient = commonServiceClient;
+        this.productExpAsynService = productExpAsynService;
         this.topicName = topicName;
     }
 
@@ -99,55 +98,29 @@ public class ProductsExpService {
     @LogAround
     public FundAccountRs getFundAccountDetail(String correlationId, FundAccountRq fundAccountRq) {
         FundAccountRs fundAccountRs = null;
-        FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
-        fundAccountRequestBody.setFundCode(fundAccountRq.getFundCode());
-        fundAccountRequestBody.setServiceType(fundAccountRq.getServiceType());
-        fundAccountRequestBody.setUnitHolderNo(fundAccountRq.getUnitHolderNo());
-
-        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setFundCode(fundAccountRq.getFundCode());
-        fundRuleRequestBody.setFundHouseCode(fundAccountRq.getFundHouseCode());
-        fundRuleRequestBody.setTranType(fundAccountRq.getTranType());
-
-        OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
-        orderStmtByPortRq.setPortfolioNumber(fundAccountRq.getUnitHolderNo());
-        orderStmtByPortRq.setFundCode(fundAccountRq.getFundCode());
-        orderStmtByPortRq.setRowStart(ProductsExpServiceConstant.FIXED_START_PAGE);
-        orderStmtByPortRq.setRowEnd(ProductsExpServiceConstant.FIXED_END_PAGE);
-
-        Map<String, String> invHeaderReqParameter = createHeader(correlationId);
-        ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response = null;
-        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = null;
-        ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseStmt = null;
+        FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAcc(fundAccountRq);
+        FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRq);
+        OrderStmtByPortRq orderStmtByPortRq = UtilMap.mappingRequestStmtByPort(fundAccountRq, ProductsExpServiceConstant.FIXED_START_PAGE,
+                ProductsExpServiceConstant.FIXED_END_PAGE);
+        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            response = investmentRequestClient.callInvestmentFundAccDetailService(invHeaderReqParameter, fundAccountRequestBody);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, response);
-            responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-            responseStmt = investmentRequestClient.callInvestmentStmtByPortService(invHeaderReqParameter, orderStmtByPortRq);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-            UtilMap map = new UtilMap();
-            fundAccountRs = map.validateTMBResponse(response, responseEntity, responseStmt);
+            CompletableFuture<AccDetailBody> fetchFundAccDetail =  productExpAsynService.fetchFundAccDetail(invHeaderReqParameter, fundAccountRequestBody);
+            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
+            CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStmtByPort(invHeaderReqParameter, orderStmtByPortRq);
+            CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
+
+            AccDetailBody accDetailBody = fetchFundAccDetail.get();
+            FundRuleBody fundRuleBody = fetchFundRule.get();
+            StatementResponse statementResponse = fetchStmtByPort.get();
+
+            fundAccountRs = UtilMap.validateTMBResponse(accDetailBody, fundRuleBody, statementResponse);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-            return fundAccountRs;
+            return null;
         }
         return fundAccountRs;
     }
 
-
-    /**
-     * Generic Method to create HTTP Header
-     *
-     * @param correlationId
-     * @return
-     */
-    private Map<String, String> createHeader(String correlationId) {
-        Map<String, String> invHeaderReqParameter = new HashMap<>();
-        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
-        invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        return invHeaderReqParameter;
-    }
 
 
     /**
@@ -166,7 +139,7 @@ public class ProductsExpService {
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData = null;
         UnitHolder unitHolder = new UnitHolder();
 
-        Map<String, String> invHeaderReqParameter = createHeader(correlationId);
+        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
             portData = accountRequestClient.getPortList(invHeaderReqParameter, rq.getCrmId());
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
@@ -219,32 +192,27 @@ public class ProductsExpService {
      */
     @LogAround
     public FundPaymentDetailRs getFundPrePaymentDetail(String correlationId, FundPaymentDetailRq fundPaymentDetailRq) {
-
-        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setFundCode(fundPaymentDetailRq.getFundCode());
-        fundRuleRequestBody.setFundHouseCode(fundPaymentDetailRq.getFundHouseCode());
-        fundRuleRequestBody.setTranType(fundPaymentDetailRq.getTranType());
-
-        Map<String, String> invHeaderReqParameter = createHeader(correlationId);
-        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = null;
-        ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday = null;
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
-        String responseCustomerExp = null;
+        FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRq);
+        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailRs fundPaymentDetailRs = null;
         try {
-            responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-            responseFundHoliday = investmentRequestClient.callInvestmentFundHolidayService(invHeaderReqParameter, fundPaymentDetailRq.getFundCode());
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseFundHoliday);
-            responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
-            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
-            responseCommon = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
+
+            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
+            CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
+            CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(invHeaderReqParameter,  fundPaymentDetailRq.getCrmId());
+            CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+
+            CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
+            FundRuleBody fundRuleBody = fetchFundRule.get();
+            FundHolidayBody fundHolidayBody = fetchFundHoliday.get();
+            String  customerExp = fetchCustomerExp.get();
+            List<CommonData> commonDataList = fetchCommonConfigByModule.get();
+
             UtilMap map = new UtilMap();
-            fundPaymentDetailRs = map.mappingPaymentResponse(responseEntity, responseFundHoliday, responseCommon, responseCustomerExp);
+            fundPaymentDetailRs = map.mappingPaymentResponse(fundRuleBody, fundHolidayBody, commonDataList, customerExp);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-            return fundPaymentDetailRs;
+            return null;
         }
         return fundPaymentDetailRs;
     }
@@ -287,7 +255,7 @@ public class ProductsExpService {
             }
         }else{
             ffsRsAndValidation.setError(true);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
+            ffsRsAndValidation.setErrorCode(fundResponse.getErrorCode());
             ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
             ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
         }
@@ -426,15 +394,13 @@ public class ProductsExpService {
             return fundResponse;
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            fundResponse.setError(true);
+            fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            fundResponse.setErrorMsg(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            fundResponse.setErrorDesc(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             return fundResponse;
         }
     }
-
-
-    /*
-
-
-     */
 
     /**
      * Method isOfShelfFund for get all fund list and check with fund code
@@ -538,12 +504,14 @@ public class ProductsExpService {
      */
     @LogAround
     public boolean isCustIDExpired(FfsRequestBody ffsRequestBody){
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>>  responseResponseEntity = null;
+       CompletableFuture<CustomerProfileResponseData> responseResponseEntity = null;
         try{
             Map<String, String> requestHeadersParameter = new HashMap<>();
-            responseResponseEntity = customerServiceClient.getCustomerProfile(requestHeadersParameter, ffsRequestBody.getCrmId());
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity.getBody().getData().getIdNo());
-            return UtilMap.isCustIDExpired(responseResponseEntity.getBody().getData());
+            responseResponseEntity = productExpAsynService.fetchCustomerProfile(requestHeadersParameter, ffsRequestBody.getCrmId());
+            CompletableFuture.allOf(responseResponseEntity);
+            CustomerProfileResponseData responseData = responseResponseEntity.get();
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
+            return UtilMap.isCustIDExpired(responseData);
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             return true;

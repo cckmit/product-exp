@@ -1,0 +1,232 @@
+package com.tmb.oneapp.productsexpservice.service;
+
+
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
+import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
+import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * ProductExpAsynService class this clasee use for asyn process
+ */
+@Service
+public class ProductExpAsynService {
+    private static final TMBLogger<ProductExpAsynService> logger = new TMBLogger<>(ProductExpAsynService.class);
+    private InvestmentRequestClient investmentRequestClient;
+    private AccountRequestClient accountRequestClient;
+    private CustomerServiceClient customerServiceClient;
+    private CommonServiceClient commonServiceClient;
+
+
+    @Autowired
+    public ProductExpAsynService(InvestmentRequestClient investmentRequestClient,
+                              AccountRequestClient accountRequestClient,
+                              CustomerServiceClient customerServiceClient,
+                              CommonServiceClient commonServiceClient) {
+
+        this.investmentRequestClient = investmentRequestClient;
+        this.customerServiceClient = customerServiceClient;
+        this.accountRequestClient = accountRequestClient;
+        this.commonServiceClient = commonServiceClient;
+    }
+
+
+
+    /**
+     * Method fetchFundAccDetail get Fund account detail
+     *
+     * @param invHeaderReqParameter
+     * @param fundAccountRequestBody
+     * @return CompletableFuture<AccDetailBody>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<AccDetailBody> fetchFundAccDetail(Map<String, String> invHeaderReqParameter, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<AccDetailBody>>  response = investmentRequestClient
+                    .callInvestmentFundAccDetailService(invHeaderReqParameter, fundAccountRequestBody);
+
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+
+    /**
+     * Method fetchFundRule get Fund rule
+     *
+     * @param invHeaderReqParameter
+     * @param fundRuleRequestBody
+     * @return CompletableFuture<FundRuleBody>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<FundRuleBody> fetchFundRule(Map<String, String> invHeaderReqParameter, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<FundRuleBody>>  responseEntity = investmentRequestClient
+                    .callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
+
+            return CompletableFuture.completedFuture(responseEntity.getBody().getData());
+        } catch (Exception e) {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+
+    /**
+     * Method fetchStmtByPort get order statement
+     *
+     * @param invHeaderReqParameter
+     * @param orderStmtByPortRq
+     * @return CompletableFuture<StatementResponse>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<StatementResponse> fetchStmtByPort(Map<String, String> invHeaderReqParameter, OrderStmtByPortRq orderStmtByPortRq) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseStmt = investmentRequestClient
+            .callInvestmentStmtByPortService(invHeaderReqParameter, orderStmtByPortRq);
+
+            return CompletableFuture.completedFuture(responseStmt.getBody().getData());
+        } catch (Exception e) {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+
+
+    /**
+     * Method fetchFundHoliday get fund holiday
+     *
+     * @param invHeaderReqParameter
+     * @param fundCode
+     * @return CompletableFuture<FundHolidayBody>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<FundHolidayBody> fetchFundHoliday(Map<String, String> invHeaderReqParameter, String fundCode) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday = investmentRequestClient.
+                    callInvestmentFundHolidayService(invHeaderReqParameter, fundCode);
+
+            return CompletableFuture.completedFuture(responseFundHoliday.getBody().getData());
+        } catch (Exception e) {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+    /**
+     * Method fetchCustomerExp get customer account
+     *
+     * @param invHeaderReqParameter
+     * @param crmID
+     * @return CompletableFuture<String>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<String> fetchCustomerExp(Map<String, String> invHeaderReqParameter, String crmID) throws TMBCommonException {
+        try {
+            String responseFundHoliday = accountRequestClient.callCustomerExpService(invHeaderReqParameter, crmID);
+            return CompletableFuture.completedFuture(responseFundHoliday);
+        } catch (Exception e) {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+    /**
+     * Method fetchCommonConfigByModule get common config
+     *
+     * @param correlationId
+     * @param module
+     * @return CompletableFuture<CommonData>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<List<CommonData>> fetchCommonConfigByModule(String correlationId, String module) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = commonServiceClient.
+                    getCommonConfigByModule(correlationId, module);
+            return CompletableFuture.completedFuture(responseCommon.getBody().getData());
+        } catch (Exception e) {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+    /**
+     * Method fetchCustomerProfile get customer profile
+     *
+     * @param invHeaderReqParameter
+     * @param crmID
+     * @return CompletableFuture<CustomerProfileResponseData>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<CustomerProfileResponseData> fetchCustomerProfile(Map<String, String> invHeaderReqParameter, String crmID) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> responseResponseEntity = customerServiceClient.
+                    getCustomerProfile(invHeaderReqParameter, crmID);
+            return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
+        } catch (Exception e) {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+}

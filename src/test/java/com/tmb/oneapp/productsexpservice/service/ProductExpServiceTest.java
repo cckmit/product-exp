@@ -37,6 +37,7 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.apache.kafka.common.protocol.types.Field;
 import org.junit.Assert;
@@ -50,7 +51,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -60,8 +63,8 @@ public class ProductExpServiceTest {
     ProductsExpService productsExpService;
     AccountRequestClient accountRequestClient;
     KafkaProducerService kafkaProducerService;
-    CustomerServiceClient customerServiceClient;
     CommonServiceClient commonServiceClient;
+    ProductExpAsynService productExpAsynService;
 
     private final String success_code = "0000";
     private final String notfund_code = "0009";
@@ -76,9 +79,9 @@ public class ProductExpServiceTest {
         accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
-        customerServiceClient = mock(CustomerServiceClient.class);
         commonServiceClient = mock(CommonServiceClient.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,topicName);
+        productExpAsynService = mock(ProductExpAsynService.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient, productExpAsynService, topicName);
 
     }
 
@@ -121,77 +124,44 @@ public class ProductExpServiceTest {
 
     @Test
     public void testGetFundAccdetailAndFundRule() throws Exception {
-
-        FundAccountRq fundAccountRequest = new FundAccountRq();
-        fundAccountRequest.setFundCode("EEEEEE");
-        fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
-        fundAccountRequest.setFundHouseCode("TTTTTTT");
-
-        ResponseEntity<TmbOneServiceResponse<AccDetailBody>> responseEntity = null;
-        FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNo("PT000000001");
-        fundAccountRq.setServiceType("1");
-        fundAccountRq.setFundCode("DDD");
-
-
-        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setTranType("2");
-        fundRuleRequestBody.setFundHouseCode("TTTTT");
-        fundRuleRequestBody.setFundCode("EEEEE");
-
-        OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
-        orderStmtByPortRq.setPortfolioNumber("PT0000000032534");
-        orderStmtByPortRq.setRowEnd("5");
-        orderStmtByPortRq.setRowStart("1");
-        orderStmtByPortRq.setFundCode("EEEE");
-
-        TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<StatementResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
-        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseResponseEntity = null;
-        ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseResponseEntity1 = null;
         StatementResponse statementResponse = null;
+        FundAccountRq fundAccountRq = new FundAccountRq();
+        fundAccountRq.setFundHouseCode("ABCC");
+        fundAccountRq.setTranType("2");
+        fundAccountRq.setFundCode("ABCC");
+        fundAccountRq.setServiceType("1");
+        fundAccountRq.setUnitHolderNo("PT0000000000123");
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             accDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccDetailBody.class);
-            oneServiceResponse.setData(accDetailBody);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule.json").toFile(), FundRuleBody.class);
-
             statementResponse = mapper.readValue(Paths.get("src/test/resources/investment/investment_stmt.json").toFile(), StatementResponse.class);
 
-            oneServiceResponseBody.setData(fundRuleBody);
-            oneServiceResponseBody.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            serviceResponseStmt.setData(statementResponse);
-            serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
-            when(investmentRequestClient.callInvestmentStmtByPortService(createHeader(corrID), orderStmtByPortRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
-
+            when(productExpAsynService.fetchFundAccDetail(any(), any())).thenReturn(CompletableFuture.completedFuture(accDetailBody));
+            when(productExpAsynService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
+            when(productExpAsynService.fetchStmtByPort(any(), any())).thenReturn(CompletableFuture.completedFuture(statementResponse));
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        responseResponseEntity = investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody);
-        responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
-        responseResponseEntity1 = investmentRequestClient.callInvestmentStmtByPortService(createHeader(corrID),orderStmtByPortRq);
-        UtilMap map = new UtilMap();
-        FundAccountRs rs = map.validateTMBResponse(responseEntity, responseResponseEntity, responseResponseEntity1);
-        Assert.assertNotNull(responseResponseEntity);
-        Assert.assertNotNull(responseEntity);
-        FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
-        Assert.assertNull(result);
+
+        CompletableFuture<AccDetailBody> fetchFundAccDetail =  productExpAsynService.fetchFundAccDetail(any(), any());
+        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
+        CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStmtByPort(any(), any());
+        CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
+
+        AccDetailBody accDetailBody = fetchFundAccDetail.get();
+        FundRuleBody fundRuleBody = fetchFundRule.get();
+        StatementResponse statementRs = fetchStmtByPort.get();
+
+        FundAccountRs fundAccountRs = UtilMap.validateTMBResponse(accDetailBody, fundRuleBody, statementRs);
+
+         Assert.assertNotNull(fundAccountRs);
+         Assert.assertNotNull(accDetailBody);
+        Assert.assertNotNull(statementRs);
+         FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRq);
+         Assert.assertNotNull(result);
     }
 
     @Test
@@ -325,7 +295,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            serviceResponseStmt.setData(null);
+            serviceResponseStmt.setData(statementResponse);
             serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -425,19 +395,10 @@ public class ProductExpServiceTest {
                 "173");
 
 
-        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundHolidayBody> responseFundHoliday = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         String responseCustomerExp = null;
-
-        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRuleEntity = null;
-        ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> hilodayEntity = null;
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonRs = null;
         String custExp = null;
-
         FundHolidayBody fundHolidayBody = null;
         FundRuleBody fundRuleBody = null;
-        FundPaymentDetailRs fundPaymentDetailRs = null;
         CommonData commonData = new CommonData();
         List<CommonData> commonDataList = new ArrayList<>();
 
@@ -448,41 +409,36 @@ public class ProductExpServiceTest {
 
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
-      //      commonData.setEligibleAccountCodeBuy(eligibleAcc);
+            commonData.setEligibleAccountCodeBuy(eligibleAcc);
             commonDataList.add(commonData);
 
-            responseEntity.setData(fundRuleBody);
-            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            responseFundHoliday.setData(fundHolidayBody);
-            responseFundHoliday.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            responseCommon.setData(commonDataList);
-            responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
-            when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFundHoliday));
-            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+            when(productExpAsynService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
+            when(productExpAsynService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsynService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
+            when(productExpAsynService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(commonDataList));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         UtilMap utilMap = new UtilMap();
-        custExp = accountRequestClient.callCustomerExpService(any(), anyString());
-        fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
-        hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
-        commonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
 
-        Assert.assertEquals(HttpStatus.OK, fundRuleEntity.getStatusCode());
-        Assert.assertEquals(HttpStatus.OK, hilodayEntity.getStatusCode());
-        Assert.assertNotNull(custExp);
+        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
+        CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(),  anyString());
+        CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
+
+        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
+        FundRuleBody fundRuleBodyCom = fetchFundRule.get();
+        FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
+        String  customerExp = fetchCustomerExp.get();
+        List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
+
+        Assert.assertNotNull(customerExp);
+        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
+        Assert.assertNotNull(response);
+
+        FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
+        Assert.assertNotNull(serviceRes);
 
     }
 
@@ -506,23 +462,29 @@ public class ProductExpServiceTest {
 
             responseCustomerExp = null;
 
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
-            when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenReturn(null);
-            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(null);
-            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(null);
+            when(productExpAsynService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsynService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsynService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsynService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        UtilMap utilMap = new UtilMap();
-        custExp = accountRequestClient.callCustomerExpService(any(), anyString());
-        fundRuleEntity = investmentRequestClient.callInvestmentFundRuleService(any(), any());
-        hilodayEntity = investmentRequestClient.callInvestmentFundHolidayService(any(), any());
-        commonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
 
+        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
+        CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(),  anyString());
+        CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
+
+        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
+        FundRuleBody fundRuleBodyCom = fetchFundRule.get();
+        FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
+        String  customerExp = fetchCustomerExp.get();
+        List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
+        UtilMap utilMap = new UtilMap();
         Assert.assertNull(custExp);
-        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, commonRs, custExp);
+        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
         Assert.assertNull(response);
 
     }
@@ -568,7 +530,7 @@ public class ProductExpServiceTest {
         try {
             commonTime.setStart("06:00");
             commonTime.setEnd("23:00");
-   //         commonData.setNoneServiceHour(commonTime);
+            commonData.setNoneServiceHour(commonTime);
             commonDataList.add(commonData);
 
             responseCommon.setData(commonDataList);
@@ -717,8 +679,10 @@ public class ProductExpServiceTest {
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundListPage> responseList = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         String responseCustomerExp = null;
         FundListPage fundListPage = null;
+        List<CommonData> commonDataList = new ArrayList<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -735,17 +699,103 @@ public class ProductExpServiceTest {
             responseList.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            CommonTime commonTime = new CommonTime();
+            commonTime.setStart("06:00");
+            commonTime.setEnd("23:00");
+            CommonData commonData = new CommonData();
+            commonData.setNoneServiceHour(commonTime);
+            commonDataList.add(commonData);
+
+
+            responseCommon.setData(commonDataList);
+            responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseList));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
+    }
+
+    @Test
+    public void validateAlternativeSellAndSwitch() throws Exception {
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setFundCode("SCBTMF");
+        alternativeRq.setFundHouseCode("SCBAM");
+        alternativeRq.setCrmId("001100000000000000000012025950");
+        alternativeRq.setProcessFlag("Y");
+        alternativeRq.setOrderType("1");
+
+
+        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundListPage> responseList = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<SuitabilityInfo> responseResponseEntity = new TmbOneServiceResponse<>();
+        String responseCustomerExp = null;
+        FundListPage fundListPage = null;
+        SuitabilityInfo suitabilityInfo = null;
+        List<CommonData> commonDataList = new ArrayList<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            fundListPage = mapper.readValue(Paths.get("src/test/resources/investment/fund_list_info.json").toFile(), FundListPage.class);
+            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+            suitabilityInfo = mapper.readValue(Paths.get("src/test/resources/investment/suitability.json").toFile(), SuitabilityInfo.class);
+
+            responseEntity.setData(fundRuleBody);
+            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseResponseEntity.setData(suitabilityInfo);
+            responseResponseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseList.setData(fundListPage);
+            responseList.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            CommonTime commonTime = new CommonTime();
+            commonTime.setStart("06:00");
+            commonTime.setEnd("23:00");
+            CommonData commonData = new CommonData();
+            commonData.setNoneServiceHour(commonTime);
+            commonDataList.add(commonData);
+
+
+            responseCommon.setData(commonDataList);
+            responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
+            when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseList));
+            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+            when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseResponseEntity));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setCrmId(alternativeRq.getCrmId());
+        FundResponse fundResponse = new FundResponse();
+
+        productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq);
+        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(corrID, ffsRequestBody, fundResponse);
+        Assert.assertNotNull(fundResponse);
     }
 
     @Test
