@@ -45,8 +45,8 @@ public class ProductExpServiceCloseTest {
     ProductsExpService productsExpService;
     AccountRequestClient accountRequestClient;
     KafkaProducerService kafkaProducerService;
-    CustomerServiceClient customerServiceClient;
     CommonServiceClient commonServiceClient;
+    ProductExpAsynService productExpAsynService;
 
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
@@ -59,10 +59,10 @@ public class ProductExpServiceCloseTest {
         accountRequestClient = mock(AccountRequestClient.class);
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
-        customerServiceClient = mock(CustomerServiceClient.class);
         commonServiceClient = mock(CommonServiceClient.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, customerServiceClient, commonServiceClient,
-                topicName);
+        productExpAsynService =  mock(ProductExpAsynService.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient,
+                productExpAsynService, topicName);
 
     }
 

@@ -7,9 +7,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustomerProfileResponseData;
-import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
@@ -22,8 +26,6 @@ import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementLi
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.*;
@@ -37,24 +39,23 @@ import java.util.stream.Collectors;
 public class UtilMap {
     private static TMBLogger<UtilMap> logger = new TMBLogger<>(UtilMap.class);
 
+
     /**
-     * Generic Method to mappingResponse
+     * Generic Method to validateTMBResponse
      *
-     * @param response
-     * @param responseEntity
+     * @param accDetailBody
+     * @param fundRuleBody
+     * @param statementRs
      * @return FundAccountRs
      */
-    public FundAccountRs validateTMBResponse(ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response,
-                                             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity,
-                                             ResponseEntity<TmbOneServiceResponse<StatementResponse>> statementRs){
-        if((StringUtils.isEmpty(response) && StringUtils.isEmpty(responseEntity))
-                || (HttpStatus.OK != response.getStatusCode() && HttpStatus.OK != responseEntity.getStatusCode())){
+    public static FundAccountRs validateTMBResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementRs){
+        if((StringUtils.isEmpty(accDetailBody) && StringUtils.isEmpty(fundRuleBody))){
             return null;
         } else{
             FundAccountRs fundAccountRs = new FundAccountRs();
             UtilMap utilMap = new UtilMap();
-            FundAccountDetail fundAccountDetail = utilMap.mappingResponse(response.getBody().getData(),
-                    responseEntity.getBody().getData(), statementRs.getBody().getData());
+            FundAccountDetail fundAccountDetail = utilMap.mappingResponse(accDetailBody,
+                    fundRuleBody, statementRs);
             fundAccountRs.setDetails(fundAccountDetail);
             return fundAccountRs;
         }
@@ -91,24 +92,25 @@ public class UtilMap {
     /**
      * Generic Method to mappingResponse
      *
-     * @param responseEntity
-     * @param responseFundHoliday
+     * @param fundRuleBody
+     * @param fundHolidayBody
+     * @param responseCommon
+     * @param responseCustomerExp
      * @return FundPaymentDetailRs
      */
-    public FundPaymentDetailRs mappingPaymentResponse(ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity,
-                                                      ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday,
-                                                      ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon,
+    public FundPaymentDetailRs mappingPaymentResponse(FundRuleBody fundRuleBody,
+                                                      FundHolidayBody fundHolidayBody,
+                                                      List<CommonData> responseCommon,
                                                       String responseCustomerExp){
-        if(StringUtils.isEmpty(responseEntity)
-                || HttpStatus.OK != responseEntity.getStatusCode()
+        if(StringUtils.isEmpty(fundRuleBody)
                 || StringUtils.isEmpty(responseCustomerExp)){
             return null;
         }else{
             FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
-            if(!StringUtils.isEmpty(responseFundHoliday) && HttpStatus.OK == responseFundHoliday.getStatusCode()) {
+            if(!StringUtils.isEmpty(fundHolidayBody)) {
                 FundHolidayClassList fundHolidayUnit = null;
                 List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
-                List<FundHolidayClassList> fundHolidayClassListRs = responseFundHoliday.getBody().getData().getFundClassList();
+                List<FundHolidayClassList> fundHolidayClassListRs = fundHolidayBody.getFundClassList();
                 for (FundHolidayClassList fundHoliday : fundHolidayClassListRs) {
                     fundHolidayUnit = new FundHolidayClassList();
                     fundHolidayUnit.setFundCode(fundHoliday.getFundCode());
@@ -121,7 +123,7 @@ public class UtilMap {
             }
 
             FundRule fundRule = new FundRule();
-            List<FundRuleInfoList> fundRuleInfoList = responseEntity.getBody().getData().getFundRuleInfoList();
+            List<FundRuleInfoList> fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailRs.setFundRule(fundRule);
@@ -138,7 +140,7 @@ public class UtilMap {
      * @param fundPaymentDetailRs
      * @return FundPaymentDetailRs
      */
-    public FundPaymentDetailRs mappingAccount(ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon,
+    public FundPaymentDetailRs mappingAccount(List<CommonData> responseCommon,
                                               String responseCustomerExp,
                                               FundPaymentDetailRs fundPaymentDetailRs){
         try {
@@ -148,8 +150,7 @@ public class UtilMap {
             ArrayNode arrayNode = (ArrayNode) node.get("data");
             int size = arrayNode.size();
             DepositAccount depositAccount = null;
-            List<CommonData> commonData = responseCommon.getBody().getData();
-            List<String> eligibleAccountCodeBuy = commonData.get(0).getEligibleAccountCodeBuy();
+            List<String> eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
             List<DepositAccount> depositAccountList = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 JsonNode itr = arrayNode.get(i);
@@ -251,6 +252,7 @@ public class UtilMap {
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
     }
+
 
     /**
      * Method to check cut of time from fund rule with current date time.
@@ -430,6 +432,59 @@ public class UtilMap {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return searchList;
+    }
+
+    /**
+     * Generic Method to mappingRequestFundAcc
+     *
+     * @param fundAccountRq
+     * @return FundAccountRequestBody
+     */
+    public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRq fundAccountRq){
+        FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
+        fundAccountRequestBody.setFundCode(fundAccountRq.getFundCode());
+        fundAccountRequestBody.setServiceType(fundAccountRq.getServiceType());
+        fundAccountRequestBody.setUnitHolderNo(fundAccountRq.getUnitHolderNo());
+        return fundAccountRequestBody;
+    }
+
+
+    /**
+     * Generic Method to mappingRequestFundRule
+     *
+     * @param fundAccountRq
+     * @return FundRuleRequestBody
+     */
+    public static FundRuleRequestBody mappingRequestFundRule(Object fundAccountRq){
+        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
+        if(fundAccountRq instanceof FundAccountRq) {
+            FundAccountRq fundAccount = (FundAccountRq) fundAccountRq;
+            fundRuleRequestBody.setFundCode(fundAccount.getFundCode());
+            fundRuleRequestBody.setFundHouseCode(fundAccount.getFundHouseCode());
+            fundRuleRequestBody.setTranType(fundAccount.getTranType());
+        }else if(fundAccountRq instanceof FundPaymentDetailRq){
+            FundPaymentDetailRq fundAccount = (FundPaymentDetailRq) fundAccountRq;
+            fundRuleRequestBody.setFundCode(fundAccount.getFundCode());
+            fundRuleRequestBody.setFundHouseCode(fundAccount.getFundHouseCode());
+            fundRuleRequestBody.setTranType(fundAccount.getTranType());
+        }
+        return fundRuleRequestBody;
+    }
+
+
+    /**
+     * Generic Method to mappingRequestStmtByPort
+     *
+     * @param fundAccountRq
+     * @return OrderStmtByPortRq
+     */
+    public static OrderStmtByPortRq mappingRequestStmtByPort(FundAccountRq fundAccountRq, String startPage, String endPage){
+        OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
+        orderStmtByPortRq.setPortfolioNumber(fundAccountRq.getUnitHolderNo());
+        orderStmtByPortRq.setFundCode(fundAccountRq.getFundCode());
+        orderStmtByPortRq.setRowStart(startPage);
+        orderStmtByPortRq.setRowEnd(endPage);
+        return orderStmtByPortRq;
     }
 
 
