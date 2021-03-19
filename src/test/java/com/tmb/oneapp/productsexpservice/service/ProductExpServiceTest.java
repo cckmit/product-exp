@@ -549,6 +549,50 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(fundResponse);
     }
 
+
+    @Test
+    public void isServiceCloseAndStop() throws Exception {
+
+        FundResponse fundResponse = new FundResponse();
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommonRs = null;
+        CommonData commonData = new CommonData();
+        CommonTime commonTime = new CommonTime();
+        List<CommonData> commonDataList = new ArrayList<>();
+        try {
+            commonTime.setStart("09:30");
+            commonTime.setEnd("23:00");
+            commonData.setNoneServiceHour(commonTime);
+            commonDataList.add(commonData);
+
+            responseCommon.setData(commonDataList);
+            responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        responseCommonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
+        fundResponse = productsExpService.isServiceHour(corrID, fundResponse);
+        Assert.assertNotNull(responseCommonRs);
+        Assert.assertNotNull(fundResponse);
+    }
+
+    @Test
+    public void isServiceCloseWithException() throws Exception {
+        FundResponse fundResponse = new FundResponse();
+        try {
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenThrow(MockitoException.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        fundResponse = productsExpService.isServiceHour(corrID, fundResponse);
+        Assert.assertNotNull(fundResponse);
+    }
+
     @Test
     public void testgetFundPrePaymentDetailNotfoundException() throws Exception {
         FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
