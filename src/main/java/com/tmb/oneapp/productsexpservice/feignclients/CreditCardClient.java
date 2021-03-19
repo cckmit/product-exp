@@ -43,38 +43,44 @@ public interface CreditCardClient {
 			@RequestBody SetCreditLimitReq requestBodyParameter);
 
 	@GetMapping(value = "/apis/creditcard/credit-card/fetch-reason-list")
-	public ResponseEntity<TmbOneServiceResponse<List<Reason>>>  getReasonList(
+	public ResponseEntity<TmbOneServiceResponse<List<Reason>>> getReasonList(
 			@RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId);
 
 	@GetMapping(value = "/apis/creditcard/creditcard-billed-statement/{ACCOUNT_ID}")
 	public ResponseEntity<BilledStatementResponse> getBilledStatement(
-			 @RequestHeader("X-Correlation-ID") String correlationId,
-			 @PathVariable(value = "ACCOUNT_ID") String accountId);
+			@RequestHeader("X-Correlation-ID") String correlationId,
+			@PathVariable(value = "ACCOUNT_ID") String accountId);
 
 	@GetMapping(value = "/apis/creditcard/creditcard-unbilled-statement/{ACCOUNT_ID}")
 	public ResponseEntity<BilledStatementResponse> getUnBilledStatement(
 			@RequestHeader("X-Correlation-ID") String correlationId,
 			@PathVariable(value = "ACCOUNT_ID") String accountId);
 
-
 	@PostMapping(value = "/apis/creditcard/creditcard-billed-statement-period/{ACCOUNT_ID}")
 	public ResponseEntity<BilledStatementResponse> getBilledStatementWithPeriod(
 			@RequestHeader("X-Correlation-ID") String correlationId,
 			@PathVariable(value = "ACCOUNT_ID") String accountId,
 			@RequestBody GetBilledStatementQuery billedStatementPeriodQuery);
-	
+
 	@PostMapping(value = "/apis/creditcard/block-card")
 	public ResponseEntity<BlockCardResponse> getBlockCardDetails(@RequestBody BlockCardRequest requestBodyParameter);
 
 	@PostMapping(value = "/apis/creditcard/creditcard/get-campaign-transactions")
-	public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCampaignTransactionsDetails(@RequestHeader("X-Correlation-ID") String correlationId,
-																										 @RequestBody CampaignTransactionQuery requestBodyParameter);
+	public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCampaignTransactionsDetails(
+			@RequestHeader("X-Correlation-ID") String correlationId,
+			@RequestBody CampaignTransactionQuery requestBodyParameter);
+
 	@PostMapping(value = "/apis/creditcard/creditcard/card-installment-confirm")
 	public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCardInstallmentDetails(
-            @RequestHeader("X-Correlation-ID") String correlationId,
+			@RequestHeader("X-Correlation-ID") String correlationId,
 			@RequestBody CardInstallmentQuery requestBodyParameter);
 
 	@GetMapping(value = "/apis/creditcard/fetch-installment-plan")
 	public ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> getInstallmentPlan(
 			@RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId);
+
+	@PostMapping(value = "/apis/creditcard/set-pin")
+	public ResponseEntity<TmbOneServiceResponse<SetPinResponse>> setPin(
+			@RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
+			@RequestBody SetPinQuery requestBodyParameter);
 }
