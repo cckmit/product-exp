@@ -78,7 +78,7 @@ public class CardInstallmentController {
                     Status status = new Status();
                     status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
                     String code = body.getStatus().getCode();
-                    if (code == "0") {
+                    if (code.equals("0")) {
 
                         oneServiceResponse
                                 .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
