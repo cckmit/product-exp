@@ -1,13 +1,9 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -17,14 +13,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCreditCardDetailsReq;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class GetCardDetailsControllerTest {

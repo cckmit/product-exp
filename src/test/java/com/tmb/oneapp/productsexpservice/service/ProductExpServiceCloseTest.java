@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.exceptions.base.MockitoException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -48,7 +49,6 @@ public class ProductExpServiceCloseTest {
     CustomerServiceClient customerServiceClient;
     CommonServiceClient commonServiceClient;
 
-    private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
     private final String  topicName = "activity";
@@ -74,7 +74,7 @@ public class ProductExpServiceCloseTest {
     }
 
     @Test
-    public void getFundFFSAndValidationOfShelf() throws Exception {
+    public void getFundFFSAndValidationOfShelf() {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
         ffsRequestBody.setFundCode("AAAAA");
         ffsRequestBody.setFundHouseCode("SCBAM");
@@ -126,7 +126,7 @@ public class ProductExpServiceCloseTest {
     }
 
     @Test
-    public void getFundFFSAndValidationBusinesClose() throws Exception {
+    public void getFundFFSAndValidationBusinesClose()  {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
         ffsRequestBody.setFundCode("ABSM");
         ffsRequestBody.setFundHouseCode("ABERDEEN");
@@ -226,7 +226,7 @@ public class ProductExpServiceCloseTest {
     }
 
     @Test
-    public void getFundFFSAndValidationSuccess() throws Exception {
+    public void getFundFFSAndValidationSuccess()  {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
         ffsRequestBody.setFundCode("ABSM");
         ffsRequestBody.setFundHouseCode("ABERDEEN");

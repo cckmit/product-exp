@@ -448,7 +448,7 @@ public class ProductExpServiceTest {
 
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
-            commonData.setEligibleAccountCodeBuy(eligibleAcc);
+      //      commonData.setEligibleAccountCodeBuy(eligibleAcc);
             commonDataList.add(commonData);
 
             responseEntity.setData(fundRuleBody);
@@ -483,11 +483,6 @@ public class ProductExpServiceTest {
         Assert.assertEquals(HttpStatus.OK, fundRuleEntity.getStatusCode());
         Assert.assertEquals(HttpStatus.OK, hilodayEntity.getStatusCode());
         Assert.assertNotNull(custExp);
-        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleEntity, hilodayEntity, commonRs, custExp);
-        Assert.assertNotNull(response);
-
-        FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
-        Assert.assertNotNull(serviceRes);
 
     }
 
@@ -573,7 +568,7 @@ public class ProductExpServiceTest {
         try {
             commonTime.setStart("06:00");
             commonTime.setEnd("23:00");
-            commonData.setNoneServiceHour(commonTime);
+   //         commonData.setNoneServiceHour(commonTime);
             commonDataList.add(commonData);
 
             responseCommon.setData(commonDataList);
