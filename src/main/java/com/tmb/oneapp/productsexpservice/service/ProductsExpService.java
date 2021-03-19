@@ -255,7 +255,7 @@ public class ProductsExpService {
             }
         }else{
             ffsRsAndValidation.setError(true);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
+            ffsRsAndValidation.setErrorCode(fundResponse.getErrorCode());
             ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
             ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
         }
