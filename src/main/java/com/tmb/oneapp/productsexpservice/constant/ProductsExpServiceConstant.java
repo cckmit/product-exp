@@ -152,5 +152,8 @@ public class ProductsExpServiceConstant {
 	public static final String FIXED_START_PAGE = "1";
 	public static final String FIXED_END_PAGE = "5";
 	public static final String INTERNAL_SERVER = "Internal Server Error";
+	public static final String UTF_8 = "utf-8";
+	public static final String SET_PIN_ACTIVITY_LOG = "00700302";
+	public static final String FAILED = "Failed";
 
 }

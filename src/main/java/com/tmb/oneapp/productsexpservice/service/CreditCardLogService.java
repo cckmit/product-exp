@@ -222,4 +222,18 @@ public class CreditCardLogService {
 		logActivity(creditCardEvent);
 	}
 
+	@Async
+	@LogAround
+	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
+			String accountId, String failReason) {
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE)) {
+			creditCardEvent.setFailReason(ProductsExpServiceConstant.FAILED);
+		}
+		creditCardEvent.setResult(status);
+		creditCardEvent.setCardNumber(accountId.substring(21, 25));
+		creditCardEvent.setActivityStatus(status);
+		logActivity(creditCardEvent);
+	}
+
 }
