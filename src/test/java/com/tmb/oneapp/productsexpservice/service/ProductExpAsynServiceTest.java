@@ -8,7 +8,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
@@ -75,6 +74,7 @@ public class ProductExpAsynServiceTest {
         try {
             when(investmentRequestClient.callInvestmentFundAccDetailService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<AccDetailBody> response = productExpAsynService.fetchFundAccDetail(any(), any());
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -111,6 +111,7 @@ public class ProductExpAsynServiceTest {
         try {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<FundRuleBody> response = productExpAsynService.fetchFundRule(any(), any());
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -144,6 +145,7 @@ public class ProductExpAsynServiceTest {
         try {
             when(investmentRequestClient.callInvestmentStmtByPortService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<StatementResponse> response = productExpAsynService.fetchStmtByPort(any(), any());
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -177,6 +179,7 @@ public class ProductExpAsynServiceTest {
         try {
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<FundHolidayBody> response = productExpAsynService.fetchFundHoliday(any(), any());
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -201,6 +204,7 @@ public class ProductExpAsynServiceTest {
         try {
             when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<String> response = productExpAsynService.fetchCustomerExp(any(), any());
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -240,6 +244,7 @@ public class ProductExpAsynServiceTest {
         try {
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenThrow(MockitoException.class);
             CompletableFuture<List<CommonData>> response = productExpAsynService.fetchCommonConfigByModule(any(), any());
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -274,6 +279,7 @@ public class ProductExpAsynServiceTest {
         try {
             when(customerServiceClient.getCustomerProfile(any(), anyString())).thenThrow(MockitoException.class);
             CompletableFuture<CustomerProfileResponseData> response = productExpAsynService.fetchCustomerProfile(any(), anyString());
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
