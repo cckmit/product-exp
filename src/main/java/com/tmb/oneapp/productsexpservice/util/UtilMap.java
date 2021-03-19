@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
@@ -485,6 +486,23 @@ public class UtilMap {
         orderStmtByPortRq.setRowStart(startPage);
         orderStmtByPortRq.setRowEnd(endPage);
         return orderStmtByPortRq;
+    }
+
+    /**
+     * Generic Method to mappingRequestStmtByPort
+     *
+     * @param ffsRequestBody
+     * @return AlternativeRq
+     */
+    public static AlternativeRq mappingRequestAlternative(FfsRequestBody ffsRequestBody){
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setCrmId(ffsRequestBody.getCrmId());
+        alternativeRq.setFundCode(ffsRequestBody.getFundCode());
+        alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
+        alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
+        alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+        alternativeRq.setOrderType(ffsRequestBody.getOrderType());
+        return alternativeRq;
     }
 
 

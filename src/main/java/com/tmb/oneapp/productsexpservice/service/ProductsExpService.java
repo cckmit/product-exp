@@ -394,6 +394,10 @@ public class ProductsExpService {
             return fundResponse;
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            fundResponse.setError(true);
+            fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            fundResponse.setErrorMsg(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            fundResponse.setErrorDesc(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             return fundResponse;
         }
     }

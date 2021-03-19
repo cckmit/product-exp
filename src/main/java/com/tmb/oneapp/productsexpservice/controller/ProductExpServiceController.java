@@ -18,6 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidati
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -180,13 +181,7 @@ public class ProductExpServiceController {
 		FfsRsAndValidation ffsRsAndValidation = null;
 		try {
 			String trackingStatus = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
-			AlternativeRq alternativeRq = new AlternativeRq();
-			alternativeRq.setCrmId(ffsRequestBody.getCrmId());
-			alternativeRq.setFundCode(ffsRequestBody.getFundCode());
-			alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
-			alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
-			alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
-			alternativeRq.setOrderType(ffsRequestBody.getOrderType());
+			AlternativeRq alternativeRq = UtilMap.mappingRequestAlternative(ffsRequestBody);
 			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
 				ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
 				if (ffsRsAndValidation.isError()) {

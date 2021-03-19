@@ -69,11 +69,10 @@ public class ProductsExpServiceConstant {
 	public static final String ID_EXPIRED_MESSAGE = "ID CARD EXPIRED";
 	public static final String ID_EXPIRED_DESC = "Error";
 
-	/* FUND RULE RETURN NOT FOUND */
-	public static final String SERVICE_NOT_FOUND = "MSG999";
-	public static final String SERVICE_NOT_FOUND_MESSAGE = "DATA NOT FOUND";
-	public static final String SERVICE_NOT_FOUND_DESC = "FUND LIST INFO NOT FOUND";
-	public static final String FUND_RULE_NOT_FOUND_DESC = "FUND RULE NOT FOUND";
+	/* CONNECTION FAIL */
+	public static final String SERVICE_NOT_READY = "MSG999";
+	public static final String SERVICE_NOT_READY_MESSAGE = "INTERNET CONNECTION FAIL";
+	public static final String SERVICE_NOT_READY_DESC = "SOMETHING WENT WRONG, TRY AGAIN";
 
 	/* BUSINESS OUR CLOSE */
 	public static final String BUSINESS_HOURS_CLOSE_CODE = "msg_al_06";
