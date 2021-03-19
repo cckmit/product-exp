@@ -50,7 +50,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetFundAccdetailAsyn() throws Exception {
+    public void fetchFundAccDetail() throws Exception {
         TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -71,7 +71,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetFundAccdetailExceptionAsyn() throws Exception {
+    public void fetchFundAccDetailWithException() throws Exception {
         try {
             when(investmentRequestClient.callInvestmentFundAccDetailService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<AccDetailBody> response = productExpAsynService.fetchFundAccDetail(any(), any());
@@ -82,7 +82,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetFundRuleAsyn() throws Exception {
+    public void fetchFundRule() throws Exception {
 
         TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
 
@@ -107,7 +107,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetFundRuleExceptionAsyn() throws Exception {
+    public void fetchFundRuleWithException() throws Exception {
         try {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<FundRuleBody> response = productExpAsynService.fetchFundRule(any(), any());
@@ -118,7 +118,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetStmtByPortAsyn() throws Exception {
+    public void fetchStmtByPort() throws Exception {
         try{
             StatementResponse statementResponse = null;
             TmbOneServiceResponse<StatementResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
@@ -140,7 +140,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetStmtByPortExceptionAsyn() throws Exception {
+    public void fetchStmtByPortWithException() throws Exception {
         try {
             when(investmentRequestClient.callInvestmentStmtByPortService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<StatementResponse> response = productExpAsynService.fetchStmtByPort(any(), any());
@@ -151,7 +151,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetFundHolidayAsyn() throws Exception {
+    public void fetchFundHoliday() throws Exception {
         try{
             FundHolidayBody fundHolidayBody = null;
             TmbOneServiceResponse<FundHolidayBody> serviceResponseStmt = new TmbOneServiceResponse<>();
@@ -173,7 +173,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetFundHolidayExceptionAsyn() throws Exception {
+    public void fetchFundHolidayWithException() throws Exception {
         try {
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<FundHolidayBody> response = productExpAsynService.fetchFundHoliday(any(), any());
@@ -184,7 +184,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetCustomerAysn() throws Exception {
+    public void fetchCustomerExp() throws Exception {
         try{
             String responseCustomerExp = null;
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
@@ -197,7 +197,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testGetCustomerExceptionAysn() throws Exception {
+    public void fetchCustomerExpWithException() throws Exception {
         try {
             when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<String> response = productExpAsynService.fetchCustomerExp(any(), any());
@@ -208,7 +208,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testfetchCommonConfigByModuleAsyn() throws Exception {
+    public void getCommonConfigByModule() throws Exception {
 
         TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         CommonData commonData = new CommonData();
@@ -236,7 +236,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testfetchCommonConfigByModuleExceptionAsyn() throws Exception {
+    public void getCommonConfigByModuleWithException() throws Exception {
         try {
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenThrow(MockitoException.class);
             CompletableFuture<List<CommonData>> response = productExpAsynService.fetchCommonConfigByModule(any(), any());
@@ -247,7 +247,7 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
-    public void testfetchCustomerProfileAsyn() throws Exception {
+    public void fetchCustomerProfile() throws Exception {
         try{
             CustomerProfileResponseData fundHolidayBody = null;
             TmbOneServiceResponse<CustomerProfileResponseData> serviceResponseStmt = new TmbOneServiceResponse<>();
@@ -270,7 +270,7 @@ public class ProductExpAsynServiceTest {
 
 
     @Test
-    public void testfetchCustomerProfileAsynException() throws Exception {
+    public void fetchCustomerProfileWithException() throws Exception {
         try {
             when(customerServiceClient.getCustomerProfile(any(), anyString())).thenThrow(MockitoException.class);
             CompletableFuture<CustomerProfileResponseData> response = productExpAsynService.fetchCustomerProfile(any(), anyString());
