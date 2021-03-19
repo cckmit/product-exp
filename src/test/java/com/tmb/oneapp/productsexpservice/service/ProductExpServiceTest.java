@@ -483,7 +483,7 @@ public class ProductExpServiceTest {
         Assert.assertEquals(HttpStatus.OK, fundRuleEntity.getStatusCode());
         Assert.assertEquals(HttpStatus.OK, hilodayEntity.getStatusCode());
         Assert.assertNotNull(custExp);
-        
+
     }
 
 
