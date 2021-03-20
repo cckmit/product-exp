@@ -2,6 +2,10 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import java.util.Map;
 
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
+import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -159,6 +163,19 @@ public class CreditCardLogService {
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		creditCardEvent.setCardNumber(reqHeader.get(ProductsExpServiceConstant.ACCOUNT_ID).substring(21, 25));
+		return creditCardEvent;
+	}
+
+	public CreditCardEvent onClickConfirmButtonEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody, StatementTransaction response) {
+
+		populateBaseEvents(creditCardEvent, reqHeader);
+		creditCardEvent.setCardNumberPlusTransDesc(requestBody.getAccountId().substring(21, 25)+ response.getTransactionDescription());
+        creditCardEvent.setCardNumberPlusTransactionDate(reqHeader.get(ProductsExpServiceConstant.ACCOUNT_ID).substring(21, 25)+ response.getTransactionDate());
+        creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
+        creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
+        creditCardEvent.setAmountPlusMonthlyInstallment(requestBody.getCardInstallment().getAmounts());
+		creditCardEvent.setTotalAmountPlusTotalIntrest(requestBody.getCardInstallment().getAmounts());
+
 		return creditCardEvent;
 	}
 

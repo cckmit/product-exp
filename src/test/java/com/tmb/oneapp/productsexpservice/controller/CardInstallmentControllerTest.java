@@ -15,6 +15,8 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,7 +26,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-
+@RunWith(JUnit4.class)
 public class CardInstallmentControllerTest {
 
     @Mock
