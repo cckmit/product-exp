@@ -26,114 +26,114 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 
 public class ProductsVerifyCvvControllerTest {
 
-	ProductsVerifyCvvController productsVerifyCvvController;
-	@Mock
-	CreditCardClient creditCardClient;
+    ProductsVerifyCvvController productsVerifyCvvController;
+    @Mock
+    CreditCardClient creditCardClient;
 
-	@BeforeEach
-	void setUp() {
-		MockitoAnnotations.initMocks(this);
-		productsVerifyCvvController = new ProductsVerifyCvvController(creditCardClient);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        productsVerifyCvvController = new ProductsVerifyCvvController(creditCardClient);
 
-	}
+    }
 
-	@Test
-	void testActivateCardDetailsSuccess() throws Exception {
-		Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C",
-				"0000000050078360018000167", "896", "2506");
-		VerifyCvvResponse verifyCvvResponse = new VerifyCvvResponse();
-		SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
-		SilverlakeErrorStatus silverlakeErrorStatus = new SilverlakeErrorStatus();
-		silverlakeErrorStatus.setDescription("test");
-		silverlakeErrorStatus.setErrorCode("0");
-		List<SilverlakeErrorStatus> errorStatus = new ArrayList<SilverlakeErrorStatus>();
-		silverlakeStatus.setStatusCode(0);
-		silverlakeStatus.setErrorStatus(errorStatus);
-		verifyCvvResponse.setStatus(silverlakeStatus);
-		handleGetCardResponse(verifyCvvResponse, HttpStatus.OK);
-		ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> responseEntity = productsVerifyCvvController
-				.verifyCvv(reqHeaders);
-		assertEquals(400, responseEntity.getStatusCodeValue());
+    @Test
+    void testActivateCardDetailsSuccess() throws Exception {
+        Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C",
+                "0000000050078360018000167", "896", "2506");
+        VerifyCvvResponse verifyCvvResponse = new VerifyCvvResponse();
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        SilverlakeErrorStatus silverlakeErrorStatus = new SilverlakeErrorStatus();
+        silverlakeErrorStatus.setDescription("test");
+        silverlakeErrorStatus.setErrorCode("0");
+        List<SilverlakeErrorStatus> errorStatus = new ArrayList<SilverlakeErrorStatus>();
+        silverlakeStatus.setStatusCode(0);
+        silverlakeStatus.setErrorStatus(errorStatus);
+        verifyCvvResponse.setStatus(silverlakeStatus);
+        handleGetCardResponse(verifyCvvResponse, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> responseEntity = productsVerifyCvvController
+                .verifyCvv(reqHeaders);
+        assertEquals(400, responseEntity.getStatusCodeValue());
 
-	}
-
-
-	@Test
-	void testActivateCardDetailsElseCondition() throws Exception {
-		Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C",
-				"0000000050078360018000167", "896", "2506");
-		VerifyCvvResponse verifyCvvResponse = new VerifyCvvResponse();
-		SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
-		SilverlakeErrorStatus silverlakeErrorStatus = new SilverlakeErrorStatus();
-		silverlakeErrorStatus.setDescription("test");
-		silverlakeErrorStatus.setErrorCode("0");
-		List<SilverlakeErrorStatus> errorStatus = new ArrayList<SilverlakeErrorStatus>();
-		silverlakeStatus.setStatusCode(0);
-		silverlakeStatus.setErrorStatus(errorStatus);
-		verifyCvvResponse.setStatus(silverlakeStatus);
-		handleGetCardResponse(verifyCvvResponse, HttpStatus.OK);
-		ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> value=null;
-		when(creditCardClient.verifyCvv(any())).thenReturn(value);
-
-		ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> activateCardResponse = productsVerifyCvvController
-				.verifyCvv(reqHeaders);
-		assertEquals(400, activateCardResponse.getStatusCodeValue());
-
-	}
-
-	@Test
-	void testVerifyCvvDetailsDataNotFound() throws Exception {
-		Map<String, String> requestHeadersParameter = headerRequestParameter("c83936c284cb398fA46CF16F399C",
-				"0000000050078360018000167","896","2506");
-		VerifyCvvResponse verifyCvvResponse = new VerifyCvvResponse();
-		verifyCvvResponse.setStatus(new SilverlakeStatus());
-		handleGetCardResponse(verifyCvvResponse, HttpStatus.BAD_REQUEST);
-		ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> res = productsVerifyCvvController
-				.verifyCvv(requestHeadersParameter);
-		assertEquals(400, res.getStatusCodeValue());
-
-	}
-
-	@Test
-	void testVerifyCvvDetailsError() throws Exception {
-		Map<String, String> requestHeadersParameter = headerRequestParameter("c83936c284cb398fA46CF16F399C",
-				"0000000050078360018000167","","");
-		when(creditCardClient.getCardBlockCode(anyString(), anyString())).thenThrow(RuntimeException.class);
-
-		ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> response = productsVerifyCvvController
-				.verifyCvv(requestHeadersParameter);
-		assertEquals(400, response.getStatusCodeValue());
-
-	}
-	
-	@Test
-	void testVerifyCvvDetailsDataNotAvailable() throws Exception {
-		Map<String, String> headers = new HashMap<>();
-		headers.put(ProductsExpServiceConstant.ACCOUNT_ID, "");
-		ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> response = productsVerifyCvvController
-				.verifyCvv(headers);
-		assertEquals(400, response.getStatusCodeValue());
+    }
 
 
-	}
+    @Test
+    void testActivateCardDetailsElseCondition() throws Exception {
+        Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C",
+                "0000000050078360018000167", "896", "2506");
+        VerifyCvvResponse verifyCvvResponse = new VerifyCvvResponse();
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        SilverlakeErrorStatus silverlakeErrorStatus = new SilverlakeErrorStatus();
+        silverlakeErrorStatus.setDescription("test");
+        silverlakeErrorStatus.setErrorCode("0");
+        List<SilverlakeErrorStatus> errorStatus = new ArrayList<SilverlakeErrorStatus>();
+        silverlakeStatus.setStatusCode(0);
+        silverlakeStatus.setErrorStatus(errorStatus);
+        verifyCvvResponse.setStatus(silverlakeStatus);
+        handleGetCardResponse(verifyCvvResponse, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> value = null;
+        when(creditCardClient.verifyCvv(any())).thenReturn(value);
 
-	public Map<String, String> headerRequestParameter(String correlationId, String accountNo, String cvv,
-			String cardExpiry) {
-		Map<String, String> headers = new HashMap<>();
-		headers.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "c83936c284cb398fA46CF16F399C");
-		headers.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078360018000167");
-		headers.put(ProductsExpServiceConstant.CVV, "896");
-		headers.put(ProductsExpServiceConstant.CARD_EXPIRY, "2506");
-		return headers;
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> activateCardResponse = productsVerifyCvvController
+                .verifyCvv(reqHeaders);
+        assertEquals(400, activateCardResponse.getStatusCodeValue());
 
-	}
+    }
 
-	public void handleGetCardResponse(VerifyCvvResponse verifyCvvResponse, HttpStatus status) {
-		TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse = new TmbOneServiceResponse<VerifyCvvResponse>();
-		oneServiceResponse.setData(verifyCvvResponse);
-		ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> getCardRes = new ResponseEntity(verifyCvvResponse, status);
-		when(creditCardClient.verifyCvv(any())).thenReturn(getCardRes);
+    @Test
+    void testVerifyCvvDetailsDataNotFound() throws Exception {
+        Map<String, String> requestHeadersParameter = headerRequestParameter("c83936c284cb398fA46CF16F399C",
+                "0000000050078360018000167", "896", "2506");
+        VerifyCvvResponse verifyCvvResponse = new VerifyCvvResponse();
+        verifyCvvResponse.setStatus(new SilverlakeStatus());
+        handleGetCardResponse(verifyCvvResponse, HttpStatus.BAD_REQUEST);
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> res = productsVerifyCvvController
+                .verifyCvv(requestHeadersParameter);
+        assertEquals(400, res.getStatusCodeValue());
 
-	}
+    }
+
+    @Test
+    void testVerifyCvvDetailsError() throws Exception {
+        Map<String, String> requestHeadersParameter = headerRequestParameter("c83936c284cb398fA46CF16F399C",
+                "0000000050078360018000167", "", "");
+        when(creditCardClient.getCardBlockCode(anyString(), anyString())).thenThrow(RuntimeException.class);
+
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> response = productsVerifyCvvController
+                .verifyCvv(requestHeadersParameter);
+        assertEquals(400, response.getStatusCodeValue());
+
+    }
+
+    @Test
+    void testVerifyCvvDetailsDataNotAvailable() throws Exception {
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ProductsExpServiceConstant.ACCOUNT_ID, "");
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> response = productsVerifyCvvController
+                .verifyCvv(headers);
+        assertEquals(400, response.getStatusCodeValue());
+
+
+    }
+
+    public Map<String, String> headerRequestParameter(String correlationId, String accountNo, String cvv,
+                                                      String cardExpiry) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "c83936c284cb398fA46CF16F399C");
+        headers.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078360018000167");
+        headers.put(ProductsExpServiceConstant.CVV, "896");
+        headers.put(ProductsExpServiceConstant.CARD_EXPIRY, "2506");
+        return headers;
+
+    }
+
+    public void handleGetCardResponse(VerifyCvvResponse verifyCvvResponse, HttpStatus status) {
+        TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse = new TmbOneServiceResponse<VerifyCvvResponse>();
+        oneServiceResponse.setData(verifyCvvResponse);
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> getCardRes = new ResponseEntity(verifyCvvResponse, status);
+        when(creditCardClient.verifyCvv(any())).thenReturn(getCardRes);
+
+    }
 
 }

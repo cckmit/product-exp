@@ -28,14 +28,14 @@ import java.util.Map;
 public class ProductsVerifyCvvController {
     private static final TMBLogger<ProductsVerifyCvvController> logger = new TMBLogger<>(ProductsVerifyCvvController.class);
 
-   CreditCardClient creditCardClient;
-
+    CreditCardClient creditCardClient;
 
 
     @Autowired
     public ProductsVerifyCvvController(CreditCardClient creditCardClient) {
-       this.creditCardClient=creditCardClient;
+        this.creditCardClient = creditCardClient;
     }
+
     @LogAround
     @ApiOperation(value = "Activate card Api")
     @ApiImplicitParams({
@@ -44,8 +44,7 @@ public class ProductsVerifyCvvController {
 
     @PostMapping(value = "/credit-card/activateCreditCard/verifyCvv")
     public ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvv(
-            @RequestHeader Map<String, String> headers)
-             {
+            @RequestHeader Map<String, String> headers) {
         logger.info("Get Verify Cvv Details for Corresponding Headers: {}", headers);
         VerifyCvvResponse response = new VerifyCvvResponse();
         TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -58,46 +57,44 @@ public class ProductsVerifyCvvController {
 
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(cvv)
                     && !Strings.isNullOrEmpty(cardExpiry)) {
-             ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvvResponse = creditCardClient.verifyCvv(headers);
-            int statusCodeValue = verifyCvvResponse.getStatusCodeValue();
-            HttpStatus statusCode = verifyCvvResponse.getStatusCode();
-            if (statusCodeValue == 200 && statusCode == HttpStatus.OK) {
+                ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvvResponse = creditCardClient.verifyCvv(headers);
+                int statusCodeValue = verifyCvvResponse.getStatusCodeValue();
+                HttpStatus statusCode = verifyCvvResponse.getStatusCode();
+                if (statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
 
-                String code = verifyCvvResponse.getBody().getStatus().getCode();
-                String message = verifyCvvResponse.getBody().getStatus().getMessage();
-                String service = verifyCvvResponse.getBody().getStatus().getService();
-                VerifyCvvResponse data = verifyCvvResponse.getBody().getData();
-                if(data.getStatus().getStatusCode()==0)
-            {
+                    String code = verifyCvvResponse.getBody().getStatus().getCode();
+                    String message = verifyCvvResponse.getBody().getStatus().getMessage();
+                    String service = verifyCvvResponse.getBody().getStatus().getService();
+                    VerifyCvvResponse data = verifyCvvResponse.getBody().getData();
+                    if (data.getStatus().getStatusCode() == 0) {
                         oneServiceResponse
                                 .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                         ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
                         oneServiceResponse.setData(response);
                         return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-                    }else {
+                    } else {
 
                         oneServiceResponse.setStatus(
                                 new TmbStatus(code, message,
-                                       service, ResponseCode.FAILED.getDesc()));
+                                        service, ResponseCode.FAILED.getDesc()));
                         oneServiceResponse.setData(response);
                         return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
                     }
-            } 	oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                }
+                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
                 return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+            } else {
+                logger.info("VerifyCvvController data not found");
+                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
             }
-         else {
-                 logger.info("VerifyCvvController data not found");
-                 oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                         ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                 return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error while getCreditCardDetails: {}", e);
             oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
