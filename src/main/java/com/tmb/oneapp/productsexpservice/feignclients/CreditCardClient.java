@@ -35,7 +35,7 @@ public interface CreditCardClient {
 	public ResponseEntity<ActivateCardResponse> activateCard(@RequestHeader Map<String, String> headers);
 
 	@PostMapping(value = "/apis/creditcard/credit-card/activateCreditCard/verifyCvv")
-	public ResponseEntity<VerifyCvvResponse> verifyCvv(@RequestHeader Map<String, String> headers);
+	public ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvv(@RequestHeader Map<String, String> headers);
 
 	@PostMapping(value = "/apis/creditcard/set-credit-limit")
 	public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> fetchSetCreditLimit(
