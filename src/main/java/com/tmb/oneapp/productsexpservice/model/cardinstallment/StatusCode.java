@@ -14,7 +14,7 @@ import java.util.List;
 public class StatusCode {
 
     @JsonProperty("status_code")
-    private String statusCode;
+    private String code;
     @JsonProperty("error_status")
     private List<ErrorStatus> errorStatus;
 }
