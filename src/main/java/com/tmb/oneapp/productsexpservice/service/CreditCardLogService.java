@@ -3,13 +3,17 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -163,15 +167,18 @@ public class CreditCardLogService {
 		return creditCardEvent;
 	}
 
-	public CreditCardEvent onClickConfirmButtonEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody, StatementTransaction response) {
+	public CreditCardEvent onClickConfirmButtonEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody, StatementTransaction response, String status, TmbOneServiceResponse<CardInstallmentResponse> cardResponse) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setCardNumberPlusTransDesc(requestBody.getAccountId().substring(21, 25)+ response.getTransactionDescription());
-        creditCardEvent.setCardNumberPlusTransactionDate(reqHeader.get(ProductsExpServiceConstant.ACCOUNT_ID).substring(21, 25)+ response.getTransactionDate());
         creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
         creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
         creditCardEvent.setAmountPlusMonthlyInstallment(requestBody.getCardInstallment().getAmounts());
 		creditCardEvent.setTotalAmountPlusTotalIntrest(requestBody.getCardInstallment().getAmounts());
+		if (status.equalsIgnoreCase(ResponseCode.GENERAL_ERROR.getCode())) {
+			creditCardEvent.setReasonCode(cardResponse.getData().getStatus().getErrorStatus().get(0).toString());
+		}
+
 
 		return creditCardEvent;
 	}
