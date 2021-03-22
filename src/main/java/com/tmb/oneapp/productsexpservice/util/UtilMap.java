@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
@@ -29,6 +31,8 @@ import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityI
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundContent;
@@ -505,5 +509,19 @@ public class UtilMap {
         return alternativeRq;
     }
 
+    @SuppressWarnings("all")
+    public static TmbOneServiceResponse mapTmbOneServiceResponse(Optional<ByteBuffer> optionalResponse) {
+        try {
+            if (!optionalResponse.isPresent()) {
+                return null;
+            }
+
+            String respBody = StandardCharsets.UTF_8.decode(optionalResponse.get()).toString();
+            return (TmbOneServiceResponse) TMBUtils.convertStringToJavaObj(respBody, TmbOneServiceResponse.class);
+        } catch (Exception e) {
+            logger.error("Unexpected error received, cannot parse.");
+            return null;
+        }
+    }
 
 }

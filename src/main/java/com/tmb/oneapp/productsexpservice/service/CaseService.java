@@ -12,8 +12,8 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CustomerServiceActivity;
-import com.tmb.oneapp.productsexpservice.model.response.CaseStatusCase;
-import com.tmb.oneapp.productsexpservice.model.response.CaseStatusResponse;
+import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
+import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusResponse;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -88,26 +88,6 @@ public class CaseService {
                                 String.valueOf(System.currentTimeMillis()),
                                 CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
-                        requestHeaders,
-                        ACTIVITY_LOG_SUCCESS,
-                        "");
-            }
-
-            if (caseStatusList.isEmpty()) {
-                //101500202
-                logActivityCST(new CustomerServiceActivity(correlationId,
-                                String.valueOf(System.currentTimeMillis()),
-                                CASE_TRACKING_EMPTY_ACTIVITY_ID)
-                                .setScreenName(ACTIVITY_SCREEN_NAME_EMPTY_CST),
-                        requestHeaders,
-                        ACTIVITY_LOG_SUCCESS,
-                        "");
-            } else {
-                //101500203
-                logActivityCST(new CustomerServiceActivity(correlationId,
-                                String.valueOf(System.currentTimeMillis()),
-                                CASE_TRACKING_ACTIVITY_ID)
-                                .setScreenName(ACTIVITY_SCREEN_NAME_CST),
                         requestHeaders,
                         ACTIVITY_LOG_SUCCESS,
                         "");
@@ -242,26 +222,12 @@ public class CaseService {
                 return new ArrayList<>();
             } else {
                 logger.error("Unexpected error occured : {}", e);
-                logActivityCST(new CustomerServiceActivity(correlationId,
-                                String.valueOf(System.currentTimeMillis()),
-                                CASE_TRACKING_ACTIVITY_ID)
-                                .setScreenName(ACTIVITY_SCREEN_NAME_CST),
-                        requestHeaders,
-                        FAILURE,
-                        "Feign Error occured when calling GET /apis/customers/case/status/{CRM_ID}. : " + e.toString());
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getMessage(),
                         ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
             }
         } catch (Exception e) {
             logger.error("Unexpected error occured : {}", e);
-            logActivityCST(new CustomerServiceActivity(correlationId,
-                            String.valueOf(System.currentTimeMillis()),
-                            CASE_TRACKING_ACTIVITY_ID)
-                            .setScreenName(ACTIVITY_SCREEN_NAME_CST),
-                    requestHeaders,
-                    FAILURE,
-                    "Unexpected Error occured when calling GET /apis/customers/case/status/{CRM_ID}. : " + e.toString());
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);

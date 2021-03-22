@@ -6,7 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.model.response.CaseStatusResponse;
+import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.CaseService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
