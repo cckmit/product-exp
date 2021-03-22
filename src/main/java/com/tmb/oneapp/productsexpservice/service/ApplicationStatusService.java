@@ -75,7 +75,7 @@ public class ApplicationStatusService {
             String mobileNo = customerProfileResponseData.getPhoneNoFull();
 
             // === Get Node Text ===
-            //TODO GET HP NODE TEXT WITH NEW ENDPOINT
+            //NO SONAR TODO GET HP NODE TEXT WITH NEW ENDPOINT 
 
             // === Hire Purchase ===
             //GET /apis/hpservice/loan-status/application-list
