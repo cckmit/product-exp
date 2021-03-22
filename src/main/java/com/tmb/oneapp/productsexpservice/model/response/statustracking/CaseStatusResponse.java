@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response;
+package com.tmb.oneapp.productsexpservice.model.response.statustracking;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

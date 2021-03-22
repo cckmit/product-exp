@@ -7,8 +7,8 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
-import com.tmb.oneapp.productsexpservice.model.response.CaseStatusCase;
-import com.tmb.oneapp.productsexpservice.model.response.CaseStatusResponse;
+import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
+import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusResponse;
 import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
@@ -78,9 +78,6 @@ class CaseServiceTest {
         doNothing().when(kafkaProducerService)
                 .sendMessageAsync(anyString(), contains("101500201"));
 
-        doNothing().when(kafkaProducerService)
-                .sendMessageAsync(anyString(), contains("101500203"));
-
         when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
@@ -99,8 +96,6 @@ class CaseServiceTest {
         assertEquals(3, response.getInProgress().size());
         verify(kafkaProducerService, times(1)).
                 sendMessageAsync(anyString(), contains("101500201"));
-        verify(kafkaProducerService, times(1)).
-                sendMessageAsync(anyString(), contains("101500203"));
 
     }
 
@@ -139,9 +134,6 @@ class CaseServiceTest {
         doThrow(new IllegalArgumentException()).when(kafkaProducerService)
                 .sendMessageAsync(anyString(), contains("101500201"));
 
-        doNothing().when(kafkaProducerService)
-                .sendMessageAsync(anyString(), contains("101500202"));
-
         when(customerServiceClient.getCaseStatus(anyString(), anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
@@ -158,8 +150,6 @@ class CaseServiceTest {
         assertEquals("CST", response.getServiceTypeId());
         assertTrue(response.getCompleted().isEmpty());
         assertTrue(response.getInProgress().isEmpty());
-        verify(kafkaProducerService, times(1)).
-                sendMessageAsync(anyString(), contains("101500202"));
 
     }
 

@@ -3,7 +3,7 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
-import com.tmb.oneapp.productsexpservice.model.response.CaseStatusCase;
+import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,8 +62,6 @@ public interface CustomerServiceClient {
     /**
      * @param crmId                   getCustDetails method consume crmId from
      *                                customers-service
-     * @param requestHeadersParameter getCustomerDetails method consume request
-     *                                parameter from customers-service
      */
     @GetMapping(value = "/apis/customers/{crmId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getCustomerProfile(
