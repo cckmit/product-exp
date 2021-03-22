@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentRe
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardStatementReponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import feign.FeignException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -34,11 +35,11 @@ public class CardInstallmentControllerTest {
     @InjectMocks
     CardInstallmentController cardInstallmentController;
     private List<StatementTransaction> list;
-
+    private CreditCardLogService creditCardLogService;
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        cardInstallmentController = new CardInstallmentController(creditCardClient);
+        cardInstallmentController = new CardInstallmentController(creditCardClient, creditCardLogService);
     }
 
     @Test
