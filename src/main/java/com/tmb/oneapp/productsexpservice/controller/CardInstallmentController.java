@@ -96,11 +96,13 @@ public class CardInstallmentController {
                     status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
                     String code = body.getStatus().getCode();
                     if (code.equals("0")) {
-
+                        creditCardLogService.logActivity(creditCardEvent);
                         oneServiceResponse
                                 .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                         ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
                     } else {
+                        creditCardLogService.logActivity(creditCardEvent);
+
                         oneServiceResponse.setData(body.getData());
                         oneServiceResponse.setStatus(
                                 new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
