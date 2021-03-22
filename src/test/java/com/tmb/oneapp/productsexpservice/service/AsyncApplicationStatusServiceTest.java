@@ -104,8 +104,7 @@ class AsyncApplicationStatusServiceTest {
         CompletableFuture<List<LoanDetails>> response = asyncApplicationStatusService.getHpData(
                 "correlationId", "en", "1260200195979", "000000000");
 
-        assertEquals("Toyota", response.get().get(0).getCarBrand());
-        assertEquals("Honda", response.get().get(1).getCarBrand());
+        assertEquals(2, response.get().size());
 
     }
 
@@ -126,7 +125,6 @@ class AsyncApplicationStatusServiceTest {
                 "correlationId", "en", "1260200195979", "000000000");
 
         assertNull(response);
-
     }
 
     @Test
