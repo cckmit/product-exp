@@ -42,6 +42,15 @@ public class AsyncApplicationStatusService {
         this.lendingServiceClient = lendingServiceClient;
     }
 
+    /**
+     * Get Hire Purchase Data
+     *
+     * @param correlationId correlationId of API
+     * @param language language to request data
+     * @param nationalId nationalId of customer used to query applications
+     * @param mobileNo mobileId of customer used to query applications
+     * @return CompletableFuture<List<LoanDetails>> list of loans with details
+     */
     @Async
     public CompletableFuture<List<LoanDetails>> getHpData(String correlationId, String language, String nationalId, String mobileNo) throws TMBCommonException {
         try {
@@ -67,7 +76,7 @@ public class AsyncApplicationStatusService {
      * @param correlationId correlationId
      * @param language      language of response
      * @param nationalId    national ID of customer
-     * @return CustomerProfileResponseData customer data
+     * @return list of loans with no details
      */
     @SuppressWarnings("squid:S3655")
     private List<LoanDetails> getHPApplicationList(String correlationId, String language, String nationalId, String mobileNo)
@@ -102,6 +111,16 @@ public class AsyncApplicationStatusService {
 
     }
 
+    /**
+     * Get Application Detail from application number
+     *
+     * @param correlationId correlationId of API
+     * @param nationalId nationalId of customer used to query applications
+     * @param language language to request data
+     * @param mobileNo mobileId of customer used to query applications
+     * @param applicationNumber applicationNumber of application used to query applications
+     * @return list of loans with details
+     */
     private LoanData postLoanStatusApplicationDetail(String correlationId, String nationalId,
                                                      String language, String applicationNumber, String mobileNo) {
         ResponseEntity<TmbOneServiceResponse<LoanData>> response =
@@ -151,6 +170,14 @@ public class AsyncApplicationStatusService {
 
     }
 
+    /**
+     * Get Application Data from RSL
+     *
+     * @param correlationId correlationId of API
+     * @param nationalId nationalId of customer used to query applications
+     * @param mobileNo mobileId of customer used to query applications
+     * @return list of RSL loans
+     */
     @Async
     public CompletableFuture<List<LendingRslStatusResponse>> getRSLData(String correlationId, String nationalId, String mobileNo)
             throws TMBCommonException {
@@ -170,6 +197,14 @@ public class AsyncApplicationStatusService {
 
     }
 
+    /**
+     * Get Application Data from RSL
+     *
+     * @param correlationId correlationId of API
+     * @param nationalId nationalId of customer used to query applications
+     * @param mobileNo mobileId of customer used to query applications
+     * @return list of RSL loans
+     */
     @SuppressWarnings("all")
     private List<LendingRslStatusResponse> getLendingRslStatus(String correlationId, String nationalId, String mobileNo)
             throws TMBCommonException {

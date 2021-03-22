@@ -54,6 +54,13 @@ public class ApplicationStatusService {
         this.topicName = topicName;
     }
 
+    /**
+     * Get get HP and RSL application status
+     *
+     * @param requestHeaders correlatinoId, crmId, deviceId, accept-language
+     * @param serviceTypeId  service type for this endpoint
+     * @return CustomerProfileResponseData customer data
+     */
     public ApplicationStatusResponse getApplicationStatus(Map<String, String> requestHeaders,
                                                           String serviceTypeId) throws TMBCommonException {
         try {
@@ -64,7 +71,7 @@ public class ApplicationStatusService {
 
             //GET /apis/customers/{crmId} CUSTOMER-SERVICE
             CustomerProfileResponseData customerProfileResponseData = getCustomerCrmId(crmId);
-            String nationalId = "1260200195979"; // customerProfileResponseData.getIdNo();
+            String nationalId = customerProfileResponseData.getIdNo();
             String mobileNo = customerProfileResponseData.getPhoneNoFull();
 
             // === Get Node Text ===
@@ -197,6 +204,12 @@ public class ApplicationStatusService {
         logger.info("After mapping HP Applications: {}", allApplications);
     }
 
+    /**
+     * Get map RSL Data
+     *
+     * @param rslApplications list of retrieved RSL applications
+     * @param allApplications list of mapped data
+     */
     private void mapRSLApplications(List<LendingRslStatusResponse> rslApplications,
                                     List<ApplicationStatusApplication> allApplications) {
 
@@ -235,6 +248,12 @@ public class ApplicationStatusService {
 
     }
 
+    /**
+     * Get customerProfileData
+     *
+     * @param hpDate string of date in HP format
+     * @return string of date in application status format
+     */
     private String convertHPToApplicationDateTimeFormat(String hpDate) throws ParseException {
         SimpleDateFormat applicationDateTimeParser = new SimpleDateFormat(APPLICATION_STATUS_DATETIME_FORMAT);
         SimpleDateFormat hpDateTimeParser = new SimpleDateFormat(HP_DATETIME_FORMAT);
@@ -316,7 +335,7 @@ public class ApplicationStatusService {
     }
 
     /**
-     * Method logActivity
+     * Method log activity for application status tracking tutorial
      *
      * @param baseEvent base event
      */
@@ -328,14 +347,14 @@ public class ApplicationStatusService {
             baseEvent.setFailReason(failReason);
 
             baseEvent.setActivityDate(String.valueOf(System.currentTimeMillis()));
-            baseEvent.setCrmId(requestHeaders.get(X_CRMID));
-            baseEvent.setDeviceId(requestHeaders.get(DEVICE_ID));
             baseEvent.setCorrelationId(requestHeaders.get(X_CORRELATION_ID));
+            baseEvent.setDeviceModel(requestHeaders.get(DEVICE_MODEL));
+            baseEvent.setOsVersion(requestHeaders.get(OS_VERSION));
             baseEvent.setChannel(requestHeaders.get(CHANNEL));
             baseEvent.setAppVersion(requestHeaders.get(APP_VERSION));
             baseEvent.setIpAddress(requestHeaders.get(X_FORWARD_FOR));
-            baseEvent.setDeviceModel(requestHeaders.get(DEVICE_MODEL));
-            baseEvent.setOsVersion(requestHeaders.get(OS_VERSION));
+            baseEvent.setCrmId(requestHeaders.get(X_CRMID));
+            baseEvent.setDeviceId(requestHeaders.get(DEVICE_ID));
 
             ObjectMapper mapper = new ObjectMapper();
             String output = mapper.writeValueAsString(baseEvent);

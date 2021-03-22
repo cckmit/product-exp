@@ -23,7 +23,7 @@ public interface LendingServiceClient {
      * @return RSL application statuses
      */
     @GetMapping(value = "/apis/lending-service/rsl/status")
-    public ResponseEntity<TmbOneServiceResponse<List<LendingRslStatusResponse>>> getLendingRslStatus(
+    ResponseEntity<TmbOneServiceResponse<List<LendingRslStatusResponse>>> getLendingRslStatus(
             @RequestHeader(X_CORRELATION_ID) String correlationId,
             @RequestHeader(HEADER_CITIZEN_ID) String citizenId,
             @RequestHeader(HEADER_MOBILE_NO) String mobileNo);
