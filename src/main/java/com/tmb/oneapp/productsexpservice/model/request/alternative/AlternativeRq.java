@@ -9,9 +9,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AlternativeRq {
-    @NotNull
     private String fundHouseCode;
-    @NotNull
     private String fundCode;
     @NotNull
     private String crmId;

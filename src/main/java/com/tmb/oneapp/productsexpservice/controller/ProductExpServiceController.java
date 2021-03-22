@@ -242,24 +242,12 @@ public class ProductExpServiceController {
 			@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
 			@Valid @RequestBody AlternativeRq alternativeRq) {
 		TmbOneServiceResponse<FundResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		FundResponse fundResponse = null;
-
 		try {
-			String trackingStatus = alternativeRq.getOrderType().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED) ?
-			ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_SALE_STATUS_TRACKING : ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_SWITCH_STATUS_TRACKING ;
-
-			String activityType = alternativeRq.getOrderType().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED) ?
-			ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING : ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_SWITCH_STATUS_TRACKING ;
-
-			if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRq.getProcessFlag())) {
 				fundResponse = productsExpService.validateAlternativeSellAndSwitch(correlationId, alternativeRq);
 				if (fundResponse.isError()) {
-
-					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-						 activityType, trackingStatus, alternativeRq));
 
 					oneServiceResponse.setStatus(new TmbStatus(fundResponse.getErrorCode(),
 							fundResponse.getErrorMsg(),
@@ -267,8 +255,6 @@ public class ProductExpServiceController {
 					oneServiceResponse.setData(null);
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
 				} else {
-					productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-							 activityType, trackingStatus, alternativeRq));
 
 					oneServiceResponse.setData(fundResponse);
 					oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -276,16 +262,7 @@ public class ProductExpServiceController {
 							ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 					return ResponseEntity.status(HttpStatus.OK).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
 				}
-			}else{
-				productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-						 activityType, trackingStatus, alternativeRq));
 
-				oneServiceResponse.setData(null);
-				oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE,
-						ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE,
-						ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC));
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-			}
 		} catch (Exception e) {
 			logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
 			oneServiceResponse.setData(null);
