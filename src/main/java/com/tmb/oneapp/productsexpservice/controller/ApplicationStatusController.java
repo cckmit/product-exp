@@ -67,6 +67,7 @@ public class ApplicationStatusController {
 
             if (Boolean.FALSE.equals(applicationStatusResponse.getHpSuccess()) &&
                     Boolean.FALSE.equals(applicationStatusResponse.getRslSuccess())) { //ACT_001
+                logger.info("Error retrieving data from RSL and HP.");
                 response.setStatus(new TmbStatus(HP_RSL_ERROR_CODE,
                         ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
             } else if (Boolean.FALSE.equals(applicationStatusResponse.getHpSuccess())) { //ACT_002
