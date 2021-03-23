@@ -1,0 +1,16 @@
+/.gradle/
+/build/
+/bin/
+.settings/
+.classpath
+.project
+
+
+# Compiled class file
+*.class
+
+dbms.properties
+
+# Log file
+*.log
+
