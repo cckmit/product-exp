@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

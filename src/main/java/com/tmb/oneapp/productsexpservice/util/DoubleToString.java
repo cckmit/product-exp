@@ -1,14 +1,15 @@
 package com.tmb.oneapp.productsexpservice.util;
 
 public class DoubleToString {
+    private DoubleToString() {
+    }
 
     public static Double stringToDouble(String string) {
-        double num = Double.valueOf(string);
-        return num;
+        return Double.valueOf(string);
+
     }
 
     public static String doubleToString(Double value) {
-        String num = Double.toString(value);
-        return num;
+      return  Double.toString(value);
     }
 }

@@ -14,7 +14,6 @@ import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentRe
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.util.DoubleToString;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -171,7 +170,7 @@ public class CreditCardLogService {
 	public CreditCardEvent onClickConfirmButtonEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody, StatementTransaction response, String status, TmbOneServiceResponse<CardInstallmentResponse> cardResponse) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
-		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25)+ " " +response.getTransactionDescription());
         creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
         creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 		String amounts = requestBody.getCardInstallment().getAmounts();
