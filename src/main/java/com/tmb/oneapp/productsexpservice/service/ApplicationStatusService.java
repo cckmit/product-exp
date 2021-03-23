@@ -11,10 +11,12 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ApplicationStatusEnum;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.LoanDetails;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CustomerServiceActivity;
+import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusApplication;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
@@ -35,21 +37,27 @@ import static com.tmb.oneapp.productsexpservice.constant.ApplicationStatusEnum.S
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 import static com.tmb.oneapp.productsexpservice.constant.ResponseCode.DATA_NOT_FOUND_ERROR;
 
+/**
+ * ApplicationStatusService process application status information
+ */
 @Service
 public class ApplicationStatusService {
     private static final TMBLogger<ApplicationStatusService> logger = new TMBLogger<>(ApplicationStatusService.class);
 
     private final CustomerServiceClient customerServiceClient;
     private final AsyncApplicationStatusService asyncApplicationStatusService;
+    private final CommonServiceClient commonServiceClient;
     private final KafkaProducerService kafkaProducerService;
     private final String topicName;
 
     public ApplicationStatusService(CustomerServiceClient customerServiceClient,
                                     AsyncApplicationStatusService asyncApplicationStatusService,
+                                    CommonServiceClient commonServiceClient,
                                     KafkaProducerService kafkaProducerService,
                                     @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
         this.customerServiceClient = customerServiceClient;
         this.asyncApplicationStatusService = asyncApplicationStatusService;
+        this.commonServiceClient = commonServiceClient;
         this.kafkaProducerService = kafkaProducerService;
         this.topicName = topicName;
     }
@@ -64,6 +72,8 @@ public class ApplicationStatusService {
     public ApplicationStatusResponse getApplicationStatus(Map<String, String> requestHeaders,
                                                           String serviceTypeId) throws TMBCommonException {
         try {
+            ApplicationStatusResponse response = new ApplicationStatusResponse();
+
             String correlationId = requestHeaders.get(X_CORRELATION_ID);
             String crmId = requestHeaders.get(X_CRMID);
             String deviceId = requestHeaders.get(DEVICE_ID);
@@ -75,6 +85,7 @@ public class ApplicationStatusService {
             String mobileNo = customerProfileResponseData.getPhoneNoFull();
 
             // === Get Node Text ===
+            List<NodeDetails> nodeTextList = getNodeText();
 
             // === Hire Purchase ===
             //GET /apis/hpservice/loan-status/application-list
@@ -90,7 +101,7 @@ public class ApplicationStatusService {
             CompletableFuture.allOf(hpResponse, rslResponse).get();
 
             List<ApplicationStatusApplication> allApplications = new ArrayList<>();
-            mapHPApplications(hpResponse.get(), allApplications, language);
+            mapHPApplications(hpResponse.get(), allApplications, language, nodeTextList);
             mapRSLApplications(rslResponse.get(), allApplications);
 
             //Combine & Sort
@@ -128,13 +139,13 @@ public class ApplicationStatusService {
                         "");
             }
 
-            return new ApplicationStatusResponse()
+            return response
                     .setFirstUsageExperience(customerFirstUsage == null)
                     .setServiceTypeId(SERVICE_TYPE_ID_AST)
                     .setInProgress(inProgress)
                     .setCompleted(completed)
-                    .setHpSuccess(hpResponse.get() == null)
-                    .setRslSuccess(rslResponse.get() == null);
+                    .setHpStatus(getStatus(hpResponse.get()))
+                    .setRslStatus(getStatus(rslResponse.get()));
 
         } catch (TMBCommonException e) {
             throw e;
@@ -144,6 +155,20 @@ public class ApplicationStatusService {
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
+    }
+
+    /**
+     * get status for responses
+     *
+     * @return integer 1 = error occurred, 2 = no data found, 0 = success
+     */
+    <T> int getStatus(List<T> list) {
+        if (list == null) {
+            return 1;
+        } else if (list.isEmpty()) {
+            return 2;
+        }
+        return 0;
     }
 
     /**
@@ -161,13 +186,43 @@ public class ApplicationStatusService {
         return Objects.requireNonNull(customersCrmIdResponse.getBody()).getData();
     }
 
+    /**
+     * Get nodeText from mongoDb
+     *
+     * @return List of node text
+     */
+    private List<NodeDetails> getNodeText() {
+        ResponseEntity<TmbOneServiceResponse<List<NodeDetails>>> nodeTextResponse =
+                commonServiceClient.getProductApplicationRoadMap();
+
+        return Objects.requireNonNull(nodeTextResponse.getBody()).getData();
+    }
+
+    /**
+     * Map HP Applications
+     *
+     * @param applicationDetailList HP applications
+     * @param allApplications       list of HP and RSL applications
+     * @param language              language of HP response
+     */
     private void mapHPApplications(List<LoanDetails> applicationDetailList,
                                    List<ApplicationStatusApplication> allApplications,
-                                   String language) throws ParseException {
+                                   String language, List<NodeDetails> nodeDetailsList) throws ParseException, TMBCommonException {
 
         if (applicationDetailList == null) {
             return;
         }
+
+        NodeDetails hpNodeDetails = nodeDetailsList.stream().filter(nodeDetails ->
+                HIRE_PURCHASE_HP.equals(nodeDetails.getLoanSystem()))
+                .findFirst().orElse(null);
+        if (hpNodeDetails == null) {
+            logger.error("Unable to retrieve HP node text.");
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+        }
+
         for (LoanDetails hpApplication : applicationDetailList) {
             logger.info("Processing application: {}", hpApplication);
             String carModel = hpApplication.getCarBrand() + " " + hpApplication.getCarFamily();
@@ -191,8 +246,8 @@ public class ApplicationStatusService {
                     .setProductDetailEn(ACCEPT_LANGUAGE_EN.equals(language) ? carModel : null)
                     .setReferenceNo(hpApplication.getAppNo())
                     .setCurrentNode(matchingEnum.getCurrentNode())
-                    .setNodeTextTh(HIRE_PURCHASE_NODE_TEXT_TH)//CONSTANT
-                    .setNodeTextEn(HIRE_PURCHASE_NODE_TEXT_EN)//CONSTANT
+                    .setNodeTextTh(hpNodeDetails.getNodeTh())
+                    .setNodeTextEn(hpNodeDetails.getNodeEn())
                     .setBottomRemarkTh(ACCEPT_LANGUAGE_TH.equals(language) ? message : null)
                     .setBottomRemarkEn(ACCEPT_LANGUAGE_EN.equals(language) ? message : null)
                     .setApplicationDate(date)
@@ -239,7 +294,6 @@ public class ApplicationStatusService {
                                     rslApplication.getLastUpdateDate())
                             .setIsApproved(APPLICATION_STATUS_FLAG_TRUE.equals(rslApplication.getIsApproved()))
                             .setIsRejected(APPLICATION_STATUS_FLAG_TRUE.equals(rslApplication.getIsRejected()))
-
                     );
                 }
         );

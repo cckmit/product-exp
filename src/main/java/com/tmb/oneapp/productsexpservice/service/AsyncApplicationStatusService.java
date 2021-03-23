@@ -29,6 +29,9 @@ import java.util.concurrent.Executors;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HIRE_PURCHASE_DATA_NOT_FOUND;
 import static com.tmb.oneapp.productsexpservice.constant.ResponseCode.DATA_NOT_FOUND_ERROR;
 
+/**
+ * AsyncApplicationStatusService process application status information async
+ */
 @Service
 public class AsyncApplicationStatusService {
     private static final TMBLogger<AsyncApplicationStatusService> logger =
@@ -134,6 +137,16 @@ public class AsyncApplicationStatusService {
         return Objects.requireNonNull(response.getBody()).getData();
     }
 
+    /**
+     * Get Application Detail from application number
+     *
+     * @param applicationList list of applications to get details
+     * @param correlationId correlationId of API
+     * @param nationalId nationalId of customer used to query applications
+     * @param language language to request data
+     * @param mobileNo mobileId of customer used to query applications
+     * @return list of loans with details
+     */
     private List<LoanDetails> asyncGetHPApplicationDetails(
             List<LoanDetails> applicationList, String correlationId, String nationalId, String language, String mobileNo) throws TMBCommonException {
         try {
