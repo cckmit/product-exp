@@ -184,8 +184,7 @@ public class AsyncApplicationStatusService {
         try {
             logger.info("Starting RSL Async");
 
-            //PENDING // NEW ENDPOINT -> SUMO
-            //GET /apis/lending-service/rsl/status   Lending Application List LENDING SERVICE
+            //GET /apis/lending-service/rsl/status
             List<LendingRslStatusResponse> rslApplications = getLendingRslStatus(correlationId, nationalId, mobileNo);
 
             //Map RSL data
