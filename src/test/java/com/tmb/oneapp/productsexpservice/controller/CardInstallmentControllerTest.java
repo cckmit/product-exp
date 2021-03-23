@@ -39,6 +39,7 @@ public class CardInstallmentControllerTest {
     @InjectMocks
     CardInstallmentController cardInstallmentController;
     private List<StatementTransaction> list;
+    @Mock
     private CreditCardLogService creditCardLogService;
     @BeforeEach
     public void setUp() {

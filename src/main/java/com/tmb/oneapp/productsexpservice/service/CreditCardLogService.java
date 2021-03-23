@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
+import com.tmb.oneapp.productsexpservice.util.DoubleToString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -173,16 +174,20 @@ public class CreditCardLogService {
 		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
         creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
         creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
-		Integer installmentPlusAmount=Integer.parseInt(requestBody.getCardInstallment().getAmounts())+Integer.parseInt(requestBody.getCardInstallment().getMonthlyInstallments());
-		String amountPlusMonthlyInstallment = installmentPlusAmount.toString();
+		String amounts = requestBody.getCardInstallment().getAmounts();
+		String installmentPlan =requestBody.getCardInstallment().getMonthlyInstallments();
+		String interest = requestBody.getCardInstallment().getInterest();
+		Double amountInDouble = DoubleToString.stringToDouble(amounts);
+		Double installmentInDouble = DoubleToString.stringToDouble(installmentPlan);
+		Double installmentPlusAmount= amountInDouble + installmentInDouble;
+		String amountPlusMonthlyInstallment = DoubleToString.doubleToString(installmentPlusAmount);
 		creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
-		Integer amountPlusTotalInterest =Integer.parseInt(requestBody.getCardInstallment().getAmounts())+
-				Integer.parseInt(requestBody.getCardInstallment().getInterest());
-		String totalAmountPlusTotalInterest = amountPlusTotalInterest.toString();
+		Double interestInDouble = DoubleToString.stringToDouble(interest);
+		Double amountPlusTotalInterest = amountInDouble + interestInDouble;
+		String totalAmountPlusTotalInterest = DoubleToString.doubleToString(amountPlusTotalInterest);
 		creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
 		if (status.equalsIgnoreCase(ResponseCode.GENERAL_ERROR.getCode())) {
 			creditCardEvent.setReasonCode(cardResponse.getData().getStatus().getErrorStatus().get(0).toString()
-
 
 			);
 		}
