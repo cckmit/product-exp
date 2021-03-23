@@ -246,8 +246,8 @@ public class ApplicationStatusService {
                     .setProductDetailEn(ACCEPT_LANGUAGE_EN.equals(language) ? carModel : null)
                     .setReferenceNo(hpApplication.getAppNo())
                     .setCurrentNode(matchingEnum.getCurrentNode())
-                    .setNodeTextTh(hpNodeDetails.getNodeTh())//CONSTANT
-                    .setNodeTextEn(hpNodeDetails.getNodeEn())//CONSTANT
+                    .setNodeTextTh(hpNodeDetails.getNodeTh())
+                    .setNodeTextEn(hpNodeDetails.getNodeEn())
                     .setBottomRemarkTh(ACCEPT_LANGUAGE_TH.equals(language) ? message : null)
                     .setBottomRemarkEn(ACCEPT_LANGUAGE_EN.equals(language) ? message : null)
                     .setApplicationDate(date)
