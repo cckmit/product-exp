@@ -2,7 +2,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.response.CaseStatusResponse;
+import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.CaseService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

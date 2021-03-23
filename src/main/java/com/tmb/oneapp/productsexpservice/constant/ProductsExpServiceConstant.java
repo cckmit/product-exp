@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.constant;
 
+import java.util.List;
+
 /**
  * Constant class for Application
  *
@@ -125,6 +127,7 @@ public class ProductsExpServiceConstant {
 	public static final String X_CRMID = "x-crmid";
 	public static final String DEVICE_ID = "device-id";
 	public static final String DEVICE_MODEL = "device-model";
+	public static final String ACCEPT_LANGUAGE = "accept-language";
 	public static final String MODE_PERMANENT = "permanent";
 	public static final String MODE_TEMPORARY = "temporary";
 	public static final String ACTIVITY_ID_VERIFY_CARD_NO = "00700100";
@@ -139,16 +142,40 @@ public class ProductsExpServiceConstant {
 	public static final String CASE_STATUS_IN_PROGRESS = "In Progress";
 	public static final String CASE_STATUS_CLOSED = "Closed";
 
-	//ACTIVITY IDs
-	public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
-	public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
-	public static final String CASE_TRACKING_EMPTY_ACTIVITY_ID = "101500202";
-	public static final String CASE_TRACKING_ACTIVITY_ID = "101500203";
+    //Application Status Tracking
+    public static final String SERVICE_TYPE_ID_AST = "AST";
+    public static final String HIRE_PURCHASE_EN = "Hire-purchase";
+    public static final String HIRE_PURCHASE_TH = "สินเชื่อเช่าซื้อ";
+    public static final String HIRE_PURCHASE_HP = "HP";
+    public static final String HIRE_PURCHASE_DATA_NOT_FOUND = "100902102";
+    public static final String APPLICATION_STATUS_IN_PROGRESS = "in_progress";
+    public static final String APPLICATION_STATUS_APPROVED = "approved";
+    public static final String APPLICATION_STATUS_REJECTED = "rejected";
+    public static final String APPLICATION_STATUS_COMPLETED = "completed";
+    public static final String ACCEPT_LANGUAGE_EN = "en";
+    public static final String ACCEPT_LANGUAGE_TH = "th";
+    public static final String APPLICATION_STATUS_CC = "CC";
+    public static final String APPLICATION_STATUS_FLAG_TRUE = "Y";
+    public static final String RSL_CURRENT_NODE_1 = "1";
+    public static final String HEADER_CITIZEN_ID = "Citizen-ID";
+    public static final String HEADER_MOBILE_NO = "Mobile-No";
+    public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String HP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+    
+    //ACTIVITY IDs
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
+    public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
+    public static final String APPLICATION_TRACKING_TUTORIAL_ACTIVITY_ID = "101500301";
 
-	//Case status screen names
-	public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";
-	public static final String ACTIVITY_SCREEN_NAME_CST = "case tracking";
-	public static final String ACTIVITY_SCREEN_NAME_EMPTY_CST = "empty case tracking";
+	public static final String HP_RSL_SUCCESS_CODE = "AST_0000";
+	public static final String HP_RSL_DATA_NOT_FOUND_CODE = "AST_0001";
+	public static final String HP_RSL_ERROR_CODE = "AST_0004";
+    public static final String HP_ERROR_CODE = "AST_0003";
+    public static final String RSL_ERROR_CODE = "AST_0002";
+
+    //Case status screen names
+    public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";
+    public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_AST = "tutorial application tracking";
 
 	public static final String FIXED_START_PAGE = "1";
 	public static final String FIXED_END_PAGE = "5";
