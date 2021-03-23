@@ -21,6 +21,10 @@ import java.util.Map;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
+/**
+ * ApplicationStatusController request mapping will handle apis call and then navigate
+ * to respective method
+ */
 @RestController
 @Api(tags = "Application Status Controller")
 public class ApplicationStatusController {
@@ -65,19 +69,23 @@ public class ApplicationStatusController {
 
             response.setData(applicationStatusResponse);
 
-            if (Boolean.FALSE.equals(applicationStatusResponse.getHpSuccess()) &&
-                    Boolean.FALSE.equals(applicationStatusResponse.getRslSuccess())) { //ACT_001
+            if (1 == applicationStatusResponse.getHpStatus() &&
+                    1 == applicationStatusResponse.getRslStatus()) { //AST_0004
                 logger.info("Error retrieving data from RSL and HP.");
                 response.setStatus(new TmbStatus(HP_RSL_ERROR_CODE,
                         ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-            } else if (Boolean.FALSE.equals(applicationStatusResponse.getHpSuccess())) { //ACT_002
+            } else if (1 == applicationStatusResponse.getHpStatus()) { //AST_0003
                 response.setStatus(new TmbStatus(HP_ERROR_CODE,
                         ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-            } else if (Boolean.FALSE.equals(applicationStatusResponse.getRslSuccess())) { //ACT_003
+            } else if (1 == applicationStatusResponse.getRslStatus()) { //AST_0002
                 response.setStatus(new TmbStatus(RSL_ERROR_CODE,
                         ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-            } else { //Success
-                response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+            } else if (2 == applicationStatusResponse.getHpStatus() &&
+                    2 == applicationStatusResponse.getRslStatus()) { // AST_0001
+                response.setStatus(new TmbStatus(HP_RSL_DATA_NOT_FOUND_CODE,
+                        ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+            } else { //AST_0000
+                response.setStatus(new TmbStatus(HP_RSL_SUCCESS_CODE, ResponseCode.SUCESS.getMessage(),
                         ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 
                 return ResponseEntity.status(HttpStatus.OK)

@@ -170,9 +170,12 @@ public class ProductsExpServiceConstant {
     public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
     public static final String APPLICATION_TRACKING_TUTORIAL_ACTIVITY_ID = "101500301";
-    public static final String HP_RSL_ERROR_CODE = "AST_001";
-    public static final String HP_ERROR_CODE = "AST_002";
-    public static final String RSL_ERROR_CODE = "AST_003";
+
+	public static final String HP_RSL_SUCCESS_CODE = "AST_0000";
+	public static final String HP_RSL_DATA_NOT_FOUND_CODE = "AST_0001";
+	public static final String HP_RSL_ERROR_CODE = "AST_0004";
+    public static final String HP_ERROR_CODE = "AST_0003";
+    public static final String RSL_ERROR_CODE = "AST_0002";
 
     //Case status screen names
     public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";

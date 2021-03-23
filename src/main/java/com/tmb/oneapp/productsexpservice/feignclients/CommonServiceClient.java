@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import java.util.List;
 
 import com.tmb.common.model.CommonData;
+import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,4 +26,8 @@ public interface CommonServiceClient {
 	public ResponseEntity<TmbOneServiceResponse<List<CommonData>>> getCommonConfigByModule(
 			@RequestHeader("X-Correlation-ID") String correlationId,
 			@RequestParam("search")  String search);
+
+	@GetMapping(value = "/apis/common/product/application/roadmap")
+	public ResponseEntity<TmbOneServiceResponse<List<NodeDetails>>> getProductApplicationRoadMap();
+
 }

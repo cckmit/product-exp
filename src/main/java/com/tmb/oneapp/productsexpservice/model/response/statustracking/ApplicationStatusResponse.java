@@ -17,8 +17,8 @@ public class ApplicationStatusResponse {
     private List<ApplicationStatusApplication> inProgress;
     private List<ApplicationStatusApplication> completed;
     @JsonIgnore
-    private Boolean hpSuccess;
+    private int hpStatus;
     @JsonIgnore
-    private Boolean rslSuccess;
+    private int rslStatus;
 
 }
