@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,14 +69,15 @@ public class CardInstallmentController {
     @PostMapping(value = "/creditcard/card-installment-confirm")
     public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCardInstallmentDetails(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
-            @RequestBody CardInstallmentQuery requestBodyParameter)
+            @RequestBody CardInstallmentQuery requestBodyParameter, @RequestHeader Map<String, String> requestHeadersParameter)
             throws TMBCommonException {
         logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
-        String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VERIFY_CARD_NO;
+        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
         String activityDate = Long.toString(System.currentTimeMillis());
-        Map<String, String> requestHeadersParameter = new HashMap<>();
-        CreditCardEvent creditCardEvent = new CreditCardEvent(requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate, activityId);
+
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
         HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<CardInstallmentResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         try {
             String modelType = requestBodyParameter.getCardInstallment().getModelType();
@@ -89,8 +91,10 @@ public class CardInstallmentController {
                 ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentResponse = creditCardClient.getCardInstallmentDetails(correlationId, requestBodyParameter);
 
                 TmbOneServiceResponse<CardInstallmentResponse> body = cardInstallmentResponse.getBody();
-                StatementTransaction statementResponse = null;
-                creditCardEvent = creditCardLogService.onClickConfirmButtonEvent(creditCardEvent, requestHeadersParameter,requestBodyParameter,statementResponse,"",oneServiceResponse);
+
+                StatementTransaction statementResponse = new StatementTransaction();
+                String statusCode = " ";
+                creditCardEvent = creditCardLogService.onClickConfirmButtonEvent(creditCardEvent, requestHeadersParameter,requestBodyParameter,statementResponse,statusCode,oneServiceResponse);
                 if (body != null) {
                     Status status = new Status();
                     status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
@@ -111,6 +115,7 @@ public class CardInstallmentController {
                     }
                 }
             } else {
+                creditCardLogService.logActivity(creditCardEvent);
                 oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));

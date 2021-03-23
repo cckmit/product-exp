@@ -3,7 +3,9 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
@@ -24,7 +26,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
@@ -69,9 +73,13 @@ public class CardInstallmentControllerTest {
         status.setDescription("");
         status.setService("products experience");
         response.setStatus(status);
+        Map<String, String> requestHeadersParameter = new HashMap<>();
+        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+        String activityDate = Long.toString(System.currentTimeMillis());
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
         when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter);
+        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
         Assert.assertEquals(200, cardInstallmentDetails.getStatusCodeValue());
     }
 
@@ -102,11 +110,13 @@ public class CardInstallmentControllerTest {
         status.setService("products experience");
         response.setStatus(status);
         response.setData(data);
-
-
+        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+        String activityDate = Long.toString(System.currentTimeMillis());
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
+        creditCardEvent.setActivityDate("01-09-1990");
         when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter);
+        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
         Assert.assertEquals(400, cardInstallmentDetails.getStatusCodeValue());
     }
 
@@ -137,9 +147,12 @@ public class CardInstallmentControllerTest {
         status.setDescription("");
         status.setService("products experience");
         response.setStatus(status);
+        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+        String activityDate = Long.toString(System.currentTimeMillis());
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
         when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter);
+        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
         Assert.assertEquals(400, cardInstallmentDetails.getStatusCodeValue());
     }
 
@@ -170,9 +183,24 @@ public class CardInstallmentControllerTest {
         status.setDescription("");
         status.setService("products experience");
         response.setStatus(status);
+        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+        String activityDate = Long.toString(System.currentTimeMillis());
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
         when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenThrow(FeignException.FeignClientException.class);
         Assertions.assertThrows(TMBCommonException.class,
-                () -> cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter));
+                () -> cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter()));
+
+    }
+
+
+
+    public Map<String, String> headerRequestParameter() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+        headers.put("os-version", "1.1");
+        headers.put("device-model", "nokia");
+        headers.put("activity-type-id", "00700103");
+        return headers;
 
     }
 }

@@ -170,13 +170,21 @@ public class CreditCardLogService {
 	public CreditCardEvent onClickConfirmButtonEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody, StatementTransaction response, String status, TmbOneServiceResponse<CardInstallmentResponse> cardResponse) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
-		creditCardEvent.setCardNumberPlusTransDesc(requestBody.getAccountId().substring(21, 25)+ response.getTransactionDescription());
+		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
         creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
         creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
-        creditCardEvent.setAmountPlusMonthlyInstallment(requestBody.getCardInstallment().getAmounts());
-		creditCardEvent.setTotalAmountPlusTotalIntrest(requestBody.getCardInstallment().getAmounts());
+		Integer installmentPlusAmount=Integer.parseInt(requestBody.getCardInstallment().getAmounts())+Integer.parseInt(requestBody.getCardInstallment().getMonthlyInstallments());
+		String amountPlusMonthlyInstallment = installmentPlusAmount.toString();
+		creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
+		Integer amountPlusTotalInterest =Integer.parseInt(requestBody.getCardInstallment().getAmounts())+
+				Integer.parseInt(requestBody.getCardInstallment().getInterest());
+		String totalAmountPlusTotalInterest = amountPlusTotalInterest.toString();
+		creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
 		if (status.equalsIgnoreCase(ResponseCode.GENERAL_ERROR.getCode())) {
-			creditCardEvent.setReasonCode(cardResponse.getData().getStatus().getErrorStatus().get(0).toString());
+			creditCardEvent.setReasonCode(cardResponse.getData().getStatus().getErrorStatus().get(0).toString()
+
+
+			);
 		}
 
 

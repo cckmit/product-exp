@@ -18,7 +18,7 @@ public class CardInstallment {
     @ApiModelProperty(notes = "modelType", required=true, example="IP")
     @JsonProperty("model_type")
     private String modelType;
-    @ApiModelProperty(notes = "amounts", required=true, example="2000")
+    @ApiModelProperty(notes = "amounts", required=true, example="5555.77")
     private String amounts;
     @ApiModelProperty(notes = "transactionKey", required=true, example="T0000018980000012")
     @JsonProperty("transaction_key")
@@ -26,4 +26,8 @@ public class CardInstallment {
     @ApiModelProperty(notes = "promotionModelNo", required=true, example="IPP001")
     @JsonProperty("promotion_model_no")
     private String promotionModelNo;
+    @JsonProperty("monthly_installments")
+    private String monthlyInstallments;
+    @JsonProperty("interest")
+    private String interest;
 }
