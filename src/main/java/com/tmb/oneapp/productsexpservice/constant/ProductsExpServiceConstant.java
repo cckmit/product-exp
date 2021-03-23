@@ -160,12 +160,7 @@ public class ProductsExpServiceConstant {
     public static final String HEADER_MOBILE_NO = "Mobile-No";
     public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String HP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
-
-    public static final List<String> HIRE_PURCHASE_NODE_TEXT_TH =
-            List.of("ธนาคารได้รับเรื่องขอสินเชื่อรถยนต์ของท่านแล้ว", "ดำเนินการพิจารณาสินเชื่อรถยนต์ของท่าน", "ได้รับอนุมัติ เตรียมดำเนินการด้านทะเบียนรถยนต์", "แจ้งเลขที่สัญญา");
-    public static final List<String> HIRE_PURCHASE_NODE_TEXT_EN =
-            List.of("Application received", "Documents in review", "Loan approved", "Contract Confirmation");
-
+    
     //ACTIVITY IDs
     public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
