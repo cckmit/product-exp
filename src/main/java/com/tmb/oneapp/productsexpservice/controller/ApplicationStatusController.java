@@ -45,12 +45,12 @@ public class ApplicationStatusController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
             @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000001184383", required = true, dataType = "string", paramType = "header"),
-            @ApiImplicitParam(name = DEVICE_ID, defaultValue = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true),
+            @ApiImplicitParam(name = DEVICE_ID, defaultValue = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true, dataType = "string", paramType = "header"),
             @ApiImplicitParam(name = ACCEPT_LANGUAGE, defaultValue = "en", required = true, paramType = "header"),
     })
     public ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> getApplicationStatus(
             @ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
-            @ApiParam(value = "Service Type Id", defaultValue = "EPB", required = true)
+            @ApiParam(value = "Service Type Id", defaultValue = "AST", required = true)
             @RequestParam("service_type_id") String serviceTypeId) {
 
         TmbOneServiceResponse<ApplicationStatusResponse> response = new TmbOneServiceResponse<>();
@@ -72,27 +72,25 @@ public class ApplicationStatusController {
             if (1 == applicationStatusResponse.getHpStatus() &&
                     1 == applicationStatusResponse.getRslStatus()) { //AST_0004
                 logger.info("Error retrieving data from RSL and HP.");
-                response.setStatus(new TmbStatus(HP_RSL_ERROR_CODE,
-                        ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+                response.setStatus(new TmbStatus(ResponseCode.HP_RSL_ERROR.getCode(),
+                        ResponseCode.HP_RSL_ERROR.getMessage(), ResponseCode.HP_RSL_ERROR.getService()));
             } else if (1 == applicationStatusResponse.getHpStatus()) { //AST_0003
-                response.setStatus(new TmbStatus(HP_ERROR_CODE,
-                        ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+                logger.info("Error retrieving data from HP.");
+                response.setStatus(new TmbStatus(ResponseCode.HP_ERROR_CODE.getCode(),
+                        ResponseCode.HP_ERROR_CODE.getMessage(), ResponseCode.HP_ERROR_CODE.getService()));
             } else if (1 == applicationStatusResponse.getRslStatus()) { //AST_0002
-                response.setStatus(new TmbStatus(RSL_ERROR_CODE,
-                        ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-            } else if (2 == applicationStatusResponse.getHpStatus() &&
+                logger.info("Error retrieving data from RSL.");
+                response.setStatus(new TmbStatus(ResponseCode.RSL_ERROR_CODE.getCode(),
+                        ResponseCode.RSL_ERROR_CODE.getMessage(), ResponseCode.RSL_ERROR_CODE.getService()));
+            } else if (2 == applicationStatusResponse.getHpStatus() ||
                     2 == applicationStatusResponse.getRslStatus()) { // AST_0001
-                response.setStatus(new TmbStatus(HP_RSL_DATA_NOT_FOUND_CODE,
-                        ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+                response.setStatus(new TmbStatus(ResponseCode.HP_RSL_DATA_NOT_FOUND.getCode(),
+                        ResponseCode.HP_RSL_DATA_NOT_FOUND.getMessage(), ResponseCode.HP_RSL_DATA_NOT_FOUND.getService()));
             } else { //AST_0000
-                response.setStatus(new TmbStatus(HP_RSL_SUCCESS_CODE, ResponseCode.SUCESS.getMessage(),
-                        ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-
-                return ResponseEntity.status(HttpStatus.OK)
-                        .headers(TMBUtils.getResponseHeaders())
-                        .body(response);
+                response.setStatus(new TmbStatus(ResponseCode.HP_RSL_SUCCESS.getCode(),
+                        ResponseCode.HP_RSL_SUCCESS.getMessage(), ResponseCode.HP_RSL_SUCCESS.getService()));
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.OK)
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 

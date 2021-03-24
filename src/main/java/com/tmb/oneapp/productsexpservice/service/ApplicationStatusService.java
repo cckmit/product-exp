@@ -272,10 +272,10 @@ public class ApplicationStatusService {
         }
 
         rslApplications.forEach(rslApplication -> {
-                    RSLProductCodeEnum matchingEnum = RSLProductCodeEnum.valueOf(rslApplication.getProductCode());
+                    RSLProductCodeEnum matchingEnum = RSLProductCodeEnum.valueOf(rslApplication.getAppType());
 
                     allApplications.add(new ApplicationStatusApplication()
-                            .setStatus(rslApplication.getAppStatus())
+                            .setStatus(rslApplication.getStatus())
                             .setProductCode(rslApplication.getProductCode())
                             .setProductCategoryTh(matchingEnum.getProductNameTh())
                             .setProductCategoryEn(matchingEnum.getProductNameEn())

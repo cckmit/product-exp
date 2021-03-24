@@ -171,10 +171,10 @@ class AsyncApplicationStatusServiceTest {
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
         mockGetCaseStatusResponse.setData(Arrays.asList(
                 new LendingRslStatusResponse()
-                        .setAppStatus("completed")
+                        .setStatus("completed")
                         .setCurrentNode("1"),
                 new LendingRslStatusResponse()
-                        .setAppStatus("approved")
+                        .setStatus("approved")
                         .setCurrentNode("2")
         ));
 
@@ -185,8 +185,8 @@ class AsyncApplicationStatusServiceTest {
         CompletableFuture<List<LendingRslStatusResponse>> response = asyncApplicationStatusService
                 .getRSLData("correlationId", "nationalId", "mobileNo");
 
-        assertEquals("completed", response.get().get(0).getAppStatus());
-        assertEquals("approved", response.get().get(1).getAppStatus());
+        assertEquals("completed", response.get().get(0).getStatus());
+        assertEquals("approved", response.get().get(1).getStatus());
 
     }
 
