@@ -14,6 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import io.swagger.annotations.Api;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,68 +71,77 @@ public class CardInstallmentController {
     public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCardInstallmentDetails(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody CardInstallmentQuery requestBodyParameter, @RequestHeader Map<String, String> requestHeadersParameter)
-            throws TMBCommonException {
-        logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
-        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
-        String activityDate = Long.toString(System.currentTimeMillis());
+            		throws TMBCommonException {
+    	logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
+    	String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+    	String activityDate = Long.toString(System.currentTimeMillis());
 
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<CardInstallmentResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        try {
-            String modelType = requestBodyParameter.getCardInstallment().getModelType();
-            String amounts = requestBodyParameter.getCardInstallment().getAmounts();
-            String transactionKey = requestBodyParameter.getCardInstallment().getTransactionKey();
-            String promotionModelNo = requestBodyParameter.getCardInstallment().getPromotionModelNo();
+    	CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+    	HttpHeaders responseHeaders = new HttpHeaders();
+    	responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+    	TmbOneServiceResponse<CardInstallmentResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+    	try {
+    		String modelType = requestBodyParameter.getCardInstallment().getModelType();
+    		String amounts = requestBodyParameter.getCardInstallment().getAmounts();
+    		String transactionKey = requestBodyParameter.getCardInstallment().getTransactionKey();
+    		String promotionModelNo = requestBodyParameter.getCardInstallment().getPromotionModelNo();
 
-            if (!Strings.isNullOrEmpty(modelType) && !Strings.isNullOrEmpty(amounts)
-                    && !Strings.isNullOrEmpty(transactionKey) && !Strings.isNullOrEmpty(promotionModelNo)
-            ) {
-                ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentResponse = creditCardClient.getCardInstallmentDetails(correlationId, requestBodyParameter);
+    		if (!Strings.isNullOrEmpty(modelType) && !Strings.isNullOrEmpty(amounts)
+    				&& !Strings.isNullOrEmpty(transactionKey) && !Strings.isNullOrEmpty(promotionModelNo)
+    				) {
+    			ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentResponse = creditCardClient.getCardInstallmentDetails(correlationId, requestBodyParameter);
+    			TmbOneServiceResponse<CardInstallmentResponse> cardInstallmentResp = cardInstallmentResponse.getBody();
 
-                TmbOneServiceResponse<CardInstallmentResponse> body = cardInstallmentResponse.getBody();
+    			if (cardInstallmentResp != null) {
+    				Status status = new Status();
+    				status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
+    				String statusCode = cardInstallmentResp.getStatus().getCode();
 
-                StatementTransaction statementResponse = new StatementTransaction();
-                String statusCode = " ";
-                creditCardEvent = creditCardLogService.onClickConfirmButtonEvent(creditCardEvent, requestHeadersParameter,requestBodyParameter,statementResponse,statusCode,oneServiceResponse);
-                if (body != null) {
-                    Status status = new Status();
-                    status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
-                    String code = body.getStatus().getCode();
-                    if (code.equals("0")) {
+    				if (statusCode.equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
 
-                        creditCardLogService.logActivity(creditCardEvent);
-                        oneServiceResponse
-                                .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                                        ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                    } else {
+    					creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter);
+    					creditCardLogService.logActivity(creditCardEvent);
 
-                        oneServiceResponse.setData(body.getData());
-                        oneServiceResponse.setStatus(
-                                new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
-                                        ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
-                        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-                    }
-                }
-            } else {
-                creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-                creditCardEvent.setFailReason(ResponseCode.DATA_NOT_FOUND_ERROR.getMessage());
-                creditCardLogService.logActivity(creditCardEvent);
-                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-            }
-        } catch (Exception e) {
-            creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-            creditCardEvent.setFailReason(e.getMessage());
-            logger.error("Error while getBlockCardDetails: {}", e);
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(), HttpStatus.OK, null);
-        }
+    					oneServiceResponse
+    					.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+    							ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+    				} else {
+						creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter);
+						creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+						List<ErrorStatus> errorStatus = cardInstallmentResp.getData().getStatus().getErrorStatus();
+						String description = errorStatus.get(0).getDescription();
+						creditCardEvent.setFailReason(description);
+						creditCardEvent.setReasonCode(description);
+						creditCardEvent.setReasonForRequest(description);
+						creditCardLogService.logActivity(creditCardEvent);
+    					oneServiceResponse.setData(cardInstallmentResp.getData());
+    					oneServiceResponse.setStatus(
+    							new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
+    									ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
+    					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+    				}
+    			}
+    		} else {
+    			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+    			creditCardEvent.setFailReason(ResponseCode.DATA_NOT_FOUND_ERROR.getMessage());
+    			creditCardLogService.logActivity(creditCardEvent);
 
-        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+    			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+    					ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+    					ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+    			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+    		}
+    	} catch (Exception e) {
+    		creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+    		creditCardEvent.setFailReason(e.getMessage());
+    		creditCardLogService.logActivity(creditCardEvent);
+
+    		logger.error("Error while getBlockCardDetails: {}", e);
+    		throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+    				ResponseCode.FAILED.getService(), HttpStatus.OK, null);
+    	}
+
+    	return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
     }
 

@@ -1,29 +1,30 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.logger.LogAround;
-import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.util.TMBUtils;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
-import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
-import com.tmb.oneapp.productsexpservice.util.DoubleToString;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import com.tmb.common.kafka.service.KafkaProducerService;
+import com.tmb.common.logger.LogAround;
+import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 
 /**
  * Class responsible for Putting activity logs in Creditcard service
  *
  */
 
+/**
+ * @author Admin
+ *
+ */
 /**
  * @author Admin
  *
@@ -167,30 +168,29 @@ public class CreditCardLogService {
 		return creditCardEvent;
 	}
 
-	public CreditCardEvent onClickConfirmButtonEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody, StatementTransaction response, String status, TmbOneServiceResponse<CardInstallmentResponse> cardResponse) {
+	/**
+	 * @param creditCardEvent
+	 * @param reqHeader
+	 * @param requestBody
+	 * @return
+	 */
+	public CreditCardEvent applySoGoodConfirmEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
-		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25)+ " " +response.getTransactionDescription());
+		
+		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
         creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
         creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
-		String amounts = requestBody.getCardInstallment().getAmounts();
-		String installmentPlan =requestBody.getCardInstallment().getMonthlyInstallments();
-		String interest = requestBody.getCardInstallment().getInterest();
-		Double amountInDouble = DoubleToString.stringToDouble(amounts);
-		Double installmentInDouble = DoubleToString.stringToDouble(installmentPlan);
-		Double installmentPlusAmount= amountInDouble + installmentInDouble;
-		String amountPlusMonthlyInstallment = DoubleToString.doubleToString(installmentPlusAmount);
-		creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
-		Double interestInDouble = DoubleToString.stringToDouble(interest);
-		Double amountPlusTotalInterest = amountInDouble + interestInDouble;
-		String totalAmountPlusTotalInterest = DoubleToString.doubleToString(amountPlusTotalInterest);
+        
+		Double amountInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getAmounts());
+		Double installmentInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getMonthlyInstallments());
+		Double interestInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getInterest());
+		
+		String amountPlusInstallmentStr = ConversionUtil.doubleToString(amountInDouble + installmentInDouble);
+		creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusInstallmentStr);
+		
+		String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountInDouble + interestInDouble);
 		creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
-		if (status.equalsIgnoreCase(ResponseCode.GENERAL_ERROR.getCode())) {
-			creditCardEvent.setReasonCode(cardResponse.getData().getStatus().getErrorStatus().get(0).toString()
-
-			);
-		}
-
 
 		return creditCardEvent;
 	}
