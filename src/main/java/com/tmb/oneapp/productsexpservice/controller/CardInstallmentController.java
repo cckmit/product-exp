@@ -106,9 +106,6 @@ public class CardInstallmentController {
                                         ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
                     } else {
 
-                        creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-                        creditCardEvent.setFailReason(cardInstallmentResponse.getBody().getStatus().getMessage());
-
                         oneServiceResponse.setData(body.getData());
                         oneServiceResponse.setStatus(
                                 new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
