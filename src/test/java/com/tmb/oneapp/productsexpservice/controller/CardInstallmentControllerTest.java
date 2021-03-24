@@ -78,7 +78,7 @@ public class CardInstallmentControllerTest {
         ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
         Assert.assertEquals(200, cardInstallmentDetails.getStatusCodeValue());
     }
-    
+
 
     @Test
     public void testCardinstallmentResponseNull() throws Exception {
