@@ -93,28 +93,28 @@ public class CardInstallmentController {
 
 				if (cardInstallmentResp != null) {
 
-					String transactionDescription = cardInstallmentResp.getData().getCardStatement().getStatementTransactions().get(0).getTransactionDescription();
 
 					Status status = new Status();
     				status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
     				String statusCode = cardInstallmentResp.getStatus().getCode();
 
     				if (statusCode.equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
+						String transactionDescription = cardInstallmentResp.getData().getCardStatement().getStatementTransactions().get(0).getTransactionDescription();
 
-    					creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,transactionDescription);
+						creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,transactionDescription);
     					creditCardLogService.logActivity(creditCardEvent);
 
     					oneServiceResponse
     					.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
     							ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
     				} else {
-						creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,transactionDescription);
 						creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
 						List<ErrorStatus> errorStatus = cardInstallmentResp.getData().getStatus().getErrorStatus();
 						String description = errorStatus.get(0).getDescription();
 						creditCardEvent.setFailReason(description);
 						creditCardEvent.setReasonCode(description);
 						creditCardEvent.setReasonForRequest(description);
+						creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 						creditCardLogService.logActivity(creditCardEvent);
     					oneServiceResponse.setData(cardInstallmentResp.getData());
     					oneServiceResponse.setStatus(
@@ -125,6 +125,7 @@ public class CardInstallmentController {
     			}
     		} else {
     			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+				creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
     			creditCardEvent.setFailReason(ResponseCode.DATA_NOT_FOUND_ERROR.getMessage());
     			creditCardLogService.logActivity(creditCardEvent);
 
@@ -135,6 +136,7 @@ public class CardInstallmentController {
     		}
     	} catch (Exception e) {
     		creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
     		creditCardEvent.setFailReason(e.getMessage());
     		creditCardLogService.logActivity(creditCardEvent);
 
