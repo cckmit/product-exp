@@ -100,7 +100,6 @@ public class ProductExpServiceTest {
         order.setOrderDate("20201212");
         orders.add(order);
         orderToBeProcess.setOrder(orders);
-        accDetailBody.setOrderToBeProcess(orderToBeProcess);
 
     }
 
@@ -199,8 +198,6 @@ public class ProductExpServiceTest {
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
         Assert.assertEquals(HttpStatus.OK.value(),responseEntity.getStatusCodeValue());
         Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
-        Assert.assertEquals(2,responseEntity.getBody().getData().getOrderToBeProcess().getOrder()
-                .size());
         Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
     }
 

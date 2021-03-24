@@ -67,16 +67,6 @@ public class ProductExpServiceControllerTest {
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundRule.setIpoflag(ruleInfoList.getIpoflag());
             BeanUtils.copyProperties(accountDetail, accDetailBody.getDetailFund());
-            List<Order> orders = accDetailBody.getOrderToBeProcess().getOrder();
-            List<FundOrderHistory> ordersHistories = new ArrayList<>();
-
-            for (Order order : orders) {
-                FundOrderHistory fundOrderHistory = new FundOrderHistory();
-                BeanUtils.copyProperties(order, fundOrderHistory);
-                ordersHistories.add(fundOrderHistory);
-            }
-            accountDetail.setOrdersHistories(ordersHistories);
-
             fundAccountDetail.setFundRuleInfoList(fundRuleInfoList);
             fundAccountDetail.setAccountDetail(accountDetail);
         }
@@ -90,15 +80,6 @@ public class ProductExpServiceControllerTest {
         detailFund.setFundHouseCode("TTTTT");
         detailFund.setFundHouseCode("EEEEE");
         accDetailBody.setDetailFund(detailFund);
-
-        OrderToBeProcess orderToBeProcess = new OrderToBeProcess();
-        List<Order> orders = new ArrayList<>();
-        Order order = new Order();
-        order.setAmount("200");
-        order.setOrderDate("20201212");
-        orders.add(order);
-        orderToBeProcess.setOrder(orders);
-        accDetailBody.setOrderToBeProcess(orderToBeProcess);
 
     }
 

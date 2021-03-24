@@ -50,22 +50,22 @@ public class ProductsExpServiceConstant {
 	public static final String PAGE_NO = "pageNo";
 
 	/* SERVICE OUR CLOSE */
-	public static final String SERVICE_OUR_CLOSE = "msg_al_01";
+	public static final String SERVICE_OUR_CLOSE = "msg_alt_01";
 	public static final String SERVICE_OUR_CLOSE_MESSAGE = "NOT ALLOW TO PROCESSING";
 	public static final String SERVICE_OUR_CLOSE_DESC = "Error";
 
 	/* OF SHELF */
-	public static final String OF_SHELF_FUND_CODE = "msg_al_05";
+	public static final String OF_SHELF_FUND_CODE = "msg_alt_05";
 	public static final String OF_SHELF_FUND_MESSAGE = "NOT ALLOW TO PURCHASE";
 	public static final String OF_SHELF_FUND_DESC = "FUND DO NOT ALLOW TO PURCHASE";
 
 	/* SUITABILITY EXPIRED */
-	public static final String SUITABILITY_EXPIRED_CODE = "msg_al_04";
+	public static final String SUITABILITY_EXPIRED_CODE = "msg_alt_04";
 	public static final String SUITABILITY_EXPIRED_MESSAGE = "SUITABILITY EXPIRED";
 	public static final String SUITABILITY_EXPIRED_DESC = "Error";
 
 	/* ID EXPIRED */
-	public static final String ID_EXPIRED_CODE = "msg_al_09";
+	public static final String ID_EXPIRED_CODE = "msg_alt_09";
 	public static final String ID_EXPIRED_MESSAGE = "ID CARD EXPIRED";
 	public static final String ID_EXPIRED_DESC = "Error";
 
@@ -75,29 +75,22 @@ public class ProductsExpServiceConstant {
 	public static final String SERVICE_NOT_READY_DESC = "SOMETHING WENT WRONG, TRY AGAIN";
 
 	/* BUSINESS OUR CLOSE */
-	public static final String BUSINESS_HOURS_CLOSE_CODE = "msg_al_06";
+	public static final String BUSINESS_HOURS_CLOSE_CODE = "msg_alt_06";
 	public static final String BUSINESS_HOURS_CLOSE_MESSAGE = "NOT ALLOW TO DO";
 	public static final String BUSINESS_HOURS_CLOSE_DESC = "TRANSACTION DO NOT ALLOW TO PROCESS";
 
 	/* CASA DORMANT OUR CLOSE */
-	public static final String CASA_DORMANT_ACCOUNT_CODE = "msg_al_03";
+	public static final String CASA_DORMANT_ACCOUNT_CODE = "msg_alt_03";
 	public static final String CASA_DORMANT_ACCOUNT_MESSAGE = "ACCOUNT NOT FOUND";
 	public static final String CASA_DORMANT_ACCOUNT_DESC = "ACCOUNT NOT FOUND OR NOT READY TO DO THE TRANSACTION";
 
 	public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING = "101000101";
-	public static final String ACTIVITY_ID_INVESTMENT_SALE_STATUS_TRACKING = "101000301";
-	public static final String ACTIVITY_ID_INVESTMENT_SWITCH_STATUS_TRACKING = "101000401";
 	public static final String ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
-	public static final String ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING = "Sell fund ";
-	public static final String ACTIVITY_TYPE_INVESTMENT_SWITCH_STATUS_TRACKING = "Switch fund ";
 	public static final String ACTIVITY_LOG_CHANNEL = "mb";
 	public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
 	public static final String ACTIVITY_LOG_SUCCESS = "Success";
 	public static final String ACTIVITY_LOG_FAILURE = "Off business hour";
-	public static final String ACTIVITY_LOG_VERIFY_FLAG = "Verify flag = ";
-	public static final String ACTIVITY_LOG_REASON = "Reason = ";
-	public static final String ACTIVITY_LOG_VERIFY_FLAG_ID = "verify_flag";
-	public static final String ACTIVITY_LOG_REASON_ID = "reason";
+
 
 	public static final String ACTIVE_STATUS = "ACTIVE";
 	public static final String INACTIVE_STATUS = "INACTIVE";
