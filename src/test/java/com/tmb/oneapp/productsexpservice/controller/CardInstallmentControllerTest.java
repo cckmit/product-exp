@@ -74,52 +74,11 @@ public class CardInstallmentControllerTest {
         status.setDescription("");
         status.setService("products experience");
         response.setStatus(status);
-        Map<String, String> requestHeadersParameter = new HashMap<>();
-        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
-        String activityDate = Long.toString(System.currentTimeMillis());
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
         when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
-
         ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
         Assert.assertEquals(200, cardInstallmentDetails.getStatusCodeValue());
     }
-
-    @Test
-    public void testCardinstallmentResponseElseCondition() throws Exception {
-        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-        CardInstallmentQuery requestBodyParameter = new CardInstallmentQuery();
-        requestBodyParameter.setAccountId("0000000050078670143000945");
-        CardInstallment cardInstallment = new CardInstallment();
-        cardInstallment.setAmounts("5555.77");
-        cardInstallment.setModelType("IP");
-        cardInstallment.setTransactionKey("T0000020700000002");
-        cardInstallment.setPromotionModelNo("IPP001");
-        requestBodyParameter.setCardInstallment(cardInstallment);
-        TmbOneServiceResponse<CardInstallmentResponse> response = new TmbOneServiceResponse();
-        CardStatement cardStatement = new CardStatement();
-        cardStatement.setDueDate("");
-        CardInstallmentResponse data = new CardInstallmentResponse();
-        CardStatementReponse statement = new CardStatementReponse();
-        statement.setStatementTransactions(list);
-        data.setMaxRecords(100);
-        data.setMoreRecords("Y");
-        data.setTotalRecords(10);
-        data.setCardStatement(statement);
-        TmbStatus status = new TmbStatus();
-        status.setCode("1");
-        status.setDescription("");
-        status.setService("products experience");
-        response.setStatus(status);
-        response.setData(data);
-        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
-        String activityDate = Long.toString(System.currentTimeMillis());
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
-        creditCardEvent.setActivityDate("01-09-1990");
-        when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
-
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
-        Assert.assertEquals(400, cardInstallmentDetails.getStatusCodeValue());
-    }
+    
 
     @Test
     public void testCardinstallmentResponseNull() throws Exception {
@@ -151,6 +110,7 @@ public class CardInstallmentControllerTest {
         String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
         String activityDate = Long.toString(System.currentTimeMillis());
         CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
+        creditCardEvent.setActivityDate("01-09-1990");
         when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
         ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
