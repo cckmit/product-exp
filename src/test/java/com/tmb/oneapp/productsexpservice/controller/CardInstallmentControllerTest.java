@@ -80,9 +80,9 @@ public class CardInstallmentControllerTest {
         String activityDate = Long.toString(System.currentTimeMillis());
         CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
         creditCardEvent.setActivityDate("01-09-1990");
-        when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
+        when(creditCardClient.confirmCardInstallment(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter());
+        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentDetails = cardInstallmentController.confirmCardInstallment(correlationId, requestBodyParameter,headerRequestParameter());
         Assert.assertEquals(400, cardInstallmentDetails.getStatusCodeValue());
     }
 
@@ -116,9 +116,9 @@ public class CardInstallmentControllerTest {
         String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
         String activityDate = Long.toString(System.currentTimeMillis());
         CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,activityId,activityDate);
-        when(creditCardClient.getCardInstallmentDetails(anyString(), any())).thenThrow(FeignException.FeignClientException.class);
+        when(creditCardClient.confirmCardInstallment(anyString(), any())).thenThrow(FeignException.FeignClientException.class);
         Assertions.assertThrows(TMBCommonException.class,
-                () -> cardInstallmentController.getCardInstallmentDetails(correlationId, requestBodyParameter,headerRequestParameter()));
+                () -> cardInstallmentController.confirmCardInstallment(correlationId, requestBodyParameter,headerRequestParameter()));
 
     }
 

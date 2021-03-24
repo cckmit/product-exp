@@ -71,7 +71,7 @@ public interface CreditCardClient {
             @RequestBody CampaignTransactionQuery requestBodyParameter);
 
     @PostMapping(value = "/apis/creditcard/creditcard/card-installment-confirm")
-    public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCardInstallmentDetails(
+    public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> confirmCardInstallment(
             @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody CardInstallmentQuery requestBodyParameter);
 
