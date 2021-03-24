@@ -71,7 +71,7 @@ class ApplicationStatusControllerTest {
         ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> response =
                 applicationStatusController.getApplicationStatus(header, "AST");
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(errorCode, response.getBody().getStatus().getCode());
 
     }

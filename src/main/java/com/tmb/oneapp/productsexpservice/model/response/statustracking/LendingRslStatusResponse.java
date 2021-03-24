@@ -11,7 +11,8 @@ import java.util.List;
 @Accessors(chain = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LendingRslStatusResponse {
-    private String appStatus;
+    private String status;
+    private String appType;
     private String productCode;
     private String productTypeTh;
     private String productTypeEn;
