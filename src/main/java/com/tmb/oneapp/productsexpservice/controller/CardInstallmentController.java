@@ -91,21 +91,24 @@ public class CardInstallmentController {
     			ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentResponse = creditCardClient.getCardInstallmentDetails(correlationId, requestBodyParameter);
     			TmbOneServiceResponse<CardInstallmentResponse> cardInstallmentResp = cardInstallmentResponse.getBody();
 
-    			if (cardInstallmentResp != null) {
-    				Status status = new Status();
+				if (cardInstallmentResp != null) {
+
+					String transactionDescription = cardInstallmentResp.getData().getCardStatement().getStatementTransactions().get(0).getTransactionDescription();
+
+					Status status = new Status();
     				status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
     				String statusCode = cardInstallmentResp.getStatus().getCode();
 
     				if (statusCode.equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
 
-    					creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter);
+    					creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,transactionDescription);
     					creditCardLogService.logActivity(creditCardEvent);
 
     					oneServiceResponse
     					.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
     							ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
     				} else {
-						creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter);
+						creditCardEvent = creditCardLogService.applySoGoodConfirmEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,transactionDescription);
 						creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
 						List<ErrorStatus> errorStatus = cardInstallmentResp.getData().getStatus().getErrorStatus();
 						String description = errorStatus.get(0).getDescription();

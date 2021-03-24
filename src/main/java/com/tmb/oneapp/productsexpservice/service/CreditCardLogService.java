@@ -174,7 +174,7 @@ public class CreditCardLogService {
 	 * @param requestBody
 	 * @return
 	 */
-	public CreditCardEvent applySoGoodConfirmEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody) {
+	public CreditCardEvent applySoGoodConfirmEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody, String transactionDescription) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
 		
@@ -191,6 +191,8 @@ public class CreditCardLogService {
 		
 		String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountInDouble + interestInDouble);
 		creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+
+		creditCardEvent.setTransactionDescription(transactionDescription);
 
 		return creditCardEvent;
 	}
