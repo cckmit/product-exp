@@ -99,12 +99,15 @@ public class CardInstallmentController {
                     status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
                     String code = body.getStatus().getCode();
                     if (code.equals("0")) {
+
                         creditCardLogService.logActivity(creditCardEvent);
                         oneServiceResponse
                                 .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                         ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
                     } else {
-                        creditCardLogService.logActivity(creditCardEvent);
+
+                        creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+                        creditCardEvent.setFailReason(cardInstallmentResponse.getBody().getStatus().getMessage());
 
                         oneServiceResponse.setData(body.getData());
                         oneServiceResponse.setStatus(
@@ -114,6 +117,8 @@ public class CardInstallmentController {
                     }
                 }
             } else {
+                creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+                creditCardEvent.setFailReason(ResponseCode.DATA_NOT_FOUND_ERROR.getMessage());
                 creditCardLogService.logActivity(creditCardEvent);
                 oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
@@ -121,6 +126,8 @@ public class CardInstallmentController {
                 return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
             }
         } catch (Exception e) {
+            creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+            creditCardEvent.setFailReason(e.getMessage());
             logger.error("Error while getBlockCardDetails: {}", e);
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.OK, null);
