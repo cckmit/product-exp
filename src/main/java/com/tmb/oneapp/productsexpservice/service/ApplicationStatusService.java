@@ -288,6 +288,8 @@ public class ApplicationStatusService {
                             .setTopRemarkEn(rslApplication.getTopRemarkTh())
                             .setBottomRemarkTh(rslApplication.getBottomRemarkTh())
                             .setBottomRemarkEn(rslApplication.getBottomRemarkEn())
+                            .setNodeTextTh(rslApplication.getNodeTextTh())
+                            .setNodeTextEn(rslApplication.getNodeTextEn())
                             .setApplicationDate(rslApplication.getApplicationDate())
                             .setLastUpdateDate(RSL_CURRENT_NODE_1.equals(rslApplication.getCurrentNode()) ?
                                     rslApplication.getApplicationDate() :
