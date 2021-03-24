@@ -1,7 +1,5 @@
 package com.tmb.oneapp.productsexpservice.constant;
 
-import java.util.List;
-
 /**
  * Constant class for Application
  *
