@@ -32,8 +32,6 @@ public class CreditCardEvent extends BaseEvent {
     private String amountPlusMonthlyInstallment;
     @JsonProperty("amount")
     private String totalAmountPlusTotalIntrest;
-    @JsonProperty("card_number_date")
-    private String cardNumberPlusTransDesc;
     @JsonProperty("reason_code")
     private String reasonCode;
     public CreditCardEvent(String correlationId, String activityDate, String activityTypeId) {
