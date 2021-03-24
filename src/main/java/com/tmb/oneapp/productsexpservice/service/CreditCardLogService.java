@@ -13,12 +13,18 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 
 /**
  * Class responsible for Putting activity logs in Creditcard service
  *
  */
 
+/**
+ * @author Admin
+ *
+ */
 /**
  * @author Admin
  *
@@ -159,6 +165,33 @@ public class CreditCardLogService {
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		creditCardEvent.setCardNumber(reqHeader.get(ProductsExpServiceConstant.ACCOUNT_ID).substring(21, 25));
+		return creditCardEvent;
+	}
+
+	/**
+	 * @param creditCardEvent
+	 * @param reqHeader
+	 * @param requestBody
+	 * @return
+	 */
+	public CreditCardEvent applySoGoodConfirmEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, CardInstallmentQuery requestBody) {
+
+		populateBaseEvents(creditCardEvent, reqHeader);
+		
+		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+        creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
+        creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
+        
+		Double amountInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getAmounts());
+		Double installmentInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getMonthlyInstallments());
+		Double interestInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getInterest());
+		
+		String amountPlusInstallmentStr = ConversionUtil.doubleToString(amountInDouble + installmentInDouble);
+		creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusInstallmentStr);
+		
+		String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountInDouble + interestInDouble);
+		creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+
 		return creditCardEvent;
 	}
 

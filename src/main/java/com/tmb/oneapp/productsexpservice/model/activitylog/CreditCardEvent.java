@@ -26,6 +26,14 @@ public class CreditCardEvent extends BaseEvent {
     private String currentLimit;
     @JsonProperty("new_limit")
     private String newLimit;
+    @JsonProperty("plan")
+    private String plan;
+    @JsonProperty("monthly_installment")
+    private String amountPlusMonthlyInstallment;
+    @JsonProperty("amount")
+    private String totalAmountPlusTotalIntrest;
+    @JsonProperty("reason_code")
+    private String reasonCode;
     public CreditCardEvent(String correlationId, String activityDate, String activityTypeId) {
         super(correlationId, activityDate, activityTypeId);
     }
