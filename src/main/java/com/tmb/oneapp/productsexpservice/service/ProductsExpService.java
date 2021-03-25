@@ -34,7 +34,6 @@ import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
@@ -323,13 +322,6 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_DESC);
             isStoped = true;
         }
-        if(!StringUtils.isEmpty(ffsRequestBody.getProcessFlag()) && isOfShelfFund(correlationId, ffsRequestBody)){
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.OF_SHELF_FUND_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.OF_SHELF_FUND_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.OF_SHELF_FUND_DESC);
-            isStoped = true;
-        }
         if(!isStoped && isBusinessClose(correlationId, ffsRequestBody)){
             ffsRsAndValidation.setError(isNotValid);
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
@@ -402,28 +394,6 @@ public class ProductsExpService {
         }
     }
 
-    /**
-     * Method isOfShelfFund for get all fund list and check with fund code
-     *
-     * @param correlationId
-     * @param ffsRequestBody
-     */
-    public boolean isOfShelfFund(String correlationId, FfsRequestBody ffsRequestBody){
-        ResponseEntity<TmbOneServiceResponse<FundListPage>> responseResponseEntity = null;
-        try{
-            Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(correlationId, 0, 0);
-            responseResponseEntity = investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
-            if (!StringUtils.isEmpty(responseResponseEntity) &&
-                    HttpStatus.OK == responseResponseEntity.getStatusCode()) {
-                return UtilMap.isOfShelfCheck(ffsRequestBody, responseResponseEntity.getBody().getData().getFundClassList());
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            return true;
-        }
-    }
 
     /**
      * Method isBusinessClose for check cut of time from fundRule
