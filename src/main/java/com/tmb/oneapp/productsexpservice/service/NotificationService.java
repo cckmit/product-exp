@@ -16,8 +16,10 @@ import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.NotificationConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
@@ -29,28 +31,41 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 public class NotificationService {
 
 	private static final TMBLogger<NotificationService> logger = new TMBLogger<>(NotificationService.class);
-	private static final String DEFAULT_CHANNEL_TH ="ทีเอ็มบี ทัซ" ;
-	private static final String DEFAULT_CHANNEL_EN ="TMB Touch" ;
+	private static final String DEFAULT_CHANNEL_TH = "ทีเอ็มบี ทัซ";
+	private static final String DEFAULT_CHANNEL_EN = "TMB Touch";
 
 	private NotificationServiceClient notificationClient;
 	private CustomerServiceClient customerClient;
-	
+	private CreditCardClient creditCardClient;
 
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
-			CustomerServiceClient customerServiceClient) {
+			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient) {
 		this.notificationClient = notificationServiceClient;
 		this.customerClient = customerServiceClient;
+		this.creditCardClient = creditCardClient;
 	}
 
-	public void sendCardActiveEmail(String xCorrelationId,String accountId, String crmId ) {
+	public void sendCardActiveEmail(String xCorrelationId, String accountId, String crmId) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
 		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody().getData())
 				&& SUCCESS_CODE.equals(response.getBody().getStatus().getCode())) {
+			System.out.println("AAA");
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
-			customerProfileInfo.getEmailAddress();
+
+			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+					accountId);
+			System.out.println("BBB");
+			if (Objects.nonNull(cardInfoResponse.getBody())
+					&& SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode().toString())) {
+				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				System.out.println("CCC");
+				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, DEFAULT_CHANNEL_EN,
+						DEFAULT_CHANNEL_TH, accountId, cardResponse.getProductCodeData().getProductNameEN(),
+						cardResponse.getProductCodeData().getProductNameTH());
+			}
 		}
 	}
 
