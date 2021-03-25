@@ -827,11 +827,6 @@ public class ProductExpServiceTest {
         Assert.assertEquals(ProductsExpServiceConstant.ACC_TYPE_CURRENT, accTypeTw);
     }
 
-    @Test
-    public void testisServiceClose() throws Exception {
-        boolean isClose = UtilMap.isOfShelfCheck(null,null);
-        Assert.assertTrue(isClose);
-    }
 
     @Test
     public void testisBusinessClose() throws Exception {

@@ -35,8 +35,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundContent;
-import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListClass;
 import org.springframework.http.MediaType;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
@@ -258,27 +256,6 @@ public class UtilMap {
         return invHeaderReqParameter;
     }
 
-
-    /**
-     * Method to check cut of time from fund rule with current date time.
-     *
-     * @param ffsRequestBody
-     * @param fundListClass
-     * @return
-     */
-    public static boolean isOfShelfCheck(FfsRequestBody ffsRequestBody, FundListClass fundListClass) {
-        boolean isFundOfShelf = true;
-        if(!StringUtils.isEmpty(fundListClass)) {
-            for (FundContent contents : fundListClass.getContent()) {
-                String fundCode = contents.getFundCode();
-                if(fundCode.equals(ffsRequestBody.getFundCode())){
-                    isFundOfShelf = false;
-                    break;
-                }
-            }
-        }
-        return isFundOfShelf;
-    }
 
     /**
      * Method to check suitability is expire from MF service
