@@ -232,7 +232,8 @@ public class ApplicationStatusService {
 
             String date = convertHPToApplicationDateTimeFormat(hpApplication.getStatusDate());
 
-            String formattedStatusCode = hpApplication.getHPAPStatus().replace("+", "");
+            String formattedStatusCode = hpApplication.getHPAPStatus().startsWith(APPLICATION_STATUS_CC) ?
+                    APPLICATION_STATUS_CC : hpApplication.getHPAPStatus();
             ApplicationStatusEnum matchingEnum = ApplicationStatusEnum.valueOf(formattedStatusCode);
 
             allApplications.add(new ApplicationStatusApplication()
@@ -242,20 +243,24 @@ public class ApplicationStatusService {
                     .setProductCategoryEn(HIRE_PURCHASE_EN)
                     .setProductTypeTh(HIRE_PURCHASE_TH)
                     .setProductTypeEn(HIRE_PURCHASE_EN)
-                    .setProductDetailTh(ACCEPT_LANGUAGE_TH.equals(language) ? carModel : null)
-                    .setProductDetailEn(ACCEPT_LANGUAGE_EN.equals(language) ? carModel : null)
+                    .setProductDetailTh(getAccordingToLang(ACCEPT_LANGUAGE_TH, language, carModel))
+                    .setProductDetailEn(getAccordingToLang(ACCEPT_LANGUAGE_EN, language, carModel))
                     .setReferenceNo(hpApplication.getAppNo())
                     .setCurrentNode(matchingEnum.getCurrentNode())
                     .setNodeTextTh(hpNodeDetails.getNodeTh())
                     .setNodeTextEn(hpNodeDetails.getNodeEn())
-                    .setBottomRemarkTh(ACCEPT_LANGUAGE_TH.equals(language) ? message : null)
-                    .setBottomRemarkEn(ACCEPT_LANGUAGE_EN.equals(language) ? message : null)
+                    .setBottomRemarkTh(getAccordingToLang(ACCEPT_LANGUAGE_TH, language, message))
+                    .setBottomRemarkEn(getAccordingToLang(ACCEPT_LANGUAGE_EN, language, message))
                     .setApplicationDate(date)
                     .setLastUpdateDate(date)
             );
         }
 
         logger.info("After mapping HP Applications: {}", allApplications);
+    }
+
+    private String getAccordingToLang(String language, String acceptLanguage, String message){
+        return language.equals(acceptLanguage) ? message : null;
     }
 
     /**
