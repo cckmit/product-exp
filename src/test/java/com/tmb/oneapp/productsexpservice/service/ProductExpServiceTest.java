@@ -667,26 +667,6 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void isServiceCloseException() throws Exception {
-
-        FfsRequestBody fundAccountRequest = new FfsRequestBody();
-        fundAccountRequest.setCrmId("001100000000000000000012025950");
-        fundAccountRequest.setFundCode("SCBTMF");
-        fundAccountRequest.setFundHouseCode("SCBAM");
-        fundAccountRequest.setLanguage("en");
-        fundAccountRequest.setProcessFlag("Y");
-        fundAccountRequest.setOrderType("1");
-
-        try {
-            when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenThrow(MockitoException.class);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        boolean getFundSummary = productsExpService.isOfShelfFund(corrID, fundAccountRequest);
-        Assert.assertTrue(getFundSummary);
-    }
-
-    @Test
     public void isCASADormantException() throws Exception {
 
         FfsRequestBody fundAccountRequest = new FfsRequestBody();
@@ -948,8 +928,6 @@ public class ProductExpServiceTest {
         Assert.assertEquals(false, isBusClose);
         boolean isCASADormant = productsExpService.isCASADormant(corrID, ffsRequestBody);
         Assert.assertEquals(false, isCASADormant);
-        boolean isServiceClose = productsExpService.isOfShelfFund(corrID, ffsRequestBody);
-        Assert.assertEquals(true, isServiceClose);
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
