@@ -1,11 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.BaseEvent;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ApplicationStatusEnum;
@@ -15,14 +11,12 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.LoanDetails;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CustomerServiceActivity;
 import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusApplication;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import feign.FeignException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -47,19 +41,14 @@ public class ApplicationStatusService {
     private final CustomerServiceClient customerServiceClient;
     private final AsyncApplicationStatusService asyncApplicationStatusService;
     private final CommonServiceClient commonServiceClient;
-    private final KafkaProducerService kafkaProducerService;
-    private final String topicName;
 
     public ApplicationStatusService(CustomerServiceClient customerServiceClient,
                                     AsyncApplicationStatusService asyncApplicationStatusService,
-                                    CommonServiceClient commonServiceClient,
-                                    KafkaProducerService kafkaProducerService,
-                                    @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
+                                    CommonServiceClient commonServiceClient) {
         this.customerServiceClient = customerServiceClient;
         this.asyncApplicationStatusService = asyncApplicationStatusService;
         this.commonServiceClient = commonServiceClient;
-        this.kafkaProducerService = kafkaProducerService;
-        this.topicName = topicName;
+
     }
 
     /**
@@ -111,12 +100,10 @@ public class ApplicationStatusService {
             List<ApplicationStatusApplication> inProgress = new ArrayList<>();
             List<ApplicationStatusApplication> completed = new ArrayList<>();
             allApplications.forEach(application -> {
-                if (APPLICATION_STATUS_APPROVED.equals(application.getStatus())
-                        || APPLICATION_STATUS_REJECTED.equals(application.getStatus())
-                        || APPLICATION_STATUS_COMPLETED.equals(application.getStatus())) {
-                    completed.add(application);
-                } else {
+                if (APPLICATION_STATUS_IN_PROGRESS.equals(application.getStatus())) {
                     inProgress.add(application);
+                } else {
+                    completed.add(application);
                 }
             });
 
@@ -128,15 +115,6 @@ public class ApplicationStatusService {
             //POST /apis/customers/firstTimeUsage
             if (customerFirstUsage == null) {
                 asyncPostFirstTime(crmId, deviceId, serviceTypeId);
-
-                //Log tutorial activity
-                logASTTutorialActivity(new CustomerServiceActivity(correlationId,
-                                String.valueOf(System.currentTimeMillis()),
-                                APPLICATION_TRACKING_TUTORIAL_ACTIVITY_ID)
-                                .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_AST),
-                        requestHeaders,
-                        ACTIVITY_LOG_SUCCESS,
-                        "");
             }
 
             return response
@@ -259,7 +237,14 @@ public class ApplicationStatusService {
         logger.info("After mapping HP Applications: {}", allApplications);
     }
 
-    private String getAccordingToLang(String language, String acceptLanguage, String message){
+    /**
+     * Get data according to language
+     *
+     * @param language       language to be checked
+     * @param acceptLanguage current language setting of user
+     * @param message        return message if language match, if not null
+     */
+    private String getAccordingToLang(String language, String acceptLanguage, String message) {
         return language.equals(acceptLanguage) ? message : null;
     }
 
@@ -393,38 +378,5 @@ public class ApplicationStatusService {
         }
 
     }
-
-    /**
-     * Method log activity for application status tracking tutorial
-     *
-     * @param baseEvent base event
-     */
-    @Async
-    @LogAround
-    public void logASTTutorialActivity(BaseEvent baseEvent, Map<String, String> requestHeaders, String activityStatus, String failReason) {
-        try {
-            baseEvent.setActivityStatus(activityStatus);
-            baseEvent.setFailReason(failReason);
-
-            baseEvent.setActivityDate(String.valueOf(System.currentTimeMillis()));
-            baseEvent.setCorrelationId(requestHeaders.get(X_CORRELATION_ID));
-            baseEvent.setDeviceModel(requestHeaders.get(DEVICE_MODEL));
-            baseEvent.setOsVersion(requestHeaders.get(OS_VERSION));
-            baseEvent.setChannel(requestHeaders.get(CHANNEL));
-            baseEvent.setAppVersion(requestHeaders.get(APP_VERSION));
-            baseEvent.setIpAddress(requestHeaders.get(X_FORWARD_FOR));
-            baseEvent.setCrmId(requestHeaders.get(X_CRMID));
-            baseEvent.setDeviceId(requestHeaders.get(DEVICE_ID));
-
-            ObjectMapper mapper = new ObjectMapper();
-            String output = mapper.writeValueAsString(baseEvent);
-            logger.info("Activity Data request is  {} : ", output);
-            kafkaProducerService.sendMessageAsync(topicName, output);
-            logger.info("callPostEventService -  data posted to activity_service : {}", System.currentTimeMillis());
-        } catch (Exception e) {
-            logger.info("Unable to log the activity request : {}", e.toString());
-        }
-    }
-
 
 }
