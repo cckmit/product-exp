@@ -86,8 +86,6 @@ public class InvestmentRequestClientTest {
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
         Assert.assertEquals(HttpStatus.OK.value(),responseEntity.getStatusCodeValue());
         Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
-        Assert.assertEquals(2,responseEntity.getBody().getData().getOrderToBeProcess().getOrder()
-                .size());
         Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
     }
 

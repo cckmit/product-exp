@@ -29,6 +29,9 @@ import java.util.concurrent.Executors;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HIRE_PURCHASE_DATA_NOT_FOUND;
 import static com.tmb.oneapp.productsexpservice.constant.ResponseCode.DATA_NOT_FOUND_ERROR;
 
+/**
+ * AsyncApplicationStatusService process application status information async
+ */
 @Service
 public class AsyncApplicationStatusService {
     private static final TMBLogger<AsyncApplicationStatusService> logger =
@@ -46,10 +49,10 @@ public class AsyncApplicationStatusService {
      * Get Hire Purchase Data
      *
      * @param correlationId correlationId of API
-     * @param language language to request data
-     * @param nationalId nationalId of customer used to query applications
-     * @param mobileNo mobileId of customer used to query applications
-     * @return CompletableFuture<List<LoanDetails>> list of loans with details
+     * @param language      language to request data
+     * @param nationalId    nationalId of customer used to query applications
+     * @param mobileNo      mobileId of customer used to query applications
+     * @return CompletableFuture<List < LoanDetails>> list of loans with details
      */
     @Async
     public CompletableFuture<List<LoanDetails>> getHpData(String correlationId, String language, String nationalId, String mobileNo) throws TMBCommonException {
@@ -114,10 +117,10 @@ public class AsyncApplicationStatusService {
     /**
      * Get Application Detail from application number
      *
-     * @param correlationId correlationId of API
-     * @param nationalId nationalId of customer used to query applications
-     * @param language language to request data
-     * @param mobileNo mobileId of customer used to query applications
+     * @param correlationId     correlationId of API
+     * @param nationalId        nationalId of customer used to query applications
+     * @param language          language to request data
+     * @param mobileNo          mobileId of customer used to query applications
      * @param applicationNumber applicationNumber of application used to query applications
      * @return list of loans with details
      */
@@ -134,6 +137,16 @@ public class AsyncApplicationStatusService {
         return Objects.requireNonNull(response.getBody()).getData();
     }
 
+    /**
+     * Get Application Detail from application number
+     *
+     * @param applicationList list of applications to get details
+     * @param correlationId   correlationId of API
+     * @param nationalId      nationalId of customer used to query applications
+     * @param language        language to request data
+     * @param mobileNo        mobileId of customer used to query applications
+     * @return list of loans with details
+     */
     private List<LoanDetails> asyncGetHPApplicationDetails(
             List<LoanDetails> applicationList, String correlationId, String nationalId, String language, String mobileNo) throws TMBCommonException {
         try {
@@ -174,8 +187,8 @@ public class AsyncApplicationStatusService {
      * Get Application Data from RSL
      *
      * @param correlationId correlationId of API
-     * @param nationalId nationalId of customer used to query applications
-     * @param mobileNo mobileId of customer used to query applications
+     * @param nationalId    nationalId of customer used to query applications
+     * @param mobileNo      mobileId of customer used to query applications
      * @return list of RSL loans
      */
     @Async
@@ -200,15 +213,16 @@ public class AsyncApplicationStatusService {
      * Get Application Data from RSL
      *
      * @param correlationId correlationId of API
-     * @param nationalId nationalId of customer used to query applications
-     * @param mobileNo mobileId of customer used to query applications
+     * @param nationalId    nationalId of customer used to query applications
+     * @param mobileNo      mobileId of customer used to query applications
      * @return list of RSL loans
      */
     @SuppressWarnings("all")
     private List<LendingRslStatusResponse> getLendingRslStatus(String correlationId, String nationalId, String mobileNo)
             throws TMBCommonException {
         try {
-            logger.info("Calling GET /apis/lending-service/rsl/status");
+            logger.info("Calling GET /apis/lending-service/rsl/status with params: correlationId : {}, nationalId : {}, mobileNo : {}",
+                    correlationId, nationalId, mobileNo);
             ResponseEntity<TmbOneServiceResponse<List<LendingRslStatusResponse>>> response =
                     lendingServiceClient.getLendingRslStatus(correlationId, nationalId, mobileNo);
             logger.info("GET /apis/lending-service/rsl/status response: {}", response);

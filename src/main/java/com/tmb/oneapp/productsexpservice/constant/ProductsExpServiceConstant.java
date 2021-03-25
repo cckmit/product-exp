@@ -1,7 +1,5 @@
 package com.tmb.oneapp.productsexpservice.constant;
 
-import java.util.List;
-
 /**
  * Constant class for Application
  *
@@ -52,22 +50,22 @@ public class ProductsExpServiceConstant {
 	public static final String PAGE_NO = "pageNo";
 
 	/* SERVICE OUR CLOSE */
-	public static final String SERVICE_OUR_CLOSE = "msg_al_01";
+	public static final String SERVICE_OUR_CLOSE = "msg_alt_01";
 	public static final String SERVICE_OUR_CLOSE_MESSAGE = "NOT ALLOW TO PROCESSING";
 	public static final String SERVICE_OUR_CLOSE_DESC = "Error";
 
 	/* OF SHELF */
-	public static final String OF_SHELF_FUND_CODE = "msg_al_05";
+	public static final String OF_SHELF_FUND_CODE = "msg_alt_05";
 	public static final String OF_SHELF_FUND_MESSAGE = "NOT ALLOW TO PURCHASE";
 	public static final String OF_SHELF_FUND_DESC = "FUND DO NOT ALLOW TO PURCHASE";
 
 	/* SUITABILITY EXPIRED */
-	public static final String SUITABILITY_EXPIRED_CODE = "msg_al_04";
+	public static final String SUITABILITY_EXPIRED_CODE = "msg_alt_04";
 	public static final String SUITABILITY_EXPIRED_MESSAGE = "SUITABILITY EXPIRED";
 	public static final String SUITABILITY_EXPIRED_DESC = "Error";
 
 	/* ID EXPIRED */
-	public static final String ID_EXPIRED_CODE = "msg_al_09";
+	public static final String ID_EXPIRED_CODE = "msg_alt_09";
 	public static final String ID_EXPIRED_MESSAGE = "ID CARD EXPIRED";
 	public static final String ID_EXPIRED_DESC = "Error";
 
@@ -77,29 +75,22 @@ public class ProductsExpServiceConstant {
 	public static final String SERVICE_NOT_READY_DESC = "SOMETHING WENT WRONG, TRY AGAIN";
 
 	/* BUSINESS OUR CLOSE */
-	public static final String BUSINESS_HOURS_CLOSE_CODE = "msg_al_06";
+	public static final String BUSINESS_HOURS_CLOSE_CODE = "msg_alt_06";
 	public static final String BUSINESS_HOURS_CLOSE_MESSAGE = "NOT ALLOW TO DO";
 	public static final String BUSINESS_HOURS_CLOSE_DESC = "TRANSACTION DO NOT ALLOW TO PROCESS";
 
 	/* CASA DORMANT OUR CLOSE */
-	public static final String CASA_DORMANT_ACCOUNT_CODE = "msg_al_03";
+	public static final String CASA_DORMANT_ACCOUNT_CODE = "msg_alt_03";
 	public static final String CASA_DORMANT_ACCOUNT_MESSAGE = "ACCOUNT NOT FOUND";
 	public static final String CASA_DORMANT_ACCOUNT_DESC = "ACCOUNT NOT FOUND OR NOT READY TO DO THE TRANSACTION";
 
 	public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING = "101000101";
-	public static final String ACTIVITY_ID_INVESTMENT_SALE_STATUS_TRACKING = "101000301";
-	public static final String ACTIVITY_ID_INVESTMENT_SWITCH_STATUS_TRACKING = "101000401";
 	public static final String ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
-	public static final String ACTIVITY_TYPE_INVESTMENT_SALE_STATUS_TRACKING = "Sell fund ";
-	public static final String ACTIVITY_TYPE_INVESTMENT_SWITCH_STATUS_TRACKING = "Switch fund ";
 	public static final String ACTIVITY_LOG_CHANNEL = "mb";
 	public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
 	public static final String ACTIVITY_LOG_SUCCESS = "Success";
 	public static final String ACTIVITY_LOG_FAILURE = "Off business hour";
-	public static final String ACTIVITY_LOG_VERIFY_FLAG = "Verify flag = ";
-	public static final String ACTIVITY_LOG_REASON = "Reason = ";
-	public static final String ACTIVITY_LOG_VERIFY_FLAG_ID = "verify_flag";
-	public static final String ACTIVITY_LOG_REASON_ID = "reason";
+
 
 	public static final String ACTIVE_STATUS = "ACTIVE";
 	public static final String INACTIVE_STATUS = "INACTIVE";
@@ -115,6 +106,7 @@ public class ProductsExpServiceConstant {
 	public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "00700201";
 	public static final String CHANGE_TEMP_CONFIRM_PIN_SUCCESS_CASE = "00700202";
 	public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "00700203";
+	public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON="00700700";
 	public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
 	public static final String CHANGE_TYPE_TEMP = "req-temp-limit";
 	public static final String SUCCESS = "Success";
@@ -158,21 +150,13 @@ public class ProductsExpServiceConstant {
     public static final String RSL_CURRENT_NODE_1 = "1";
     public static final String HEADER_CITIZEN_ID = "Citizen-ID";
     public static final String HEADER_MOBILE_NO = "Mobile-No";
-    public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String HP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
-
-    public static final List<String> HIRE_PURCHASE_NODE_TEXT_TH =
-            List.of("ธนาคารได้รับเรื่องขอสินเชื่อรถยนต์ของท่านแล้ว", "ดำเนินการพิจารณาสินเชื่อรถยนต์ของท่าน", "ได้รับอนุมัติ เตรียมดำเนินการด้านทะเบียนรถยนต์", "แจ้งเลขที่สัญญา");
-    public static final List<String> HIRE_PURCHASE_NODE_TEXT_EN =
-            List.of("Application received", "Documents in review", "Loan approved", "Contract Confirmation");
-
+    
     //ACTIVITY IDs
     public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
     public static final String APPLICATION_TRACKING_TUTORIAL_ACTIVITY_ID = "101500301";
-    public static final String HP_RSL_ERROR_CODE = "AST_001";
-    public static final String HP_ERROR_CODE = "AST_002";
-    public static final String RSL_ERROR_CODE = "AST_003";
 
     //Case status screen names
     public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";

@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +15,20 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
+import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 
 /**
  * Class responsible for Putting activity logs in Creditcard service
  *
  */
 
+/**
+ * @author Admin
+ *
+ */
 /**
  * @author Admin
  *
@@ -163,6 +173,47 @@ public class CreditCardLogService {
 	}
 
 	/**
+	 * @param creditCardEvent
+	 * @param reqHeader
+	 * @param requestBody
+	 * @param cardInstallmentResponse 
+	 * @return
+	 */
+	public List<CreditCardEvent> applySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, CardInstallmentResponse cardInstallmentResponse) {
+
+		List<CreditCardEvent> confirmEventList = new ArrayList<>();
+		List<StatementTransaction> statementTransactions = cardInstallmentResponse.getCardStatement().getStatementTransactions();
+		
+		for(StatementTransaction transaction : statementTransactions) {
+			
+	    	CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, 
+	    			Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
+	    	
+			populateBaseEvents(creditCardEvent, reqHeader);
+			
+			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+	        creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
+	        creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
+
+			Double amountInDouble = ConversionUtil.bigDecimalToDouble(transaction.getTransactionAmounts());
+			Double installmentInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getMonthlyInstallments());
+			Double interestInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getInterest());
+			
+			String amountPlusInstallmentStr = ConversionUtil.doubleToString(amountInDouble + installmentInDouble);
+			creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusInstallmentStr);
+			
+			String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountInDouble + interestInDouble);
+			creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+			
+			creditCardEvent.setTransactionDescription(transaction.getTransactionDescription());
+			
+			confirmEventList.add(creditCardEvent);
+		}
+		
+		return confirmEventList;
+	}
+
+	/**
 	 * method for populating base events for Activity logs
 	 *
 	 * @param creditCardEvent
@@ -196,6 +247,16 @@ public class CreditCardLogService {
 			logger.info("callPostEventService -  data posted to event_service : {}", System.currentTimeMillis());
 		} catch (Exception e) {
 			logger.info("Unable to process the request : {}", e);
+		}
+	}
+	
+	
+	/**
+	 * @param cardActivityList
+	 */
+	public void logActivityList(List<CreditCardEvent> cardActivityList) {
+		for(CreditCardEvent activity : cardActivityList) {
+			logActivity(activity);
 		}
 	}
 

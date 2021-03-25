@@ -31,8 +31,8 @@ class ApplicationStatusControllerTest {
     void getApplicationStatus() throws TMBCommonException {
         when(applicationStatusService.getApplicationStatus(anyMap(), anyString()))
                 .thenReturn(new ApplicationStatusResponse()
-                        .setHpSuccess(true)
-                        .setRslSuccess(true));
+                        .setHpStatus(0)
+                        .setRslStatus(0));
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CORRELATION_ID, "correlationId");
@@ -49,16 +49,18 @@ class ApplicationStatusControllerTest {
 
     @Test
     void getApplicationStatus_hp_rsl_error() throws TMBCommonException {
-        testHpRslError(false, false, "AST_001");
-        testHpRslError(false, true, "AST_002");
-        testHpRslError(true, false, "AST_003");
+        testHpRslError(2, 2, "AST_0001");
+        testHpRslError(1, 1, "AST_0004");
+        testHpRslError(1, 0, "AST_0003");
+        testHpRslError(0, 1, "AST_0002");
+
     }
 
-    void testHpRslError(boolean hpSuccess, boolean rslSuccess, String errorCode) throws TMBCommonException {
+    void testHpRslError(int hpSuccess, int rslSuccess, String errorCode) throws TMBCommonException {
         when(applicationStatusService.getApplicationStatus(anyMap(), anyString()))
                 .thenReturn(new ApplicationStatusResponse()
-                        .setHpSuccess(hpSuccess)
-                        .setRslSuccess(rslSuccess));
+                        .setHpStatus(hpSuccess)
+                        .setRslStatus(rslSuccess));
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CORRELATION_ID, "correlationId");
@@ -69,7 +71,7 @@ class ApplicationStatusControllerTest {
         ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> response =
                 applicationStatusController.getApplicationStatus(header, "AST");
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(errorCode, response.getBody().getStatus().getCode());
 
     }
