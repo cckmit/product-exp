@@ -9,7 +9,6 @@
 # Compiled class file
 *.class
 
-dbms.properties
 
 # Log file
 *.log

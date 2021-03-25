@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.NotificationConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -19,19 +23,35 @@ import com.tmb.oneapp.productsexpservice.model.request.notification.Notification
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
+
 @Service
 public class NotificationService {
 
 	private static final TMBLogger<NotificationService> logger = new TMBLogger<>(NotificationService.class);
+	private static final String DEFAULT_CHANNEL_TH ="ทีเอ็มบี ทัซ" ;
+	private static final String DEFAULT_CHANNEL_EN ="TMB Touch" ;
 
 	private NotificationServiceClient notificationClient;
 	private CustomerServiceClient customerClient;
+	
 
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
 			CustomerServiceClient customerServiceClient) {
 		this.notificationClient = notificationServiceClient;
 		this.customerClient = customerServiceClient;
+	}
+
+	public void sendCardActiveEmail(String xCorrelationId,String accountId, String crmId ) {
+		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
+		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
+				.getCustomerProfile(new HashMap<String, String>(), crmId);
+		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody().getData())
+				&& SUCCESS_CODE.equals(response.getBody().getStatus().getCode())) {
+			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
+			customerProfileInfo.getEmailAddress();
+		}
 	}
 
 	public void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn, String channelNameTh,
@@ -59,8 +79,8 @@ public class NotificationService {
 		notificationRecords.add(emailRecord);
 		notificationRequest.setRecords(notificationRecords);
 
-		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
-				.sendMessage(xCorrelationId, notificationRequest);
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient.sendMessage(xCorrelationId,
+				notificationRequest);
 		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
 			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
 		} else {
