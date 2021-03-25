@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.util;
 
+import java.math.BigDecimal;
+
 public class ConversionUtil {
 	
     private ConversionUtil() {
@@ -13,6 +15,12 @@ public class ConversionUtil {
         return Double.valueOf(string);
 
     }
+
+    public static Double bigDecimalToDouble(BigDecimal value) {
+        return value.doubleValue();
+
+    }
+
 
     /**
      * @param value
