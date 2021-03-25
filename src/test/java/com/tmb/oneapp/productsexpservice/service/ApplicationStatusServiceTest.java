@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -29,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 class ApplicationStatusServiceTest {
@@ -37,11 +36,9 @@ class ApplicationStatusServiceTest {
     private final CustomerServiceClient customerServiceClient = Mockito.mock(CustomerServiceClient.class);
     private final AsyncApplicationStatusService asyncApplicationStatusService = Mockito.mock(AsyncApplicationStatusService.class);
     private final CommonServiceClient commonServiceClient = Mockito.mock(CommonServiceClient.class);
-    private final KafkaProducerService kafkaProducerService = Mockito.mock(KafkaProducerService.class);
-    private final String topicName = "topicName";
 
     private final ApplicationStatusService applicationStatusService = new ApplicationStatusService(
-            customerServiceClient, asyncApplicationStatusService, commonServiceClient, kafkaProducerService, topicName);
+            customerServiceClient, asyncApplicationStatusService, commonServiceClient);
 
     @Test
     void getApplicationStatus_en() throws TMBCommonException {
@@ -139,9 +136,6 @@ class ApplicationStatusServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockPostFirstTimeUsageResponse));
 
-        doNothing().when(kafkaProducerService)
-                .sendMessageAsync(anyString(), contains("101500301"));
-
         Map<String, String> header = new HashMap<>();
         header.put(X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
@@ -153,8 +147,6 @@ class ApplicationStatusServiceTest {
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("HP", response.getCompleted().get(0).getProductCode());
         assertEquals("Toyota Camry", response.getCompleted().get(0).getProductDetailEn());
-        verify(kafkaProducerService, times(1)).
-                sendMessageAsync(anyString(), contains("101500301"));
 
     }
 
@@ -248,9 +240,6 @@ class ApplicationStatusServiceTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockPostFirstTimeUsageResponse));
 
-        doNothing().when(kafkaProducerService)
-                .sendMessageAsync(anyString(), contains("101500301"));
-
         Map<String, String> header = new HashMap<>();
         header.put(X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
@@ -323,9 +312,6 @@ class ApplicationStatusServiceTest {
         //POST /apis/customers/firstTimeUsage
         when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("AST")))
                 .thenThrow(new IllegalArgumentException());
-
-        doThrow(new IllegalArgumentException()).when(kafkaProducerService)
-                .sendMessageAsync(anyString(), contains("101500301"));
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CORRELATION_ID, "correlationId");
