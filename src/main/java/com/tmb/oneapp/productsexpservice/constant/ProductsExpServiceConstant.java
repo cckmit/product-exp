@@ -144,6 +144,7 @@ public class ProductsExpServiceConstant {
     public static final String APPLICATION_STATUS_APPROVED = "approved";
     public static final String APPLICATION_STATUS_REJECTED = "rejected";
     public static final String APPLICATION_STATUS_COMPLETED = "completed";
+    public static final String APPLICATION_STATUS_INCOMPLETE = "incomplete";
     public static final String APPLICATION_STATUS_EXPIRED = "expired";
     public static final String APPLICATION_STATUS_CUSTOMER_CANCEL = "customer_cancel";
     public static final String ACCEPT_LANGUAGE_EN = "en";

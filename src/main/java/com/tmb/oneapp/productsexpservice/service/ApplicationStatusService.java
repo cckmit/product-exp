@@ -100,7 +100,8 @@ public class ApplicationStatusService {
             List<ApplicationStatusApplication> inProgress = new ArrayList<>();
             List<ApplicationStatusApplication> completed = new ArrayList<>();
             allApplications.forEach(application -> {
-                if (APPLICATION_STATUS_IN_PROGRESS.equals(application.getStatus())) {
+                if (APPLICATION_STATUS_IN_PROGRESS.equals(application.getStatus()) ||
+                        APPLICATION_STATUS_INCOMPLETE.equals(application.getStatus())) {
                     inProgress.add(application);
                 } else {
                     completed.add(application);
