@@ -1,13 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -18,7 +10,13 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
-import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class responsible for Putting activity logs in Creditcard service
