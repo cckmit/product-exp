@@ -1,3 +1,4 @@
+
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
@@ -64,7 +65,7 @@ public class CardInstallmentControllerTest {
 
 
         requestBodyParameter.setCardInstallment(cardInstallment);
-        TmbOneServiceResponse<CardInstallmentFinalResponse> response = new TmbOneServiceResponse();
+        TmbOneServiceResponse<List<CardInstallmentFinalResponse>> response = new TmbOneServiceResponse<>();
         CardStatement cardStatement = new CardStatement();
         cardStatement.setDueDate("");
         CardInstallmentFinalResponse data = new CardInstallmentFinalResponse();
@@ -78,7 +79,7 @@ public class CardInstallmentControllerTest {
         status.setStatusCode("0");
         status.setErrorStatus(errorStatusList);
         data.setStatus(status);
-        response.setData(data);
+
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode("0");
 
@@ -91,8 +92,8 @@ public class CardInstallmentControllerTest {
         creditCardEvent.setActivityDate("01-09-1990");
         when(creditCardClient.confirmCardInstallment(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentFinalResponse>> cardInstallmentDetails = cardInstallmentController.confirmCardInstallment(correlationId, requestBodyParameter, headerRequestParameter());
-        Assert.assertEquals(200, cardInstallmentDetails.getStatusCodeValue());
+        ResponseEntity<TmbOneServiceResponse<List<CardInstallmentFinalResponse>>> responseEntity = cardInstallmentController.confirmCardInstallment(correlationId, requestBodyParameter, headerRequestParameter());
+        Assert.assertEquals("0", response.getStatus().getCode());
     }
 
     @Test
@@ -146,4 +147,5 @@ public class CardInstallmentControllerTest {
 
     }
 }
+
 

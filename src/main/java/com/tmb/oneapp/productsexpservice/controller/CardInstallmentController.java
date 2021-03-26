@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentFinalResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import io.swagger.annotations.Api;
@@ -66,7 +67,7 @@ public class CardInstallmentController {
 	@LogAround
 	@ApiOperation(value = "Campaign Transactions Api")
 	@PostMapping(value = "/creditcard/card-installment-confirm")
-	public ResponseEntity<TmbOneServiceResponse<CardInstallmentFinalResponse>> confirmCardInstallment(
+	public ResponseEntity<TmbOneServiceResponse<List<CardInstallmentFinalResponse>>> confirmCardInstallment(
 			@ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
 			@RequestBody CardInstallmentQuery requestBodyParameter, @RequestHeader Map<String, String> requestHeadersParameter)
 			throws TMBCommonException {
@@ -77,36 +78,34 @@ public class CardInstallmentController {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-		TmbOneServiceResponse<CardInstallmentFinalResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+
+		TmbOneServiceResponse<List<CardInstallmentFinalResponse>> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
             String accountId = requestBodyParameter.getAccountId();
 
 			if (accountId!=null)
 			{
-				ResponseEntity<TmbOneServiceResponse<CardInstallmentFinalResponse>> cardInstallment =  creditCardClient.confirmCardInstallment(correlationId, requestBodyParameter);
-				TmbOneServiceResponse<CardInstallmentFinalResponse> cardInstallmentResp = cardInstallment.getBody();
-
+				ResponseEntity<TmbOneServiceResponse<List<CardInstallmentFinalResponse> >> cardInstallment = creditCardClient.confirmCardInstallment(correlationId, requestBodyParameter);
+				TmbOneServiceResponse<List<CardInstallmentFinalResponse>> cardInstallmentResp = cardInstallment.getBody();
+				creditCardLogService.applySoGoodConfirmEvent(correlationId,requestHeadersParameter,requestBodyParameter);
 				if (cardInstallmentResp != null) {
 
 					Status status = new Status();
 					status.setStatusCode(cardInstallment.getBody().getStatus().getCode());
 
-					String code = cardInstallmentResp.getData().getStatus().getStatusCode();
+					List<CardInstallmentFinalResponse> data = cardInstallmentResp.getData();
 
+					if (data!=null) {
 
-					if (code.equals("0")) {
+						creditCardLogService.logActivity(creditCardEvent);
 
-
-                        oneServiceResponse.setData(cardInstallmentResp.getData());
+						oneServiceResponse.setData(cardInstallmentResp.getData());
 						oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 					} else {
 						creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-						List<ErrorStatus> errorStatus = cardInstallmentResp.getData().getStatus().getErrorStatus();
-						String description = errorStatus.get(0).getDescription();
-						creditCardEvent.setFailReason(description);
-						creditCardEvent.setReasonCode(description);
-						creditCardEvent.setReasonForRequest(description);
+
+
 						creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 						creditCardLogService.logActivity(creditCardEvent);
 						oneServiceResponse.setData(cardInstallmentResp.getData());

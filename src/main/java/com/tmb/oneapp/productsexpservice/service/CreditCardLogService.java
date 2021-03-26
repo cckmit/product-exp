@@ -7,9 +7,12 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentFinalResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
+import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -171,31 +174,39 @@ public class CreditCardLogService {
 	}
 
 	/**
-	 * @param creditCardEvent
+	 *
 	 * @param reqHeader
 	 * @param requestBody
 	 * @param cardInstallmentResponse
 	 * @return
 	 */
-	public List<CreditCardEvent> applySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, CardInstallmentResponse cardInstallmentResponse) {
+	public List<CreditCardEvent> applySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody) {
 
 		List<CreditCardEvent> confirmEventList = new ArrayList<>();
-		List<StatementTransaction> statementTransactions = cardInstallmentResponse.getCardStatement()!=null?cardInstallmentResponse.getCardStatement().getStatementTransactions():null;
-		if(statementTransactions!=null) {
-			for (StatementTransaction transaction : statementTransactions) {
 
-				CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,
-						Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
+			List<CardInstallment> cardInstallment = requestBody.getCardInstallment();
+
+			for (CardInstallment installment : cardInstallment) {
+				CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
 
 				populateBaseEvents(creditCardEvent, reqHeader);
 
+				Double amountInDouble = ConversionUtil.stringToDouble(installment.getAmounts());
+				Double installmentInDouble = ConversionUtil.stringToDouble(installment.getMonthlyInstallments());
+				Double installmentPlusAmount = amountInDouble + installmentInDouble;
+
+				Double interestInDouble = ConversionUtil.stringToDouble(installment.getInterest());
+				Double amountPlusTotalInterest = amountInDouble + interestInDouble;
 				creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+				creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
+				String amountPlusMonthlyInstallment = ConversionUtil.doubleToString(installmentPlusAmount);
+				creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
 
-				creditCardEvent.setTransactionDescription(transaction.getTransactionDescription());
+				String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountPlusTotalInterest);
 
-				confirmEventList.add(creditCardEvent);
+				creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+
 			}
-		}
 
 		return confirmEventList;
 	}
@@ -206,17 +217,17 @@ public class CreditCardLogService {
 	 * @param creditCardEvent
 	 * @param reqHeader
 	 */
-	private void populateBaseEvents(CreditCardEvent creditCardEvent, Map<String, String> reqHeader) {
-		creditCardEvent.setIpAddress(reqHeader.get(ProductsExpServiceConstant.X_FORWARD_FOR));
-		creditCardEvent.setOsVersion(reqHeader.get(ProductsExpServiceConstant.OS_VERSION));
-		creditCardEvent.setChannel(reqHeader.get(ProductsExpServiceConstant.CHANNEL));
-		creditCardEvent.setAppVersion(reqHeader.get(ProductsExpServiceConstant.APP_VERSION));
-		creditCardEvent.setCrmId(reqHeader.get(ProductsExpServiceConstant.X_CRMID));
-		creditCardEvent.setDeviceId(reqHeader.get(ProductsExpServiceConstant.DEVICE_ID));
-		creditCardEvent.setDeviceModel(reqHeader.get(ProductsExpServiceConstant.DEVICE_MODEL));
-		creditCardEvent.setCorrelationId(reqHeader.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()));
-		creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
-	}
+		private void populateBaseEvents(CreditCardEvent creditCardEvent, Map<String, String> reqHeader) {
+			creditCardEvent.setIpAddress(reqHeader.get(ProductsExpServiceConstant.X_FORWARD_FOR));
+			creditCardEvent.setOsVersion(reqHeader.get(ProductsExpServiceConstant.OS_VERSION));
+			creditCardEvent.setChannel(reqHeader.get(ProductsExpServiceConstant.CHANNEL));
+			creditCardEvent.setAppVersion(reqHeader.get(ProductsExpServiceConstant.APP_VERSION));
+			creditCardEvent.setCrmId(reqHeader.get(ProductsExpServiceConstant.X_CRMID));
+			creditCardEvent.setDeviceId(reqHeader.get(ProductsExpServiceConstant.DEVICE_ID));
+			creditCardEvent.setDeviceModel(reqHeader.get(ProductsExpServiceConstant.DEVICE_MODEL));
+			creditCardEvent.setCorrelationId(reqHeader.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()));
+			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
+		}
 
 	/**
 	 * Method sending data to Kafka producer
