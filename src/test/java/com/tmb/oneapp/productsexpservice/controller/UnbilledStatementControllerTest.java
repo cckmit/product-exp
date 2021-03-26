@@ -78,7 +78,7 @@ public class UnbilledStatementControllerTest {
 
        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.getUnBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement","moreRecords", "searchKeys"));
 
-        assertEquals(200,result.getStatusCode().value());
+        assertEquals(400,result.getStatusCode().value());
     }
 
     @Test
