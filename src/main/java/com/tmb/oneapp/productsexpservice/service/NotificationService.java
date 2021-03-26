@@ -52,16 +52,13 @@ public class NotificationService {
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
 		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody().getData())
 				&& SUCCESS_CODE.equals(response.getBody().getStatus().getCode())) {
-			System.out.println("AAA");
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
-			System.out.println("BBB");
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode().toString())) {
 				GetCardResponse cardResponse = cardInfoResponse.getBody();
-				System.out.println("CCC");
 				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, DEFAULT_CHANNEL_EN,
 						DEFAULT_CHANNEL_TH, accountId, cardResponse.getProductCodeData().getProductNameEN(),
 						cardResponse.getProductCodeData().getProductNameTH());
@@ -69,7 +66,7 @@ public class NotificationService {
 		}
 	}
 
-	public void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn, String channelNameTh,
+	private void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn, String channelNameTh,
 			String accountId, String productNameEn, String productNameTh) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<NotificationRecord>();

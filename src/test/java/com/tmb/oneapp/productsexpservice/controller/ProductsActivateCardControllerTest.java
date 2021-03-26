@@ -4,6 +4,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -26,12 +28,13 @@ public class ProductsActivateCardControllerTest {
 	ProductsActivateCardController productsActivateCardController;
 	@Mock
 	CreditCardClient creditCardClient;
+	@Mock
+	NotificationService notificationService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		productsActivateCardController = new ProductsActivateCardController(creditCardClient);
-
+		productsActivateCardController = new ProductsActivateCardController(creditCardClient, notificationService);
 	}
 
 	@Test

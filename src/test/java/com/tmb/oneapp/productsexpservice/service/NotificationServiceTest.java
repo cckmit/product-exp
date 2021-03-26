@@ -23,6 +23,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 
 @RunWith(JUnit4.class)
@@ -50,9 +51,10 @@ public class NotificationServiceTest {
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
-		notificationService.sendActivationCardEmail("witsanu.t@tsc.com",
-				ProductsExpServiceConstant.HEADER_CORRELATION_ID, "TMB Touch", "ทีเอ็มบี ทัซ",
-				"0000000050079650011000193", "Product Test En", "ผลิตภัณฑ์ 1");
+
+		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+				"0000000050079650011000193", "001100000000000000000012036208");
+
 	}
 
 	@Test
@@ -68,6 +70,9 @@ public class NotificationServiceTest {
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
 		cardResponse.setProductCodeData(productData);
+		SilverlakeStatus silverlake = new SilverlakeStatus();
+		silverlake.setStatusCode(0000);
+		cardResponse.setStatus(silverlake);
 
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
@@ -76,7 +81,7 @@ public class NotificationServiceTest {
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
-		
+
 		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
 
