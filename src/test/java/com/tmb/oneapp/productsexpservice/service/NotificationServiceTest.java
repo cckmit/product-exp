@@ -44,10 +44,30 @@ public class NotificationServiceTest {
 		notificationService = new NotificationService(notificationServiceClient, customerServiceClient,
 				creditCardClient);
 	}
-
+	
 	@Test
-	@Ignore
 	void sendNotificationByEmailTriggerManual() {
+
+		TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
+		CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+		customerProfile.setEmailAddress("witsanu.t@tcs.com");
+		profileResponse.setData(customerProfile);
+		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
+		
+		GetCardResponse cardResponse = new GetCardResponse();
+		ProductCodeData productData = new ProductCodeData();
+		productData.setProductNameEN("So Fast Credit Card");
+		productData.setProductNameTH("โซฟาสต์");
+		cardResponse.setProductCodeData(productData);
+		SilverlakeStatus silverlake = new SilverlakeStatus();
+		silverlake.setStatusCode(0000);
+		cardResponse.setStatus(silverlake);
+		
+		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+		
+		when(customerServiceClient.getCustomerProfile(any(), any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
+
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);

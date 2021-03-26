@@ -50,7 +50,7 @@ public class NotificationService {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody().getData())
+		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody()) && Objects.nonNull(response.getBody().getData())
 				&& SUCCESS_CODE.equals(response.getBody().getStatus().getCode())) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
