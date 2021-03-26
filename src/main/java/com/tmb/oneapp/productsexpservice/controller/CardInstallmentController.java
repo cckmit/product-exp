@@ -1,7 +1,6 @@
 
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.google.common.base.Strings;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;

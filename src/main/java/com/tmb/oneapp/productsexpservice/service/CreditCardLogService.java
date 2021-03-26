@@ -192,19 +192,7 @@ public class CreditCardLogService {
 				populateBaseEvents(creditCardEvent, reqHeader);
 
 				creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-				/*creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
-				creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 
-				Double amountInDouble = ConversionUtil.bigDecimalToDouble(transaction.getTransactionAmounts());
-				Double installmentInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getMonthlyInstallments());
-				Double interestInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getInterest());
-
-				String amountPlusInstallmentStr = ConversionUtil.doubleToString(amountInDouble + installmentInDouble);
-				creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusInstallmentStr);
-
-				String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountInDouble + interestInDouble);
-				creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
-*/
 				creditCardEvent.setTransactionDescription(transaction.getTransactionDescription());
 
 				confirmEventList.add(creditCardEvent);
