@@ -5,10 +5,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
@@ -65,13 +62,13 @@ public interface CreditCardClient {
     @PostMapping(value = "/apis/creditcard/block-card")
     public ResponseEntity<BlockCardResponse> getBlockCardDetails(@RequestBody BlockCardRequest requestBodyParameter);
 
-    @PostMapping(value = "/apis/creditcard/creditcard/get-campaign-transactions")
+    @PostMapping(value = "/apis/creditcard/get-campaign-transactions")
     public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCampaignTransactionsDetails(
             @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody CampaignTransactionQuery requestBodyParameter);
 
-    @PostMapping(value = "/apis/creditcard/creditcard/card-installment-confirm")
-    public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> confirmCardInstallment(
+    @PostMapping(value = "/apis/creditcard/card-installment-confirm")
+    public ResponseEntity<TmbOneServiceResponse<CardInstallmentFinalResponse>> confirmCardInstallment(
             @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody CardInstallmentQuery requestBodyParameter);
 

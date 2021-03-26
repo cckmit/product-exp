@@ -4,26 +4,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-/**
- * @author Admin
- *
- */
+import java.util.List;
+
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({
-"error_code",
-"description"
+"status_code"
 })
-@AllArgsConstructor
 @Data
-@NoArgsConstructor
-public class ErrorStatus {
-    @JsonProperty("error_code")
-    private String errorCode;
-    @JsonProperty("description")
-    private String description;
+public class StatusResponse {
+
+
+	@JsonProperty("status_code")
+	private String statusCode;
+	@JsonProperty("error_status")
+	private List<ErrorStatus> errorStatus;
 }

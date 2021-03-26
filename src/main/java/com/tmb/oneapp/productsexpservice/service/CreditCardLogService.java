@@ -1,13 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -18,7 +10,13 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
-import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class responsible for Putting activity logs in Creditcard service
@@ -89,7 +87,7 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent onClickNextButtonEvent(CreditCardEvent creditCardEvent,
-			Map<String, String> requestHeadersParameter, SetCreditLimitReq requestBody) {
+												  Map<String, String> requestHeadersParameter, SetCreditLimitReq requestBody) {
 
 		populateBaseEvents(creditCardEvent, requestHeadersParameter);
 		creditCardEvent
@@ -108,7 +106,7 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent onClickNextButtonLimitEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
-			SetCreditLimitReq requestBody, String mode) {
+													   SetCreditLimitReq requestBody, String mode) {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
@@ -134,7 +132,7 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent completeUsageListEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
-			SetCreditLimitReq requestBody) {
+												  SetCreditLimitReq requestBody) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
@@ -176,40 +174,29 @@ public class CreditCardLogService {
 	 * @param creditCardEvent
 	 * @param reqHeader
 	 * @param requestBody
-	 * @param cardInstallmentResponse 
+	 * @param cardInstallmentResponse
 	 * @return
 	 */
 	public List<CreditCardEvent> applySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, CardInstallmentResponse cardInstallmentResponse) {
 
 		List<CreditCardEvent> confirmEventList = new ArrayList<>();
-		List<StatementTransaction> statementTransactions = cardInstallmentResponse.getCardStatement().getStatementTransactions();
-		
-		for(StatementTransaction transaction : statementTransactions) {
-			
-	    	CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, 
-	    			Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
-	    	
-			populateBaseEvents(creditCardEvent, reqHeader);
-			
-			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-	        creditCardEvent.setPlan(requestBody.getCardInstallment().getPromotionModelNo());
-	        creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
+		List<StatementTransaction> statementTransactions = cardInstallmentResponse.getCardStatement()!=null?cardInstallmentResponse.getCardStatement().getStatementTransactions():null;
+		if(statementTransactions!=null) {
+			for (StatementTransaction transaction : statementTransactions) {
 
-			Double amountInDouble = ConversionUtil.bigDecimalToDouble(transaction.getTransactionAmounts());
-			Double installmentInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getMonthlyInstallments());
-			Double interestInDouble = ConversionUtil.stringToDouble(requestBody.getCardInstallment().getInterest());
-			
-			String amountPlusInstallmentStr = ConversionUtil.doubleToString(amountInDouble + installmentInDouble);
-			creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusInstallmentStr);
-			
-			String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountInDouble + interestInDouble);
-			creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
-			
-			creditCardEvent.setTransactionDescription(transaction.getTransactionDescription());
-			
-			confirmEventList.add(creditCardEvent);
+				CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId,
+						Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
+
+				populateBaseEvents(creditCardEvent, reqHeader);
+
+				creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+
+				creditCardEvent.setTransactionDescription(transaction.getTransactionDescription());
+
+				confirmEventList.add(creditCardEvent);
+			}
 		}
-		
+
 		return confirmEventList;
 	}
 
@@ -249,8 +236,8 @@ public class CreditCardLogService {
 			logger.info("Unable to process the request : {}", e);
 		}
 	}
-	
-	
+
+
 	/**
 	 * @param cardActivityList
 	 */
@@ -272,7 +259,7 @@ public class CreditCardLogService {
 	@Async
 	@LogAround
 	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason) {
+										   String accountId, String failReason) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE)) {
 			creditCardEvent.setFailReason(failReason);
@@ -286,7 +273,7 @@ public class CreditCardLogService {
 	@Async
 	@LogAround
 	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason) {
+										String accountId, String failReason) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE)) {
 			creditCardEvent.setFailReason(ProductsExpServiceConstant.FAILED);
