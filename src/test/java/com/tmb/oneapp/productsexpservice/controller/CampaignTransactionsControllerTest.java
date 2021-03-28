@@ -7,7 +7,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardStatementReponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import feign.FeignException;
@@ -42,7 +42,7 @@ public class CampaignTransactionsControllerTest {
     }
 
     @Test
-    public void testCardinstallmentResponse() throws Exception {
+    public void testCampaignTransactionResponse() throws Exception {
         String correlationId = "123";
         CampaignTransactionQuery requestBodyParameter = new CampaignTransactionQuery();
         requestBodyParameter.setAccountId("0000000050078670143000945");
@@ -52,7 +52,7 @@ public class CampaignTransactionsControllerTest {
         status.setCode("0");
         Status stat = new Status();
         stat.setCode("0");
-        CardInstallmentResponse resp = new CardInstallmentResponse();
+        CampaignTransactionResponse resp = new CampaignTransactionResponse();
       //  resp.setStatus(stat);
         CardStatementReponse cardStatement = new CardStatementReponse();
         List<StatementTransaction> statementTransactions = new ArrayList<>();
@@ -62,18 +62,18 @@ public class CampaignTransactionsControllerTest {
         statementTransactions.add(transaction);
         cardStatement.setStatementTransactions(statementTransactions);
         resp.setCardStatement(cardStatement);
-        TmbOneServiceResponse<CardInstallmentResponse> response = new TmbOneServiceResponse();
+        TmbOneServiceResponse<CampaignTransactionResponse> response = new TmbOneServiceResponse();
         response.setStatus(status);
         response.setData(resp);
        when(creditCardClient.getCampaignTransactionsDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
         Map<String, String> requestHeadersParameter= new HashMap();
         requestHeadersParameter.put(correlationId,"32fbd3b2-3f97-4a89-ar39-b4f628fbc8da");
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> result = campaignTransactionsController.cardinstallmentResponse(requestBodyParameter,requestHeadersParameter);
+        ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> result = campaignTransactionsController.campaignTransactionResponse(requestBodyParameter,requestHeadersParameter);
         Assert.assertEquals(200, result.getStatusCodeValue());
     }
     @Test
-    void testCardinstallmentResponseNoDataFound() throws Exception {
+    void testCampaignTransactionResponseNoDataFound() throws Exception {
         String correlationId = "123";
         CampaignTransactionQuery requestBodyParameter = new CampaignTransactionQuery();
         requestBodyParameter.setAccountId("0000000050078670143000945");
@@ -83,8 +83,8 @@ public class CampaignTransactionsControllerTest {
         status.setCode("0");
         Map<String, String> requestHeadersParameter= new HashMap();
         requestHeadersParameter.put(correlationId,"32fbd3b2-3f97-4a89-ar39-b4f628fbc8da");
-        ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> res = campaignTransactionsController
-                .cardinstallmentResponse(requestBodyParameter, requestHeadersParameter);
+        ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> res = campaignTransactionsController
+                .campaignTransactionResponse(requestBodyParameter, requestHeadersParameter);
         assertEquals(400,res.getStatusCodeValue());
 
     }
@@ -97,15 +97,15 @@ public class CampaignTransactionsControllerTest {
         requestBodyParameter.setAccountId("0000000050078360018000167");
         requestBodyParameter.setSearchKeys("");
         requestBodyParameter.setMoreRecords("Y");
-        CardInstallmentResponse cardInstallmentResponse = new CardInstallmentResponse();
+        CampaignTransactionResponse CampaignTransactionResponse = new CampaignTransactionResponse();
         Status status = new Status();
         status.setCode("0");
         status.setMessage("");
         status.setService("service name");
-       // cardInstallmentResponse.setStatus(status);
+       // CampaignTransactionResponse.setStatus(status);
         when(creditCardClient.getCampaignTransactionsDetails(any(),any())).thenThrow(FeignException.FeignClientException.class);
         Assertions.assertThrows(TMBCommonException.class,
-                () -> campaignTransactionsController.cardinstallmentResponse(requestBodyParameter, requestHeadersParameter));
+                () -> campaignTransactionsController.campaignTransactionResponse(requestBodyParameter, requestHeadersParameter));
 
     }
 }

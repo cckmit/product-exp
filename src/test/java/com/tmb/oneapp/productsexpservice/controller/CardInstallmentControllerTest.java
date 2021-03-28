@@ -50,7 +50,7 @@ public class CardInstallmentControllerTest {
 
 
     @Test
-    public void testCardinstallmentResponseNull() throws Exception {
+    public void testCampaignTransactionResponseNull() throws Exception {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
         CardInstallmentQuery requestBodyParameter = new CardInstallmentQuery();
         requestBodyParameter.setAccountId("0000000050078670143000945");
@@ -65,10 +65,10 @@ public class CardInstallmentControllerTest {
 
 
         requestBodyParameter.setCardInstallment(cardInstallment);
-        TmbOneServiceResponse<List<CardInstallmentFinalResponse>> response = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<List<CardInstallmentResponse>> response = new TmbOneServiceResponse<>();
         CardStatement cardStatement = new CardStatement();
         cardStatement.setDueDate("");
-        CardInstallmentFinalResponse data = new CardInstallmentFinalResponse();
+        CardInstallmentResponse data = new CardInstallmentResponse();
         CardStatementReponse statement = new CardStatementReponse();
         statement.setStatementTransactions(list);
         ErrorStatus errorStatus = new ErrorStatus();
@@ -92,7 +92,7 @@ public class CardInstallmentControllerTest {
         creditCardEvent.setActivityDate("01-09-1990");
         when(creditCardClient.confirmCardInstallment(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
-        ResponseEntity<TmbOneServiceResponse<List<CardInstallmentFinalResponse>>> responseEntity = cardInstallmentController.confirmCardInstallment(correlationId, requestBodyParameter, headerRequestParameter());
+        ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> responseEntity = cardInstallmentController.confirmCardInstallment(correlationId, requestBodyParameter, headerRequestParameter());
         Assert.assertEquals("0", response.getStatus().getCode());
     }
 
@@ -117,10 +117,14 @@ public class CardInstallmentControllerTest {
         CardInstallmentResponse data = new CardInstallmentResponse();
         CardStatementReponse statement = new CardStatementReponse();
         statement.setStatementTransactions(list);
-        data.setMaxRecords(100);
-        data.setMoreRecords("Y");
-        data.setTotalRecords(10);
-        data.setCardStatement(statement);
+        CreditCardModel card = new CreditCardModel();
+        card.setAccountId("0000000050078670143000945");
+        CardInstallmentModel model = new CardInstallmentModel();
+        model.setOrderNo("1234");
+        model.setAmounts(1234.00);
+        card.setCardInstallment(model);
+        data.setCreditCard(card);
+
         response.setData(data);
         TmbStatus status = new TmbStatus();
         status.setCode("0");

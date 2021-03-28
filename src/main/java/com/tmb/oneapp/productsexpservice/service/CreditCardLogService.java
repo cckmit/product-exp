@@ -8,10 +8,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentFinalResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
-import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -173,11 +170,11 @@ public class CreditCardLogService {
 		return creditCardEvent;
 	}
 
+
 	/**
-	 *
+	 * @param correlationId
 	 * @param reqHeader
 	 * @param requestBody
-	 * @param cardInstallmentResponse
 	 * @return
 	 */
 	public List<CreditCardEvent> applySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody) {
@@ -210,6 +207,7 @@ public class CreditCardLogService {
 
 		return confirmEventList;
 	}
+
 
 	/**
 	 * method for populating base events for Activity logs
