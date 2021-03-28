@@ -53,7 +53,6 @@ public class CampaignTransactionsControllerTest {
         Status stat = new Status();
         stat.setCode("0");
         CampaignTransactionResponse resp = new CampaignTransactionResponse();
-      //  resp.setStatus(stat);
         CardStatementReponse cardStatement = new CardStatementReponse();
         List<StatementTransaction> statementTransactions = new ArrayList<>();
         StatementTransaction transaction = new StatementTransaction();
