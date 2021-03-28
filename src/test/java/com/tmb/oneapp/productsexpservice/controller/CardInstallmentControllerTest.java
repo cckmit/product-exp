@@ -131,9 +131,6 @@ public class CardInstallmentControllerTest {
         status.setDescription("");
         status.setService("products experience");
         response.setStatus(status);
-        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
-        String activityDate = Long.toString(System.currentTimeMillis());
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityId, activityDate);
         when(creditCardClient.confirmCardInstallment(anyString(), any())).thenThrow(FeignException.FeignClientException.class);
         Assertions.assertThrows(TMBCommonException.class,
                 () -> cardInstallmentController.confirmCardInstallment(correlationId, requestBodyParameter, headerRequestParameter()));
