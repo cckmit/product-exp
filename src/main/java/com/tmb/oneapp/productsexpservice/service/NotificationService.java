@@ -37,7 +37,7 @@ public class NotificationService {
 	private NotificationServiceClient notificationClient;
 	private CustomerServiceClient customerClient;
 	private CreditCardClient creditCardClient;
-
+	
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
 			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient) {
@@ -69,7 +69,7 @@ public class NotificationService {
 	private void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn, String channelNameTh,
 			String accountId, String productNameEn, String productNameTh) {
 		NotificationRequest notificationRequest = new NotificationRequest();
-		List<NotificationRecord> notificationRecords = new ArrayList<NotificationRecord>();
+		List<NotificationRecord> notificationRecords = new ArrayList<>();
 		NotificationRecord emailRecord = new NotificationRecord();
 		EmailChannel emailChannel = new EmailChannel();
 		emailChannel.setEmailEndpoint(email);
