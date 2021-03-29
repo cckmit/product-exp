@@ -124,7 +124,7 @@ jacocoTestReport {
 sonarqube {
 	if (System.getProperty("sonar.host.url").equals(null)){
 		properties {
-			System.setProperty('sonar.host.url', 'http://10.209.50.21:9000')
+			System.setProperty('sonar.host.url', 'http://localhost:9000')
 		}
 	}
 	properties {
