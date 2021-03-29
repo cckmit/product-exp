@@ -11,7 +11,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionResponse;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -58,13 +58,13 @@ public class CampaignTransactionsController {
             @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header")
 
     })
-    public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardinstallmentResponse(
+    public ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> campaignTransactionResponse(
             @RequestBody CampaignTransactionQuery requestBodyParameter,
             @ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeadersParameter)
             throws TMBCommonException {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<CardInstallmentResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         String accountId = requestBodyParameter.getAccountId();
         String moreRecords = requestBodyParameter.getMoreRecords();
 
@@ -73,12 +73,12 @@ public class CampaignTransactionsController {
 
         try {
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(moreRecords)) {
-                ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> cardInstallmentResponse = creditCardClient.getCampaignTransactionsDetails(correlationId,requestBodyParameter);
-                if (cardInstallmentResponse != null) {
+                ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> campaignTransactionsDetails = creditCardClient.getCampaignTransactionsDetails(correlationId,requestBodyParameter);
+                if (campaignTransactionsDetails != null) {
                     Status status = new Status();
-                    status.setStatusCode(cardInstallmentResponse.getBody().getStatus().getCode());
-                    TmbOneServiceResponse<CardInstallmentResponse> body = cardInstallmentResponse.getBody();
-                    CardInstallmentResponse data = body.getData();
+                    status.setStatusCode(campaignTransactionsDetails.getBody().getStatus().getCode());
+                    TmbOneServiceResponse<CampaignTransactionResponse> body = campaignTransactionsDetails.getBody();
+                    CampaignTransactionResponse data = body.getData();
                     oneServiceResponse.setData(data);
                     oneServiceResponse
                             .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
