@@ -63,12 +63,12 @@ public interface CreditCardClient {
     public ResponseEntity<BlockCardResponse> getBlockCardDetails(@RequestBody BlockCardRequest requestBodyParameter);
 
     @PostMapping(value = "/apis/creditcard/get-campaign-transactions")
-    public ResponseEntity<TmbOneServiceResponse<CardInstallmentResponse>> getCampaignTransactionsDetails(
+    public ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> getCampaignTransactionsDetails(
             @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody CampaignTransactionQuery requestBodyParameter);
 
     @PostMapping(value = "/apis/creditcard/card-installment-confirm")
-    public ResponseEntity<TmbOneServiceResponse<CardInstallmentFinalResponse>> confirmCardInstallment(
+    public ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse> >>  confirmCardInstallment(
             @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody CardInstallmentQuery requestBodyParameter);
 
