@@ -1,0 +1,84 @@
+{
+	"predicates": [{
+			"equals": {
+				"method": "POST",
+				"path": "/apis/accounts/loan/get-account-details"
+			}
+		},
+		{
+			"equals": {
+			    "body": {
+					"account-id": "00016109738001"
+				}
+			}
+		}
+	],
+	"responses": [{
+		"is": {
+			"statusCode": 200,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"body": {
+				"status": {
+					"code": "0000",
+					"description": "Success"
+				},
+				"account": {
+					"id": "00016109738001",
+					"type": "LOC",
+					"branch_id": "9121",
+					"product_id": "SB02",
+					"title": "Loan TestAccount",
+					"currency": "THB",
+					"status": {
+						"account_status": "Active",
+						"contract_date": "2020-02-14"
+					},
+					"debit_account": {
+						"id": "00002152525727",
+						"auto_debit_method": "",
+						"auto_debit_date": ""
+					},
+					"balances": {
+						"original_loan": "1495200.00",
+						"principal": "1299580.68",
+						"ledger": "160603.42",
+						"outstanding": "1299580.68",
+						"available": "1299580.68",
+						"current": "316899.10",
+						"accrued_interest": "5846.51",
+						"payoff": "1331853.24"
+					},
+					"payment": {
+						"monthly_payment_amount": "12000.00",
+						"next_payment_due_date": "2021-04-05",
+						"next_payment_amount": "12000.00",
+						"next_payment_principal": "6000.00",
+						"next_payment_interest": "6000.00",
+						"last_payment_amount": "2000.00",
+						"last_payment_date": "2021-03-05",
+						"current_terms": "112",
+						"remaining_terms": "240",
+						"total_payment_amount": "15000.00",
+						"current_total_due_amount": "14000.00",
+						"total_past_due_amount": "4000.00",
+						"late_charges_amount": "530.00",
+						"fee_due_amount": "200.00",
+						"past_due_date": "2021-02-05",
+						"past_due_payment_count": "2"
+					},
+					"credit_limit": {
+						"amount": "1495200.00",
+						"interest_rate": "4.00500",
+						"expired_date": "2049-02-05"
+					},
+					"rates": {
+						"current_interest_rate": "4.0050000",
+						"original_interest_rate": "0.0000001"
+					}
+				}
+			}
+		}
+	}]
+}
