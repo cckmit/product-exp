@@ -49,7 +49,14 @@ public class NotificationService {
 		this.customerClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
 	}
-
+	
+	/**
+	 * Method for activation email service for expose to external request
+	 * 
+	 * @param xCorrelationId
+	 * @param accountId
+	 * @param crmId
+	 */
 	public void sendCardActiveEmail(String xCorrelationId, String accountId, String crmId) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
@@ -70,7 +77,17 @@ public class NotificationService {
 			}
 		}
 	}
-
+	/**
+	 * Method for activation email service for wrapper process
+	 * 
+	 * @param email
+	 * @param xCorrelationId
+	 * @param channelNameEn
+	 * @param channelNameTh
+	 * @param accountId
+	 * @param productNameEn
+	 * @param productNameTh
+	 */
 	private void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn,
 			String channelNameTh, String accountId, String productNameEn, String productNameTh) {
 		NotificationRequest notificationRequest = new NotificationRequest();
@@ -91,7 +108,7 @@ public class NotificationService {
 		emailTemplateParams.put(NotificationConstant.ACTIVE_CARD_PRODUCT_NAME_EN, productNameEn);
 		emailTemplateParams.put(NotificationConstant.ACTIVE_CARD_PRODUCT_NAME_TH, productNameTh);
 		emailRecord.setParams(emailTemplateParams);
-		emailRecord.setLanguage("th");
+		emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
 
 		notificationRecords.add(emailRecord);
 		notificationRequest.setRecords(notificationRecords);
