@@ -34,6 +34,7 @@ import com.tmb.oneapp.productsexpservice.model.setpin.SilverlakeErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.setpin.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.setpin.TranslatePinRes;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
 import feign.FeignException;
 
@@ -46,11 +47,14 @@ public class SetPinControllerTest {
 	CreditCardClient creditCardClient;
 	@Mock
 	CreditCardLogService creditCardLogService;
+	
+	@Mock
+	NotificationService notificationService ;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		setPinController = new SetPinController(oneappAuthClient, creditCardClient, creditCardLogService);
+		setPinController = new SetPinController(oneappAuthClient, creditCardClient, creditCardLogService,notificationService);
 	}
 
 	@Test
