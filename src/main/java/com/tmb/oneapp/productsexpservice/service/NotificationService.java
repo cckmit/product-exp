@@ -26,6 +26,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardRespons
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
+import com.tmb.oneapp.productsexpservice.model.request.notification.NotifyCommon;
 import com.tmb.oneapp.productsexpservice.model.request.notification.SmsChannel;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 
@@ -135,7 +136,7 @@ public class NotificationService {
 	}
 
 	/**
-	 * Wrapper execution for notify success for set pin  for email and sms
+	 * Wrapper execution for notify success for set pin for email and sms
 	 * 
 	 * @param xCorrelationId
 	 * @param accountId
@@ -156,35 +157,37 @@ public class NotificationService {
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				GetCardResponse cardResponse = cardInfoResponse.getBody();
-				sendNotificationEmailForSetpin(customerProfileInfo.getPhoneNoFull(),
-						customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn, defaultChannelTh,
-						accountId, cardResponse.getProductCodeData().getProductNameEN(),
+				NotifyCommon notifyCommon = new NotifyCommon();
+				notifyCommon.setChannelNameEn(defaultChannelEn);
+				notifyCommon.setChannelNameTh(defaultChannelTh);
+				notifyCommon.setEmail(customerProfileInfo.getEmailAddress());
+				notifyCommon.setSmsNo(customerProfileInfo.getPhoneNoFull());
+				sendNotificationEmailForSetpin(notifyCommon, xCorrelationId, accountId,
+						cardResponse.getProductCodeData().getProductNameEN(),
 						cardResponse.getProductCodeData().getProductNameTH(), gobalCallCenter);
 			}
 		}
 	}
+
 	/**
 	 * Wrapper for process notification for SET PIN
-	 * @param smsNo
-	 * @param email
+	 * @param notifyCommon
 	 * @param xCorrelationId
-	 * @param channelNameEn
-	 * @param channelNameTh
 	 * @param accountId
 	 * @param productNameEn
 	 * @param productNameTh
 	 * @param supportNo
 	 */
-	private void sendNotificationEmailForSetpin(String smsNo, String email, String xCorrelationId, String channelNameEn,
-			String channelNameTh, String accountId, String productNameEn, String productNameTh, String supportNo) {
+	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String xCorrelationId, String accountId,
+			String productNameEn, String productNameTh, String supportNo) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 		NotificationRecord record = new NotificationRecord();
 
 		// case email
-		if (StringUtils.isNotBlank(email)) {
+		if (StringUtils.isNotBlank(notifyCommon.getEmail())) {
 			EmailChannel emailChannel = new EmailChannel();
-			emailChannel.setEmailEndpoint(email);
+			emailChannel.setEmailEndpoint(notifyCommon.getEmail());
 			emailChannel.setEmailSearch(false);
 
 			record.setEmail(emailChannel);
@@ -193,8 +196,8 @@ public class NotificationService {
 			emailTemplateParams.put(NotificationConstant.EMAIL_TEMPLATE_KEY,
 					NotificationConstant.SET_PIN_TEMPLATE_VALUE);
 			emailTemplateParams.put(NotificationConstant.EMAIL_CARD_ACCOUNT_ID, accountId);
-			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, channelNameEn);
-			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, channelNameTh);
+			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
+			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
 			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_EN, productNameEn);
 			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
 			emailTemplateParams.put(NotificationConstant.EMAIL_SUPPORT_NO, supportNo);
@@ -203,11 +206,11 @@ public class NotificationService {
 
 			notificationRecords.add(record);
 		}
-		
+
 		// case sms
-		if (StringUtils.isNotBlank(smsNo)) {
+		if (StringUtils.isNotBlank(notifyCommon.getSmsNo())) {
 			SmsChannel smsChannel = new SmsChannel();
-			smsChannel.setSmsEdpoint(smsNo);
+			smsChannel.setSmsEdpoint(notifyCommon.getSmsNo());
 			smsChannel.setSmsSearch(false);
 			smsChannel.setSmsForce(false);
 			record.setSms(smsChannel);
