@@ -10,12 +10,14 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -32,6 +34,7 @@ import com.tmb.common.logger.TMBLogger;
 import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import java.time.Instant;
+import java.util.List;
 
 
 /**
@@ -273,6 +276,41 @@ public class ProductExpServiceController {
 
 		}
 	}
+
+	/**
+	 * Description:- Inquiry MF Service
+	 *
+	 * @param correlationId the correlation id
+	 * @return return fund list info
+	 */
+	@ApiOperation(value = "Fetch Fund list from MF Service and add more flag, then return to front-end")
+	@LogAround
+	@PostMapping(value = "/search/fundList", consumes= MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> getFundListInfo(
+			@ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
+			@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+			@Valid @RequestBody FundListRq fundListRq) {
+
+		TmbOneServiceResponse<List<FundClassListInfo>> oneServiceResponse = new TmbOneServiceResponse<>();
+
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+		List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, fundListRq);
+		if(!StringUtils.isEmpty(fundAccountRs)){
+			oneServiceResponse.setData(fundAccountRs);
+			oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+					ProductsExpServiceConstant.SUCCESS_MESSAGE,
+					ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+		} else {
+			oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
+					ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
+					ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
+			oneServiceResponse.setData(null);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+		}
+	}
+
 
 
 
