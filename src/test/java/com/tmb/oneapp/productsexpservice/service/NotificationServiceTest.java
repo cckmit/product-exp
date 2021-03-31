@@ -45,7 +45,7 @@ public class NotificationServiceTest {
 		notificationService = new NotificationService(notificationServiceClient, customerServiceClient,
 				creditCardClient);
 	}
-	
+
 	@Test
 	void sendNotificationByEmailTriggerManual() {
 
@@ -54,18 +54,19 @@ public class NotificationServiceTest {
 		customerProfile.setEmailAddress("witsanu.t@tcs.com");
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
-		
+
 		GetCardResponse cardResponse = new GetCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
-		silverlake.setStatusCode(0000);
+		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
-		
-		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
-		
+
+		when(creditCardClient.getCreditCardDetails(any(), any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
@@ -92,7 +93,7 @@ public class NotificationServiceTest {
 		productData.setProductNameTH("โซฟาสต์");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
-		silverlake.setStatusCode(0000);
+		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
 
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
@@ -105,8 +106,40 @@ public class NotificationServiceTest {
 
 		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
-		 Assert.assertTrue(true);
+		Assert.assertTrue(true);
 
+	}
+
+	@Test
+	void activeSetPinNotification() {
+		TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
+		CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+		customerProfile.setEmailAddress("witsanu@gmail.com");
+		profileResponse.setData(customerProfile);
+		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
+
+		GetCardResponse cardResponse = new GetCardResponse();
+		ProductCodeData productData = new ProductCodeData();
+		productData.setProductNameEN("So Fast Credit Card");
+		productData.setProductNameTH("โซฟาสต์");
+		cardResponse.setProductCodeData(productData);
+		SilverlakeStatus silverlake = new SilverlakeStatus();
+		silverlake.setStatusCode(0);
+		cardResponse.setStatus(silverlake);
+
+		when(customerServiceClient.getCustomerProfile(any(), any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
+
+		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
+		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
+		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
+
+		notificationService.doNotifySuccessForSetPin(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+				"0000000050079650011000193", "001100000000000000000012036208");
+		Assert.assertTrue(true);
 	}
 
 }
