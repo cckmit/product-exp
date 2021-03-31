@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardRespons
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
+import com.tmb.oneapp.productsexpservice.model.request.notification.SmsChannel;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
@@ -38,6 +40,8 @@ public class NotificationService {
 	private String defaultChannelTh;
 	@Value("${notification-service.e-noti.default.channel.en}")
 	private String defaultChannelEn;
+	@Value("${notification-service.e-noti.default.support.no}")
+	private String gobalCallCenter;
 
 	private NotificationServiceClient notificationClient;
 	private CustomerServiceClient customerClient;
@@ -65,13 +69,13 @@ public class NotificationService {
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
 		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
 				&& Objects.nonNull(response.getBody().getData())
-				&& SUCCESS_CODE.equals(response.getBody().getStatus().getCode())) {
+				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
-					&& SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode().toString())) {
+					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				GetCardResponse cardResponse = cardInfoResponse.getBody();
 				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn,
 						defaultChannelTh, accountId, cardResponse.getProductCodeData().getProductNameEN(),
@@ -93,41 +97,45 @@ public class NotificationService {
 	 */
 	private void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn,
 			String channelNameTh, String accountId, String productNameEn, String productNameTh) {
-		NotificationRequest notificationRequest = new NotificationRequest();
-		List<NotificationRecord> notificationRecords = new ArrayList<>();
-		NotificationRecord emailRecord = new NotificationRecord();
-		EmailChannel emailChannel = new EmailChannel();
-		emailChannel.setEmailEndpoint(email);
-		emailChannel.setEmailSearch(false);
 
-		emailRecord.setEmail(emailChannel);
+		if (StringUtils.isNotBlank(email)) {
+			NotificationRequest notificationRequest = new NotificationRequest();
+			List<NotificationRecord> notificationRecords = new ArrayList<>();
+			NotificationRecord emailRecord = new NotificationRecord();
+			EmailChannel emailChannel = new EmailChannel();
+			emailChannel.setEmailEndpoint(email);
+			emailChannel.setEmailSearch(false);
 
-		Map<String, Object> emailTemplateParams = new HashMap<>();
-		emailTemplateParams.put(NotificationConstant.EMAIL_TEMPLATE_KEY,
-				NotificationConstant.ACTIVE_CARD_TEMPLATE_VALUE);
-		emailTemplateParams.put(NotificationConstant.EMAIL_CARD_ACCOUNT_ID, accountId);
-		emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, channelNameEn);
-		emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, channelNameTh);
-		emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_EN, productNameEn);
-		emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
-		emailRecord.setParams(emailTemplateParams);
-		emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
+			emailRecord.setEmail(emailChannel);
 
-		notificationRecords.add(emailRecord);
-		notificationRequest.setRecords(notificationRecords);
+			Map<String, Object> emailTemplateParams = new HashMap<>();
+			emailTemplateParams.put(NotificationConstant.EMAIL_TEMPLATE_KEY,
+					NotificationConstant.ACTIVE_CARD_TEMPLATE_VALUE);
+			emailTemplateParams.put(NotificationConstant.EMAIL_CARD_ACCOUNT_ID, accountId);
+			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, channelNameEn);
+			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, channelNameTh);
+			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_EN, productNameEn);
+			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
+			emailRecord.setParams(emailTemplateParams);
+			emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
 
-		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient.sendMessage(xCorrelationId,
-				notificationRequest);
-		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
-			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
-		} else {
-			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
-					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
+			notificationRecords.add(emailRecord);
+			notificationRequest.setRecords(notificationRecords);
+
+			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+					.sendMessage(xCorrelationId, notificationRequest);
+			if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
+				logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
+			} else {
+				logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
+						sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
+			}
 		}
+
 	}
 
 	/**
-	 * Wrapper execution for notify success for set pin
+	 * Wrapper execution for notify success for set pin  for email and sms
 	 * 
 	 * @param xCorrelationId
 	 * @param accountId
@@ -140,52 +148,72 @@ public class NotificationService {
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
 		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
 				&& Objects.nonNull(response.getBody().getData())
-				&& SUCCESS_CODE.equals(response.getBody().getStatus().getCode())) {
+				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
-					&& SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode().toString())) {
+					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				GetCardResponse cardResponse = cardInfoResponse.getBody();
-				String supportNo = null; // TODO
-				String productTypeEN = null; // TODO
-				String productTypeTH = null; // TODO
-				sendNotificationEmailForSetpin(customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn,
-						defaultChannelTh, accountId, cardResponse.getProductCodeData().getProductNameEN(),
-						cardResponse.getProductCodeData().getProductNameTH(), supportNo, productTypeEN, productTypeTH);
+				sendNotificationEmailForSetpin(customerProfileInfo.getPhoneNoFull(),
+						customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn, defaultChannelTh,
+						accountId, cardResponse.getProductCodeData().getProductNameEN(),
+						cardResponse.getProductCodeData().getProductNameTH(), gobalCallCenter);
 			}
 		}
 	}
-
-	private void sendNotificationEmailForSetpin(String email, String xCorrelationId, String channelNameEn,
-			String channelNameTh, String accountId, String productNameEn, String productNameTh, String supportNo,
-			String productTypeEN, String productTypeTH) {
+	/**
+	 * Wrapper for process notification for SET PIN
+	 * @param smsNo
+	 * @param email
+	 * @param xCorrelationId
+	 * @param channelNameEn
+	 * @param channelNameTh
+	 * @param accountId
+	 * @param productNameEn
+	 * @param productNameTh
+	 * @param supportNo
+	 */
+	private void sendNotificationEmailForSetpin(String smsNo, String email, String xCorrelationId, String channelNameEn,
+			String channelNameTh, String accountId, String productNameEn, String productNameTh, String supportNo) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
-		NotificationRecord emailRecord = new NotificationRecord();
-		EmailChannel emailChannel = new EmailChannel();
-		emailChannel.setEmailEndpoint(email);
-		emailChannel.setEmailSearch(false);
+		NotificationRecord record = new NotificationRecord();
 
-		emailRecord.setEmail(emailChannel);
+		// case email
+		if (StringUtils.isNotBlank(email)) {
+			EmailChannel emailChannel = new EmailChannel();
+			emailChannel.setEmailEndpoint(email);
+			emailChannel.setEmailSearch(false);
 
-		Map<String, Object> emailTemplateParams = new HashMap<>();
-		emailTemplateParams.put(NotificationConstant.EMAIL_TEMPLATE_KEY, NotificationConstant.SET_PIN_TEMPLATE_VALUE);
-		emailTemplateParams.put(NotificationConstant.EMAIL_CARD_ACCOUNT_ID, accountId);
-		emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, channelNameEn);
-		emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, channelNameTh);
-		emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_EN, productNameEn);
-		emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
-		emailTemplateParams.put(NotificationConstant.EMAIL_SUPPORT_NO, supportNo);
-		emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
-		emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_TYPE_EN, productTypeEN);
-		emailRecord.setParams(emailTemplateParams);
-		emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
+			record.setEmail(emailChannel);
 
-		notificationRecords.add(emailRecord);
+			Map<String, Object> emailTemplateParams = new HashMap<>();
+			emailTemplateParams.put(NotificationConstant.EMAIL_TEMPLATE_KEY,
+					NotificationConstant.SET_PIN_TEMPLATE_VALUE);
+			emailTemplateParams.put(NotificationConstant.EMAIL_CARD_ACCOUNT_ID, accountId);
+			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, channelNameEn);
+			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, channelNameTh);
+			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_EN, productNameEn);
+			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
+			emailTemplateParams.put(NotificationConstant.EMAIL_SUPPORT_NO, supportNo);
+			record.setParams(emailTemplateParams);
+			record.setLanguage(NotificationConstant.LOCALE_TH);
+
+			notificationRecords.add(record);
+		}
+		
+		// case sms
+		if (StringUtils.isNotBlank(smsNo)) {
+			SmsChannel smsChannel = new SmsChannel();
+			smsChannel.setSmsEdpoint(smsNo);
+			smsChannel.setSmsSearch(false);
+			smsChannel.setSmsForce(false);
+			record.setSms(smsChannel);
+		}
+
 		notificationRequest.setRecords(notificationRecords);
-
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient.sendMessage(xCorrelationId,
 				notificationRequest);
 		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
