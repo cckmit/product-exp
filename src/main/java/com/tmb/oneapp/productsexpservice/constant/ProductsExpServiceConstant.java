@@ -173,4 +173,7 @@ public class ProductsExpServiceConstant {
     public static final String SET_PIN_ACTIVITY_LOG = "00700302";
     public static final String FAILED = "Failed";
 
+    public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
+    public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
+
 }

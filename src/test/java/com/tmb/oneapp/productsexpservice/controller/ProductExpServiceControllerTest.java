@@ -8,12 +8,14 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
@@ -418,6 +420,63 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
                 .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundListException() throws Exception {
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+        when(productsExpService.getFundList(corrID, fundListRq)).thenThrow(MockitoException.class);
+
+        ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
+                .getFundListInfo(corrID, fundListRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundListNotfound() throws Exception {
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+        try {
+            when(productsExpService.getFundList(corrID, fundListRq)).thenReturn(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
+                .getFundListInfo(corrID, fundListRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundList() throws Exception {
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+
+        List<FundClassListInfo> list = new ArrayList<>();
+        FundClassListInfo fundClassListInfo = new FundClassListInfo();
+        fundClassListInfo.setFundCode("ABCC");
+        list.add(fundClassListInfo);
+
+        try {
+            when(productsExpService.getFundList(corrID, fundListRq)).thenReturn(list);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
+                .getFundListInfo(corrID, fundListRq);
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
