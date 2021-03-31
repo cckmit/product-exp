@@ -295,19 +295,30 @@ public class ProductExpServiceController {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-		List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, fundListRq);
-		if(!StringUtils.isEmpty(fundAccountRs)){
-			oneServiceResponse.setData(fundAccountRs);
-			oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-					ProductsExpServiceConstant.SUCCESS_MESSAGE,
-					ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-		} else {
+		try {
+			List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, fundListRq);
+			if(!StringUtils.isEmpty(fundAccountRs)){
+				oneServiceResponse.setData(fundAccountRs);
+				oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+						ProductsExpServiceConstant.SUCCESS_MESSAGE,
+						ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+				return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+			} else {
+				oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
+						ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
+						ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
+				oneServiceResponse.setData(null);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+			}
+
+		} catch (Exception e) {
+			logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+			oneServiceResponse.setData(null);
 			oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
 					ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
 					ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-			oneServiceResponse.setData(null);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+
 		}
 	}
 
