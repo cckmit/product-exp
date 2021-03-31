@@ -3,10 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -686,6 +683,30 @@ public class ProductExpServiceTest {
         }
         boolean getFundSummary = productsExpService.isCASADormant(corrID, fundAccountRequest);
         Assert.assertTrue(getFundSummary);
+    }
+
+    @Test
+    public void isCustIDExpired() throws Exception {
+
+        FfsRequestBody fundAccountRequest = new FfsRequestBody();
+        fundAccountRequest.setCrmId("001100000000000000000012025950");
+        fundAccountRequest.setFundCode("SCBTMF");
+        fundAccountRequest.setFundHouseCode("SCBAM");
+        fundAccountRequest.setLanguage("en");
+        fundAccountRequest.setProcessFlag("Y");
+        fundAccountRequest.setOrderType("1");
+
+        try {
+            CustomerProfileResponseData fundHolidayBody = null;
+            ObjectMapper mapper = new ObjectMapper();
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustomerProfileResponseData.class);
+
+            when(productExpAsynService.fetchCustomerProfile(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        boolean getFundSummary = productsExpService.isCustIDExpired(fundAccountRequest);
+        Assert.assertFalse(getFundSummary);
     }
 
 
