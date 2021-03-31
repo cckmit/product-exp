@@ -34,7 +34,7 @@ public interface AccountRequestClient {
     @GetMapping(value = "${account.service.account.list.url}")
     public String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
 
-    @PostMapping(value = "${account.service.account.url}", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "${account.service.loan.url}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
             @RequestHeader("X-Correlation-ID") String correlationId,
              @RequestBody AccountId accountId);
