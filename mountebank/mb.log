@@ -1,5 +1,0 @@
-{"message":"[mb:2525] Running with --allowInjection set. See http://localhost:2525/docs/security for security info","level":"warn","timestamp":"2021-03-29T10:19:14.223Z"}
-{"message":"[mb:2525] mountebank v2.4.0 now taking orders - point your browser to http://localhost:2525/ for help","level":"info","timestamp":"2021-03-29T10:19:14.233Z"}
-{"message":"[mb:2525] PUT /imposters","level":"info","timestamp":"2021-03-29T10:19:14.362Z"}
-{"message":"[http:8080 proxy] Open for business...","level":"info","timestamp":"2021-03-29T10:19:14.429Z"}
-{"message":"[http:8080 proxy] ::1:52935 => POST /apis/accounts/loan/get-loan-details","level":"info","timestamp":"2021-03-29T10:19:20.528Z"}
