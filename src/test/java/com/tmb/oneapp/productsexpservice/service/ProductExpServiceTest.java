@@ -980,6 +980,28 @@ public class ProductExpServiceTest {
     }
 
 
+    @Test
+    public void getFundListWithException() throws Exception {
+
+        try {
+            when(productExpAsynService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
+            when(productExpAsynService.fetchFundSummary(any(), any())).thenReturn(null);
+            when(productExpAsynService.fetchFundFavorite(any(), anyString())).thenReturn(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+        List<FundClassListInfo> result = productsExpService.getFundList(corrID, fundListRq);
+        Assert.assertNotNull(result);
+    }
+
+
 }
 
 
