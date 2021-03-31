@@ -23,17 +23,20 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
@@ -485,6 +488,40 @@ public class ProductsExpService {
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             return true;
+        }
+    }
+
+    /**
+     * Generic Method to call MF Service getFundList
+     *
+     * @param fundListRq
+     * @param correlationId
+     * @return List<FundClassListInfo>
+     */
+    @LogAround
+    public List<FundClassListInfo> getFundList(String correlationId, FundListRq fundListRq) {
+        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        List<FundClassListInfo> listFund = new ArrayList<>();
+        try {
+            UnitHolder unitHolder = new UnitHolder();
+            String unitHolderList = fundListRq.getUnitHolderNo().stream().collect(Collectors.joining(","));
+            unitHolder.setUnitHolderNo(unitHolderList);
+
+            CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
+                    productExpAsynService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
+            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter, unitHolder);
+            CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsynService.fetchFundFavorite(invHeaderReqParameter, fundListRq.getCrmId());
+
+            CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
+            listFund = fetchFundListInfo.get();
+            FundSummaryResponse fundSummaryResponse = fetchFundSummary.get();
+            List<CustFavoriteFundData> custFavoriteFundDataList = fetchFundFavorite.get();
+            listFund = UtilMap.mappingFollowingFlag(listFund, custFavoriteFundDataList);
+            listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
+            return listFund;
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            return listFund;
         }
     }
 

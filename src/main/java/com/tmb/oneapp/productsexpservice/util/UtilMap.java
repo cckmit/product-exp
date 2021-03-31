@@ -14,11 +14,14 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
@@ -500,5 +503,97 @@ public class UtilMap {
             return null;
         }
     }
+
+
+    /**
+     * Generic Method to mappingCache
+     *
+     * @param jsonStr
+     * @param key
+     * @return CacheModel
+     */
+    public static CacheModel mappingCache(String jsonStr, String key){
+        CacheModel cacheModel = new CacheModel();
+        cacheModel.setKey(key);
+        cacheModel.setTtl(ProductsExpServiceConstant.INVESTMENT_CACHE_TIME_EXPIRE);
+        cacheModel.setValue(jsonStr);
+        return cacheModel;
+    }
+
+    /**
+     * Generic Method to mappingFollowingFlag
+     *
+     * @param fundClassList
+     * @param custFavoriteFundDataList
+     * @return List<FundClassList>
+     */
+    public static List<FundClassListInfo> mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustFavoriteFundData> custFavoriteFundDataList){
+        List<FundClassListInfo> fundClassLists = new ArrayList<>();
+        for(FundClassListInfo fundClass : fundClassList){
+            for(CustFavoriteFundData custFavoriteFund : custFavoriteFundDataList){
+                if(custFavoriteFund.getFundCode().equals(fundClass.getFundCode())){
+                    fundClass.setFollowingFlag(ProductsExpServiceConstant.PROCESS_FLAG_Y);
+                }
+            }
+            if(StringUtils.isEmpty(fundClass.getFollowingFlag())){
+                fundClass.setFollowingFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
+            }
+            fundClassLists.add(fundClass);
+        }
+        return fundClassLists;
+    }
+
+    /**
+     * Generic Method to mappingBoughtFlag
+     *
+     * @param fundClassList
+     * @param fundSummaryResponse
+     * @return List<FundClassList>
+     */
+    public static List<FundClassListInfo> mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryResponse fundSummaryResponse){
+        List<FundClassListInfo> fundClassLists = new ArrayList<>();
+        try {
+            for(FundClassListInfo fundClass : fundClassList) {
+                for (FundClass fundClassLoop : fundSummaryResponse.getBody().getFundClassList().getFundClass()) {
+                    List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
+                    mappingBoughtFlagWithFundHouse(fundClass, fundHouseList);
+                }
+                if(StringUtils.isEmpty(fundClass.getBoughtFlag())){
+                    fundClass.setBoughtFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
+                }
+                fundClassLists.add(fundClass);
+            }
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+        }
+        return fundClassLists;
+    }
+
+    /**
+     * Generic Method to mappingBoughtFlagWithFundHouse
+     *
+     * @param fundClass
+     * @param fundHouseList
+     * @return FundClassListInfo
+     */
+    public static FundClassListInfo mappingBoughtFlagWithFundHouse(FundClassListInfo fundClass, List<FundHouse> fundHouseList){
+        try {
+            for (FundHouse fundHouse : fundHouseList) {
+                FundList fundList = fundHouse.getFundList();
+                List<Fund> fund = fundList.getFund();
+                for (Fund fundDetail : fund) {
+                    if (fundDetail.getFundCode().equals(fundClass.getFundCode())) {
+                        fundClass.setBoughtFlag(ProductsExpServiceConstant.PROCESS_FLAG_Y);
+                    }
+                }
+            }
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+        }
+        return fundClass;
+    }
+
+
+
 
 }

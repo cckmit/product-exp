@@ -8,9 +8,10 @@ import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestB
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
@@ -18,6 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityI
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -79,7 +81,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.listinfo.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<FundListPage>> callInvestmentFundListInfoService(@RequestHeader Map<String, Object> headers);
+    public ResponseEntity<TmbOneServiceResponse<FundListBody>> callInvestmentFundListInfoService(@RequestHeader Map<String, String> headers);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -118,5 +120,16 @@ public interface InvestmentRequestClient {
     @ResponseBody
     public ResponseEntity<TmbOneServiceResponse<StatementResponse>> callInvestmentStmtByPortService(@RequestHeader Map<String, String> headers
             , @RequestBody OrderStmtByPortRq orderStmtByPortRq);
+
+
+    /**
+     * Call investment fund favorite service fund favorite response.
+     *
+     * @param headers  the headers
+     * @return the fund favorite response
+     */
+    @PostMapping(value = "${investment.service.fund.listfavorite.url}")
+    @ResponseBody
+    public ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestHeader String crmId);
 
 }

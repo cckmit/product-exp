@@ -192,6 +192,7 @@ public class UtilMapTest {
     public void testIsSuitabilityExpire() {
         SuitabilityInfo suitabilityInfo = new SuitabilityInfo();
         suitabilityInfo.setFxFlag("1234");
+        suitabilityInfo.setSuitValidation("1");
         boolean result = UtilMap.isSuitabilityExpire(suitabilityInfo);
         Assert.assertEquals(false, result);
     }

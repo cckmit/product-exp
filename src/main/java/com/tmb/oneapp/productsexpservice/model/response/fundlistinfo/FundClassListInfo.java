@@ -1,15 +1,15 @@
 package com.tmb.oneapp.productsexpservice.model.response.fundlistinfo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.math.BigDecimal;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class FundContent {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class FundClassListInfo {
     private String fundHouseCode;
     private String fundCode;
     private String fundShortName;
@@ -43,14 +43,20 @@ public class FundContent {
     @JsonProperty("termfundFlag")
     private String termFundFlag;
     private String inceptionDate;
-    private String return1Day;
-    private String return1Month;
-    private String return3Month;
-    private String return6Month;
-    private String returnYTD;
-    private String return1Year;
-    private String return3Year;
-    private String return5Year;
-    private String inceptionSinceReturn;
+    private BigDecimal return1Day;
+    private BigDecimal return1Month;
+    private BigDecimal return3Month;
+    private BigDecimal return6Month;
+    private BigDecimal returnYTD;
+    private BigDecimal return1Year;
+    private BigDecimal return3Year;
+    private BigDecimal return5Year;
+    private BigDecimal inceptionSinceReturn;
+    private String tspFlag;
+    private String recommendFlag;
+    private String followingFlag;
+    private String boughtFlag;
 }
+
+
 

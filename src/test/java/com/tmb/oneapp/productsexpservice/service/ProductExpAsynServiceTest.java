@@ -4,14 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.*;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
+import org.apache.kafka.common.protocol.types.Field;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,11 +32,13 @@ import static org.mockito.Mockito.when;
 
 
 public class ProductExpAsynServiceTest {
-     InvestmentRequestClient investmentRequestClient;
-     AccountRequestClient accountRequestClient;
-     CustomerServiceClient customerServiceClient;
-     CommonServiceClient commonServiceClient;
-     ProductExpAsynService productExpAsynService;
+    InvestmentRequestClient investmentRequestClient;
+    AccountRequestClient accountRequestClient;
+    CustomerServiceClient customerServiceClient;
+    CommonServiceClient commonServiceClient;
+    ProductExpAsynService productExpAsynService;
+    CacheServiceClient cacheServiceClient;
+
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
 
@@ -45,7 +49,8 @@ public class ProductExpAsynServiceTest {
         accountRequestClient = mock(AccountRequestClient.class);
         commonServiceClient = mock(CommonServiceClient.class);
         customerServiceClient = mock(CustomerServiceClient.class);
-        productExpAsynService = new ProductExpAsynService(investmentRequestClient, accountRequestClient, customerServiceClient, commonServiceClient);
+        cacheServiceClient = mock(CacheServiceClient.class);
+        productExpAsynService = new ProductExpAsynService(investmentRequestClient, accountRequestClient, customerServiceClient, commonServiceClient, cacheServiceClient);
     }
 
     @Test
@@ -285,6 +290,98 @@ public class ProductExpAsynServiceTest {
         }
 
     }
+
+
+    @Test
+    public void fetchFundListInfoWithException() throws Exception {
+        try {
+            when(cacheServiceClient.getCacheByKey(anyString(), anyString())).thenThrow(MockitoException.class);
+            CompletableFuture<List<FundClassListInfo>> response = productExpAsynService.fetchFundListInfo(any(), anyString(), anyString());
+            Assert.assertNotNull(response);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+
+    @Test
+    public void fetchFundSummary() throws Exception {
+        try{
+            FundSummaryResponse fundHolidayBody = null;
+            TmbOneServiceResponse<FundSummaryResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
+
+            ObjectMapper mapper = new ObjectMapper();
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(), FundSummaryResponse.class);
+
+            serviceResponseStmt.setData(fundHolidayBody);
+            serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        CompletableFuture<FundSummaryResponse> response = productExpAsynService.fetchFundSummary(any(), any());
+        Assert.assertNotNull(response);
+    }
+
+    @Test
+    public void fetchFundSummaryWithException() throws Exception {
+        try {
+            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any())).thenThrow(MockitoException.class);
+            CompletableFuture<FundSummaryResponse> response = productExpAsynService.fetchFundSummary(any(), any());
+            Assert.assertNotNull(response);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+
+    @Test
+    public void fetchFundFavoriteWitchException() throws Exception {
+        try {
+            when(investmentRequestClient.callInvestmentFundFavoriteService(any(), anyString())).thenThrow(MockitoException.class);
+            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(any(), anyString());
+            Assert.assertNotNull(response);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+
+
+    @Test
+    public void fetchFundFavorite() throws Exception {
+        try{
+            List<CustFavoriteFundData> favoriteFundData = new ArrayList<>();
+            CustFavoriteFundData fundHolidayBody = new CustFavoriteFundData();
+            TmbOneServiceResponse<List<CustFavoriteFundData>> serviceResponseStmt = new TmbOneServiceResponse<>();
+
+            fundHolidayBody.setFundCode("AAAA");
+            fundHolidayBody.setIsFavorite("N");
+            fundHolidayBody.setId("1");
+            fundHolidayBody.setCustId("100000023333");
+
+            favoriteFundData.add(fundHolidayBody);
+
+
+            serviceResponseStmt.setData(favoriteFundData);
+            serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(investmentRequestClient.callInvestmentFundFavoriteService(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(any(), anyString());
+        Assert.assertNotNull(response);
+    }
+
 
 
 
