@@ -52,7 +52,7 @@ public class FundClassListInfo {
     private BigDecimal return3Year;
     private BigDecimal return5Year;
     private BigDecimal inceptionSinceReturn;
-    private String tspFlag;
+    private String smartPortFlag;
     private String recommendFlag;
     private String followingFlag;
     private String boughtFlag;
