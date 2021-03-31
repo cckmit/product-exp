@@ -1,8 +1,11 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
+
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.homeloan.AccountId;
+import com.tmb.oneapp.productsexpservice.model.homeloan.LoanDetailsFullResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -30,4 +33,9 @@ public interface AccountRequestClient {
      */
     @GetMapping(value = "${account.service.account.list.url}")
     public String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
+
+    @PostMapping(value = "${account.service.account.url}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
+            @RequestHeader("X-Correlation-ID") String correlationId,
+             @RequestBody AccountId accountId);
 }
