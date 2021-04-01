@@ -10,7 +10,8 @@ public class NotificationConstant {
 	public static final String SET_PIN_TEMPLATE_VALUE = "ONEAPP_004";
 	public static final String CHANGE_USAGE_TEMPLATE_VALUE = "ONEAPP_005";
 	public static final String REQUEST_TEMPORARY_TEMPLATE_VALUE = "ONEAPP_006";
-	
+	public static final String BLOCK_CARD_TEMPLATE_VALUE = "ONEAPP_007";
+
 	public static final String CHANNEL_NAME_TH = "channelNameTH";
 	public static final String CHANNEL_NAME_EN = "channelNameEN";
 	public static final String ACCOUNT_ID = "fromAcctId";
@@ -23,19 +24,14 @@ public class NotificationConstant {
 	public static final String SUPPORT_NO = "supportNo";
 	public static final String PRODUCT_TYPE_TH = "productTypeTH";
 	public static final String PRODUCT_TYPE_EN = "productTypeEN";
-	public static final String OLD_CREDIT_LIMIT ="oldLimit";
-	public static final String NEW_CREDIT_LIMIT ="newLimit";
-	public static final String TRAN_DATE ="tranDate";
-	public static final String TRAN_TIME ="tranTime";
-	
+	public static final String OLD_CREDIT_LIMIT = "oldLimit";
+	public static final String NEW_CREDIT_LIMIT = "newLimit";
+	public static final String TRAN_DATE = "tranDate";
+	public static final String TRAN_TIME = "tranTime";
+
 	public static final String TEMP_LIMIT = "tempLimit";
 	public static final String EXPIRE_DATE = "expiryDate";
 	public static final String REASON_EN = "reasonEN";
 	public static final String REASON_TH = "reasonTH";
-	
-	
-	
-	
-	
 
 }

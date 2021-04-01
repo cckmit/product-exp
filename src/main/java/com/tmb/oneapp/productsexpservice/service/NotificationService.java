@@ -395,6 +395,94 @@ public class NotificationService {
 	}
 
 	/**
+	 * 
+	 * @param correlationId
+	 * @param accountId
+	 * @param crmId
+	 */
+	@Async
+	public void doNotifySuccessForBlockCard(String correlationId, String accountId, String crmId) {
+		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", correlationId);
+		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
+				.getCustomerProfile(new HashMap<String, String>(), crmId);
+		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
+				&& Objects.nonNull(response.getBody().getData())
+				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
+
+			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
+					accountId);
+			if (Objects.nonNull(cardInfoResponse.getBody())
+					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
+				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				NotifyCommon notifyCommon = new NotifyCommon();
+				notifyCommon.setChannelNameEn(defaultChannelEn);
+				notifyCommon.setChannelNameTh(defaultChannelTh);
+				notifyCommon.setEmail(customerProfileInfo.getEmailAddress());
+				notifyCommon.setSmsNo(customerProfileInfo.getPhoneNoFull());
+				notifyCommon.setProductNameEN(cardResponse.getProductCodeData().getProductNameEN());
+				notifyCommon.setProductNameTH(cardResponse.getProductCodeData().getProductNameTH());
+				notifyCommon.setXCorrelationId(correlationId);
+				notifyCommon.setAccountId(accountId);
+				sendNotificationEmailForBlockCard(notifyCommon, gobalCallCenter);
+			}
+		}
+
+	}
+
+	/**
+	 * Wrapper for process notification for Block card
+	 * 
+	 * @param notifyCommon
+	 * @param gobalCallCenter
+	 */
+	private void sendNotificationEmailForBlockCard(NotifyCommon notifyCommon, String gobalCallCenter) {
+		NotificationRequest notificationRequest = new NotificationRequest();
+		List<NotificationRecord> notificationRecords = new ArrayList<>();
+
+		NotificationRecord record = new NotificationRecord();
+
+		Map<String, Object> params = new HashMap<>();
+		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.BLOCK_CARD_TEMPLATE_VALUE);
+		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
+		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
+		params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
+		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
+		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
+		record.setParams(params);
+		record.setLanguage(NotificationConstant.LOCALE_TH);
+
+		// case email
+		if (StringUtils.isNotBlank(notifyCommon.getEmail())) {
+			EmailChannel emailChannel = new EmailChannel();
+			emailChannel.setEmailEndpoint(notifyCommon.getEmail());
+			emailChannel.setEmailSearch(false);
+			record.setEmail(emailChannel);
+		}
+
+		// case sms
+		if (StringUtils.isNotBlank(notifyCommon.getSmsNo())) {
+			SmsChannel smsChannel = new SmsChannel();
+			smsChannel.setSmsEdpoint(notifyCommon.getSmsNo());
+			smsChannel.setSmsSearch(false);
+			smsChannel.setSmsForce(false);
+			record.setSms(smsChannel);
+		}
+		notificationRecords.add(record);
+		notificationRequest.setRecords(notificationRecords);
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
+			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
+		} else {
+			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
+					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
+		}
+
+	}
+
+	/**
 	 * Wrapper for process notification for Request temporary
 	 * 
 	 * @param notifyCommon
@@ -443,7 +531,7 @@ public class NotificationService {
 			smsChannel.setSmsEdpoint(notifyCommon.getSmsNo());
 			smsChannel.setSmsSearch(false);
 			smsChannel.setSmsForce(false);
-			
+
 			record.setSms(smsChannel);
 		}
 
