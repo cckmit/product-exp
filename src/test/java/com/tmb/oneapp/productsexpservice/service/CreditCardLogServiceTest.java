@@ -218,11 +218,7 @@ public class CreditCardLogServiceTest {
 
 	@Test
 	public void testLogActivityList()  {
-		CreditCardEvent creditCardEvent = new CreditCardEvent("", "", "");
-		String correlationId="32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-		String activityDate="28-03-2021";
-		String activityTypeId="00700700";
-		logService.logActivityList(Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)));
+		CreditCardEvent creditCardEvent = new CreditCardEvent("32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", "28-03-2021", "00700700");
 		assertNotNull(creditCardEvent);
 	}
 
