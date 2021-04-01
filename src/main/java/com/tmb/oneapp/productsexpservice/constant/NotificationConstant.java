@@ -8,6 +8,8 @@ public class NotificationConstant {
 	public static final String EMAIL_TEMPLATE_KEY = "template_name";
 	public static final String ACTIVE_CARD_TEMPLATE_VALUE = "ONEAPP_003";
 	public static final String SET_PIN_TEMPLATE_VALUE = "ONEAPP_004";
+	public static final String CHANGE_USAGE_TEMPLATE_VALUE = "ONEAPP_005";
+	public static final String REQUEST_TEMPORARY_TEMPLATE_VALUE = "ONEAPP_006";
 	
 	public static final String EMAIL_CHANNEL_NAME_TH = "channelNameTH";
 	public static final String EMAIL_CHANNEL_NAME_EN = "channelNameEN";
@@ -21,5 +23,9 @@ public class NotificationConstant {
 	public static final String EMAIL_SUPPORT_NO = "supportNo";
 	public static final String EMAIL_PRODUCT_TYPE_TH = "productTypeTH";
 	public static final String EMAIL_PRODUCT_TYPE_EN = "productTypeEN";
+	public static final String OLD_CREDIT_LIMIT ="oldLimit";
+	public static final String NEW_CREDIT_LIMIT ="newLimit";
+	public static final String TRAN_DATE ="tranDate";
+	public static final String TRAN_TIME ="tranTime";
 
 }
