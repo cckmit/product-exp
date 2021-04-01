@@ -257,7 +257,9 @@ public class CreditCardLogService {
 		try {
 			for(CreditCardEvent activity : cardActivityList) {
 				for(CardInstallmentResponse cardResp : data) {
-					if(cardResp.getStatus().getErrorStatus()!=null && !cardResp.getStatus().getErrorStatus().isEmpty()) {
+
+					String transactionKey = data.get(0).getCreditCard().getCardInstallment().getTransactionKey();
+					if(cardResp.getStatus().getErrorStatus()!=null && !cardResp.getStatus().getErrorStatus().isEmpty()  &&  transactionKey.equalsIgnoreCase(cardResp.getCreditCard().getCardInstallment().getTransactionKey())) {
 						activity.setResult(ProductsExpServiceConstant.FAILURE);
 						activity.setActivityStatus(ProductsExpServiceConstant.FAILURE);
 						activity.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
