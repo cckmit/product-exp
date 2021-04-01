@@ -6,6 +6,8 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimit
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -184,8 +186,16 @@ public class CreditCardLogServiceTest {
 			cardInstallment.add(installment);
 		}
 		query.setCardInstallment(cardInstallment);
-		List<CreditCardEvent> creditCardEvents = logService.applySoGoodConfirmEvent(correlationId, reqHeader, query);
-		assertEquals(true, creditCardEvents.isEmpty());
+		List<CardInstallmentResponse> installment = new ArrayList<>();
+		CardInstallmentResponse response = new CardInstallmentResponse();
+		StatusResponse status= new StatusResponse();
+		status.setStatusCode("0");
+		status.setErrorStatus(null);
+		response.setStatus(status);
+		installment.add(response);
+		logService.applySoGoodConfirmEvent(correlationId, reqHeader, query,installment);
+		assertEquals("0", status.getStatusCode());
+
 	}
 
 	@Test
@@ -210,7 +220,14 @@ public class CreditCardLogServiceTest {
 			cardInstallment.add(installment);
 		}
 		query.setCardInstallment(cardInstallment);
-		logService.applySoGoodConfirmEvent(correlationId,hashMap,query);
+		List<CardInstallmentResponse> installment = new ArrayList<>();
+		CardInstallmentResponse response = new CardInstallmentResponse();
+		StatusResponse status= new StatusResponse();
+		status.setStatusCode("0");
+		status.setErrorStatus(null);
+		response.setStatus(status);
+		installment.add(response);
+		logService.applySoGoodConfirmEvent(correlationId,hashMap,query,installment);
 		assertEquals(false,Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
 	}
 
