@@ -94,18 +94,13 @@ public class CardInstallmentController {
 					List<CardInstallmentResponse> data = cardInstallmentResp.getData();
 
 					if (data!=null) {
-
-						creditCardLogService.logActivity(creditCardEvent);
+						List<CreditCardEvent> creditCardEvents = creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter);
+						creditCardLogService.logActivityList(creditCardEvents, data);
 
 						oneServiceResponse.setData(cardInstallmentResp.getData());
 						oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 					} else {
-						creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-
-
-						creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-						creditCardLogService.logActivity(creditCardEvent);
 						oneServiceResponse.setData(cardInstallmentResp.getData());
 						oneServiceResponse.setStatus(
 								new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
@@ -114,11 +109,6 @@ public class CardInstallmentController {
 					}
 				}
 			} else {
-				creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-				creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-				creditCardEvent.setFailReason(ResponseCode.DATA_NOT_FOUND_ERROR.getMessage());
-				creditCardLogService.logActivity(creditCardEvent);
-
 				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
 						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
 						ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));

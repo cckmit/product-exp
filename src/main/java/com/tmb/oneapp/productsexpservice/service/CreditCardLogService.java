@@ -9,6 +9,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimit
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -185,7 +186,8 @@ public class CreditCardLogService {
 
 			for (CardInstallment installment : cardInstallment) {
 				CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
-
+				creditCardEvent.setPlan(installment.getPromotionModelNo());
+				creditCardEvent.setTransactionDescription(installment.getTransactionDescription());
 				populateBaseEvents(creditCardEvent, reqHeader);
 
 				Double amountInDouble = ConversionUtil.stringToDouble(installment.getAmounts());
@@ -202,6 +204,7 @@ public class CreditCardLogService {
 				String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountPlusTotalInterest);
 
 				creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+				confirmEventList.add(creditCardEvent);
 
 			}
 
@@ -250,9 +253,21 @@ public class CreditCardLogService {
 	/**
 	 * @param cardActivityList
 	 */
-	public void logActivityList(List<CreditCardEvent> cardActivityList) {
-		for(CreditCardEvent activity : cardActivityList) {
-			logActivity(activity);
+	public void logActivityList(List<CreditCardEvent> cardActivityList, List<CardInstallmentResponse> data) {
+		try {
+			for(CreditCardEvent activity : cardActivityList) {
+				for(CardInstallmentResponse cardResp : data) {
+					if(cardResp.getStatus().getErrorStatus()!=null && cardResp.getStatus().getErrorStatus().size()>0) {
+						activity.setResult(ProductsExpServiceConstant.FAILURE);
+						activity.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+						activity.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+						activity.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+					}
+					logActivity(activity);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Unable to process activity log request : {}", e);
 		}
 	}
 
