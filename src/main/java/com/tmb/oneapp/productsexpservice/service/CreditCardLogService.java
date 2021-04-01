@@ -258,6 +258,7 @@ public class CreditCardLogService {
 			for(CreditCardEvent activity : cardActivityList) {
 				for(CardInstallmentResponse cardResp : data) {
 					if(cardResp.getStatus().getErrorStatus()!=null && cardResp.getStatus().getErrorStatus().size()>0) {
+						activity.setResult(ProductsExpServiceConstant.FAILURE);
 						activity.setActivityStatus(ProductsExpServiceConstant.FAILURE);
 						activity.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
 					}
