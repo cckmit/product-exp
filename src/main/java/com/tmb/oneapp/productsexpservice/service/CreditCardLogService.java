@@ -260,6 +260,7 @@ public class CreditCardLogService {
 					if(cardResp.getStatus().getErrorStatus()!=null && cardResp.getStatus().getErrorStatus().size()>0) {
 						activity.setResult(ProductsExpServiceConstant.FAILURE);
 						activity.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+						activity.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
 						activity.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
 					}
 					logActivity(activity);
