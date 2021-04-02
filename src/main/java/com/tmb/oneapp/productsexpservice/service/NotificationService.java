@@ -360,13 +360,8 @@ public class NotificationService {
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
 					accountId);
-//			ResponseEntity<TmbOneServiceResponse<List<Reason>>> reasoncodeInfoRes = creditCardClient
-//					.getReasonList(correlationId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
-					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())
-//					&& Objects.nonNull(reasoncodeInfoRes.getBody())
-//					&& SUCCESS_MESSAGE.equals(reasoncodeInfoRes.getBody().getStatus().getCode())
-			) {
+					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				GetCardResponse cardResponse = cardInfoResponse.getBody();
 				NotifyCommon notifyCommon = new NotifyCommon();
 				notifyCommon.setAccountId(accountId);
@@ -385,9 +380,8 @@ public class NotificationService {
 								? cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
 										.getAmounts().toString()
 								: null;
-//				Reason reasonInfo = fillerReasonCode(reasoncodeInfoRes.getBody().getData(),requestBodyParameter.get);					
-				String reasonEN = null;
-				String reasonTH = null;
+				String reasonEN = requestBodyParameter.getEnglishDes();
+				String reasonTH = requestBodyParameter.getReasonDescEn();
 				sendNotifySuccessForRequestTemporary(notifyCommon, requestBodyParameter.getPreviousCreditLimit(),
 						requestBodyParameter.getCurrentCreditLimit(), expiryDate, tempLimit, reasonEN, reasonTH);
 
