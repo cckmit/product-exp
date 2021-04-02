@@ -335,24 +335,5 @@ public class ProductExpAsynService {
                     null);
         }
     }
-//ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>>
-    //ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>>
-    @LogAround
-    @Async
-    public CompletableFuture<List<CustFavoriteFundData>> fetchFundSummaryByPort(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
-        try {
-            ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter, crmId);
-            return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
-        }
-    }
 
 }
