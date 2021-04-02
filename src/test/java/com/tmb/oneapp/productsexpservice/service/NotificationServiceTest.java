@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

@@ -25,6 +25,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
