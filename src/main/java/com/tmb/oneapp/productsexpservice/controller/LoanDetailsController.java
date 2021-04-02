@@ -57,7 +57,7 @@ public class LoanDetailsController {
      * @return
      */
     @LogAround
-    @PostMapping(value = "/creditcard/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/loan/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @Valid @RequestHeader("X-Correlation-ID") String correlationId,
             @ApiParam(value = "Account ID", defaultValue = "00016109738001", required = true) @RequestBody AccountId requestBody) {

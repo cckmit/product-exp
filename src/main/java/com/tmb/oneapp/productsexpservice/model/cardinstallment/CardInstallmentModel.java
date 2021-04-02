@@ -16,4 +16,8 @@ public class CardInstallmentModel {
 	private Double amounts;
 	@JsonProperty("order_no")
 	private String orderNo;
+	@JsonProperty("transaction_description")
+    private String transactionDescription;
+	@JsonProperty("transaction_key")
+    private String transactionKey;
 }

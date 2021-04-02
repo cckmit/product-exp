@@ -33,4 +33,6 @@ public class CardInstallment {
     private String monthlyInstallments;
     @JsonProperty("interest")
     private String interest;
+    @JsonProperty("transaction_description")
+    private String transactionDescription;
 }
