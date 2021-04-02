@@ -47,6 +47,21 @@ public interface CustomerServiceClient {
     );
 
     /**
+     * Put first time usage status of customer for specified service.
+     *
+     * @param crmId         customer ID
+     * @param deviceId      device ID
+     * @param serviceTypeId service type ID
+     * @return String of update first time usage status
+     */
+    @PutMapping(value = "/apis/customers/firstTimeUsage")
+    ResponseEntity<TmbOneServiceResponse<String>> putFirstTimeUsage(
+            @RequestHeader(value = X_CRMID) String crmId,
+            @RequestHeader(value = DEVICE_ID) String deviceId,
+            @RequestParam(value = "serviceTypeId") String serviceTypeId
+    );
+
+    /**
      * Get all case statuses for customer
      *
      * @param crmId customer ID
@@ -68,4 +83,21 @@ public interface CustomerServiceClient {
             @RequestHeader Map<String, String> requestHeadersParameter, @RequestHeader(name = "crmId") String crmId);
 
 
+    /**
+     * Post submit NCB customer case
+     *
+     * @param crmId customer ID
+     * @param correlationId correlationId
+     * @param firstname user's firstname
+     * @param lastname user's lastname
+     *
+     * @return String of
+     */
+    @PostMapping(value = "/apis/customers/case/submit")
+    ResponseEntity<TmbOneServiceResponse<String>> submitNcbCustomerCase(
+            @RequestHeader(value = X_CRMID) String crmId,
+            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
+            @RequestParam(value = "Firstname") String firstname,
+            @RequestParam(value = "Lastname") String lastname
+    );
 }
