@@ -1,8 +1,8 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.homeloan.AccountId;
-import com.tmb.oneapp.productsexpservice.model.homeloan.LoanDetailsFullResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

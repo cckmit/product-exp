@@ -24,8 +24,8 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
@@ -64,7 +64,7 @@ public class NotificationService {
 
 	/**
 	 * Method for activation email service for expose to external request
-	 * 
+	 *
 	 * @param xCorrelationId
 	 * @param accountId
 	 * @param crmId
@@ -77,11 +77,11 @@ public class NotificationService {
 		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn,
 						defaultChannelTh, accountId, cardResponse.getProductCodeData().getProductNameEN(),
 						cardResponse.getProductCodeData().getProductNameTH());
@@ -103,7 +103,7 @@ public class NotificationService {
 
 	/**
 	 * Method for activation email service for wrapper process
-	 * 
+	 *
 	 * @param email
 	 * @param xCorrelationId
 	 * @param channelNameEn
@@ -149,7 +149,7 @@ public class NotificationService {
 
 	/**
 	 * Wrapper execution for notify success for set pin for email and sms
-	 * 
+	 *
 	 * @param xCorrelationId
 	 * @param accountId
 	 * @param crmId
@@ -162,11 +162,11 @@ public class NotificationService {
 		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				NotifyCommon notifyCommon = new NotifyCommon();
 				notifyCommon.setChannelNameEn(defaultChannelEn);
 				notifyCommon.setChannelNameTh(defaultChannelTh);
@@ -206,10 +206,9 @@ public class NotificationService {
 		params.put(NotificationConstant.SUPPORT_NO, supportNo);
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
-		
+
 		setRequestForEmailAndSms(notifyCommon, record);
 
-		
 		notificationRecords.add(record);
 		notificationRequest.setRecords(notificationRecords);
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient.sendMessage(xCorrelationId,
@@ -234,11 +233,11 @@ public class NotificationService {
 		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				NotifyCommon notifyCommon = new NotifyCommon();
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setEmail(customerProfileInfo.getEmailAddress());
@@ -345,11 +344,11 @@ public class NotificationService {
 		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				NotifyCommon notifyCommon = new NotifyCommon();
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setEmail(customerProfileInfo.getEmailAddress());
@@ -389,11 +388,11 @@ public class NotificationService {
 		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				NotifyCommon notifyCommon = new NotifyCommon();
 				notifyCommon.setChannelNameEn(defaultChannelEn);
 				notifyCommon.setChannelNameTh(defaultChannelTh);
@@ -431,9 +430,9 @@ public class NotificationService {
 		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
-		
+
 		setRequestForEmailAndSms(notifyCommon, record);
-		
+
 		notificationRecords.add(record);
 		notificationRequest.setRecords(notificationRecords);
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
@@ -472,7 +471,7 @@ public class NotificationService {
 		params.put(NotificationConstant.REASON_TH, reasonTH);
 
 		record.setParams(params);
-		
+
 		setRequestForEmailAndSms(notifyCommon, record);
 
 		notificationRecords.add(record);

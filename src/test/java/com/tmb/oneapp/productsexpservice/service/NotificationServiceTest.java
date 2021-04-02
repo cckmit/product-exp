@@ -25,7 +25,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardCreditLimit;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
@@ -60,7 +60,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -92,7 +92,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -123,7 +123,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -155,7 +155,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -198,7 +198,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -254,7 +254,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -289,18 +289,18 @@ public class NotificationServiceTest {
 				"0000000050079650011000193", "001100000000000000000012036208", req);
 		Assert.assertTrue(true);
 	}
-	
+
 	@Test
 	public void validCustomerResponseTest() {
-		
+
 		TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
 		CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
 		customerProfile.setEmailAddress("witsanu@gmail.com");
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
-		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> ab  = ResponseEntity.ok(profileResponse);
+		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> ab = ResponseEntity.ok(profileResponse);
 		notificationService.validCustomerResponse(ab);
 		Assert.assertTrue(true);
 	}
-	
+
 }
