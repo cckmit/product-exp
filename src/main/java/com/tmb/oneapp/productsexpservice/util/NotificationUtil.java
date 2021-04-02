@@ -4,6 +4,8 @@ import com.tmb.oneapp.productsexpservice.model.request.notification.NotifyCommon
 
 public class NotificationUtil {
 	
+	private NotificationUtil() {}
+	
 	/**
 	 * Create object for notifycommon wrapper information
 	 * @param xCorrelationId

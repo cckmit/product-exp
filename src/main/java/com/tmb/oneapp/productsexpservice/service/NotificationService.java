@@ -48,9 +48,9 @@ public class NotificationService {
 	@Value("${notification-service.e-noti.default.support.no}")
 	private String gobalCallCenter;
 	@Value("${notification-service.e-noti.default.template.date}")
-	private String formatTranDate;
+	private String formatTranDate = "dd/MM/yyyy";
 	@Value("${notification-service.e-noti.default.template.time}")
-	private String formateTime;
+	private String formateTime = "HH:mm";
 
 	private NotificationServiceClient notificationClient;
 	private CustomerServiceClient customerClient;

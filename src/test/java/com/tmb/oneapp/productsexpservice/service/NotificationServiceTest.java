@@ -236,7 +236,7 @@ public class NotificationServiceTest {
 	}
 
 	@Test
-	void changeUsageLimit() {
+	void changeUsageLimitTest() {
 		SetCreditLimitReq req = new SetCreditLimitReq();
 		req.setAccountId("0000000050079650011000193");
 		req.setCurrentCreditLimit("120000");
