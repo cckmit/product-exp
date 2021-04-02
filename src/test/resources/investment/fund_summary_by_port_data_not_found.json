@@ -1,0 +1,9 @@
+{
+  "status": {
+    "code": "MF0008",
+    "message": "Info",
+    "service": "investment-service",
+    "description": "Data not found."
+  },
+  "data": null
+}

@@ -40,6 +40,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassLi
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
+import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -140,10 +141,12 @@ public class ProductsExpService {
         String portData;
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData = null;
         UnitHolder unitHolder = new UnitHolder();
+        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse = null;
 
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
             portData = accountRequestClient.getPortList(invHeaderReqParameter, rq.getCrmId());
+
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
             if (!StringUtils.isEmpty(portData)) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -160,9 +163,13 @@ public class ProductsExpService {
                 String acctNbrList = ports.stream().map(Port::<String>getAcctNbr).collect(Collectors.joining(","));
                 unitHolder.setUnitHolderNo(acctNbrList);
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
+                summaryByPortResponse = investmentRequestClient
+                        .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
                 logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, fundSummaryData);
                 if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                     var body = fundSummaryData.getBody();
+                    var summaryByPort = summaryByPortResponse.getBody();
+
                     if (body != null) {
                         FundClassList fundClassList = body.getData().getBody().getFundClassList();
                         List<FundClass> fundClass = fundClassList.getFundClass();
@@ -175,6 +182,12 @@ public class ProductsExpService {
                         result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
                         result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
                         result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
+                        if(summaryByPort != null && summaryByPort.getData() !=null && summaryByPort.getData().getBody() != null &&
+                                !summaryByPort.getData().getBody().getPortfolioList().isEmpty()){
+                            result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
+                        }
+
+
                     }
                 }
             }
