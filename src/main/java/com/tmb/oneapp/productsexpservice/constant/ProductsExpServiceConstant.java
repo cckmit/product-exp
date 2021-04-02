@@ -119,6 +119,10 @@ public class ProductsExpServiceConstant {
     public static final String DEVICE_ID = "device-id";
     public static final String DEVICE_MODEL = "device-model";
     public static final String ACCEPT_LANGUAGE = "accept-language";
+    public static final String FIRST_NAME_TH = "firstname_th";
+    public static final String LAST_NAME_TH = "lastname_th";
+    public static final String FIRST_NAME_EN = "firstname_en";
+    public static final String LAST_NAME_EN = "lastname_en";
     public static final String MODE_PERMANENT = "permanent";
     public static final String MODE_TEMPORARY = "temporary";
     public static final String ACTIVITY_ID_VERIFY_CARD_NO = "00700100";

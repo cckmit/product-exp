@@ -16,5 +16,4 @@ public interface NotificationServiceClient {
 	TmbOneServiceResponse<NotificationResponse> sendMessage(
 			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID, required = true) final String xCorrelationId,
 			NotificationRequest request);
-
 }
