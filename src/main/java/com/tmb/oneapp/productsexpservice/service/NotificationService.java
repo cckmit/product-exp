@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
@@ -29,6 +32,7 @@ import com.tmb.oneapp.productsexpservice.model.request.notification.Notification
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotifyCommon;
 import com.tmb.oneapp.productsexpservice.model.request.notification.SmsChannel;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
+import com.tmb.oneapp.productsexpservice.util.NotificationUtil;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
@@ -43,6 +47,10 @@ public class NotificationService {
 	private String defaultChannelEn;
 	@Value("${notification-service.e-noti.default.support.no}")
 	private String gobalCallCenter;
+	@Value("${notification-service.e-noti.default.template.date}")
+	private String formatTranDate = "dd/MM/yyyy";
+	@Value("${notification-service.e-noti.default.template.time}")
+	private String formateTime = "HH:mm";
 
 	private NotificationServiceClient notificationClient;
 	private CustomerServiceClient customerClient;
@@ -50,7 +58,7 @@ public class NotificationService {
 
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
-							   CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient) {
+			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient) {
 		this.notificationClient = notificationServiceClient;
 		this.customerClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
@@ -65,12 +73,10 @@ public class NotificationService {
 	 */
 	@Async
 	public void sendCardActiveEmail(String xCorrelationId, String accountId, String crmId) {
-		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
+		logger.info("xCorrelationId:{} request customer name in th and en to card active", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
-				&& Objects.nonNull(response.getBody().getData())
-				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
@@ -86,6 +92,18 @@ public class NotificationService {
 	}
 
 	/**
+	 * Validae for sucess customer response
+	 * 
+	 * @param response
+	 * @return
+	 */
+	public boolean validCustomerResponse(ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response) {
+		return HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
+				&& Objects.nonNull(response.getBody().getData())
+				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode());
+	}
+
+	/**
 	 * Method for activation email service for wrapper process
 	 *
 	 * @param email
@@ -97,7 +115,7 @@ public class NotificationService {
 	 * @param productNameTh
 	 */
 	private void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn,
-										 String channelNameTh, String accountId, String productNameEn, String productNameTh) {
+			String channelNameTh, String accountId, String productNameEn, String productNameTh) {
 
 		if (StringUtils.isNotBlank(email)) {
 			NotificationRequest notificationRequest = new NotificationRequest();
@@ -109,15 +127,14 @@ public class NotificationService {
 
 			emailRecord.setEmail(emailChannel);
 
-			Map<String, Object> emailTemplateParams = new HashMap<>();
-			emailTemplateParams.put(NotificationConstant.EMAIL_TEMPLATE_KEY,
-					NotificationConstant.ACTIVE_CARD_TEMPLATE_VALUE);
-			emailTemplateParams.put(NotificationConstant.EMAIL_CARD_ACCOUNT_ID, accountId);
-			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, channelNameEn);
-			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, channelNameTh);
-			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_EN, productNameEn);
-			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
-			emailRecord.setParams(emailTemplateParams);
+			Map<String, Object> params = new HashMap<>();
+			params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.ACTIVE_CARD_TEMPLATE_VALUE);
+			params.put(NotificationConstant.ACCOUNT_ID, accountId);
+			params.put(NotificationConstant.CHANNEL_NAME_EN, channelNameEn);
+			params.put(NotificationConstant.CHANNEL_NAME_TH, channelNameTh);
+			params.put(NotificationConstant.PRODUCT_NAME_EN, productNameEn);
+			params.put(NotificationConstant.PRODUCT_NAME_TH, productNameTh);
+			emailRecord.setParams(params);
 			emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
 
 			notificationRecords.add(emailRecord);
@@ -125,12 +142,9 @@ public class NotificationService {
 
 			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
 					.sendMessage(xCorrelationId, notificationRequest);
-			if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
-				logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
-			} else {
-				logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
-						sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
-			}
+
+			processResultLog(sendEmailResponse, notificationRequest);
+
 		}
 
 	}
@@ -147,9 +161,7 @@ public class NotificationService {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
-				&& Objects.nonNull(response.getBody().getData())
-				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
@@ -157,75 +169,333 @@ public class NotificationService {
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				FetchCardResponse cardResponse = cardInfoResponse.getBody();
-				NotifyCommon notifyCommon = new NotifyCommon();
-				notifyCommon.setChannelNameEn(defaultChannelEn);
-				notifyCommon.setChannelNameTh(defaultChannelTh);
-				notifyCommon.setEmail(customerProfileInfo.getEmailAddress());
-				notifyCommon.setSmsNo(customerProfileInfo.getPhoneNoFull());
-				sendNotificationEmailForSetpin(notifyCommon, xCorrelationId, accountId,
-						cardResponse.getProductCodeData().getProductNameEN(),
-						cardResponse.getProductCodeData().getProductNameTH(), gobalCallCenter);
+				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
+						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
+						cardResponse.getProductCodeData().getProductNameTH(), null, null);
+
+				sendNotificationEmailForSetpin(notifyCommon, customerProfileInfo.getEmailAddress(),
+						customerProfileInfo.getPhoneNoFull(), accountId, gobalCallCenter);
 			}
 		}
 	}
 
 	/**
 	 * Wrapper for process notification for SET PIN
+	 * 
 	 * @param notifyCommon
 	 * @param xCorrelationId
 	 * @param accountId
 	 * @param productNameEn
 	 * @param productNameTh
 	 * @param supportNo
+	 * @param gobalCallCenter2
+	 * @param string
 	 */
-	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String xCorrelationId, String accountId,
-												String productNameEn, String productNameTh, String supportNo) {
+	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String accountId, String supportNo,
+			String email, String smsNo) {
+		NotificationRequest notificationRequest = new NotificationRequest();
+		List<NotificationRecord> notificationRecords = new ArrayList<>();
+
+		NotificationRecord record = new NotificationRecord();
+
+		Map<String, Object> params = new HashMap<>();
+		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.SET_PIN_TEMPLATE_VALUE);
+		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
+		params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
+		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
+		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+		params.put(NotificationConstant.SUPPORT_NO, supportNo);
+		record.setParams(params);
+		record.setLanguage(NotificationConstant.LOCALE_TH);
+
+		setRequestForEmailAndSms(email, smsNo, record);
+
+		notificationRecords.add(record);
+		notificationRequest.setRecords(notificationRecords);
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+		processResultLog(sendEmailResponse, notificationRequest);
+	}
+
+	/**
+	 * Method for notify change usage email service for wrapper process
+	 * 
+	 * @param xCorrelationId
+	 * @param accountId
+	 * @param crmId
+	 * @param requestBodyParameter
+	 */
+	@Async
+	public void doNotifySuccessForChangeUsageLimit(String xCorrelationId, String accountId, String crmId,
+			SetCreditLimitReq requestBodyParameter) {
+		logger.info("xCorrelationId:{} request customer name in th and en for change usage limit", xCorrelationId);
+		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
+				.getCustomerProfile(new HashMap<String, String>(), crmId);
+		if (validCustomerResponse(response)) {
+			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
+
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+					accountId);
+			if (Objects.nonNull(cardInfoResponse.getBody())
+					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
+
+				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
+						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
+						cardResponse.getProductCodeData().getProductNameTH(),
+						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
+						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+
+				String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formatTranDate));
+				String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formateTime));
+				sendNotifySuccessForChangeUsage(notifyCommon, requestBodyParameter.getPreviousCreditLimit(),
+						requestBodyParameter.getCurrentCreditLimit(), accountId, customerProfileInfo.getEmailAddress(),
+						tranDate, tranTime);
+
+			}
+		}
+	}
+
+	/**
+	 * Wrapper for process notification for CHANGE USAGE
+	 * 
+	 * @param notifyCommon
+	 * @param oldLimit
+	 * @param newLimit
+	 * @param tranDate
+	 * @param tranTime
+	 * @param email
+	 * @param accoundId
+	 */
+	private void sendNotifySuccessForChangeUsage(NotifyCommon notifyCommon, String oldLimit, String newLimit,
+			String accoundId, String email, String tranDate, String tranTime) {
+
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 		NotificationRecord record = new NotificationRecord();
 
+		Map<String, Object> params = new HashMap<>();
+		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.CHANGE_USAGE_TEMPLATE_VALUE);
+		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
+		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
+		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
+		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+		params.put(NotificationConstant.ACCOUNT_ID, accoundId);
+		params.put(NotificationConstant.OLD_CREDIT_LIMIT, oldLimit);
+		params.put(NotificationConstant.NEW_CREDIT_LIMIT, newLimit);
+		params.put(NotificationConstant.TRAN_DATE, tranDate);
+		params.put(NotificationConstant.TRAN_TIME, tranTime);
+
+		record.setParams(params);
+
+		setRequestForEmailAndSms(email, null, record);
+
+		notificationRecords.add(record);
+		notificationRequest.setRecords(notificationRecords);
+
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+		processResultLog(sendEmailResponse, notificationRequest);
+
+	}
+
+	/**
+	 * set param for email and sms
+	 * 
+	 * @param notifyCommon
+	 * @param record
+	 */
+	private void setRequestForEmailAndSms(String email, String smsNo, NotificationRecord record) {
 		// case email
-		if (StringUtils.isNotBlank(notifyCommon.getEmail())) {
+		if (StringUtils.isNotBlank(email)) {
 			EmailChannel emailChannel = new EmailChannel();
-			emailChannel.setEmailEndpoint(notifyCommon.getEmail());
+			emailChannel.setEmailEndpoint(email);
 			emailChannel.setEmailSearch(false);
 
 			record.setEmail(emailChannel);
 
-			Map<String, Object> emailTemplateParams = new HashMap<>();
-			emailTemplateParams.put(NotificationConstant.EMAIL_TEMPLATE_KEY,
-					NotificationConstant.SET_PIN_TEMPLATE_VALUE);
-			emailTemplateParams.put(NotificationConstant.EMAIL_CARD_ACCOUNT_ID, accountId);
-			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
-			emailTemplateParams.put(NotificationConstant.EMAIL_CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
-			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_EN, productNameEn);
-			emailTemplateParams.put(NotificationConstant.EMAIL_PRODUCT_NAME_TH, productNameTh);
-			emailTemplateParams.put(NotificationConstant.EMAIL_SUPPORT_NO, supportNo);
-			record.setParams(emailTemplateParams);
-			record.setLanguage(NotificationConstant.LOCALE_TH);
-
-			notificationRecords.add(record);
 		}
-
 		// case sms
-		if (StringUtils.isNotBlank(notifyCommon.getSmsNo())) {
+		if (StringUtils.isNotBlank(smsNo)) {
 			SmsChannel smsChannel = new SmsChannel();
-			smsChannel.setSmsEdpoint(notifyCommon.getSmsNo());
+			smsChannel.setSmsEdpoint(smsNo);
 			smsChannel.setSmsSearch(false);
 			smsChannel.setSmsForce(false);
 			record.setSms(smsChannel);
 		}
+	}
 
+	/**
+	 * Method for notify request temporary limit email service for wrapper process
+	 * 
+	 * @param correlationId
+	 * @param accountId
+	 * @param crmId
+	 * @param requestBodyParameter
+	 */
+	@Async
+	public void doNotifySuccessForTemporaryLimit(String correlationId, String accountId, String crmId,
+			SetCreditLimitReq requestBodyParameter) {
+		logger.info("xCorrelationId:{} request customer name in th and en to temporary limit", correlationId);
+		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
+				.getCustomerProfile(new HashMap<String, String>(), crmId);
+		if (validCustomerResponse(response)) {
+			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
+
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
+					accountId);
+			if (Objects.nonNull(cardInfoResponse.getBody())
+					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
+				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
+						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
+						cardResponse.getProductCodeData().getProductNameTH(),
+						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
+						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+				String expiryDate = cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
+						.getExpiryDate();
+				String tempLimit = cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
+						.getAmounts() != null
+								? cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
+										.getAmounts().toString()
+								: null;
+				String reasonEN = requestBodyParameter.getEnglishDes();
+				String reasonTH = requestBodyParameter.getReasonDescEn();
+				sendNotifySuccessForRequestTemporary(notifyCommon, customerProfileInfo.getEmailAddress(), accountId,
+						expiryDate, tempLimit, reasonEN, reasonTH);
+
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param correlationId
+	 * @param accountId
+	 * @param crmId
+	 */
+	@Async
+	public void doNotifySuccessForBlockCard(String correlationId, String accountId, String crmId) {
+		logger.info("xCorrelationId:{} request customer name in th and en for block card", correlationId);
+		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
+				.getCustomerProfile(new HashMap<String, String>(), crmId);
+		if (validCustomerResponse(response)) {
+			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
+
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
+					accountId);
+			if (Objects.nonNull(cardInfoResponse.getBody())
+					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
+				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
+						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
+						cardResponse.getProductCodeData().getProductNameTH(), null, null);
+
+				sendNotificationEmailForBlockCard(notifyCommon, customerProfileInfo.getEmailAddress(),
+						customerProfileInfo.getPhoneNoFull(), accountId, gobalCallCenter);
+			}
+		}
+
+	}
+
+	/**
+	 * Wrapper for process notification for Block card
+	 * 
+	 * @param notifyCommon
+	 * @param gobalCallCenter
+	 * @param accountId
+	 * @param smsNo
+	 * @param email
+	 */
+	private void sendNotificationEmailForBlockCard(NotifyCommon notifyCommon, String email, String smsNo,
+			String accountId, String gobalCallCenter) {
+		NotificationRequest notificationRequest = new NotificationRequest();
+		List<NotificationRecord> notificationRecords = new ArrayList<>();
+
+		NotificationRecord record = new NotificationRecord();
+
+		Map<String, Object> params = new HashMap<>();
+		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.BLOCK_CARD_TEMPLATE_VALUE);
+		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
+		params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
+		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
+		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
+		record.setParams(params);
+		record.setLanguage(NotificationConstant.LOCALE_TH);
+
+		setRequestForEmailAndSms(email, smsNo, record);
+
+		notificationRecords.add(record);
 		notificationRequest.setRecords(notificationRecords);
-		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient.sendMessage(xCorrelationId,
-				notificationRequest);
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+		processResultLog(sendEmailResponse, notificationRequest);
+
+	}
+
+	/**
+	 * Wrapper for process notification for Request temporary
+	 * 
+	 * @param notifyCommon
+	 * @param expiryDate
+	 * @param tempLimit
+	 * @param reasonEN
+	 * @param reasonTH
+	 * @param reasonTH2
+	 * @param reasonEN2
+	 */
+	private void sendNotifySuccessForRequestTemporary(NotifyCommon notifyCommon, String email, String accountId,
+			String expiryDate, String tempLimit, String reasonEN, String reasonTH) {
+
+		NotificationRequest notificationRequest = new NotificationRequest();
+		List<NotificationRecord> notificationRecords = new ArrayList<>();
+		NotificationRecord record = new NotificationRecord();
+
+		Map<String, Object> params = new HashMap<>();
+		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.REQUEST_TEMPORARY_TEMPLATE_VALUE);
+		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
+		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
+		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
+		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.TEMP_LIMIT, tempLimit);
+		params.put(NotificationConstant.EXPIRE_DATE, expiryDate);
+		params.put(NotificationConstant.REASON_EN, reasonEN);
+		params.put(NotificationConstant.REASON_TH, reasonTH);
+
+		record.setParams(params);
+
+		setRequestForEmailAndSms(email, null, record);
+
+		notificationRecords.add(record);
+		notificationRequest.setRecords(notificationRecords);
+
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+		processResultLog(sendEmailResponse, notificationRequest);
+
+	}
+
+	/**
+	 * Log response for e-notification system
+	 * 
+	 * @param sendEmailResponse
+	 * @param notificationRequest
+	 */
+	private void processResultLog(TmbOneServiceResponse<NotificationResponse> sendEmailResponse,
+			NotificationRequest notificationRequest) {
 		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
 			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
 		} else {
 			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
 					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
 		}
-
 	}
 
 }

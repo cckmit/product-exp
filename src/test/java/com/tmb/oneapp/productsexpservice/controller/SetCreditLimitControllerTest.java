@@ -8,6 +8,8 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimit
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Status;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -33,11 +35,13 @@ public class SetCreditLimitControllerTest {
 	CreditCardClient creditCardClient;
 	@Mock
 	CreditCardLogService creditCardLogService;
+	@Mock
+	NotificationService notificationService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		setCreditLimitController = new SetCreditLimitController(creditCardClient, creditCardLogService);
+		setCreditLimitController = new SetCreditLimitController(creditCardClient, creditCardLogService,notificationService);
 
 	}
 
