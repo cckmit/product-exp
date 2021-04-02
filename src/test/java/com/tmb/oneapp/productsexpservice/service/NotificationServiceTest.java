@@ -287,8 +287,20 @@ public class NotificationServiceTest {
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
 		notificationService.doNotifySuccessForChangeUsageLimit(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208", req);
-		
 		Assert.assertTrue(true);
-
 	}
+	
+	@Test
+	public void validCustomerResponseTest() {
+		
+		TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
+		CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+		customerProfile.setEmailAddress("witsanu@gmail.com");
+		profileResponse.setData(customerProfile);
+		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
+		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> ab  = ResponseEntity.ok(profileResponse);
+		notificationService.validCustomerResponse(ab);
+		Assert.assertTrue(true);
+	}
+	
 }

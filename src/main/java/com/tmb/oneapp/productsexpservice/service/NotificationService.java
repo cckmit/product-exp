@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
@@ -73,12 +71,10 @@ public class NotificationService {
 	 */
 	@Async
 	public void sendCardActiveEmail(String xCorrelationId, String accountId, String crmId) {
-		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
+		logger.info("xCorrelationId:{} request customer name in th and en to card active", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
-				&& Objects.nonNull(response.getBody().getData())
-				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
@@ -91,6 +87,18 @@ public class NotificationService {
 						cardResponse.getProductCodeData().getProductNameTH());
 			}
 		}
+	}
+
+	/**
+	 * Validae for sucess customer response
+	 * 
+	 * @param response
+	 * @return
+	 */
+	public boolean validCustomerResponse(ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response) {
+		return HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
+				&& Objects.nonNull(response.getBody().getData())
+				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode());
 	}
 
 	/**
@@ -132,12 +140,9 @@ public class NotificationService {
 
 			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
 					.sendMessage(xCorrelationId, notificationRequest);
-			if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
-				logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
-			} else {
-				logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
-						sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
-			}
+
+			processResultLog(sendEmailResponse, notificationRequest);
+
 		}
 
 	}
@@ -154,9 +159,7 @@ public class NotificationService {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
-				&& Objects.nonNull(response.getBody().getData())
-				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
@@ -203,34 +206,15 @@ public class NotificationService {
 		params.put(NotificationConstant.SUPPORT_NO, supportNo);
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
+		
+		setRequestForEmailAndSms(notifyCommon, record);
 
-		// case email
-		if (StringUtils.isNotBlank(notifyCommon.getEmail())) {
-			EmailChannel emailChannel = new EmailChannel();
-			emailChannel.setEmailEndpoint(notifyCommon.getEmail());
-			emailChannel.setEmailSearch(false);
-			record.setEmail(emailChannel);
-		}
-
-		// case sms
-		if (StringUtils.isNotBlank(notifyCommon.getSmsNo())) {
-			SmsChannel smsChannel = new SmsChannel();
-			smsChannel.setSmsEdpoint(notifyCommon.getSmsNo());
-			smsChannel.setSmsSearch(false);
-			smsChannel.setSmsForce(false);
-			record.setSms(smsChannel);
-		}
+		
 		notificationRecords.add(record);
 		notificationRequest.setRecords(notificationRecords);
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient.sendMessage(xCorrelationId,
 				notificationRequest);
-		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
-			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
-		} else {
-			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
-					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
-		}
-
+		processResultLog(sendEmailResponse, notificationRequest);
 	}
 
 	/**
@@ -244,12 +228,10 @@ public class NotificationService {
 	@Async
 	public void doNotifySuccessForChangeUsageLimit(String xCorrelationId, String accountId, String crmId,
 			SetCreditLimitReq requestBodyParameter) {
-		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
+		logger.info("xCorrelationId:{} request customer name in th and en for change usage limit", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
-				&& Objects.nonNull(response.getBody().getData())
-				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
@@ -308,6 +290,25 @@ public class NotificationService {
 
 		record.setParams(params);
 
+		setRequestForEmailAndSms(notifyCommon, record);
+
+		notificationRecords.add(record);
+		notificationRequest.setRecords(notificationRecords);
+
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+		processResultLog(sendEmailResponse, notificationRequest);
+
+	}
+
+	/**
+	 * set param for email and sms
+	 * 
+	 * @param notifyCommon
+	 * @param record
+	 */
+	private void setRequestForEmailAndSms(NotifyCommon notifyCommon, NotificationRecord record) {
 		// case email
 		if (StringUtils.isNotBlank(notifyCommon.getEmail())) {
 			EmailChannel emailChannel = new EmailChannel();
@@ -325,19 +326,6 @@ public class NotificationService {
 			smsChannel.setSmsForce(false);
 			record.setSms(smsChannel);
 		}
-
-		notificationRecords.add(record);
-		notificationRequest.setRecords(notificationRecords);
-
-		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
-				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
-		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
-			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
-		} else {
-			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
-					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
-		}
-
 	}
 
 	/**
@@ -351,12 +339,10 @@ public class NotificationService {
 	@Async
 	public void doNotifySuccessForTemporaryLimit(String correlationId, String accountId, String crmId,
 			SetCreditLimitReq requestBodyParameter) {
-		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", correlationId);
+		logger.info("xCorrelationId:{} request customer name in th and en to temporary limit", correlationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
-				&& Objects.nonNull(response.getBody().getData())
-				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
@@ -383,8 +369,7 @@ public class NotificationService {
 								: null;
 				String reasonEN = requestBodyParameter.getEnglishDes();
 				String reasonTH = requestBodyParameter.getReasonDescEn();
-				sendNotifySuccessForRequestTemporary(notifyCommon, requestBodyParameter.getPreviousCreditLimit(),
-						requestBodyParameter.getCurrentCreditLimit(), expiryDate, tempLimit, reasonEN, reasonTH);
+				sendNotifySuccessForRequestTemporary(notifyCommon, expiryDate, tempLimit, reasonEN, reasonTH);
 
 			}
 		}
@@ -398,12 +383,10 @@ public class NotificationService {
 	 */
 	@Async
 	public void doNotifySuccessForBlockCard(String correlationId, String accountId, String crmId) {
-		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", correlationId);
+		logger.info("xCorrelationId:{} request customer name in th and en for block card", correlationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
-		if (HttpStatus.OK == response.getStatusCode() && Objects.nonNull(response.getBody())
-				&& Objects.nonNull(response.getBody().getData())
-				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
 			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
@@ -448,33 +431,15 @@ public class NotificationService {
 		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
-
-		// case email
-		if (StringUtils.isNotBlank(notifyCommon.getEmail())) {
-			EmailChannel emailChannel = new EmailChannel();
-			emailChannel.setEmailEndpoint(notifyCommon.getEmail());
-			emailChannel.setEmailSearch(false);
-			record.setEmail(emailChannel);
-		}
-
-		// case sms
-		if (StringUtils.isNotBlank(notifyCommon.getSmsNo())) {
-			SmsChannel smsChannel = new SmsChannel();
-			smsChannel.setSmsEdpoint(notifyCommon.getSmsNo());
-			smsChannel.setSmsSearch(false);
-			smsChannel.setSmsForce(false);
-			record.setSms(smsChannel);
-		}
+		
+		setRequestForEmailAndSms(notifyCommon, record);
+		
 		notificationRecords.add(record);
 		notificationRequest.setRecords(notificationRecords);
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
 				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
-		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
-			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
-		} else {
-			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
-					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
-		}
+
+		processResultLog(sendEmailResponse, notificationRequest);
 
 	}
 
@@ -482,17 +447,13 @@ public class NotificationService {
 	 * Wrapper for process notification for Request temporary
 	 * 
 	 * @param notifyCommon
-	 * @param custFullNameEn
-	 * @param custFullNameTH
-	 * @param previousCreditLimit
-	 * @param currentCreditLimit
 	 * @param expiryDate
 	 * @param tempLimit
 	 * @param reasonEN
 	 * @param reasonTH
 	 */
-	private void sendNotifySuccessForRequestTemporary(NotifyCommon notifyCommon, String previousCreditLimit,
-			String currentCreditLimit, String expiryDate, String tempLimit, String reasonEN, String reasonTH) {
+	private void sendNotifySuccessForRequestTemporary(NotifyCommon notifyCommon, String expiryDate, String tempLimit,
+			String reasonEN, String reasonTH) {
 
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
@@ -511,38 +472,33 @@ public class NotificationService {
 		params.put(NotificationConstant.REASON_TH, reasonTH);
 
 		record.setParams(params);
-
-		// case email
-		if (StringUtils.isNotBlank(notifyCommon.getEmail())) {
-			EmailChannel emailChannel = new EmailChannel();
-			emailChannel.setEmailEndpoint(notifyCommon.getEmail());
-			emailChannel.setEmailSearch(false);
-
-			record.setEmail(emailChannel);
-
-		}
-		// case sms
-		if (StringUtils.isNotBlank(notifyCommon.getSmsNo())) {
-			SmsChannel smsChannel = new SmsChannel();
-			smsChannel.setSmsEdpoint(notifyCommon.getSmsNo());
-			smsChannel.setSmsSearch(false);
-			smsChannel.setSmsForce(false);
-
-			record.setSms(smsChannel);
-		}
+		
+		setRequestForEmailAndSms(notifyCommon, record);
 
 		notificationRecords.add(record);
 		notificationRequest.setRecords(notificationRecords);
 
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
 				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+		processResultLog(sendEmailResponse, notificationRequest);
+
+	}
+
+	/**
+	 * Log response for e-notification system
+	 * 
+	 * @param sendEmailResponse
+	 * @param notificationRequest
+	 */
+	private void processResultLog(TmbOneServiceResponse<NotificationResponse> sendEmailResponse,
+			NotificationRequest notificationRequest) {
 		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
 			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
 		} else {
 			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
 					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
 		}
-
 	}
 
 }
