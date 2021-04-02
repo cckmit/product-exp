@@ -6,8 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NotifyCommon {
-	private String smsNo;
-	private String email;
 	private String xCorrelationId;
 	private String channelNameEn;
 	private String channelNameTh;
@@ -15,6 +13,5 @@ public class NotifyCommon {
 	private String productNameTH;
 	private String custFullNameEn;
 	private String custFullNameTH;
-	private String accountId;
 
 }
