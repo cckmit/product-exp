@@ -10,6 +10,8 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.homeloan.AccountId;
+import com.tmb.oneapp.productsexpservice.model.homeloan.LoanDetailsFullResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -319,5 +321,15 @@ public class CreditCardLogService {
 		creditCardEvent.setActivityStatus(status);
 		logActivity(creditCardEvent);
 	}
+
+	public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, AccountId requestBody, LoanDetailsFullResponse response) {
+
+		populateBaseEvents(creditCardEvent, reqHeader);
+
+		creditCardEvent.setLoanNumber(requestBody.getAccountNo().substring(1, 11));
+		creditCardEvent.setProductName(response.getProductConfig().getProductNameEN());
+		return creditCardEvent;
+	}
+
 
 }
