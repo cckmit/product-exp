@@ -20,7 +20,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
@@ -66,11 +66,11 @@ public class NotificationService {
 				&& SUCCESS_CODE.equals(response.getBody().getStatus().getCode())) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode().toString())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn,
 						defaultChannelTh, accountId, cardResponse.getProductCodeData().getProductNameEN(),
 						cardResponse.getProductCodeData().getProductNameTH());
