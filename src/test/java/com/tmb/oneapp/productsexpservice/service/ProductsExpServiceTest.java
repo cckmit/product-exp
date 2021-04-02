@@ -86,5 +86,49 @@ public class ProductsExpServiceTest {
                 .getFundClass().size(),result.getFundClass().size());
     }
 
+    @Test
+    public void testGetFundSummaryWithNoSummaryByPort() throws Exception {
+
+        FundSummaryRq rq = new FundSummaryRq();
+        rq.setCrmId("test");
+        String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+        FundSummaryByPortResponse fundSummaryByPortResponse;
+        TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+
+        try {
+            FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port.txt");
+            String data = IOUtils.toString(fis, "UTF-8");
+            ObjectMapper mapper = new ObjectMapper();
+            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
+                    FundSummaryResponse.class);
+            ObjectMapper mapperPort = new ObjectMapper();
+            fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port_data_not_found.json").toFile(),
+                    FundSummaryByPortResponse.class);
+            oneServiceResponse.setData(expectedResponse);
+            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            portResponse.setData(fundSummaryByPortResponse);
+            portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(accountRequestClient.getPortList(any(), anyString())).thenReturn(data);
+            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(),any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
+
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        FundSummaryBody result = productsExpService.getFundSummary(corrID,rq);
+        Assert.assertEquals(expectedResponse.getBody().getFundClassList()
+                .getFundClass().size(),result.getFundClass().size());
+        Assert.assertNull(expectedResponse.getBody().getSummaryByPort());
+    }
+
 }
 
