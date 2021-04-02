@@ -22,7 +22,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
@@ -55,7 +55,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -87,7 +87,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
@@ -118,7 +118,7 @@ public class NotificationServiceTest {
 		profileResponse.setData(customerProfile);
 		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
-		GetCardResponse cardResponse = new GetCardResponse();
+		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");

@@ -22,7 +22,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
@@ -50,7 +50,7 @@ public class NotificationService {
 
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
-			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient) {
+							   CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient) {
 		this.notificationClient = notificationServiceClient;
 		this.customerClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
@@ -58,7 +58,7 @@ public class NotificationService {
 
 	/**
 	 * Method for activation email service for expose to external request
-	 * 
+	 *
 	 * @param xCorrelationId
 	 * @param accountId
 	 * @param crmId
@@ -73,11 +73,11 @@ public class NotificationService {
 				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn,
 						defaultChannelTh, accountId, cardResponse.getProductCodeData().getProductNameEN(),
 						cardResponse.getProductCodeData().getProductNameTH());
@@ -87,7 +87,7 @@ public class NotificationService {
 
 	/**
 	 * Method for activation email service for wrapper process
-	 * 
+	 *
 	 * @param email
 	 * @param xCorrelationId
 	 * @param channelNameEn
@@ -97,7 +97,7 @@ public class NotificationService {
 	 * @param productNameTh
 	 */
 	private void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn,
-			String channelNameTh, String accountId, String productNameEn, String productNameTh) {
+										 String channelNameTh, String accountId, String productNameEn, String productNameTh) {
 
 		if (StringUtils.isNotBlank(email)) {
 			NotificationRequest notificationRequest = new NotificationRequest();
@@ -137,7 +137,7 @@ public class NotificationService {
 
 	/**
 	 * Wrapper execution for notify success for set pin for email and sms
-	 * 
+	 *
 	 * @param xCorrelationId
 	 * @param accountId
 	 * @param crmId
@@ -152,11 +152,11 @@ public class NotificationService {
 				&& ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
-			ResponseEntity<GetCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
+			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				GetCardResponse cardResponse = cardInfoResponse.getBody();
+				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				NotifyCommon notifyCommon = new NotifyCommon();
 				notifyCommon.setChannelNameEn(defaultChannelEn);
 				notifyCommon.setChannelNameTh(defaultChannelTh);
@@ -179,7 +179,7 @@ public class NotificationService {
 	 * @param supportNo
 	 */
 	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String xCorrelationId, String accountId,
-			String productNameEn, String productNameTh, String supportNo) {
+												String productNameEn, String productNameTh, String supportNo) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 		NotificationRecord record = new NotificationRecord();

@@ -25,8 +25,8 @@ public interface CreditCardClient {
             @PathVariable(value = "ACCOUNT_ID") String accountId);
 
     @GetMapping(value = "/apis/creditcard/creditcard-details/{ACCOUNT_ID}")
-    public ResponseEntity<GetCardResponse> getCreditCardDetails(@RequestHeader("X-Correlation-ID") String correlationId,
-                                                                @PathVariable(value = "ACCOUNT_ID") String accountId);
+    public ResponseEntity<FetchCardResponse> getCreditCardDetails(@RequestHeader("X-Correlation-ID") String correlationId,
+                                                                  @PathVariable(value = "ACCOUNT_ID") String accountId);
 
     @PostMapping(value = "/apis/creditcard/credit-card/activate-card")
     public ResponseEntity<ActivateCardResponse> activateCard(@RequestHeader Map<String, String> headers);

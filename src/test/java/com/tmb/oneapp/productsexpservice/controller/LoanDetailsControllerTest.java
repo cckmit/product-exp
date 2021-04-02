@@ -5,11 +5,11 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCreditCardDetailsReq;
-import com.tmb.oneapp.productsexpservice.model.homeloan.Account;
-import com.tmb.oneapp.productsexpservice.model.homeloan.AccountId;
-import com.tmb.oneapp.productsexpservice.model.homeloan.LoanDetailsFullResponse;
-import com.tmb.oneapp.productsexpservice.model.homeloan.StatusResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
+import com.tmb.oneapp.productsexpservice.model.loan.Account;
+import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.StatusResponse;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -92,7 +92,7 @@ public class LoanDetailsControllerTest {
     @Test
     void testGetCreditCardDetailsNull()  {
         Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C");
-        GetCreditCardDetailsReq req = new GetCreditCardDetailsReq();
+        FetchCreditCardDetailsReq req = new FetchCreditCardDetailsReq();
         Account accountId = new Account();
         accountId.setBranchId("001");
         accountId.setProductId("ABHA");
@@ -109,7 +109,7 @@ public class LoanDetailsControllerTest {
     @Test
     void testGetLoanDetailsNull()  {
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        GetCreditCardDetailsReq req = new GetCreditCardDetailsReq();
+        FetchCreditCardDetailsReq req = new FetchCreditCardDetailsReq();
         Account accountId = new Account();
         accountId.setBranchId("001");
         accountId.setProductId("ABHA");
