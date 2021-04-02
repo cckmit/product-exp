@@ -85,7 +85,6 @@ public class CardInstallmentController {
 			{
 				ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse> >> cardInstallment = creditCardClient.confirmCardInstallment(correlationId, requestBodyParameter);
 				TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = cardInstallment.getBody();
-				creditCardLogService.applySoGoodConfirmEvent(correlationId,requestHeadersParameter,requestBodyParameter);
 				if (cardInstallmentResp != null) {
 
 					Status status = new Status();
@@ -94,8 +93,7 @@ public class CardInstallmentController {
 					List<CardInstallmentResponse> data = cardInstallmentResp.getData();
 
 					if (data!=null) {
-						List<CreditCardEvent> creditCardEvents = creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter);
-						creditCardLogService.logActivityList(creditCardEvents, data);
+						creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter, data);
 
 						oneServiceResponse.setData(cardInstallmentResp.getData());
 						oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
