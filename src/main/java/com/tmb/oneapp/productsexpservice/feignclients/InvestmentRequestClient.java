@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -60,6 +61,17 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.fund.summary.url}")
     @ResponseBody
     public ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> callInvestmentFundSummaryService(@RequestHeader Map<String, String> headers
+            , @RequestBody UnitHolder unitHolder);
+
+    /***
+     * Call investment to get fund sumaary by port
+     * @param headers
+     * @param unitHolder
+     * @return
+     */
+    @PostMapping(value = "${investment.service.fund.summary.by.port.url}")
+    @ResponseBody
+    public ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> callInvestmentFundSummaryByPortService(@RequestHeader Map<String, String> headers
             , @RequestBody UnitHolder unitHolder);
 
     /**

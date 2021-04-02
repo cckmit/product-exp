@@ -1,6 +1,8 @@
 package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
+import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
@@ -16,5 +18,6 @@ public class FundSummaryBody extends FundClassList{
     private PercentOfFundType percentOfFundType;
     private List<String> portsUnitHolder;
     private List<FundSearch> searchList;
+    private List<PortfolioByPort> summaryByPort;
 
 }
