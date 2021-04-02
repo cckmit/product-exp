@@ -9,6 +9,8 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -31,10 +33,12 @@ public class ProductsActivateCardController {
             ProductsActivateCardController.class);
 
     private CreditCardClient creditCardClient;
+    private NotificationService notificationService;
 
     @Autowired
-    public ProductsActivateCardController(CreditCardClient creditCardClient) {
+    public ProductsActivateCardController(CreditCardClient creditCardClient,NotificationService notificationService) {
         this.creditCardClient = creditCardClient;
+        this.notificationService = notificationService;
     }
 
     @LogAround
@@ -54,6 +58,8 @@ public class ProductsActivateCardController {
 
         try {
             String accountId = headers.get(ProductsExpServiceConstant.ACCOUNT_ID);
+            String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+            String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
             if (!Strings.isNullOrEmpty(accountId)) {
                 ResponseEntity<ActivateCardResponse> activateCardResponse = creditCardClient.activateCard(headers);
                 int statusCodeValue = activateCardResponse.getStatusCodeValue();
@@ -64,6 +70,7 @@ public class ProductsActivateCardController {
                             .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
                     oneServiceResponse.setData(response);
+                    notificationService.sendCardActiveEmail(correlationId, accountId, crmId);
                     return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
                 } else {
                     oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),

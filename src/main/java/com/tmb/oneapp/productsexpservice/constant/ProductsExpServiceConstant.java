@@ -21,6 +21,7 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";
     public static final String SUCCESS_CODE = "0000";
+    public static final Integer SILVER_LAKE_SUCCESS_CODE = 0;
     public static final String SUCCESS_MESSAGE = "success";
     public static final String SERVICE_NAME = "product-exp-service";
     public static final String FUND_CODE_ACCDETAIL = "TMB50";
@@ -172,5 +173,8 @@ public class ProductsExpServiceConstant {
     public static final String UTF_8 = "utf-8";
     public static final String SET_PIN_ACTIVITY_LOG = "00700302";
     public static final String FAILED = "Failed";
+
+    public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
+    public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
 
 }

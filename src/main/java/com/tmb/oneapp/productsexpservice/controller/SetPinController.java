@@ -37,6 +37,7 @@ import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
 import com.tmb.oneapp.productsexpservice.model.setpin.SilverlakeErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.setpin.TranslatePinRes;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
 import feign.FeignException;
 import io.swagger.annotations.Api;
@@ -53,6 +54,7 @@ public class SetPinController {
 	private final OneappAuthClient oneappAuthClient;
 	private final CreditCardClient creditCardClient;
 	private final CreditCardLogService creditCardLogService;
+	private final NotificationService notificationService;
 	private static final TMBLogger<SetPinController> logger = new TMBLogger<>(SetPinController.class);
 
 	/**
@@ -65,10 +67,11 @@ public class SetPinController {
 
 	@Autowired
 	public SetPinController(OneappAuthClient oneappAuthClient, CreditCardClient creditCardClient,
-			CreditCardLogService creditCardLogService) {
+			CreditCardLogService creditCardLogService, NotificationService notificationService) {
 		this.oneappAuthClient = oneappAuthClient;
 		this.creditCardClient = creditCardClient;
 		this.creditCardLogService = creditCardLogService;
+		this.notificationService = notificationService;
 	}
 
 	/**
@@ -90,6 +93,8 @@ public class SetPinController {
 			String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 			String accountId = requestBodyParameter.getAccountId();
 			String activityDate = Long.toString(System.currentTimeMillis());
+			String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
+			
 			TmbOneServiceResponse<SetPinResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 			TranslatePinRes translatePinRes = oneappAuthClient.fetchEcasTranslatePinData(correlationId,
 					requestBodyParameter);
@@ -110,6 +115,7 @@ public class SetPinController {
 					oneServiceResponse
 							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+					notificationService.doNotifySuccessForSetPin(correlationId, accountId, crmId);
 					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 				} else {
 					List<SilverlakeErrorStatus> errorStatus = setPinResponse.getStatus().getErrorStatus();
