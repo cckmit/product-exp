@@ -124,7 +124,7 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_ENTERED_CVV_NO = "00700101";
     public static final String ACTIVITY_ID_CONFIRM_PIN_SUCCESS = "00700102";
     public static final String ACTIVITY_ID_CARD_ACTIVATION = "00700103";
-    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN="00700500";
+    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN="00700600";
     public static final String METHOD = "SCAN/KEY IN";
     public static final String UNIT_HOLDER = "PT000000000000587870";
     public static final String SUITABILITY_EXPIRED = "2";
