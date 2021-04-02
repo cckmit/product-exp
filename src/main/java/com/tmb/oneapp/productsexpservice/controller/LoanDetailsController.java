@@ -101,7 +101,7 @@ public class LoanDetailsController {
                     }
 
                     /*  Activity log */
-                    creditCardEvent=creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,requestBody,loanResponse.getBody().getData());
+                    creditCardEvent=creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,loanDetails);
                     creditCardLogService.logActivity(creditCardEvent);
                     oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

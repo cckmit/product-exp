@@ -322,11 +322,11 @@ public class CreditCardLogService {
 		logActivity(creditCardEvent);
 	}
 
-	public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, AccountId requestBody, LoanDetailsFullResponse response) {
+	public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, LoanDetailsFullResponse response) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
 
-		creditCardEvent.setLoanNumber(requestBody.getAccountNo().substring(1, 11));
+		creditCardEvent.setLoanNumber(response.getAccount().getId().substring(1, 11));
 		creditCardEvent.setProductName(response.getProductConfig().getProductNameEN());
 		return creditCardEvent;
 	}
