@@ -8,6 +8,8 @@ import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.Account;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,10 +20,8 @@ import org.mockito.Mockito;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.assertj.core.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
@@ -301,5 +301,105 @@ public class CreditCardLogServiceTest {
 		CreditCardEvent result = logService.loadCardDetailsEvent(creditCardEvent, hashMap, fetchCardResponse);
 		assertEquals(creditCardEvent,result);
 	}
+
+	@Test
+	public void testViewLoanLandingScreenEvent()  {
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put("1","creditCard");
+		hashMap.put("2","debitCard");
+		LoanDetailsFullResponse response = new LoanDetailsFullResponse();
+		com.tmb.oneapp.productsexpservice.model.loan.StatusResponse status = new com.tmb.oneapp.productsexpservice.model.loan.StatusResponse();
+		status.setCode("0");
+		status.setDescription("Available");
+		response.setStatus(status);
+		Account accountId = new Account();
+		response.setAccount(accountId);
+		ProductConfig productConfig = new ProductConfig();
+		productConfig.setProductNameEN("Tiger");
+		productConfig.setIconId("1234");
+		response.setProductConfig(productConfig);
+		response.getAccount().setId("0000000050078670143000945");
+		CreditCardEvent result = logService.viewLoanLandingScreenEvent(creditCardEvent, hashMap,response);
+		Assert.assertEquals(creditCardEvent, result);
+	}
+	@Test
+	public void testLogActivity()  {
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		logService.logActivity(creditCardEvent);
+		assertNotNull(creditCardEvent);
+	}
+
+	@Test
+	public void testCallVerifyCardNoEvent()  {
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put(ProductsExpServiceConstant.ACCOUNT_ID,"0000000050078670143000945");
+		hashMap.put("2","debitCard");
+		hashMap.put("3","1234");
+		creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
+		creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
+		CreditCardEvent result = logService.callVerifyCardNoEvent(creditCardEvent, hashMap);
+		Assert.assertEquals(creditCardEvent, result);
+	}
+
+
+	@Test
+	public void testOnClickNextButtonEvent()  {
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put("1","creditCard");
+		hashMap.put("2","debitCard");
+		SetCreditLimitReq limitReq = new SetCreditLimitReq();
+	    limitReq.setRequestReason("1234");
+	    limitReq.setPreviousCreditLimit("12345");
+		hashMap.put(ProductsExpServiceConstant.ACCOUNT_ID,"0000000050078670143000945");
+		hashMap.put("2","debitCard");
+		hashMap.put("3","1234");
+		creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
+		CreditCardEvent result = logService.onClickNextButtonEvent(creditCardEvent, hashMap, limitReq);
+		Assert.assertEquals(creditCardEvent, result);
+	}
+
+	@Test
+	public void testOnClickNextButtonLimitEvent()  {
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put("1","creditCard");
+		hashMap.put("2","debitCard");
+		SetCreditLimitReq limitReq = new SetCreditLimitReq();
+		limitReq.setRequestReason("1234");
+		limitReq.setPreviousCreditLimit("12345");
+		CreditCardEvent result = logService.onClickNextButtonLimitEvent(creditCardEvent, hashMap, limitReq,"");
+		Assert.assertEquals(creditCardEvent, result);
+	}
+
+	@Test
+	public void testCompleteUsageListEvent(){
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put("1","creditCard");
+		hashMap.put("2","debitCard");
+		SetCreditLimitReq limitReq = new SetCreditLimitReq();
+		limitReq.setRequestReason("1234");
+		limitReq.setPreviousCreditLimit("12345");
+		limitReq.setAccountId("0000000050078670143000945");
+		CreditCardEvent result = logService.completeUsageListEvent(creditCardEvent, hashMap, limitReq);
+		Assert.assertEquals(creditCardEvent, result);
+	}
+
+	@Test
+	public void testOnVerifyPinEvent()  {
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put("1","creditCard");
+		hashMap.put("2","debitCard");
+		hashMap.put(ProductsExpServiceConstant.ACCOUNT_ID,"0000000050078670143000945");
+		creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
+		creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
+		CreditCardEvent result = logService.onVerifyPinEvent(creditCardEvent, hashMap);
+		Assert.assertEquals(creditCardEvent, result);
+	}
+
 }
 
