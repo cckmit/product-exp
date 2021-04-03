@@ -2,7 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
@@ -15,10 +15,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
+import java.math.BigDecimal;
 import java.util.*;
 
+import static org.assertj.core.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
@@ -264,4 +267,39 @@ public class CreditCardLogServiceTest {
 		logService.finishSetPinActivityLog(status, activityId, correlationId, activityDate, accountId, failReason);
 		assertNotNull(creditCardEvent);
 	}
+
+	@Test
+	public void testLoadCardDetailsEvent()  {
+		String correlationId="32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+		String activityDate="28-03-2021";
+		String activityId=ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put("1","creditCard");
+		hashMap.put("2","debitCard");
+		SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+		silverlakeStatus.setStatusCode(0);
+		FetchCardResponse fetchCardResponse = new FetchCardResponse();
+		fetchCardResponse.setStatus(silverlakeStatus);
+		CreditCardDetail creditCard = new CreditCardDetail();
+		creditCard.setAccountId("0000000050078670143000945");
+		CardCreditLimit cardCreditLimit = new CardCreditLimit();
+		cardCreditLimit.setPermanentCreditLimit(1000l);
+		TemporaryCreditLimit tempCreditLimit = new TemporaryCreditLimit();
+		tempCreditLimit.setAmounts(BigDecimal.valueOf(12232433.55));
+		tempCreditLimit.setEffectiveDate("10-10-2020");
+		cardCreditLimit.setTemporaryCreditLimit(tempCreditLimit);
+		creditCard.setCardCreditLimit(cardCreditLimit);
+		fetchCardResponse.setCreditCard(creditCard);
+		creditCardEvent.setCardNumber("1234");
+		creditCardEvent.setProductName("Tiger");
+		ProductCodeData data = new ProductCodeData();
+		data.setProductNameEN("Tiger");
+		data.setProductNameTH("dfd");
+		data.setIconId("123");
+		fetchCardResponse.setProductCodeData(data);
+		CreditCardEvent result = logService.loadCardDetailsEvent(creditCardEvent, hashMap, fetchCardResponse);
+		assertEquals(creditCardEvent,result);
+	}
 }
+

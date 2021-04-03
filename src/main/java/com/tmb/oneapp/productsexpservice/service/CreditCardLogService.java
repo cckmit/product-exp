@@ -265,27 +265,6 @@ public class CreditCardLogService {
 
 
 	/**
-	 * @param cardActivityList
-	 */
-	public void logActivityList(List<CreditCardEvent> cardActivityList, List<CardInstallmentResponse> data) {
-		try {
-			for(CreditCardEvent activity : cardActivityList) {
-				for(CardInstallmentResponse cardResp : data) {
-					if(cardResp.getStatus().getErrorStatus()!=null && !cardResp.getStatus().getErrorStatus().isEmpty()) {
-						activity.setResult(ProductsExpServiceConstant.FAILURE);
-						activity.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-						activity.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-						activity.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-					}
-					logActivity(activity);
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Unable to process activity log request : {}", e);
-		}
-	}
-
-	/**
 	 * Activity log for finish block card
 	 *
 	 * @param status
