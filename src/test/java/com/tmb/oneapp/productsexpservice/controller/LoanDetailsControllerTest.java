@@ -133,9 +133,14 @@ public class LoanDetailsControllerTest {
         accountNo.setAccountNo("00016109738001");
         req.setAccountId("0000000050078360018000167");
         LoanDetailsFullResponse response = new LoanDetailsFullResponse();
+        response.setAccount(accountId);
+        StatusResponse status = new StatusResponse();
+        status.setCode("1234");
+        status.setDescription("Sucessful");
+        response.setStatus(status);
         ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, accountNo);
 
-        assertNotNull(response);
+        assertNotNull(result);
 
     }
 
