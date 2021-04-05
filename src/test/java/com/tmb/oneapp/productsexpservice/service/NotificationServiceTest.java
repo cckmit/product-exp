@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -301,6 +302,55 @@ public class NotificationServiceTest {
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> ab = ResponseEntity.ok(profileResponse);
 		notificationService.validCustomerResponse(ab);
 		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void testDoNotifySuccessForBlockCard() {
+		TmbOneServiceResponse<NotificationResponse> response = new TmbOneServiceResponse<>();
+		TmbStatus status= new TmbStatus();
+		status.setDescription("Successful");
+		status.setCode("1234");
+		status.setMessage("Successful");
+		status.setService("notificationservice");
+		response.setStatus(status);
+		NotificationResponse data = new NotificationResponse();
+		data.setStatus(0);
+		data.setMessage("successful");
+		data.setGuid("1234");
+		data.setSuccess(true);
+		response.setData(data);
+		TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
+		CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+		customerProfile.setEmailAddress("witsanu@gmail.com");
+		profileResponse.setData(customerProfile);
+		profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
+		FetchCardResponse cardResponse = new FetchCardResponse();
+		ProductCodeData productData = new ProductCodeData();
+		productData.setProductNameEN("So Fast Credit Card");
+		productData.setProductNameTH("โซฟาสต์");
+		cardResponse.setProductCodeData(productData);
+		SilverlakeStatus silverlake = new SilverlakeStatus();
+		silverlake.setStatusCode(0);
+		cardResponse.setStatus(silverlake);
+		CreditCardDetail creditCard = new CreditCardDetail();
+		creditCard.setAccountId("0000000050079650011000193");
+		creditCard.setCardId("050079650011000193");
+		creditCard.setDirectDepositBank("YES");
+		cardResponse.setCreditCard(creditCard);
+		cardResponse.setProductCodeData(productData);
+		String accountId="0000000050079650011000193";
+		String correlationId="1234";
+		ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
+				accountId);
+		
+		when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
+
+		when(customerServiceClient.getCustomerProfile(any(), any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
+
+		when(creditCardClient.getCreditCardDetails(any(),any())).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+		notificationService.doNotifySuccessForBlockCard(correlationId, accountId, "crmId");
+		assertNotNull(data);
 	}
 
 }
