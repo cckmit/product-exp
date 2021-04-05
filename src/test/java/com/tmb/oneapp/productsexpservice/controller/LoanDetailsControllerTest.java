@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -114,11 +115,21 @@ public class LoanDetailsControllerTest {
         productConfig.setProductNameEN("Mobile");
         productConfig.setProductCode("1234");
         response.setProductConfig(productConfig);
+
         ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
         when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
+
+
         AccountId account = new AccountId();
         account.setAccountNo("00016109738001");
         ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
+        TmbOneServiceResponse<LoanDetailsFullResponse> body = result.getBody();
+        body.setData(response);
+        TmbStatus tmbStatus= new TmbStatus();
+        tmbStatus.setMessage("Successful");
+        tmbStatus.setService("loan-service");
+        tmbStatus.setDescription("Successful");
+        body.setStatus(tmbStatus);
         Assert.assertEquals(400, result.getStatusCodeValue());
     }
 
