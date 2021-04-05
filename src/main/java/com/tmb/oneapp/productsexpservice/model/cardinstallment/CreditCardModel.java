@@ -7,12 +7,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 @JsonInclude(Include.NON_NULL)
-	@JsonPropertyOrder({
-	"account_id",
-	"card_installment"
-	})
-    @Data
-	public class CreditCardModel {
+@JsonPropertyOrder({ "account_id", "card_installment" })
+@Data
+public class CreditCardModel {
 
 	@JsonProperty("account_id")
 	private String accountId;
