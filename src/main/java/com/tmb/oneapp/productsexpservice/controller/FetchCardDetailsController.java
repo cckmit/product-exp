@@ -87,6 +87,7 @@ public class FetchCardDetailsController {
 		try {
 			String accountId = request.getAccountId();
 			if (!Strings.isNullOrEmpty(accountId)) {
+				logger.info("calling FetchCardDetails start Time : {} ", System.currentTimeMillis());
 				ResponseEntity<FetchCardResponse> getCardRes = creditCardClient.getCreditCardDetails(correlationId,
 						accountId);
 				FetchCardResponse fetchCardResponse = getCardRes.getBody();
@@ -106,6 +107,7 @@ public class FetchCardDetailsController {
 					}
 					creditCardEvent=creditCardLogService.loadCardDetailsEvent(creditCardEvent, requestHeadersParameter,fetchCardResponse);
 					creditCardLogService.logActivity(creditCardEvent);
+					logger.info("calling FetchCardDetails end Time : {} ", System.currentTimeMillis());
 
 					oneServiceResponse
 							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
