@@ -6,18 +6,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 
 @JsonInclude(Include.NON_NULL)
 @Getter
 @Setter
-public class AdditionalStatus {
+public class LoanStatementResponse {
 
-    @JsonProperty("status_code")
-    private String statusCode;
-    @JsonProperty("server_status_code")
-    private String serverStatusCode;
-    @JsonProperty("severity")
-    private String severity;
-    @JsonProperty("status_desc")
-    private String statusDesc;
+    @JsonProperty("status")
+    private Status status;
+    @JsonProperty("additional_status")
+    private List<AdditionalStatus> additionalStatus = null;
+    @JsonProperty("account")
+    private AccountResponse response;
 }
