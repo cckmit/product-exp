@@ -6,10 +6,8 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
-import com.tmb.oneapp.productsexpservice.model.loan.Account;
-import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
-import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
-import com.tmb.oneapp.productsexpservice.model.loan.StatusResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import com.tmb.oneapp.productsexpservice.model.loan.*;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -81,6 +79,41 @@ public class LoanDetailsControllerTest {
         accountId.setBranchId("001");
         accountId.setProductId("ABHA");
         response.setAccount(accountId);
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
+        when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
+        AccountId account = new AccountId();
+        account.setAccountNo("00016109738001");
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
+        Assert.assertEquals(400, result.getStatusCodeValue());
+    }
+
+
+    @Test
+    public void testGetLoanAccountDetailsCase()  {
+        Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C");
+        LoanDetailsFullResponse response = new LoanDetailsFullResponse();
+        StatusResponse status = new StatusResponse();
+        status.setCode("0000");
+        status.setDescription("Success");
+        response.setStatus(status);
+        Account accountId = new Account();
+        accountId.setBranchId("001");
+        accountId.setProductId("ABHA");
+        DebitAccount debitAccount = new DebitAccount();
+        debitAccount.setAutoDebitDate("06-06-2021");
+        debitAccount.setAutoDebitMethod("card");
+        debitAccount.setId("1234");
+        accountId.setDebitAccount(debitAccount);
+        response.setAccount(accountId);
+        AdditionalStatus additionalStatus= new AdditionalStatus();
+        additionalStatus.setStatusCode("1234");
+        additionalStatus.setSeverity("Awesome");
+        additionalStatus.setStatusDesc("successful");
+        response.setAdditionalStatus(additionalStatus);
+        ProductConfig productConfig = new ProductConfig();
+        productConfig.setProductNameEN("Mobile");
+        productConfig.setProductCode("1234");
+        response.setProductConfig(productConfig);
         ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
         when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
         AccountId account = new AccountId();
