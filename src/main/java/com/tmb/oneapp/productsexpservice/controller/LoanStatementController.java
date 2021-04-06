@@ -8,11 +8,6 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
-import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementResponse;
 import io.swagger.annotations.Api;
@@ -29,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.Instant;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -68,7 +61,7 @@ public class LoanStatementController {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<LoanStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = new TmbOneServiceResponse<>();
         String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 
         try {
@@ -85,29 +78,29 @@ public class LoanStatementController {
 
                     LoanStatementResponse loanDetails = loanResponse.getBody().getData();
 
-                    oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                    serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                    oneServiceResponse.setData(loanDetails);
-                    return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+                    serviceResponse.setData(loanDetails);
+                    return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
                 } else {
-                    oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                    serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                             ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                             ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                    return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                    return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
 
                 }
             } else {
-                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
             }
 
         } catch (Exception e) {
             log.error("Error while getLoanAccountDetails: {}", e);
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+            serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+            return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
         }
 
     }
