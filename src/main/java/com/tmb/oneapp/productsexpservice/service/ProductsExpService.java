@@ -175,18 +175,28 @@ public class ProductsExpService {
                         List<FundClass> fundClass = fundClassList.getFundClass();
                         List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
                         List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
-
                         result.setFundClass(fundClassData);
                         result.setSearchList(searchList);
                         result.setFundClassList(null);
                         result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
                         result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
                         result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
+                        result.setUnrealizedProfitPercent(body.getData().getBody().getUnrealizedProfitPercent());
+                        result.setSummaryMarketValue(body.getData().getBody().getSummaryMarketValue());
+                        result.setSummaryUnrealizedProfit(body.getData().getBody().getSummaryUnrealizedProfit());
+                        result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
+                                .getSummarySmartPortUnrealizedProfitPercent());
+                        result.setSummarySmartPortMarketValue(body.getData().getBody().getSummarySmartPortMarketValue());
+                        result.setSummarySmartPortUnrealizedProfit(body.getData().getBody()
+                                .getSummarySmartPortUnrealizedProfit());
+                        result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
+                                .getSummarySmartPortUnrealizedProfitPercent());
+
+
                         if(summaryByPort != null && summaryByPort.getData() !=null && summaryByPort.getData().getBody() != null &&
                                 !summaryByPort.getData().getBody().getPortfolioList().isEmpty()){
                             result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
                         }
-
 
                     }
                 }
