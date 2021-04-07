@@ -38,8 +38,7 @@ public class LoanStatementControllerTest {
 
     @Test
     public void testGetLoanAccountDetail()  {
-        Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C");
-
+        String correlationId="c83936c284cb398fA46CF16F399C";
         TmbOneServiceResponse<LoanStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setDescription("working");
@@ -54,7 +53,7 @@ public class LoanStatementControllerTest {
         requestBody.setAccountId("00015719933001");
         requestBody.setEndDate("2021-03-25");
         requestBody.setStartDate("2020-03-01");
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanAccountDetail(reqHeaders, requestBody);
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanAccountDetail(correlationId, requestBody);
         Assert.assertEquals(200, result.getStatusCodeValue());
     }
     public Map<String, String> headerRequestParameter(String correlationId) {

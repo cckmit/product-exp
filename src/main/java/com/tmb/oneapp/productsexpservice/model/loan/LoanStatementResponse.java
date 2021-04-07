@@ -16,7 +16,7 @@ public class LoanStatementResponse {
     @JsonProperty("status")
     private Status status;
     @JsonProperty("additional_status")
-    private List<AdditionalStatus> additionalStatus = null;
+    private List<AdditionalStatus> additionalStatus;
     @JsonProperty("account")
     private AccountResponse response;
 }
