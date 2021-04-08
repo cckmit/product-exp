@@ -56,6 +56,8 @@ public class FundClassListInfo {
     private String recommendFlag;
     private String followingFlag;
     private String boughtFlag;
+    private String navAsOfDate;
+    private String nav;
 }
 
 
