@@ -6,6 +6,10 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
+import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
@@ -80,4 +84,14 @@ public interface CreditCardClient {
     public ResponseEntity<TmbOneServiceResponse<SetPinResponse>> setPin(
             @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody SetPinQuery requestBodyParameter);
+
+    @PostMapping(value = "/installment/get-eligible-leads")
+    public ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getEligibleLeads(
+            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
+            @RequestBody EligibleLeadRequest requestBodyParameter);
+
+    @PostMapping(value = "/installment/get-installment-rate")
+    public ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> getInstallmentRate(
+            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
+            @RequestBody InstallmentRateRequest requestBodyParameter);
 }

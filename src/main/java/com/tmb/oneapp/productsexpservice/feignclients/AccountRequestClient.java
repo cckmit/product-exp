@@ -8,8 +8,10 @@ import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 import java.util.Map;
+
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
 
 /**
  * The interface Account request client.
@@ -38,11 +40,11 @@ public interface AccountRequestClient {
 
     @PostMapping(value = "${account.service.loan.url}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
-            @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestHeader(value= X_CORRELATION_ID) String correlationId,
              @RequestBody AccountId accountId);
 
-    @PostMapping(value = "${account.service.statement.url}",consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "${account.service.statement.url}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountStatement(
-            @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestHeader(value=X_CORRELATION_ID) String correlationId,
             @RequestBody LoanStatementRequest request);
 }
