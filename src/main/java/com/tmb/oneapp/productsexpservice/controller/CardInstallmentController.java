@@ -36,13 +36,14 @@ import java.util.Map;
 @RestController
 @Api(tags = "Card Installment Api")
 public class CardInstallmentController {
+
 	private static final TMBLogger<CardInstallmentController> logger = new TMBLogger<>(CardInstallmentController.class);
 	private final CreditCardClient creditCardClient;
 	private final CreditCardLogService creditCardLogService;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param
 	 * @param creditCardClient
 	 * @param creditCardLogService
@@ -92,22 +93,26 @@ public class CardInstallmentController {
 					List<CardInstallmentResponse> data = cardInstallmentResp.getData();
 
 					if (data != null) {
+
 						creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter,
 								requestBodyParameter, data);
 
-						oneServiceResponse.setData(cardInstallmentResp.getData());
-						oneServiceResponse.setStatus(
-								new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-										ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+						boolean success = data.stream().anyMatch(t -> t.getStatus().getStatusCode().equals("0"));
+
+						if (success) {
+							oneServiceResponse.setData(cardInstallmentResp.getData());
+							oneServiceResponse.setStatus(
+									new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+											ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+						} else {
+
+							return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
+						}
+
 					} else {
-						oneServiceResponse.setData(cardInstallmentResp.getData());
-						oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-								ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService(),
-								ResponseCode.GENERAL_ERROR.getDesc()));
-						return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+						return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
 					}
 				}
-				
 			} else {
 				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
 						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
@@ -127,6 +132,16 @@ public class CardInstallmentController {
 
 		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
+	}
+
+	private ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> populateErrorResponse(
+			HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse,
+			TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp) {
+		oneServiceResponse.setData(cardInstallmentResp.getData());
+		oneServiceResponse
+				.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
+						ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
+		return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 	}
 
 }
