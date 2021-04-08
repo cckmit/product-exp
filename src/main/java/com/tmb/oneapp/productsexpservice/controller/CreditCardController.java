@@ -22,7 +22,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCreditCardResponse;
 
 import io.swagger.annotations.Api;
@@ -144,11 +144,11 @@ public class CreditCardController {
 		GetCardBlockCodeResponse oneBlockCodeRes = blockCodeRes.getBody();
 		String blockCode = oneBlockCodeRes.getCreditCard() != null ? oneBlockCodeRes.getCreditCard().getBlockCode()
 				: ProductsExpServiceConstant.EMPTY;
-		ResponseEntity<GetCardResponse> getCardRes = creditCardClient.getCreditCardDetails(correlationId,
+		ResponseEntity<FetchCardResponse> getCardRes = creditCardClient.getCreditCardDetails(correlationId,
 				accountId);
 		if (getCardRes != null && getCardRes.getStatusCode() == HttpStatus.OK
 				&& getCardRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
-			GetCardResponse oneGetCardRes = getCardRes.getBody();
+			FetchCardResponse oneGetCardRes = getCardRes.getBody();
 			String cardId = oneGetCardRes.getCreditCard() != null ? oneGetCardRes.getCreditCard().getCardId()
 					: ProductsExpServiceConstant.EMPTY;
 			String expiredBy = oneGetCardRes.getCreditCard() != null

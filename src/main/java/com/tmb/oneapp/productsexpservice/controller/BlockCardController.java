@@ -27,6 +27,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -46,6 +47,7 @@ public class BlockCardController {
 	private static final TMBLogger<BlockCardController> logger = new TMBLogger<>(BlockCardController.class);
 	private final CreditCardClient creditCardClient;
 	private final CreditCardLogService creditCardLogService;
+	private final NotificationService notificationService;
 
 	/**
 	 * Constructor
@@ -55,10 +57,11 @@ public class BlockCardController {
 	 */
 
 	@Autowired
-	public BlockCardController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService) {
-		super();
+	public BlockCardController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService,
+			NotificationService notificationService) {
 		this.creditCardClient = creditCardClient;
 		this.creditCardLogService = creditCardLogService;
+		this.notificationService = notificationService;
 	}
 
 	/**
@@ -87,6 +90,8 @@ public class BlockCardController {
 		String activityDate = Long.toString(System.currentTimeMillis());
 		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase());
 		String accountId = requestBodyParameter.getAccountId();
+		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
+	
 
 		try {
 			if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)
@@ -107,7 +112,7 @@ public class BlockCardController {
 									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 					creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.SUCCESS, activityId,
 							correlationId, activityDate, accountId, "");
-
+					notificationService.doNotifySuccessForBlockCard(correlationId,accountId,crmId);
 					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
 				} else {

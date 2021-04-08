@@ -5,11 +5,13 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -263,27 +265,6 @@ public class CreditCardLogService {
 
 
 	/**
-	 * @param cardActivityList
-	 */
-	public void logActivityList(List<CreditCardEvent> cardActivityList, List<CardInstallmentResponse> data) {
-		try {
-			for(CreditCardEvent activity : cardActivityList) {
-				for(CardInstallmentResponse cardResp : data) {
-					if(cardResp.getStatus().getErrorStatus()!=null && !cardResp.getStatus().getErrorStatus().isEmpty()) {
-						activity.setResult(ProductsExpServiceConstant.FAILURE);
-						activity.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-						activity.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-						activity.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-					}
-					logActivity(activity);
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Unable to process activity log request : {}", e);
-		}
-	}
-
-	/**
 	 * Activity log for finish block card
 	 *
 	 * @param status
@@ -319,5 +300,24 @@ public class CreditCardLogService {
 		creditCardEvent.setActivityStatus(status);
 		logActivity(creditCardEvent);
 	}
+
+	public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, LoanDetailsFullResponse response) {
+
+		populateBaseEvents(creditCardEvent, reqHeader);
+
+		creditCardEvent.setLoanNumber(response.getAccount().getId().substring(1, 11));
+		creditCardEvent.setProductName(response.getProductConfig().getProductNameEN());
+		return creditCardEvent;
+	}
+
+	public CreditCardEvent loadCardDetailsEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, FetchCardResponse fetchCardResponse) {
+
+		populateBaseEvents(creditCardEvent, reqHeader);
+
+		creditCardEvent.setCardNumber(fetchCardResponse.getCreditCard().getAccountId().substring(21,25));
+		creditCardEvent.setProductName(fetchCardResponse.getProductCodeData().getProductNameEN());
+		return creditCardEvent;
+	}
+
 
 }

@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.homeloan;
+package com.tmb.oneapp.productsexpservice.model.loan;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;

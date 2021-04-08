@@ -13,4 +13,5 @@ public class FundClass {
     private String fundClassNameEN;
     private String fundClassNameTH;
     private List<FundHouse> fundHouseList;
+    private String fundClassPercent;
 }

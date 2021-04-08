@@ -14,7 +14,7 @@ public class Fund {
     private String fundNickNameTH;
     private String fundShortName;
     private BigDecimal unrealizedProfit;
-    private BigDecimal marketValue;
+    private String marketValue;
     private BigDecimal unrealizedProfitPercent;
     private BigDecimal accruedFee;
 

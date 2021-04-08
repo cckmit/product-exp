@@ -4,7 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCreditCardResponse;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
@@ -48,10 +48,10 @@ public class CreditCardControllerTest {
 		SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
 		silverlakeStatus.setStatusCode(0);
 		getCardBlockCodeResponse.setStatus(silverlakeStatus);
-		GetCardResponse getCardResponse = new GetCardResponse();
-		getCardResponse.setStatus(silverlakeStatus);
+		FetchCardResponse fetchCardResponse = new FetchCardResponse();
+		fetchCardResponse.setStatus(silverlakeStatus);
 		handleGetCardBlockCodeResponse(getCardBlockCodeResponse, HttpStatus.OK);
-		handleGetCardResponse(getCardResponse, HttpStatus.OK);
+		handleGetCardResponse(fetchCardResponse, HttpStatus.OK);
 
 		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = creditCardController
 				.verifyCreditCardDetails(requestHeadersParameter);
@@ -102,8 +102,8 @@ public class CreditCardControllerTest {
 		silverlakeStatus.setStatusCode(0);
 		getCardBlockCodeResponse.setStatus(silverlakeStatus);
 		handleGetCardBlockCodeResponse(getCardBlockCodeResponse, HttpStatus.OK);
-		GetCardResponse getCardResponse = null;
-		handleGetCardResponse(getCardResponse, HttpStatus.BAD_REQUEST);
+		FetchCardResponse fetchCardResponse = null;
+		handleGetCardResponse(fetchCardResponse, HttpStatus.BAD_REQUEST);
 		ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> response = creditCardController
 				.verifyCreditCardDetails(requestHeadersParameter);
 		assertEquals(400, response.getStatusCodeValue());
@@ -119,10 +119,10 @@ public class CreditCardControllerTest {
 
 	}
 
-	public void handleGetCardResponse(GetCardResponse getCardResponse, HttpStatus status) {
-		TmbOneServiceResponse<GetCardResponse> oneServiceResponse = new TmbOneServiceResponse<GetCardResponse>();
-		oneServiceResponse.setData(getCardResponse);
-		ResponseEntity<GetCardResponse> getCardRes = new ResponseEntity<GetCardResponse>(getCardResponse, status);
+	public void handleGetCardResponse(FetchCardResponse fetchCardResponse, HttpStatus status) {
+		TmbOneServiceResponse<FetchCardResponse> oneServiceResponse = new TmbOneServiceResponse<FetchCardResponse>();
+		oneServiceResponse.setData(fetchCardResponse);
+		ResponseEntity<FetchCardResponse> getCardRes = new ResponseEntity<FetchCardResponse>(fetchCardResponse, status);
 		when(creditCardClient.getCreditCardDetails(anyString(), anyString())).thenReturn(getCardRes);
 
 	}

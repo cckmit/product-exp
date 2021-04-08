@@ -1,31 +1,14 @@
-package com.tmb.oneapp.productsexpservice.model.homeloan;
+package com.tmb.oneapp.productsexpservice.model.loan;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({
-        "monthly_payment_amount",
-        "next_payment_due_date",
-        "next_payment_amount",
-        "next_payment_principal",
-        "next_payment_interest",
-        "last_payment_amount",
-        "last_payment_date",
-        "current_terms",
-        "remaining_terms",
-        "total_payment_amount",
-        "current_total_due_amount",
-        "total_past_due_amount",
-        "late_charges_amount",
-        "fee_due_amount",
-        "past_due_date",
-        "past_due_payment_count"
-})
-@Data
+@Setter
+@Getter
 public class Payment {
 
     @JsonProperty("monthly_payment_amount")
