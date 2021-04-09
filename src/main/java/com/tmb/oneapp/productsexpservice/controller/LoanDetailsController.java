@@ -64,7 +64,7 @@ public class LoanDetailsController {
     @LogAround
     @PostMapping(value = "/loan/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid @RequestHeader Map<String, String> requestHeadersParameter,
+            @ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid @RequestHeader Map<String, String> requestHeadersParameter,
             @ApiParam(value = "Account ID", defaultValue = "00016109738001", required = true) @RequestBody AccountId requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();

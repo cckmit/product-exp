@@ -47,14 +47,13 @@ public class LoanStatementController {
 
 
     /**
-     * @param correlationId
+     * @param X_CORRELATION_ID
      * @param requestBody
      * @return
      */
     @LogAround
     @PostMapping(value = "/loan/get-loan-statement", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountDetail(
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true)  @RequestHeader String correlationId,
+    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountDetail(@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true)  @RequestHeader String X_CORRELATION_ID,
             @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody LoanStatementRequest requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -68,7 +67,7 @@ public class LoanStatementController {
             String startDate = requestBody.getStartDate();
             String endDate = requestBody.getEndDate();
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-                ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> loanResponse = accountRequestClient.getLoanAccountStatement(correlationId,requestBody);
+                ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> loanResponse = accountRequestClient.getLoanAccountStatement(X_CORRELATION_ID,requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
 
