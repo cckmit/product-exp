@@ -329,9 +329,9 @@ public class NotificationServiceTest {
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
 		cardResponse.setProductCodeData(productData);
-		SilverlakeStatus silverlake = new SilverlakeStatus();
-		silverlake.setStatusCode(0);
-		cardResponse.setStatus(silverlake);
+		SilverlakeStatus silverLake = new SilverlakeStatus();
+		silverLake.setStatusCode(0);
+		cardResponse.setStatus(silverLake);
 		CreditCardDetail creditCard = new CreditCardDetail();
 		creditCard.setAccountId("0000000050079650011000193");
 		creditCard.setCardId("050079650011000193");
@@ -340,8 +340,7 @@ public class NotificationServiceTest {
 		cardResponse.setProductCodeData(productData);
 		String accountId="0000000050079650011000193";
 		String correlationId="1234";
-		ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
-				accountId);
+		creditCardClient.getCreditCardDetails(correlationId, accountId);
 		when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
