@@ -28,7 +28,7 @@ import java.util.Map;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
 
 @RestController
-@Api(tags = "Campaign Transactions Api")
+@Api(tags = "Apply So GooOD Feature Api")
 public class CampaignTransactionsController {
     private final CreditCardClient creditCardClient;
     private static final TMBLogger<CampaignTransactionsController> logger = new TMBLogger<>(CampaignTransactionsController.class);

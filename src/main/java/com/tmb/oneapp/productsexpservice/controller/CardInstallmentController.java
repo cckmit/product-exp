@@ -34,7 +34,7 @@ import java.util.Map;
  * @author Admin
  */
 @RestController
-@Api(tags = "Card Installment Api")
+@Api(tags = "Apply So GooOD Feature Api")
 public class CardInstallmentController {
     private static final TMBLogger<CardInstallmentController> logger = new TMBLogger<>(CardInstallmentController.class);
     private final CreditCardClient creditCardClient;
