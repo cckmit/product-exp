@@ -9,7 +9,6 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
-import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -71,17 +70,11 @@ public class EligibleLeadController {
                     serviceResponse.setData(loanDetails);
                     return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
                 } else {
-                    serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                    return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+                    return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
 
                 }
             } else {
-                serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+                return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
             }
 
         } catch (Exception e) {
@@ -91,5 +84,12 @@ public class EligibleLeadController {
             return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
         }
 
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<EligibleLeadResponse> serviceResponse) {
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
     }
 }

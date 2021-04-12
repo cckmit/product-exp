@@ -56,15 +56,21 @@ public class LoanDetailsControllerTest {
         Account accountId = new Account();
         accountId.setBranchId("001");
         accountId.setProductId("ABHA");
+        DebitAccount account = new DebitAccount();
+        account.setId("1234");
+        account.setAutoDebitDate("12-12-2021");
+        account.setAutoDebitMethod("card");
+        accountId.setDebitAccount(account);
         response.setAccount(accountId);
         AccountId accountNo = new AccountId();
         accountNo.setAccountNo("00016109738001");
         response.setAccount(accountId);
         ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
         when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
-        AccountId account = new AccountId();
-        account.setAccountNo("00016109738001");
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
+        AccountId id = new AccountId();
+        id.setAccountNo("00016109738001");
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, id);
+
         Assert.assertEquals(400, result.getStatusCodeValue());
     }
 

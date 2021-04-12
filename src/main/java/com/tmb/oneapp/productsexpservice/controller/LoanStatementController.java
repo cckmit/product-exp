@@ -47,13 +47,13 @@ public class LoanStatementController {
 
 
     /**
-     * @param X_CORRELATION_ID
+     * @param correlationId
      * @param requestBody
      * @return
      */
     @LogAround
     @PostMapping(value = "/loan/get-loan-statement", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountDetail(@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true)  @RequestHeader String X_CORRELATION_ID,
+    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountDetail(@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true)  @RequestHeader String correlationId,
             @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody LoanStatementRequest requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -67,7 +67,7 @@ public class LoanStatementController {
             String startDate = requestBody.getStartDate();
             String endDate = requestBody.getEndDate();
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-                ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> loanResponse = accountRequestClient.getLoanAccountStatement(X_CORRELATION_ID,requestBody);
+                ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> loanResponse = accountRequestClient.getLoanAccountStatement(correlationId,requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
 
@@ -80,26 +80,27 @@ public class LoanStatementController {
                     serviceResponse.setData(loanDetails);
                     return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
                 } else {
-                    serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                    return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+                    return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
 
                 }
             } else {
-                serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+                return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
             }
 
         } catch (Exception e) {
-            log.error("Error while getLoanAccountStatement: {}", e);
+            log.error("Error while getting LoanAccountStatement: {}", e);
             serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
         }
 
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse) {
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
     }
 }
 

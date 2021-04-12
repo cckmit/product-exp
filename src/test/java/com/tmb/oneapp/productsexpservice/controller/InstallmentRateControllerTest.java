@@ -34,7 +34,8 @@ public class InstallmentRateControllerTest {
     }
 
     @Test
-    public void testGetLoanAccountDetail() throws Exception {
+    public void testGetLoanAccountDetail() {
+        String correlationId="c83936c284cb398fA46CF16F399C";
         TmbOneServiceResponse<InstallmentRateResponse> serverResponse = new TmbOneServiceResponse<>();
         InstallmentRateResponse data= new InstallmentRateResponse();
         InstallmentData installment = new InstallmentData();
@@ -48,7 +49,13 @@ public class InstallmentRateControllerTest {
         InstallmentRateRequest requestBody = new InstallmentRateRequest();
         requestBody.setAmount("1234.00");
         requestBody.setGetAllDetailFlag("Y");
-        ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> result = installmentRateController.getLoanAccountDetail("correlationId", requestBody);
+        requestBody.setGroupAccountId("0000000050080760015");
+        requestBody.setDisbursementDate("2020-10-16");
+        requestBody.setBillCycleCutDate("3");
+        requestBody.setPromoSegment("CS7");
+        requestBody.setCashChillChillFlag("Y");
+        requestBody.setGetAllDetailFlag("N");
+        ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> result = installmentRateController.getLoanAccountDetail(correlationId, requestBody);
         Assert.assertEquals(400, result.getStatusCodeValue());
     }
 }

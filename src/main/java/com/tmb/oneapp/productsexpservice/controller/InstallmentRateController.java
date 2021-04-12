@@ -47,7 +47,7 @@ public class InstallmentRateController {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<InstallmentRateResponse> serviceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<InstallmentRateResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
 
         try {
@@ -55,7 +55,8 @@ public class InstallmentRateController {
             String groupAccountId = requestBody.getGroupAccountId();
             String disbursementDate = requestBody.getDisbursementDate();
 
-            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate)) {
+            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate))
+             {
                 ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient.getInstallmentRate(correlationId,requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
@@ -64,30 +65,31 @@ public class InstallmentRateController {
 
                     InstallmentRateResponse loanDetails = loanResponse.getBody().getData();
 
-                    serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                    oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                    serviceResponse.setData(loanDetails);
-                    return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
+                    oneServiceResponse.setData(loanDetails);
+                    return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
                 } else {
-                    serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                    return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+                    return getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse);
 
                 }
             } else {
-                serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+                return getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse);
             }
 
         } catch (Exception e) {
-            logger.error("Error while getting eligible lead controller: {}", e);
-            serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+            logger.error("Error while getting installment rate controller: {}", e);
+            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
         }
 
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<InstallmentRateResponse> serviceResponse) {
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
     }
 }
