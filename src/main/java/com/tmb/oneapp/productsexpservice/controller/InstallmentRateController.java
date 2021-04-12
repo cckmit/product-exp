@@ -54,8 +54,16 @@ public class InstallmentRateController {
 
             String groupAccountId = requestBody.getGroupAccountId();
             String disbursementDate = requestBody.getDisbursementDate();
+            String amount = requestBody.getAmount();
+            String billCycleCutDate = requestBody.getBillCycleCutDate();
+            String cashChillChillFlag = requestBody.getCashChillChillFlag();
+            String cashTransferFlag = requestBody.getCashTransferFlag();
+            String getAllDetailFlag = requestBody.getGetAllDetailFlag();
+            String promoSegment = requestBody.getPromoSegment();
 
-            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate))
+            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate) &&
+            Strings.isNullOrEmpty(amount) && !Strings.isNullOrEmpty(billCycleCutDate)  &&
+                    Strings.isNullOrEmpty(promoSegment) && cashChillChillFlag!=null && cashTransferFlag!=null && getAllDetailFlag!=null)
              {
                 ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient.getInstallmentRate(correlationId,requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
