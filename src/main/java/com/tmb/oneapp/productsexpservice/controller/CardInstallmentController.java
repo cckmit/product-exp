@@ -36,95 +36,109 @@ import java.util.Map;
 @RestController
 @Api(tags = "Card Installment Api")
 public class CardInstallmentController {
-	private static final TMBLogger<CardInstallmentController> logger = new TMBLogger<>(CardInstallmentController.class);
-	private final CreditCardClient creditCardClient;
-	private final CreditCardLogService creditCardLogService;
+    private static final TMBLogger<CardInstallmentController> logger = new TMBLogger<>(CardInstallmentController.class);
+    private final CreditCardClient creditCardClient;
+    private final CreditCardLogService creditCardLogService;
 
 
-	/**
-	 * Constructor
-	 *  @param
-	 * @param creditCardClient
-	 * @param creditCardLogService
-	 */
+    /**
+     * Constructor
+     *
+     * @param
+     * @param creditCardClient
+     * @param creditCardLogService
+     */
 
-	@Autowired
-	public CardInstallmentController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService) {
-		this.creditCardClient = creditCardClient;
-		this.creditCardLogService = creditCardLogService;
-	}
+    @Autowired
+    public CardInstallmentController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService) {
+        this.creditCardClient = creditCardClient;
+        this.creditCardLogService = creditCardLogService;
+    }
 
-	/**
-	 * campaign transaction api
-	 *
-	 * @param requestBodyParameter
-	 * @return campaign transaction response
-	 */
+    /**
+     * campaign transaction api
+     *
+     * @param requestBodyParameter
+     * @return campaign transaction response
+     */
 
 
-	@LogAround
-	@ApiOperation(value = "Campaign Transactions Api")
-	@PostMapping(value = "/creditcard/card-installment-confirm")
-	public ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> confirmCardInstallment(
-			@ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
-			@RequestBody CardInstallmentQuery requestBodyParameter, @RequestHeader Map<String, String> requestHeadersParameter)
-			throws TMBCommonException {
-		logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
-		String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
-		String activityDate = Long.toString(System.currentTimeMillis());
+    @LogAround
+    @ApiOperation(value = "Campaign Transactions Api")
+    @PostMapping(value = "/creditcard/card-installment-confirm")
+    public ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> confirmCardInstallment(
+            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestBody CardInstallmentQuery requestBodyParameter, @RequestHeader Map<String, String> requestHeadersParameter)
+            throws TMBCommonException {
+        logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
+        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+        String activityDate = Long.toString(System.currentTimeMillis());
 
-		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
-		TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse = new TmbOneServiceResponse<>();
-		try {
+        TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse = new TmbOneServiceResponse<>();
+        try {
             String accountId = requestBodyParameter.getAccountId();
 
-			if (accountId!=null)
-			{
-				ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse> >> cardInstallment = creditCardClient.confirmCardInstallment(correlationId, requestBodyParameter);
-				TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = cardInstallment.getBody();
-				if (cardInstallmentResp != null) {
+            if (accountId != null) {
+                ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> cardInstallment = creditCardClient.confirmCardInstallment(correlationId, requestBodyParameter);
+                TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = cardInstallment.getBody();
+                if (cardInstallmentResp != null) {
 
-					Status status = new Status();
-					status.setStatusCode(cardInstallment.getBody().getStatus().getCode());
+                    Status status = new Status();
+                    status.setStatusCode(cardInstallment.getBody().getStatus().getCode());
 
-					List<CardInstallmentResponse> data = cardInstallmentResp.getData();
+                    List<CardInstallmentResponse> data = cardInstallmentResp.getData();
 
-					if (data!=null) {
-						creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter, data);
+                    if (data != null) {
 
-						oneServiceResponse.setData(cardInstallmentResp.getData());
-						oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-					} else {
-						oneServiceResponse.setData(cardInstallmentResp.getData());
-						oneServiceResponse.setStatus(
-								new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
-										ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
-						return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-					}
-				}
-			} else {
-				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-						ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-			}
-		} catch (Exception e) {
-			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-			creditCardEvent.setFailReason(e.getMessage());
-			creditCardLogService.logActivity(creditCardEvent);
+                        creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter, data);
 
-			logger.error("Error while getBlockCardDetails: {}", e);
-			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService(), HttpStatus.OK, null);
-		}
+                        boolean success = data.stream()
+                                .anyMatch(t -> t.getStatus().getStatusCode().equals("0"));
 
-		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+                        if (success) {
+                            oneServiceResponse.setData(cardInstallmentResp.getData());
+                            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+                        } else {
 
-	}
+                            return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
+                        }
+
+                    } else {
+                        return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
+                    }
+                }
+            } else {
+                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+            }
+        } catch (Exception e) {
+            creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+            creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
+            creditCardEvent.setFailReason(e.getMessage());
+            creditCardLogService.logActivity(creditCardEvent);
+
+            logger.error("Error while getBlockCardDetails: {}", e);
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.OK, null);
+        }
+
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> populateErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp) {
+        oneServiceResponse.setData(cardInstallmentResp.getData());
+        oneServiceResponse.setStatus(
+                new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
+                        ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+    }
 
 }
