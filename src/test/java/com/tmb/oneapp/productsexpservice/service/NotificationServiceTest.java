@@ -342,7 +342,6 @@ public class NotificationServiceTest {
 		String correlationId="1234";
 		ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
 				accountId);
-
 		when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
