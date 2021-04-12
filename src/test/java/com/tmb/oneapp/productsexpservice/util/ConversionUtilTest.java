@@ -11,19 +11,19 @@ import java.math.BigDecimal;
 public class ConversionUtilTest {
 
     @Test
-    public void testStringToDouble() throws Exception {
+    public void testStringToDouble()   {
         Double result = ConversionUtil.stringToDouble("10.0");
         Assertions.assertEquals(10.0, result);
     }
 
     @Test
-    public void testBigDecimalToDouble() throws Exception {
+    public void testBigDecimalToDouble() {
         Double result = ConversionUtil.bigDecimalToDouble(new BigDecimal(1000000.00));
         Assertions.assertEquals(1000000.00, result);
     }
 
     @Test
-    public void testDoubleToString() throws Exception {
+    public void testDoubleToString()  {
         String result = ConversionUtil.doubleToString(Double.valueOf(100));
         Assert.assertEquals("100.0",result);
     }
