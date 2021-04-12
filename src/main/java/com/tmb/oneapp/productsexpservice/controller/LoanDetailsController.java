@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Api(tags = "Fetch Home loan account details")
+@Api(tags = "Credit Card-Cash For You")
 public class LoanDetailsController {
     private static final TMBLogger<LoanDetailsController> log = new TMBLogger<>(LoanDetailsController.class);
     private final AccountRequestClient accountRequestClient;
