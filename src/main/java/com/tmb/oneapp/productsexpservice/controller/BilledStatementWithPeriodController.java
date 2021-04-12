@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @RestController
-@Api(tags = "Controller for getting billed statement with period")
+@Api(tags = "Controller for billed statement")
 public class BilledStatementWithPeriodController {
     private final CreditCardClient creditCardClient;
     private static final TMBLogger<BilledStatementWithPeriodController> logger = new TMBLogger<>(

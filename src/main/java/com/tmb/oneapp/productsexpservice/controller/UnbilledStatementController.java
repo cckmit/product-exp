@@ -28,7 +28,7 @@ import java.util.Objects;
 
 
 @RestController
-@Api(tags = "Controller for unbilled statement")
+@Api(tags = "Controller for billed statement")
 public class UnbilledStatementController {
     @Autowired
     private final CreditCardClient creditCardClient;
