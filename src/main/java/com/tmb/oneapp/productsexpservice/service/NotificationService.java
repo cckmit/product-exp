@@ -163,7 +163,7 @@ public class NotificationService {
 	 * @param accountId
 	 * @param crmId
 	 */
-	@Async
+//	@Async
 	public void doNotifySuccessForSetPin(String xCorrelationId, String accountId, String crmId) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
@@ -178,11 +178,14 @@ public class NotificationService {
 
 				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, xCorrelationId);
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
-						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(), null,
-						null);
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
+						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
+						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+				notifyCommon.setAccountId(accountId);
+				notifyCommon.setCrmId(crmId);
 
-				sendNotificationEmailForSetpin(notifyCommon, customerProfileInfo.getEmailAddress(),
-						customerProfileInfo.getPhoneNoFull(), accountId, gobalCallCenter);
+				sendNotificationEmailForSetpin(notifyCommon, gobalCallCenter,customerProfileInfo.getEmailAddress(),
+						customerProfileInfo.getPhoneNoFull());
 			}
 		}
 	}
@@ -199,7 +202,7 @@ public class NotificationService {
 	 * @param gobalCallCenter2
 	 * @param string
 	 */
-	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String accountId, String supportNo,
+	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String supportNo,
 			String email, String smsNo) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
@@ -208,7 +211,7 @@ public class NotificationService {
 
 		Map<String, Object> params = new HashMap<>();
 		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.SET_PIN_TEMPLATE_VALUE);
-		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
 		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
 		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
@@ -218,6 +221,8 @@ public class NotificationService {
 		params.put(NotificationConstant.SUPPORT_NO, supportNo);
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
+		record.setAccount(notifyCommon.getAccountId());
+		record.setCrmId(notifyCommon.getCrmId());
 
 		setRequestForEmailAndSms(email, smsNo, record);
 
@@ -380,6 +385,7 @@ public class NotificationService {
 
 	/**
 	 * expose service for block card
+	 * 
 	 * @param correlationId
 	 * @param accountId
 	 * @param crmId
@@ -420,7 +426,8 @@ public class NotificationService {
 	 * @param smsNo
 	 * @param email
 	 */
-	private void sendNotificationEmailForBlockCard(NotifyCommon notifyCommon, String email, String smsNo,String gobalCallCenter) {
+	private void sendNotificationEmailForBlockCard(NotifyCommon notifyCommon, String email, String smsNo,
+			String gobalCallCenter) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 
