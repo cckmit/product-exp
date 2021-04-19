@@ -14,11 +14,11 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
-import com.tmb.oneapp.productsexpservice.model.portdata.Port;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
@@ -72,6 +72,7 @@ public class ProductsExpService {
     private ProductExpAsynService productExpAsynService;
     private final KafkaProducerService kafkaProducerService;
     private final String topicName;
+    private CustomerExpServiceClient customerExpServiceClient;
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
@@ -79,7 +80,8 @@ public class ProductsExpService {
                               KafkaProducerService kafkaProducerService,
                               CommonServiceClient commonServiceClient,
                               ProductExpAsynService productExpAsynService,
-                              @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
+                              @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName,
+                              CustomerExpServiceClient customerExpServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
@@ -87,6 +89,7 @@ public class ProductsExpService {
         this.commonServiceClient = commonServiceClient;
         this.productExpAsynService = productExpAsynService;
         this.topicName = topicName;
+        this.customerExpServiceClient = customerExpServiceClient;
     }
 
 
@@ -136,8 +139,6 @@ public class ProductsExpService {
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, FundSummaryRq rq) {
         FundSummaryBody result = new FundSummaryBody();
-
-
         String portData;
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData = null;
         UnitHolder unitHolder = new UnitHolder();
@@ -145,7 +146,8 @@ public class ProductsExpService {
 
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            portData = accountRequestClient.getPortList(invHeaderReqParameter, rq.getCrmId());
+
+            portData = customerExpServiceClient.getAccountSaving(correlationId,rq.getCrmId());
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
             if (!StringUtils.isEmpty(portData)) {
@@ -153,15 +155,22 @@ public class ProductsExpService {
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
                 JsonNode dataNode = node.get("data");
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
-                List<Port> ports = mapper.readValue(portList.toString(), new TypeReference<List<Port>>() {
+                List<String> ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
                 });
-                List<String> myPorts  = new ArrayList<>();
-                for(Port port : ports){
-                    myPorts.add(port.getAcctNbr());
-                }
-                result.setPortsUnitHolder(myPorts);
-                String acctNbrList = ports.stream().map(Port::<String>getAcctNbr).collect(Collectors.joining(","));
-                unitHolder.setUnitHolderNo(acctNbrList);
+
+                List<String> ptesList = ports
+                        .stream()
+                        .filter(port -> port.startsWith("PTES"))
+                        .collect(Collectors.toList());
+                List<String> ptList = ports
+                        .stream()
+                        .filter(port -> port.startsWith("PT"))
+                        .collect(Collectors.toList());
+
+
+
+                result.setPortsUnitHolder(ports);
+                unitHolder.setUnitHolderNo(ports.stream().map(port -> String.valueOf(port)).collect(Collectors.joining(",")));
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
                 summaryByPortResponse = investmentRequestClient
                         .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
@@ -191,11 +200,24 @@ public class ProductsExpService {
                                 .getSummarySmartPortUnrealizedProfit());
                         result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
                                 .getSummarySmartPortUnrealizedProfitPercent());
-
+                        List smartPort = fundClassData.stream().filter(port -> "090".equalsIgnoreCase(port.getFundClassCode()))
+                                .collect(Collectors.toList());
+                        List notSmartPort = fundClassData.stream().filter(port -> !"090".equalsIgnoreCase(port.getFundClassCode()))
+                                .collect(Collectors.toList());
 
                         if(summaryByPort != null && summaryByPort.getData() !=null && summaryByPort.getData().getBody() != null &&
                                 !summaryByPort.getData().getBody().getPortfolioList().isEmpty()){
                             result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
+                        }
+                        if(ptesList.size() > 0){
+                            result.setIsPtes(Boolean.TRUE);
+                        }
+                        if(notSmartPort.size() > 0 && ptList.size() > 0){
+                            result.setIsPt(Boolean.TRUE);
+                        }
+
+                        if(smartPort.size() > 0 && ptList.size() > 0){
+                            result.setIsSmartPort(Boolean.TRUE);
                         }
 
                     }
