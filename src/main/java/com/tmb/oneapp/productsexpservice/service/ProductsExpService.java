@@ -209,14 +209,14 @@ public class ProductsExpService {
                                 !summaryByPort.getData().getBody().getPortfolioList().isEmpty()){
                             result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
                         }
-                        if(ptesList.size() > 0){
+                        if(ptesList.isEmpty()){
                             result.setIsPtes(Boolean.TRUE);
                         }
-                        if(notSmartPort.size() > 0 && ptList.size() > 0){
+                        if(notSmartPort.isEmpty() && ptList.isEmpty()){
                             result.setIsPt(Boolean.TRUE);
                         }
 
-                        if(smartPort.size() > 0 && ptList.size() > 0){
+                        if(smartPort.isEmpty() && ptList.isEmpty()){
                             result.setIsSmartPort(Boolean.TRUE);
                         }
 
