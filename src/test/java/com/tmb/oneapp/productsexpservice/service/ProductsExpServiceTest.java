@@ -101,7 +101,7 @@ public class ProductsExpServiceTest {
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
 
         try {
-            FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port.txt");
+            FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
             String data = IOUtils.toString(fis, "UTF-8");
             ObjectMapper mapper = new ObjectMapper();
             expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
@@ -120,7 +120,7 @@ public class ProductsExpServiceTest {
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(accountRequestClient.getPortList(any(), anyString())).thenReturn(data);
+            when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(),any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
