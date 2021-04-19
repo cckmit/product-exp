@@ -184,7 +184,7 @@ public class NotificationService {
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
 
-				sendNotificationEmailForSetpin(notifyCommon, gobalCallCenter,customerProfileInfo.getEmailAddress(),
+				sendNotificationEmailForSetpin(notifyCommon, gobalCallCenter, customerProfileInfo.getEmailAddress(),
 						customerProfileInfo.getPhoneNoFull());
 			}
 		}
@@ -202,8 +202,8 @@ public class NotificationService {
 	 * @param gobalCallCenter2
 	 * @param string
 	 */
-	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String supportNo,
-			String email, String smsNo) {
+	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String supportNo, String email,
+			String smsNo) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 
@@ -259,12 +259,14 @@ public class NotificationService {
 						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
 						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+				notifyCommon.setAccountId(accountId);
+				notifyCommon.setCrmId(crmId);
 
 				String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formatTranDate));
 				String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formateTime));
 				sendNotifySuccessForChangeUsage(notifyCommon, requestBodyParameter.getPreviousCreditLimit(),
-						requestBodyParameter.getCurrentCreditLimit(), accountId, customerProfileInfo.getEmailAddress(),
-						tranDate, tranTime);
+						requestBodyParameter.getCurrentCreditLimit(), customerProfileInfo.getEmailAddress(), tranDate,
+						tranTime);
 
 			}
 		}
@@ -282,7 +284,7 @@ public class NotificationService {
 	 * @param accoundId
 	 */
 	private void sendNotifySuccessForChangeUsage(NotifyCommon notifyCommon, String oldLimit, String newLimit,
-			String accoundId, String email, String tranDate, String tranTime) {
+			String email, String tranDate, String tranTime) {
 
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
@@ -294,13 +296,16 @@ public class NotificationService {
 		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
 		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
-		params.put(NotificationConstant.ACCOUNT_ID, accoundId);
+		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
 		params.put(NotificationConstant.OLD_CREDIT_LIMIT, oldLimit);
 		params.put(NotificationConstant.NEW_CREDIT_LIMIT, newLimit);
 		params.put(NotificationConstant.TRAN_DATE, tranDate);
 		params.put(NotificationConstant.TRAN_TIME, tranTime);
 
 		record.setParams(params);
+		record.setAccount(notifyCommon.getAccountId());
+		record.setCrmId(notifyCommon.getCrmId());
+		record.setLanguage(NotificationConstant.LOCALE_TH);
 
 		setRequestForEmailAndSms(email, null, record);
 
