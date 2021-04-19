@@ -353,7 +353,7 @@ public class NotificationService {
 	 * @param crmId
 	 * @param requestBodyParameter
 	 */
-	@Async
+//	@Async
 	public void doNotifySuccessForTemporaryLimit(String correlationId, String accountId, String crmId,
 			SetCreditLimitReq requestBodyParameter) {
 		logger.info("xCorrelationId:{} request customer name in th and en to temporary limit", correlationId);
@@ -372,6 +372,8 @@ public class NotificationService {
 						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
 						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+				notifyCommon.setAccountId(accountId);
+				notifyCommon.setCrmId(crmId);
 				String expiryDate = cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
 						.getExpiryDate();
 				String tempLimit = cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
@@ -488,13 +490,16 @@ public class NotificationService {
 		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
 		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
-		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
 		params.put(NotificationConstant.TEMP_LIMIT, tempLimit);
 		params.put(NotificationConstant.EXPIRE_DATE, expiryDate);
 		params.put(NotificationConstant.REASON_EN, reasonEN);
 		params.put(NotificationConstant.REASON_TH, reasonTH);
 
 		record.setParams(params);
+		record.setAccount(notifyCommon.getAccountId());
+		record.setCrmId(notifyCommon.getCrmId());
+		record.setLanguage(NotificationConstant.LOCALE_TH);
 
 		setRequestForEmailAndSms(email, null, record);
 
