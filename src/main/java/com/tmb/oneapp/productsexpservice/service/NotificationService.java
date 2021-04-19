@@ -90,9 +90,12 @@ public class NotificationService {
 			ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, xCorrelationId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn,
-						defaultChannelTh, accountId, productCodeData.getProductNameEN(),
-						productCodeData.getProductNameTH());
+				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(), null,
+						null);
+				notifyCommon.setAccountId(accountId);
+				notifyCommon.setCrmId(crmId);
+				sendActivationCardEmail(notifyCommon, customerProfileInfo.getEmailAddress());
 			}
 		}
 	}
@@ -111,17 +114,12 @@ public class NotificationService {
 
 	/**
 	 * Method for activation email service for wrapper process
+	 * 
+	 * @param notifyCommon
 	 *
 	 * @param email
-	 * @param xCorrelationId
-	 * @param channelNameEn
-	 * @param channelNameTh
-	 * @param accountId
-	 * @param productNameEn
-	 * @param productNameTh
 	 */
-	private void sendActivationCardEmail(String email, String xCorrelationId, String channelNameEn,
-			String channelNameTh, String accountId, String productNameEn, String productNameTh) {
+	private void sendActivationCardEmail(NotifyCommon notifyCommon, String email) {
 
 		if (StringUtils.isNotBlank(email)) {
 			NotificationRequest notificationRequest = new NotificationRequest();
@@ -135,19 +133,22 @@ public class NotificationService {
 
 			Map<String, Object> params = new HashMap<>();
 			params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.ACTIVE_CARD_TEMPLATE_VALUE);
-			params.put(NotificationConstant.ACCOUNT_ID, accountId);
-			params.put(NotificationConstant.CHANNEL_NAME_EN, channelNameEn);
-			params.put(NotificationConstant.CHANNEL_NAME_TH, channelNameTh);
-			params.put(NotificationConstant.PRODUCT_NAME_EN, productNameEn);
-			params.put(NotificationConstant.PRODUCT_NAME_TH, productNameTh);
+			params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
+			params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
+			params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
+			params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
+			params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
 			emailRecord.setParams(params);
 			emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
+			emailRecord.setAccount(notifyCommon.getAccountId());
+			emailRecord.setCrmId(notifyCommon.getCrmId());
 
 			notificationRecords.add(emailRecord);
+
 			notificationRequest.setRecords(notificationRecords);
 
 			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
-					.sendMessage(xCorrelationId, notificationRequest);
+					.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
 
 			processResultLog(sendEmailResponse, notificationRequest);
 
