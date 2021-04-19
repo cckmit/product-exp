@@ -379,7 +379,7 @@ public class NotificationService {
 	}
 
 	/**
-	 * 
+	 * expose service for block card
 	 * @param correlationId
 	 * @param accountId
 	 * @param crmId
@@ -398,11 +398,14 @@ public class NotificationService {
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, correlationId);
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
-						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(), null,
-						null);
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
+						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
+						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+				notifyCommon.setAccountId(accountId);
+				notifyCommon.setCrmId(crmId);
 
 				sendNotificationEmailForBlockCard(notifyCommon, customerProfileInfo.getEmailAddress(),
-						customerProfileInfo.getPhoneNoFull(), accountId, gobalCallCenter);
+						customerProfileInfo.getPhoneNoFull(), gobalCallCenter);
 			}
 		}
 
@@ -417,16 +420,17 @@ public class NotificationService {
 	 * @param smsNo
 	 * @param email
 	 */
-	private void sendNotificationEmailForBlockCard(NotifyCommon notifyCommon, String email, String smsNo,
-			String accountId, String gobalCallCenter) {
+	private void sendNotificationEmailForBlockCard(NotifyCommon notifyCommon, String email, String smsNo,String gobalCallCenter) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 
 		NotificationRecord record = new NotificationRecord();
+		record.setAccount(notifyCommon.getAccountId());
+		record.setCrmId(notifyCommon.getCrmId());
 
 		Map<String, Object> params = new HashMap<>();
 		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.BLOCK_CARD_TEMPLATE_VALUE);
-		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
 		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
 		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
