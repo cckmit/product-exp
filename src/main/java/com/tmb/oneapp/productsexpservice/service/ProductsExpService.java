@@ -170,7 +170,8 @@ public class ProductsExpService {
 
 
                 result.setPortsUnitHolder(ports);
-                unitHolder.setUnitHolderNo(ports.stream().map(port -> String.valueOf(port)).collect(Collectors.joining(",")));
+                unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                logger.info(">>>>" + unitHolder.getUnitHolderNo());
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
                 summaryByPortResponse = investmentRequestClient
                         .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
@@ -179,54 +180,58 @@ public class ProductsExpService {
                     var body = fundSummaryData.getBody();
                     var summaryByPort = summaryByPortResponse.getBody();
 
-                    if (body != null) {
-                        FundClassList fundClassList = body.getData().getBody().getFundClassList();
-                        List<FundClass> fundClass = fundClassList.getFundClass();
-                        List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
-                        List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
-                        result.setFundClass(fundClassData);
-                        result.setSearchList(searchList);
-                        result.setFundClassList(null);
-                        result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
-                        result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
-                        result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
-                        result.setUnrealizedProfitPercent(body.getData().getBody().getUnrealizedProfitPercent());
-                        result.setSummaryMarketValue(body.getData().getBody().getSummaryMarketValue());
-                        result.setSummaryUnrealizedProfit(body.getData().getBody().getSummaryUnrealizedProfit());
-                        result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
-                                .getSummarySmartPortUnrealizedProfitPercent());
-                        result.setSummarySmartPortMarketValue(body.getData().getBody().getSummarySmartPortMarketValue());
-                        result.setSummarySmartPortUnrealizedProfit(body.getData().getBody()
-                                .getSummarySmartPortUnrealizedProfit());
-                        result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
-                                .getSummarySmartPortUnrealizedProfitPercent());
-                        List smartPort = fundClassData.stream().filter(port -> "090".equalsIgnoreCase(port.getFundClassCode()))
-                                .collect(Collectors.toList());
-                        List notSmartPort = fundClassData.stream().filter(port -> !"090".equalsIgnoreCase(port.getFundClassCode()))
-                                .collect(Collectors.toList());
-
-                        if(summaryByPort != null && summaryByPort.getData() !=null && summaryByPort.getData().getBody() != null &&
-                                !summaryByPort.getData().getBody().getPortfolioList().isEmpty()){
-                            result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
-                        }
-                        if(ptesList.isEmpty()){
-                            result.setIsPtes(Boolean.TRUE);
-                        }
-                        if(notSmartPort.isEmpty() && ptList.isEmpty()){
-                            result.setIsPt(Boolean.TRUE);
-                        }
-
-                        if(smartPort.isEmpty() && ptList.isEmpty()){
-                            result.setIsSmartPort(Boolean.TRUE);
-                        }
-
-                    }
+                    setFundSummaryBody(result, ptesList, ptList, body, summaryByPort);
                 }
             }
             return result;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
+        }
+    }
+
+    private void setFundSummaryBody(FundSummaryBody result, List<String> ptesList, List<String> ptList, TmbOneServiceResponse<FundSummaryResponse> body, TmbOneServiceResponse<FundSummaryByPortResponse> summaryByPort) {
+        if (body != null) {
+            FundClassList fundClassList = body.getData().getBody().getFundClassList();
+            List<FundClass> fundClass = fundClassList.getFundClass();
+            List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
+            List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
+            result.setFundClass(fundClassData);
+            result.setSearchList(searchList);
+            result.setFundClassList(null);
+            result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
+            result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
+            result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
+            result.setUnrealizedProfitPercent(body.getData().getBody().getUnrealizedProfitPercent());
+            result.setSummaryMarketValue(body.getData().getBody().getSummaryMarketValue());
+            result.setSummaryUnrealizedProfit(body.getData().getBody().getSummaryUnrealizedProfit());
+            result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
+                    .getSummarySmartPortUnrealizedProfitPercent());
+            result.setSummarySmartPortMarketValue(body.getData().getBody().getSummarySmartPortMarketValue());
+            result.setSummarySmartPortUnrealizedProfit(body.getData().getBody()
+                    .getSummarySmartPortUnrealizedProfit());
+            result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
+                    .getSummarySmartPortUnrealizedProfitPercent());
+            List smartPort = fundClassData.stream().filter(port -> "090".equalsIgnoreCase(port.getFundClassCode()))
+                    .collect(Collectors.toList());
+            List notSmartPort = fundClassData.stream().filter(port -> !"090".equalsIgnoreCase(port.getFundClassCode()))
+                    .collect(Collectors.toList());
+
+            if(summaryByPort != null && summaryByPort.getData() !=null && summaryByPort.getData().getBody() != null &&
+                    !summaryByPort.getData().getBody().getPortfolioList().isEmpty()){
+                result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
+            }
+            if(ptesList.isEmpty()){
+                result.setIsPtes(Boolean.TRUE);
+            }
+            if(notSmartPort.isEmpty() && ptList.isEmpty()){
+                result.setIsPt(Boolean.TRUE);
+            }
+
+            if(smartPort.isEmpty() && ptList.isEmpty()){
+                result.setIsSmartPort(Boolean.TRUE);
+            }
+
         }
     }
 
