@@ -21,6 +21,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
@@ -42,6 +43,8 @@ public class NotificationServiceTest {
 	CustomerServiceClient customerServiceClient;
 	@Mock
 	CreditCardClient creditCardClient;
+	@Mock
+	CommonServiceClient commonServiceClient;
 
 	private NotificationService notificationService;
 
@@ -49,7 +52,7 @@ public class NotificationServiceTest {
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		notificationService = new NotificationService(notificationServiceClient, customerServiceClient,
-				creditCardClient);
+				creditCardClient, commonServiceClient);
 	}
 
 	@Test
@@ -307,7 +310,7 @@ public class NotificationServiceTest {
 	@Test
 	public void testDoNotifySuccessForBlockCard() {
 		TmbOneServiceResponse<NotificationResponse> response = new TmbOneServiceResponse<>();
-		TmbStatus status= new TmbStatus();
+		TmbStatus status = new TmbStatus();
 		status.setDescription("Successful");
 		status.setCode("1234");
 		status.setMessage("Successful");
@@ -338,17 +341,18 @@ public class NotificationServiceTest {
 		creditCard.setDirectDepositBank("YES");
 		cardResponse.setCreditCard(creditCard);
 		cardResponse.setProductCodeData(productData);
-		String accountId="0000000050079650011000193";
-		String correlationId="1234";
+		String accountId = "0000000050079650011000193";
+		String correlationId = "1234";
 		ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
 				accountId);
-		
+
 		when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
-		when(creditCardClient.getCreditCardDetails(any(),any())).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+		when(creditCardClient.getCreditCardDetails(any(), any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 		notificationService.doNotifySuccessForBlockCard(correlationId, accountId, "crmId");
 		assertNotNull(data);
 	}

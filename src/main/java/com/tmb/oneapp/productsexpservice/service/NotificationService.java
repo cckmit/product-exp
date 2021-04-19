@@ -21,11 +21,14 @@ import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.NotificationConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
@@ -55,13 +58,16 @@ public class NotificationService {
 	private NotificationServiceClient notificationClient;
 	private CustomerServiceClient customerClient;
 	private CreditCardClient creditCardClient;
+	private CommonServiceClient commonServiceClient;
 
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
-			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient) {
+			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
+			CommonServiceClient commonServiceClient) {
 		this.notificationClient = notificationServiceClient;
 		this.customerClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
+		this.commonServiceClient = commonServiceClient;
 	}
 
 	/**
@@ -81,12 +87,12 @@ public class NotificationService {
 
 			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(xCorrelationId,
 					accountId);
+			ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, xCorrelationId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				FetchCardResponse cardResponse = cardInfoResponse.getBody();
 				sendActivationCardEmail(customerProfileInfo.getEmailAddress(), xCorrelationId, defaultChannelEn,
-						defaultChannelTh, accountId, cardResponse.getProductCodeData().getProductNameEN(),
-						cardResponse.getProductCodeData().getProductNameTH());
+						defaultChannelTh, accountId, productCodeData.getProductNameEN(),
+						productCodeData.getProductNameTH());
 			}
 		}
 	}
@@ -168,10 +174,11 @@ public class NotificationService {
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				FetchCardResponse cardResponse = cardInfoResponse.getBody();
+
+				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, xCorrelationId);
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
-						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
-						cardResponse.getProductCodeData().getProductNameTH(), null, null);
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(), null,
+						null);
 
 				sendNotificationEmailForSetpin(notifyCommon, customerProfileInfo.getEmailAddress(),
 						customerProfileInfo.getPhoneNoFull(), accountId, gobalCallCenter);
@@ -201,6 +208,8 @@ public class NotificationService {
 		Map<String, Object> params = new HashMap<>();
 		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.SET_PIN_TEMPLATE_VALUE);
 		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
+		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
 		params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
 		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
@@ -239,11 +248,9 @@ public class NotificationService {
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				FetchCardResponse cardResponse = cardInfoResponse.getBody();
-
+				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, xCorrelationId);
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
-						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
-						cardResponse.getProductCodeData().getProductNameTH(),
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
 						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 
@@ -349,9 +356,9 @@ public class NotificationService {
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				FetchCardResponse cardResponse = cardInfoResponse.getBody();
+				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, correlationId);
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
-						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
-						cardResponse.getProductCodeData().getProductNameTH(),
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
 						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 				String expiryDate = cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
@@ -388,10 +395,10 @@ public class NotificationService {
 					accountId);
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-				FetchCardResponse cardResponse = cardInfoResponse.getBody();
+				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, correlationId);
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
-						defaultChannelTh, cardResponse.getProductCodeData().getProductNameEN(),
-						cardResponse.getProductCodeData().getProductNameTH(), null, null);
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(), null,
+						null);
 
 				sendNotificationEmailForBlockCard(notifyCommon, customerProfileInfo.getEmailAddress(),
 						customerProfileInfo.getPhoneNoFull(), accountId, gobalCallCenter);
@@ -419,6 +426,8 @@ public class NotificationService {
 		Map<String, Object> params = new HashMap<>();
 		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.BLOCK_CARD_TEMPLATE_VALUE);
 		params.put(NotificationConstant.ACCOUNT_ID, accountId);
+		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
+		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
 		params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
 		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
@@ -496,6 +505,30 @@ public class NotificationService {
 			logger.error("xCorrelationId:{}, e-noti response sent email error:{}, {}", notificationRequest,
 					sendEmailResponse.getStatus().getCode(), sendEmailResponse.getStatus().getMessage());
 		}
+	}
+
+	/**
+	 * Method for fetcg Product Code Data model from card response
+	 * 
+	 * @param cardInfoResponse
+	 * @param correlationId
+	 * @return
+	 */
+	private ProductCodeData generateProductCodeData(ResponseEntity<FetchCardResponse> cardInfoResponse,
+			String correlationId) {
+		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
+				.getProductConfig(correlationId);
+		List<ProductConfig> productConfigList = response.getBody().getData();
+		String productCode = cardInfoResponse.getBody().getCreditCard().getProductId();
+		ProductConfig productConfig = productConfigList.stream().filter(e -> productCode.equals(e.getProductCode()))
+				.findAny().orElse(null);
+		ProductCodeData productCodeData = new ProductCodeData();
+		if (Objects.nonNull(productConfig)) {
+			productCodeData.setProductNameTH(productConfig.getProductNameTH());
+			productCodeData.setProductNameEN(productConfig.getProductNameEN());
+			productCodeData.setIconId(productConfig.getIconId());
+		}
+		return productCodeData;
 	}
 
 }
