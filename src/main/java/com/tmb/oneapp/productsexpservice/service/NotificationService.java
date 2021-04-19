@@ -163,7 +163,7 @@ public class NotificationService {
 	 * @param accountId
 	 * @param crmId
 	 */
-//	@Async
+	@Async
 	public void doNotifySuccessForSetPin(String xCorrelationId, String accountId, String crmId) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
