@@ -3,8 +3,12 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.loan.*;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
+import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -103,5 +108,36 @@ public class LoanStatementControllerTest {
 
         Assert.assertEquals(200, result.getStatusCodeValue());
 
+    }
+
+    @Test
+    public void testHandlingFailedResponse()  {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(1);
+        setCreditLimitResp.setStatus(silverlakeStatus);
+        setCreditLimitResp.setTotalRecords(10);
+        setCreditLimitResp.setMaxRecords(100);
+        setCreditLimitResp.setMoreRecords("100");
+        setCreditLimitResp.setSearchKeys("N");
+        CardStatement cardStatement = new CardStatement();
+        cardStatement.setPromotionFlag("Y");
+        setCreditLimitResp.setCardStatement(cardStatement);
+        oneServiceResponse.setData(setCreditLimitResp);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
+        when(accountRequestClient.getLoanAccountStatement(any(),any())).thenThrow(new
+                IllegalStateException("Error occurred"));
+        final TmbOneServiceResponse<LoanStatementResponse> loanStatementResponse = new TmbOneServiceResponse();
+        TmbStatus status = new TmbStatus();
+        status.setCode("0");
+        status.setDescription("Success");
+        status.setMessage("Success");
+        status.setService("loan-statement-service");
+        loanStatementResponse.setStatus(status);
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getTmbOneServiceResponseResponseEntity(responseHeaders, loanStatementResponse);
+
+        Assert.assertNotEquals("0001", result.getBody().getStatus().getCode());
     }
 }

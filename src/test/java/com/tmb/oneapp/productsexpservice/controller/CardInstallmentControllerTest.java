@@ -21,6 +21,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -108,7 +109,7 @@ public class CardInstallmentControllerTest {
             card.setModelType("IP");
             card.setTransactionKey("T0000020700000002");
             card.setPromotionModelNo("IPP001");
-            cardInstallment.set(0, card);
+            cardInstallment.add(installment);
         }
         requestBodyParameter.setCardInstallment(cardInstallment);
         TmbOneServiceResponse<CardInstallmentResponse> response = new TmbOneServiceResponse();
@@ -147,6 +148,50 @@ public class CardInstallmentControllerTest {
         return headers;
 
     }
+
+    @Test
+    public void testHandlingFailedResponse()  {
+        TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse = new TmbOneServiceResponse<>();
+        List<CardInstallmentResponse> cardInstallment = new ArrayList();
+        for (CardInstallmentResponse installment : cardInstallment) {
+            CardInstallment card = new CardInstallment();
+            card.setAmounts("5555.77");
+            card.setModelType("IP");
+            card.setTransactionKey("T0000020700000002");
+            card.setPromotionModelNo("IPP001");
+            cardInstallment.add(installment);
+        }
+        StatusResponse status = new StatusResponse();
+        status.setStatusCode("1243");
+
+
+        CreditCardModel creditLimit = new CreditCardModel();
+
+        creditLimit.setAccountId("1234");
+        CardInstallmentModel installment = new CardInstallmentModel();
+        installment.setAmounts(1234.00);
+        installment.setOrderNo("1234");
+        installment.setTransactionKey("1234");
+        installment.setTransactionDescription("TEST");
+        creditLimit.setCardInstallment(installment);
+        CardStatement cardStatement = new CardStatement();
+        cardStatement.setPromotionFlag("Y");
+        oneServiceResponse.setData(cardInstallment);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
+        when(creditCardClient.confirmCardInstallment(any(),any())).thenThrow(new
+                IllegalStateException("Error occurred"));
+        final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode("0");
+        tmbStatus.setDescription("Success");
+        tmbStatus.setMessage("Success");
+        tmbStatus.setService("loan-statement-service");
+        loanStatementResponse.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> result = cardInstallmentController.populateErrorResponse(responseHeaders, oneServiceResponse, loanStatementResponse);
+        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+    }
 }
+
 
 

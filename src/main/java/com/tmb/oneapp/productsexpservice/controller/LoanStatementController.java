@@ -96,7 +96,7 @@ public class LoanStatementController {
 
     }
 
-    private ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse) {
+     ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse) {
         serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));

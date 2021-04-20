@@ -133,7 +133,7 @@ public class CardInstallmentController {
 
     }
 
-    private ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> populateErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp) {
+     ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> populateErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp) {
         oneServiceResponse.setData(cardInstallmentResp.getData());
         oneServiceResponse.setStatus(
                 new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
