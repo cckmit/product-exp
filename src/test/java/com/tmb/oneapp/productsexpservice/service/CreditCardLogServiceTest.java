@@ -4,12 +4,10 @@ import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
 import com.tmb.oneapp.productsexpservice.model.loan.Account;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
+import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -401,5 +399,52 @@ public class CreditCardLogServiceTest {
 		Assert.assertEquals(creditCardEvent, result);
 	}
 
+	@Test
+	void getCreditCardEvent() {
+		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
+		Map<String,String> hashMap = new HashMap();
+		hashMap.put("1","creditCard");
+		hashMap.put("2","debitCard");
+		hashMap.put(ProductsExpServiceConstant.ACCOUNT_ID,"0000000050078670143000945");
+		creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
+		creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
+		String correlationId="32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+		CardInstallmentQuery requestBody = new CardInstallmentQuery();
+		requestBody.setAccountId("0000000050078670143000945");
+		List<CardInstallment> cardInstallment= new ArrayList<>();
+		for(CardInstallment installment : cardInstallment)
+		{
+			installment.setInterest("1234");
+			installment.setMonthlyInstallments(ConversionUtil.doubleToString(1234.00));
+			installment.setInterest("1234.00");
+			installment.setModelType("Test");
+			installment.setPromotionModelNo("123");
+			installment.setTransactionKey("test");
+			cardInstallment.add(installment);
+		}
+		requestBody.setCardInstallment(cardInstallment);
+		List<CardInstallmentResponse> data = new ArrayList<>();
+		for(CardInstallmentResponse response :data){
+			CreditCardModel creditCard= new CreditCardModel();
+			creditCard.setAccountId("0000000050078670143000945");
+			CardInstallmentModel card = new CardInstallmentModel();
+			card.setTransactionKey("1234");
+			card.setTransactionDescription("Test");
+			card.setTransactionKey("1234");
+			card.setAmounts(ConversionUtil.stringToDouble("1234.00"));
+			creditCard.setCardInstallment(card);
+			response.setCreditCard(creditCard);
+		}
+		CardInstallment installment = new CardInstallment();
+		installment.setTransactionKey("1234");
+		installment.setAmounts("1234.00");
+		installment.setInterest("1");
+		installment.setModelType("test");
+		installment.setInterest(ConversionUtil.doubleToString(10.00));
+		installment.setPromotionModelNo("test");
+		installment.setMonthlyInstallments(ConversionUtil.doubleToString(10.00));
+		CreditCardEvent result = logService.getCreditCardEvent(correlationId,hashMap,requestBody,data,installment);
+		Assert.assertNotEquals(creditCardEvent, result);
+	}
 }
 

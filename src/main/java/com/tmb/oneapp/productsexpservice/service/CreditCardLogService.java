@@ -185,44 +185,49 @@ public class CreditCardLogService {
 		List<CardInstallment> cardInstallment = requestBody.getCardInstallment();
 
 		for (CardInstallment installment : cardInstallment) {
-			CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
-			creditCardEvent.setPlan(installment.getPromotionModelNo());
-			creditCardEvent.setTransactionDescription(installment.getTransactionDescription());
-			populateBaseEvents(creditCardEvent, reqHeader);
-
-			Double amountInDouble = ConversionUtil.stringToDouble(installment.getAmounts());
-			Double installmentInDouble = ConversionUtil.stringToDouble(installment.getMonthlyInstallments());
-			Double installmentPlusAmount = amountInDouble + installmentInDouble;
-
-			Double interestInDouble = ConversionUtil.stringToDouble(installment.getInterest());
-			Double amountPlusTotalInterest = amountInDouble + interestInDouble;
-			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
-			String amountPlusMonthlyInstallment = ConversionUtil.doubleToString(installmentPlusAmount);
-			creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
-
-			String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountPlusTotalInterest);
-
-			creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
-
-			for(CardInstallmentResponse cardResp : data) {
-				String transactionKey = cardResp.getCreditCard().getCardInstallment().getTransactionKey();
-
-				if(cardResp.getStatus().getErrorStatus()!=null && !cardResp.getStatus().getErrorStatus().isEmpty()  &&  
-						transactionKey.equalsIgnoreCase(installment.getTransactionKey())) {
-
-					creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-					creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-					creditCardEvent.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-					creditCardEvent.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-				}
-
-			}
+			CreditCardEvent creditCardEvent = getCreditCardEvent(correlationId, reqHeader, requestBody, data, installment);
 
 			logActivity(creditCardEvent);
 
 		}
 
+	}
+
+	 CreditCardEvent getCreditCardEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, List<CardInstallmentResponse> data, CardInstallment installment) {
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
+		creditCardEvent.setPlan(installment.getPromotionModelNo());
+		creditCardEvent.setTransactionDescription(installment.getTransactionDescription());
+		populateBaseEvents(creditCardEvent, reqHeader);
+
+		Double amountInDouble = ConversionUtil.stringToDouble(installment.getAmounts());
+		Double installmentInDouble = ConversionUtil.stringToDouble(installment.getMonthlyInstallments());
+		Double installmentPlusAmount = amountInDouble + installmentInDouble;
+
+		Double interestInDouble = ConversionUtil.stringToDouble(installment.getInterest());
+		Double amountPlusTotalInterest = amountInDouble + interestInDouble;
+		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+		creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
+		String amountPlusMonthlyInstallment = ConversionUtil.doubleToString(installmentPlusAmount);
+		creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
+
+		String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountPlusTotalInterest);
+
+		creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+
+		for(CardInstallmentResponse cardResp : data) {
+			String transactionKey = cardResp.getCreditCard().getCardInstallment().getTransactionKey();
+
+			if(cardResp.getStatus().getErrorStatus()!=null && !cardResp.getStatus().getErrorStatus().isEmpty()  &&
+					transactionKey.equalsIgnoreCase(installment.getTransactionKey())) {
+
+				creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
+				creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+				creditCardEvent.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+				creditCardEvent.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+			}
+
+		}
+		return creditCardEvent;
 	}
 
 

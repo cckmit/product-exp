@@ -63,24 +63,7 @@ public class ProductsVerifyCvvController {
                 if (statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
 
-                    String code = verifyCvvResponse.getBody().getStatus().getCode();
-                    String message = verifyCvvResponse.getBody().getStatus().getMessage();
-                    String service = verifyCvvResponse.getBody().getStatus().getService();
-                    VerifyCvvResponse data = verifyCvvResponse.getBody().getData();
-                    if (data.getStatus().getStatusCode() == 0) {
-                        oneServiceResponse
-                                .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                                        ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                        oneServiceResponse.setData(response);
-                        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-                    } else {
-
-                        oneServiceResponse.setStatus(
-                                new TmbStatus(code, message,
-                                        service, ResponseCode.FAILED.getDesc()));
-                        oneServiceResponse.setData(response);
-                        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-                    }
+                    return getTmbOneServiceResponseResponseEntity(response, oneServiceResponse, responseHeaders, verifyCvvResponse);
                 }
                 oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(),
@@ -98,6 +81,27 @@ public class ProductsVerifyCvvController {
             logger.error("Error while getCreditCardDetails: {}", e);
             oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+        }
+    }
+
+     ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> getTmbOneServiceResponseResponseEntity(VerifyCvvResponse response, TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse, HttpHeaders responseHeaders, ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvvResponse) {
+        String code = verifyCvvResponse.getBody().getStatus().getCode();
+        String message = verifyCvvResponse.getBody().getStatus().getMessage();
+        String service = verifyCvvResponse.getBody().getStatus().getService();
+        VerifyCvvResponse data = verifyCvvResponse.getBody().getData();
+        if (data.getStatus().getStatusCode() == 0) {
+            oneServiceResponse
+                    .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                            ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            oneServiceResponse.setData(response);
+            return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+        } else {
+
+            oneServiceResponse.setStatus(
+                    new TmbStatus(code, message,
+                            service, ResponseCode.FAILED.getDesc()));
+            oneServiceResponse.setData(response);
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
         }
     }
