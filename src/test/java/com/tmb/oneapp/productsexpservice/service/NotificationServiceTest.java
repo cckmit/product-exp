@@ -15,12 +15,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
@@ -28,6 +31,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardCreditLimi
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.TemporaryCreditLimit;
@@ -42,6 +46,8 @@ public class NotificationServiceTest {
 	CustomerServiceClient customerServiceClient;
 	@Mock
 	CreditCardClient creditCardClient;
+	@Mock
+	CommonServiceClient commonServiceClient;
 
 	private NotificationService notificationService;
 
@@ -49,7 +55,7 @@ public class NotificationServiceTest {
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		notificationService = new NotificationService(notificationServiceClient, customerServiceClient,
-				creditCardClient);
+				creditCardClient, commonServiceClient);
 	}
 
 	@Test
@@ -69,12 +75,21 @@ public class NotificationServiceTest {
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
+		CreditCardDetail cardDetail = new CreditCardDetail();
+		cardDetail.setProductId("VTOPBR");
+		cardResponse.setCreditCard(cardDetail);
 
 		when(creditCardClient.getCreditCardDetails(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
+
+		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		List<ProductConfig> productConfigs = new ArrayList<ProductConfig>();
+		productResponse.setData(productConfigs);
+		when(commonServiceClient.getProductConfig(any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
 
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
@@ -101,6 +116,9 @@ public class NotificationServiceTest {
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
+		CreditCardDetail cardDetail = new CreditCardDetail();
+		cardDetail.setProductId("VTOPBR");
+		cardResponse.setCreditCard(cardDetail);
 
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
@@ -109,6 +127,11 @@ public class NotificationServiceTest {
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		List<ProductConfig> productConfigs = new ArrayList<ProductConfig>();
+		productResponse.setData(productConfigs);
+		when(commonServiceClient.getProductConfig(any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
 
 		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
@@ -132,12 +155,20 @@ public class NotificationServiceTest {
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
+		CreditCardDetail cardDetail = new CreditCardDetail();
+		cardDetail.setProductId("VTOPBR");
+		cardResponse.setCreditCard(cardDetail);
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
 		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		List<ProductConfig> productConfigs = new ArrayList<ProductConfig>();
+		productResponse.setData(productConfigs);
+		when(commonServiceClient.getProductConfig(any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
 
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
@@ -164,12 +195,25 @@ public class NotificationServiceTest {
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
+		
+		CreditCardDetail cardDetail = new CreditCardDetail();
+		cardDetail.setProductId("VTOPBR");
+		cardResponse.setCreditCard(cardDetail);
+		
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
 		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+
+		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		List<ProductConfig> productConfigs = new ArrayList<ProductConfig>();
+		ProductConfig config = new ProductConfig();
+		config.setProductCode(null);
+		productResponse.setData(productConfigs);
+		when(commonServiceClient.getProductConfig(any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
 
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
@@ -227,6 +271,12 @@ public class NotificationServiceTest {
 		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
+		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		List<ProductConfig> productConfigs = new ArrayList<ProductConfig>();
+		productResponse.setData(productConfigs);
+		when(commonServiceClient.getProductConfig(any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
+
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
@@ -283,6 +333,12 @@ public class NotificationServiceTest {
 		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
+		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		List<ProductConfig> productConfigs = new ArrayList<ProductConfig>();
+		productResponse.setData(productConfigs);
+		when(commonServiceClient.getProductConfig(any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
+
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
@@ -307,7 +363,7 @@ public class NotificationServiceTest {
 	@Test
 	public void testDoNotifySuccessForBlockCard() {
 		TmbOneServiceResponse<NotificationResponse> response = new TmbOneServiceResponse<>();
-		TmbStatus status= new TmbStatus();
+		TmbStatus status = new TmbStatus();
 		status.setDescription("Successful");
 		status.setCode("1234");
 		status.setMessage("Successful");
@@ -338,17 +394,25 @@ public class NotificationServiceTest {
 		creditCard.setDirectDepositBank("YES");
 		cardResponse.setCreditCard(creditCard);
 		cardResponse.setProductCodeData(productData);
-		String accountId="0000000050079650011000193";
-		String correlationId="1234";
+		String accountId = "0000000050079650011000193";
+		String correlationId = "1234";
 		ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
 				accountId);
-		
+
 		when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
-		when(creditCardClient.getCreditCardDetails(any(),any())).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+		when(creditCardClient.getCreditCardDetails(any(), any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
+
+		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		List<ProductConfig> productConfigs = new ArrayList<ProductConfig>();
+		productResponse.setData(productConfigs);
+		when(commonServiceClient.getProductConfig(any()))
+				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
+
 		notificationService.doNotifySuccessForBlockCard(correlationId, accountId, "crmId");
 		assertNotNull(data);
 	}

@@ -7,17 +7,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({
-"status",
-"credit_card"
-})
+@JsonPropertyOrder({ "status", "credit_card" })
 @Data
 public class CardInstallmentResponse {
 
-@JsonProperty("status")
-private StatusResponse status;
-@JsonProperty("credit_card")
-private CreditCardModel creditCard;
+	@JsonProperty("status")
+	private StatusResponse status;
+	@JsonProperty("credit_card")
+	private CreditCardModel creditCard;
 
 }
-
