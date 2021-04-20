@@ -167,11 +167,8 @@ public class ProductsExpService {
                         .filter(port -> port.startsWith("PT"))
                         .collect(Collectors.toList());
 
-
-
                 result.setPortsUnitHolder(ports);
                 unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                logger.info(">>>>" + unitHolder.getUnitHolderNo());
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
                 summaryByPortResponse = investmentRequestClient
                         .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
@@ -212,9 +209,9 @@ public class ProductsExpService {
                     .getSummarySmartPortUnrealizedProfit());
             result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
                     .getSummarySmartPortUnrealizedProfitPercent());
-            List smartPort = fundClassData.stream().filter(port -> "090".equalsIgnoreCase(port.getFundClassCode()))
+            List smartPort = fundClassData.stream().filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
                     .collect(Collectors.toList());
-            List notSmartPort = fundClassData.stream().filter(port -> !"090".equalsIgnoreCase(port.getFundClassCode()))
+            List notSmartPort = fundClassData.stream().filter(port -> !ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
                     .collect(Collectors.toList());
 
             if(summaryByPort != null && summaryByPort.getData() !=null && summaryByPort.getData().getBody() != null &&
