@@ -39,6 +39,12 @@ public class ApplicationStatusController {
         this.applicationStatusService = applicationStatusService;
     }
 
+    /**
+     *
+     * @param requestHeaders
+     * @param serviceTypeId
+     * @return
+     */
     @LogAround
     @ApiOperation(value = "Get Application Status")
     @GetMapping(value = "/application/status")

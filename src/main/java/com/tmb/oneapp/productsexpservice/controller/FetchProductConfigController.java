@@ -165,7 +165,14 @@ public class FetchProductConfigController {
 		return data;
 
 	}
-	
+
+	/**
+	 *
+	 * @param e
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws JsonProcessingException
+	 */
 	private TMBCommonException handleFeignException(FeignException e) throws UnsupportedEncodingException, JsonProcessingException {
 		logger.error("Exception in {} :{}", e.getClass().getName(), e.toString());
 		if (e instanceof FeignException.BadRequest)
@@ -181,19 +188,33 @@ public class FetchProductConfigController {
 				ResponseCode.ETE_SERVICE_ERROR.getMessage(), ResponseCode.ETE_SERVICE_ERROR.getService(),
 				HttpStatus.BAD_REQUEST, null);
 	}
-	
+
+	/**
+	 *
+	 * @param e
+	 * @return
+	 */
 	private TmbStatus getResponseFail(Exception e) {
 		logger.error("Exception :{}", e.toString());
         return new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 				ResponseCode.FAILED.getService());
     }
-	
+
+	/**
+	 *
+	 * @return
+	 */
 	private HttpHeaders getResponseHeaders() {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		return responseHeaders;
 	}
-	
+
+	/**
+	 *
+	 * @param correlationId
+	 * @return
+	 */
 	private List<ProductConfig> getProductConfig(String correlationId) {
 		logger.info("========== Start call service name : common service ==========");
 		try {

@@ -9,12 +9,9 @@ import lombok.Data;
 import java.util.List;
 
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({
-"status_code"
-})
+@JsonPropertyOrder({ "status_code" })
 @Data
 public class StatusResponse {
-
 
 	@JsonProperty("status_code")
 	private String statusCode;

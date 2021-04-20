@@ -193,6 +193,15 @@ public class CreditCardLogService {
 
 	}
 
+	/**
+	 *
+ 	 * @param correlationId
+	 * @param reqHeader
+	 * @param requestBody
+	 * @param data
+	 * @param installment
+	 * @return
+	 */
 	 CreditCardEvent getCreditCardEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, List<CardInstallmentResponse> data, CardInstallment installment) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
 		creditCardEvent.setPlan(installment.getPromotionModelNo());

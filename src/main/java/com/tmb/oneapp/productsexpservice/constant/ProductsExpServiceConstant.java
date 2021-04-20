@@ -182,5 +182,7 @@ public class ProductsExpServiceConstant {
 
     public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
     public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
+    public static final String SMART_PORT_CODE = "090" ;
+
 
 }

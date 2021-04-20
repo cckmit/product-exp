@@ -94,6 +94,12 @@ public class InstallmentRateController {
 
     }
 
+    /**
+     *
+     * @param responseHeaders
+     * @param serviceResponse
+     * @return
+     */
     private ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<InstallmentRateResponse> serviceResponse) {
         serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),

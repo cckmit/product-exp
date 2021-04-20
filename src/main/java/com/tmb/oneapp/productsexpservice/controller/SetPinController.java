@@ -152,6 +152,13 @@ public class SetPinController {
 
 	}
 
+	/**
+	 *
+	 * @param ex
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws JsonProcessingException
+	 */
 	private TmbServiceResponse<List<Object>> convertExceptionResposeToExceptionRespose(FeignException ex)
 			throws UnsupportedEncodingException, JsonProcessingException {
 		Optional<ByteBuffer> response = ex.responseBody();

@@ -8,6 +8,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -64,6 +65,7 @@ public class ProductExpServiceTest {
     KafkaProducerService kafkaProducerService;
     CommonServiceClient commonServiceClient;
     ProductExpAsynService productExpAsynService;
+    CustomerExpServiceClient customerExpServiceClient;
 
     private final String success_code = "0000";
     private final String notfund_code = "0009";
@@ -80,7 +82,7 @@ public class ProductExpServiceTest {
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsynService = mock(ProductExpAsynService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient, productExpAsynService, topicName);
+        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient, productExpAsynService, topicName,customerExpServiceClient);
 
     }
 
