@@ -113,10 +113,7 @@ public class CardInstallmentController {
                     }
                 }
             } else {
-                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                return dataNotFoundErrorResponse(responseHeaders, oneServiceResponse);
             }
         } catch (Exception e) {
             creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
@@ -133,7 +130,14 @@ public class CardInstallmentController {
 
     }
 
-     ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> populateErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp) {
+     ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> dataNotFoundErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse) {
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+    }
+
+    ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> populateErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp) {
         oneServiceResponse.setData(cardInstallmentResp.getData());
         oneServiceResponse.setStatus(
                 new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),

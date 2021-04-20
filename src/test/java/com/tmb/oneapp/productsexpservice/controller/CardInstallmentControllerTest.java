@@ -191,6 +191,49 @@ public class CardInstallmentControllerTest {
         ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> result = cardInstallmentController.populateErrorResponse(responseHeaders, oneServiceResponse, loanStatementResponse);
         Assert.assertEquals("0001", result.getBody().getStatus().getCode());
     }
+
+    @Test
+    public void testpopulateErrorResponse()  {
+        TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse = new TmbOneServiceResponse<>();
+        List<CardInstallmentResponse> cardInstallment = new ArrayList();
+        for (CardInstallmentResponse installment : cardInstallment) {
+            CardInstallment card = new CardInstallment();
+            card.setAmounts("5555.77");
+            card.setModelType("IP");
+            card.setTransactionKey("T0000020700000002");
+            card.setPromotionModelNo("IPP001");
+            cardInstallment.add(installment);
+        }
+        StatusResponse status = new StatusResponse();
+        status.setStatusCode("1243");
+
+
+        CreditCardModel creditLimit = new CreditCardModel();
+
+        creditLimit.setAccountId("1234");
+        CardInstallmentModel installment = new CardInstallmentModel();
+        installment.setAmounts(1234.00);
+        installment.setOrderNo("1234");
+        installment.setTransactionKey("1234");
+        installment.setTransactionDescription("TEST");
+        creditLimit.setCardInstallment(installment);
+        CardStatement cardStatement = new CardStatement();
+        cardStatement.setPromotionFlag("Y");
+        oneServiceResponse.setData(cardInstallment);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
+        when(creditCardClient.confirmCardInstallment(any(),any())).thenThrow(new
+                IllegalStateException("Error occurred"));
+        final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode("0");
+        tmbStatus.setDescription("Success");
+        tmbStatus.setMessage("Success");
+        tmbStatus.setService("loan-statement-service");
+        loanStatementResponse.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> result = cardInstallmentController.dataNotFoundErrorResponse(responseHeaders, oneServiceResponse);
+        Assert.assertEquals("0009", result.getBody().getStatus().getCode());
+    }
 }
 
 
