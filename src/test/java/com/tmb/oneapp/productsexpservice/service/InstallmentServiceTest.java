@@ -17,13 +17,11 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class InstallmentServiceTest {
 
-	@Mock
-	private InstallmentService installmentService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		installmentService = new InstallmentService();
+		
 	}
 
 	@Test
@@ -37,7 +35,7 @@ public class InstallmentServiceTest {
 		result.setTotalAmt(new BigDecimal("1041.91"));
 		result.setTotalInterest(new BigDecimal("41.40"));
 
-		MonthlyTrans monthlyTrans = installmentService.calcualteMonthlyTransection(new BigDecimal("1000.51"), 6,
+		MonthlyTrans monthlyTrans = InstallmentService.calcualteMonthlyTransection(new BigDecimal("1000.51"), 6,
 				new BigDecimal("0.69"));
 		
 		

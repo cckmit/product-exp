@@ -3,16 +3,15 @@ package com.tmb.oneapp.productsexpservice.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.springframework.stereotype.Service;
-
 import com.tmb.oneapp.productsexpservice.model.MonthlyTrans;
 
-@Service
 public class InstallmentService {
 
 	public static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
 	public static final Integer CALCULATE_DIGIT = 5;
 	public static final Integer DISPLAY_DIGIT = 2;
+	
+	private InstallmentService() {}
 
 	public static MonthlyTrans calcualteMonthlyTransection(BigDecimal principle, Integer tenor,
 			BigDecimal interestRatePercent) {

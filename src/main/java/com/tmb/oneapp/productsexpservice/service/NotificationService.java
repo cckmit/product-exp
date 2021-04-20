@@ -245,6 +245,7 @@ public class NotificationService {
 		logger.info("xCorrelationId:{} request customer name in th and en for change usage limit", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 				.getCustomerProfile(new HashMap<String, String>(), crmId);
+
 		if (validCustomerResponse(response)) {
 			CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
@@ -253,10 +254,11 @@ public class NotificationService {
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, xCorrelationId);
+				String fullNameEng = customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname();
+				String fullNameThai = customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname();
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
 						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
-						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
-						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+						fullNameEng, fullNameThai);
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
 
@@ -380,8 +382,8 @@ public class NotificationService {
 								: null;
 				String reasonEN = requestBodyParameter.getEnglishDes();
 				String reasonTH = requestBodyParameter.getReasonDescEn();
-				sendNotifySuccessForRequestTemporary(notifyCommon, customerProfileInfo.getEmailAddress(), accountId,
-						expiryDate, tempLimit, reasonEN, reasonTH);
+				sendNotifySuccessForRequestTemporary(notifyCommon, customerProfileInfo.getEmailAddress(), expiryDate,
+						tempLimit, reasonEN, reasonTH);
 
 			}
 		}
@@ -463,18 +465,17 @@ public class NotificationService {
 	}
 
 	/**
-	 * Wrapper for process notification for Request temporary
+	 * Wrapper for process request temporary
 	 * 
 	 * @param notifyCommon
+	 * @param email
 	 * @param expiryDate
 	 * @param tempLimit
 	 * @param reasonEN
 	 * @param reasonTH
-	 * @param reasonTH2
-	 * @param reasonEN2
 	 */
-	private void sendNotifySuccessForRequestTemporary(NotifyCommon notifyCommon, String email, String accountId,
-			String expiryDate, String tempLimit, String reasonEN, String reasonTH) {
+	private void sendNotifySuccessForRequestTemporary(NotifyCommon notifyCommon, String email, String expiryDate,
+			String tempLimit, String reasonEN, String reasonTH) {
 
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
@@ -525,7 +526,7 @@ public class NotificationService {
 	}
 
 	/**
-	 * Method for fetcg Product Code Data model from card response
+	 * Method for fetch Product Code Data model from card response
 	 * 
 	 * @param cardInfoResponse
 	 * @param correlationId
