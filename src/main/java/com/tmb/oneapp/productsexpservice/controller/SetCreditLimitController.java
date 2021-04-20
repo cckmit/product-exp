@@ -77,7 +77,7 @@ public class SetCreditLimitController {
 		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		String activityDate = Long.toString(System.currentTimeMillis());
 		
-		String accountId = requestHeadersParameter.get(ProductsExpServiceConstant.ACCOUNT_ID);
+		String accountId = requestBodyParameter.getAccountId();
         String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate,
