@@ -13,7 +13,6 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -63,10 +62,7 @@ public class LoanStatementControllerTest {
     }
 
     @Test
-    public void testGetLoanAccountDetailTest() throws Exception {
-        // Setup
-
-        // Configure AccountRequestClient.getLoanAccountStatement(...).
+    public void testGetLoanAccountDetailTest()  {
         String correlationId="c83936c284cb398fA46CF16F399C";
         LoanStatementRequest requestBody = new LoanStatementRequest();
         requestBody.setAccountId("00015719933001");
@@ -105,9 +101,6 @@ public class LoanStatementControllerTest {
         when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(tmbOneServiceResponseEntity);
         ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanAccountDetail(correlationId, requestBody);
 
-        // Run the test
-
-        // Verify the results
         Assert.assertEquals(200, result.getStatusCodeValue());
 
     }
