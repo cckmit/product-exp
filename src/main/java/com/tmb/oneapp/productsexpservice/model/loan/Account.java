@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @JsonPropertyOrder({
@@ -21,6 +23,8 @@ import lombok.Data;
         "credit_limit",
         "rates"
 })
+@Setter
+@Getter
 @JsonInclude(Include.NON_NULL)
 public class Account {
 
