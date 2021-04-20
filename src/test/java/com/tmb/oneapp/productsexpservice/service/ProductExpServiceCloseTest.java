@@ -8,6 +8,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
@@ -45,6 +46,7 @@ public class ProductExpServiceCloseTest {
     KafkaProducerService kafkaProducerService;
     CommonServiceClient commonServiceClient;
     ProductExpAsynService productExpAsynService;
+    CustomerExpServiceClient customerExpServiceClient;
 
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
@@ -59,7 +61,7 @@ public class ProductExpServiceCloseTest {
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsynService =  mock(ProductExpAsynService.class);
         productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient,
-                productExpAsynService, topicName);
+                productExpAsynService, topicName,customerExpServiceClient);
 
     }
 

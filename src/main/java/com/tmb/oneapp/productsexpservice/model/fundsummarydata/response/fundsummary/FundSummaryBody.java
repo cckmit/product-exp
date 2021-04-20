@@ -25,5 +25,8 @@ public class FundSummaryBody extends FundClassList{
     private String summarySmartPortMarketValue;
     private String summarySmartPortUnrealizedProfit;
     private String summarySmartPortUnrealizedProfitPercent;
+    private Boolean isPtes;
+    private Boolean isPt;
+    private Boolean isSmartPort;
 
 }
