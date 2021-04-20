@@ -1,0 +1,87 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "customers-ex-service",
+    "description": null
+  },
+  "data": {
+    "total_available_balance": "0",
+    "deposit_account_lists": [],
+    "product_group_flag": [
+      {
+        "name": "saving",
+        "is_available": true,
+        "content": null
+      },
+      {
+        "name": "credit_card",
+        "is_available": true,
+        "content": null
+      },
+      {
+        "name": "investment",
+        "is_available": true,
+        "content": null
+      },
+      {
+        "name": "loan",
+        "is_available": false,
+        "content": {
+          "en": {
+            "label_title": "You don't have loan account",
+            "label_detail": "Fulfill your life moment with lending solution and special offer from ttb",
+            "button_cta": "Apply loan",
+            "hyper_link1_name": "",
+            "hyper_link1_url": "",
+            "hyper_link2_name": "",
+            "hyper_link2_url": ""
+          },
+          "th": {
+            "label_title": "คุณยังไม่มีสินเชื่อของทีทีบี",
+            "label_detail": "สินเชื่อเมื่อถึงคราวจำเป็น ด้วยอัตราดอกเบี้ยพิเศษสำหรับลูกค้าคนสำคัญเช่นคุณ",
+            "button_cta": "สมัครสินเชื่อ",
+            "hyper_link1_name": "",
+            "hyper_link1_url": "",
+            "hyper_link2_name": "",
+            "hyper_link2_url": ""
+          },
+          "icon_url_ios": "/media/common/introduction/temp/ios/1.png",
+          "icon_url_android": "/media/common/introduction/temp/android/1.svg"
+        }
+      },
+      {
+        "name": "insurance",
+        "is_available": false,
+        "content": {
+          "en": {
+            "label_title": "You have no saving account yet.",
+            "label_detail": "With a special text box on the first page That reminds me like a financial friend knows Like you have a personal finance manager.That you want to meet every day ...",
+            "button_cta": "New Account",
+            "hyper_link1_name": "Saving Account",
+            "hyper_link1_url": "https://www.tmbbank.com/home",
+            "hyper_link2_name": "",
+            "hyper_link2_url": ""
+          },
+          "th": {
+            "label_title": "คุณยังไม่มีผลิตภัณฑ์เงินฝาก",
+            "label_detail": "สนใจเปิดบัญชีเงินฝากที่ออกแบบให้คุณมีการเก็บเงินที่ดีขึ้นกว่าเดิมไม่ว่าจะเพื่อใช้หรือเพื่อออม",
+            "button_cta": "เปิดบัญชีใหม่",
+            "hyper_link1_name": "ข้อมูลบัญชีเงินฝาก",
+            "hyper_link1_url": "https://www.tmbbank.com/en/home",
+            "hyper_link2_name": "",
+            "hyper_link2_url": ""
+          },
+          "icon_url_ios": "/media/common/introduction/temp/ios/1.png",
+          "icon_url_android": "/media/common/introduction/temp/android/1.svg"
+        }
+      }
+    ],
+    "mutual_fund_accounts": [
+      "PTES000000000001829798",
+      "PTES000000000001829800"
+    ],
+    "loan_accounts": [],
+    "hp_accounts": []
+  }
+}

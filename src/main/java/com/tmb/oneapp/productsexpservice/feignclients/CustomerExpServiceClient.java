@@ -10,9 +10,9 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 @FeignClient(name = "${feign.customers.exp.service.name}", url = "${feign.customers.exp.service.url}")
 public interface CustomerExpServiceClient {
 
-    @GetMapping(value = "/accounts/saving")
+    @GetMapping(value = "/apis/customer/accounts/saving")
     public String getAccountSaving(
             @RequestHeader(value = X_CORRELATION_ID) String correlationId,
-            @PathVariable("X-CRMID") String crmId
+            @RequestHeader("X-CRMID") String crmId
     );
 }

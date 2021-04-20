@@ -187,6 +187,14 @@ public class ProductsExpService {
         }
     }
 
+    /***
+     * Set The FundSummaryBody
+     * @param result
+     * @param ptesList
+     * @param ptList
+     * @param body
+     * @param summaryByPort
+     */
     private void setFundSummaryBody(FundSummaryBody result, List<String> ptesList, List<String> ptList, TmbOneServiceResponse<FundSummaryResponse> body, TmbOneServiceResponse<FundSummaryByPortResponse> summaryByPort) {
         if (body != null) {
             FundClassList fundClassList = body.getData().getBody().getFundClassList();
@@ -218,14 +226,13 @@ public class ProductsExpService {
                     !summaryByPort.getData().getBody().getPortfolioList().isEmpty()){
                 result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
             }
-            if(ptesList.isEmpty()){
+            if(!ptesList.isEmpty()){
                 result.setIsPtes(Boolean.TRUE);
             }
-            if(notSmartPort.isEmpty() && ptList.isEmpty()){
+            if(!ptList.isEmpty() && !notSmartPort.isEmpty()){
                 result.setIsPt(Boolean.TRUE);
             }
-
-            if(smartPort.isEmpty() && ptList.isEmpty()){
+            if(!smartPort.isEmpty()){
                 result.setIsSmartPort(Boolean.TRUE);
             }
 
