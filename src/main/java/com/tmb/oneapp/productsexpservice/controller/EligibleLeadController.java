@@ -44,7 +44,7 @@ public class EligibleLeadController {
     @PostMapping(value = "/loan/get-eligible-lead", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getLoanAccountDetail(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true)  @RequestHeader String correlationId,
-            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EligibleLeadRequest requestBody) {
+            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EligibleLeadRequest requestBody)  {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));

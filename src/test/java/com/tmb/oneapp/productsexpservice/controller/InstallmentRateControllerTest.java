@@ -55,8 +55,9 @@ public class InstallmentRateControllerTest {
         requestBody.setPromoSegment("CS7");
         requestBody.setCashChillChillFlag("Y");
         requestBody.setGetAllDetailFlag("N");
+        requestBody.setCashTransferFlag("Y");
         ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> result = installmentRateController.getLoanAccountDetail(correlationId, requestBody);
-        Assert.assertEquals(400, result.getStatusCodeValue());
+        Assert.assertNotEquals(400, result.getStatusCodeValue());
     }
 }
 

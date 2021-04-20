@@ -21,9 +21,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
+import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -75,7 +77,7 @@ public class LoanDetailsControllerTest {
     }
 
     @Test
-    public void testGetLoanAccountDetailElseCase()  {
+    public void testGetLoanAccountDetailElseCase() {
         Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C");
         LoanDetailsFullResponse response = new LoanDetailsFullResponse();
         StatusResponse status = new StatusResponse();
@@ -92,8 +94,8 @@ public class LoanDetailsControllerTest {
         account.setAccountNo("00016109738001");
         ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
         Assert.assertEquals(400, result.getStatusCodeValue());
-    }
 
+    }
 
     @Test
     public void testGetLoanAccountDetailsCase()  {
@@ -121,22 +123,36 @@ public class LoanDetailsControllerTest {
         productConfig.setProductNameEN("Mobile");
         productConfig.setProductCode("1234");
         response.setProductConfig(productConfig);
+        TmbOneServiceResponse<LoanDetailsFullResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus= new TmbStatus();
+        tmbStatus.setMessage("Successful");
+        tmbStatus.setService("loan-service");
+        tmbStatus.setDescription("Successful");
+        tmbOneServiceResponse.setData(response);
+        tmbOneServiceResponse.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(tmbOneServiceResponse,HttpStatus.OK);
+        TmbOneServiceResponse<List<ProductConfig>> listTmbOneServiceResponse= new TmbOneServiceResponse<>();
+        listTmbOneServiceResponse.setStatus(tmbStatus);
+        List<ProductConfig> list = new ArrayList<>();
+        for(ProductConfig config: list){
+            config.setProductCode("123");
+            config.setIconId("123");
+            config.setOpenEkyc("123");
+            config.setProductNameEN("TEST");
+            list.add(config);
+        }
 
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
+        listTmbOneServiceResponse.setData(list);
+        ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> commonResponse = new ResponseEntity(listTmbOneServiceResponse,HttpStatus.OK);
+        when(commonServiceClient.getProductConfig(anyString())).thenReturn(commonResponse);
         when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
-
-
         AccountId account = new AccountId();
         account.setAccountNo("00016109738001");
         ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
         TmbOneServiceResponse<LoanDetailsFullResponse> body = result.getBody();
         body.setData(response);
-        TmbStatus tmbStatus= new TmbStatus();
-        tmbStatus.setMessage("Successful");
-        tmbStatus.setService("loan-service");
-        tmbStatus.setDescription("Successful");
         body.setStatus(tmbStatus);
-        Assert.assertEquals(400, result.getStatusCodeValue());
+        Assert.assertEquals(200, result.getStatusCodeValue());
     }
 
     @Test
