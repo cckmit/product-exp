@@ -140,7 +140,6 @@ public class NotificationService {
 			params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
 			emailRecord.setParams(params);
 			emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
-			emailRecord.setAccount(notifyCommon.getAccountId());
 			emailRecord.setCrmId(notifyCommon.getCrmId());
 
 			notificationRecords.add(emailRecord);
@@ -221,7 +220,6 @@ public class NotificationService {
 		params.put(NotificationConstant.SUPPORT_NO, supportNo);
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
-		record.setAccount(notifyCommon.getAccountId());
 		record.setCrmId(notifyCommon.getCrmId());
 
 		setRequestForEmailAndSms(email, smsNo, record);
@@ -303,7 +301,6 @@ public class NotificationService {
 		params.put(NotificationConstant.TRAN_TIME, tranTime);
 
 		record.setParams(params);
-		record.setAccount(notifyCommon.getAccountId());
 		record.setCrmId(notifyCommon.getCrmId());
 		record.setLanguage(NotificationConstant.LOCALE_TH);
 
@@ -439,7 +436,6 @@ public class NotificationService {
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 
 		NotificationRecord record = new NotificationRecord();
-		record.setAccount(notifyCommon.getAccountId());
 		record.setCrmId(notifyCommon.getCrmId());
 
 		Map<String, Object> params = new HashMap<>();
@@ -497,7 +493,6 @@ public class NotificationService {
 		params.put(NotificationConstant.REASON_TH, reasonTH);
 
 		record.setParams(params);
-		record.setAccount(notifyCommon.getAccountId());
 		record.setCrmId(notifyCommon.getCrmId());
 		record.setLanguage(NotificationConstant.LOCALE_TH);
 
