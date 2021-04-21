@@ -35,117 +35,119 @@ import java.util.Map;
 @RestController
 @Api(tags = "Temporary and Permanent Credit Card Limit")
 public class SetCreditLimitController {
-    private final CreditCardClient creditCardClient;
-    private static final TMBLogger<SetCreditLimitController> logger = new TMBLogger<>(SetCreditLimitController.class);
-    private final CreditCardLogService creditCardLogService;
-    private final NotificationService notificationService;
+	private final CreditCardClient creditCardClient;
+	private static final TMBLogger<SetCreditLimitController> logger = new TMBLogger<>(SetCreditLimitController.class);
+	private CreditCardLogService creditCardLogService;
+	private NotificationService notificationService;
 
-    /**
-     * Constructor
-     *
-     * @param creditCardClient
-     */
-    @Autowired
-    public SetCreditLimitController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService, NotificationService notificationService) {
-        this.creditCardClient = creditCardClient;
-        this.creditCardLogService = creditCardLogService;
-        this.notificationService = notificationService;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param creditCardClient
+	 */
+	@Autowired
+	public SetCreditLimitController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService,
+									NotificationService notificationService) {
+		this.creditCardClient = creditCardClient;
+		this.creditCardLogService = creditCardLogService;
+		this.notificationService = notificationService;
+	}
 
-    /**
-     * Temporary and Permanent Credit Card Limit api
-     *
-     * @param requestBodyParameter
-     * @return status code
-     */
-    @LogAround
-    @ApiOperation(value = "Temporary and Permanent Credit Card Limit")
-    @PostMapping(value = "/credit-card/set-credit-limit")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
+	/**
+	 * Temporary and Permanent Credit Card Limit api
+	 *
+	 * @param requestBodyParameter
+	 * @return status code
+	 */
+	@LogAround
+	@ApiOperation(value = "Temporary and Permanent Credit Card Limit")
+	@PostMapping(value = "/credit-card/set-credit-limit")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") })
 
-    public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> setCreditLimit(
-            @RequestBody SetCreditLimitReq requestBodyParameter,
-            @RequestHeader Map<String, String> requestHeadersParameter) {
-        logger.info("Request Parameter fetchCreditLimit : {} ", requestBodyParameter);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<>();
-        String mode = requestBodyParameter.getMode();
+	public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> setCreditLimit(
+			@RequestBody SetCreditLimitReq requestBodyParameter,
+			@RequestHeader Map<String, String> requestHeadersParameter) {
+		logger.info("Request Parameter fetchCreditLimit : {} ", requestBodyParameter);
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+		TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<>();
+		String mode = requestBodyParameter.getMode();
 
-        String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
-        String activityDate = Long.toString(System.currentTimeMillis());
+		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String activityDate = Long.toString(System.currentTimeMillis());
+		String accountId = requestBodyParameter.getAccountId();
+		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 
-        String accountId = requestHeadersParameter.get(ProductsExpServiceConstant.ACCOUNT_ID);
-        String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate,
+				ProductsExpServiceConstant.CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT);
+		creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
+				requestBodyParameter);
+		try {
+			ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> response = creditCardClient
+					.fetchSetCreditLimit(correlationId, requestBodyParameter);
 
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate,
-                ProductsExpServiceConstant.CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT);
-        creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
-                requestBodyParameter);
-        try {
-            ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> response = creditCardClient
-                    .fetchSetCreditLimit(correlationId, requestBodyParameter);
+			/* Activity log -- CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT */
+			creditCardLogService.logActivity(creditCardEvent);
 
-            /* Activity log -- CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT */
-            creditCardLogService.logActivity(creditCardEvent);
+			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			oneServiceResponse.setData(response.getBody().getData());
 
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-            oneServiceResponse.setData(response.getBody().getData());
+			if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
+				activityDate = Long.toString(System.currentTimeMillis());
+				creditCardEvent = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), activityDate,
+						ProductsExpServiceConstant.ACTIVITY_ID_TEMP);
 
-            if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
-                activityDate = Long.toString(System.currentTimeMillis());
-                creditCardEvent = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), activityDate,
-                        ProductsExpServiceConstant.ACTIVITY_ID_TEMP);
+				creditCardEvent = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent,
+						requestHeadersParameter, requestBodyParameter, ProductsExpServiceConstant.MODE_PERMANENT);
 
-                creditCardEvent = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent,
-                        requestHeadersParameter, requestBodyParameter, ProductsExpServiceConstant.MODE_PERMANENT);
+				/* Activity log -- MODE_PERMANENT */
+				creditCardLogService.logActivity(creditCardEvent);
+				notificationService.doNotifySuccessForChangeUsageLimit(correlationId, accountId, crmId,
+						requestBodyParameter);
+			} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
+				activityDate = Long.toString(System.currentTimeMillis());
+				creditCardEvent = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), activityDate,
+						ProductsExpServiceConstant.ACTIVITY_ID_TEMP_REASON_OF_REQUEST);
 
-                /* Activity log -- MODE_PERMANENT */
-                creditCardLogService.logActivity(creditCardEvent);
-                notificationService.doNotifySuccessForChangeUsageLimit(correlationId, accountId, crmId, requestBodyParameter);
-            } else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
-                activityDate = Long.toString(System.currentTimeMillis());
-                creditCardEvent = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), activityDate,
-                        ProductsExpServiceConstant.ACTIVITY_ID_TEMP_REASON_OF_REQUEST);
+				creditCardEvent = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent,
+						requestHeadersParameter, requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
 
-                creditCardEvent = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent,
-                        requestHeadersParameter, requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
+				/* Activity log -- MODE_TEMPORARY */
+				creditCardLogService.logActivity(creditCardEvent);
+				notificationService.doNotifySuccessForTemporaryLimit(correlationId, accountId, crmId,
+						requestBodyParameter);
+			}
+			return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+		} catch (Exception ex) {
+			logger.error("Unable to fetch set credit limit response: {}", ex);
 
-                /* Activity log -- MODE_TEMPORARY */
-                creditCardLogService.logActivity(creditCardEvent);
-                notificationService.doNotifySuccessForTemporaryLimit(correlationId, accountId, crmId, requestBodyParameter);
-            }
-            return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-        } catch (Exception ex) {
-            logger.error("Unable to fetch set credit limit response: {}", ex);
+			// change credit limit for temp
+			CreditCardEvent creditCardTempLimit = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT),
+					activityDate, ProductsExpServiceConstant.ACTIVITY_ID_TEMP_REASON_OF_REQUEST);
+			creditCardTempLimit = creditCardLogService.onClickNextButtonLimitEvent(creditCardTempLimit,
+					requestHeadersParameter, requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
+			creditCardTempLimit.setFailReason(ex.getMessage() != null ? ex.getMessage() : "");
+			creditCardTempLimit.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+			creditCardLogService.logActivity(creditCardTempLimit);
 
-            // change credit limit for temp
-            CreditCardEvent creditCardTempLimit = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT),
-                    activityDate, ProductsExpServiceConstant.ACTIVITY_ID_TEMP_REASON_OF_REQUEST);
-            creditCardTempLimit = creditCardLogService.onClickNextButtonLimitEvent(creditCardTempLimit,
-                    requestHeadersParameter, requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
-            creditCardTempLimit.setFailReason(ex.getMessage() != null ? ex.getMessage() : "");
-            creditCardTempLimit.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-            creditCardLogService.logActivity(creditCardTempLimit);
+			// complete usage limit
+			creditCardEvent = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent, requestHeadersParameter,
+					requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
+			creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
+					requestBodyParameter);
+			creditCardEvent.setFailReason(ex.getMessage() != null ? ex.getMessage() : "");
+			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
+			/* Activity log */
+			creditCardLogService.logActivity(creditCardEvent);
 
-            // complete usage limit
-            creditCardEvent = creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent, requestHeadersParameter,
-                    requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
-            creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
-                    requestBodyParameter);
-            creditCardEvent.setFailReason(ex.getMessage() != null ? ex.getMessage() : "");
-            creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-            creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-            /* Activity log */
-            creditCardLogService.logActivity(creditCardEvent);
+			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+					ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+		}
 
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-                    ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-        }
-
-    }
+	}
 
 }
