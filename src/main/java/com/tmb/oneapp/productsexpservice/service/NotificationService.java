@@ -16,6 +16,8 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.oneapp.productsexpservice.model.request.notification.*;
@@ -551,16 +553,17 @@ public class NotificationService {
 	 * @param accountId
 	 * @param crmId
 	 * @param data
-	 * @param promotionModelNo
+	 * @param requestBodyParameter
 	 */
-	@Async
+//	@Async
 	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
-			List<CardInstallmentResponse> data, String promotionModelNo) {
+			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
 		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
 
 		List<CardInstallmentResponse> successItems = fillerForSuccessCardInstallmentRequest(data);
 		if (CollectionUtils.isNotEmpty(successItems)) {
-			InstallmentPlan installment = lookUpInstallment(correlationId, promotionModelNo);
+			InstallmentPlan installment = lookUpInstallment(correlationId,
+					requestBodyParameter.getCardInstallment().stream().findFirst().get().getPromotionModelNo());
 			BigDecimal totalAmt = calculateTotalSoGoodAmt(successItems);
 			ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 					.getCustomerProfile(new HashMap<String, String>(), crmId);
@@ -570,7 +573,8 @@ public class NotificationService {
 						defaultChannelTh, null, null,
 						profileResponseData.getEngFname() + " " + profileResponseData.getEngLname(),
 						profileResponseData.getThaFname() + " " + profileResponseData.getThaLname());
-				SoGoodWrapper soGoodWrapperInfo = generateSoGoodWraperModel(installment, successItems);
+				SoGoodWrapper soGoodWrapperInfo = generateSoGoodWraperModel(installment, successItems,
+						requestBodyParameter);
 				sendNotifyApplySoGood(notifyCommon, profileResponseData.getEmailAddress(),
 						profileResponseData.getPhoneNoFull(), soGoodWrapperInfo, totalAmt);
 			}
@@ -583,10 +587,11 @@ public class NotificationService {
 	 * 
 	 * @param installment
 	 * @param successItems
+	 * @param requestBodyParameter
 	 * @return
 	 */
 	private SoGoodWrapper generateSoGoodWraperModel(InstallmentPlan installment,
-			List<CardInstallmentResponse> successItems) {
+			List<CardInstallmentResponse> successItems, CardInstallmentQuery requestBodyParameter) {
 		SoGoodWrapper wrapperInfo = new SoGoodWrapper();
 		wrapperInfo.setInterestRatePercent(installment.getInterestRate());
 		wrapperInfo.setTenor(installment.getPaymentTerm());
@@ -596,13 +601,20 @@ public class NotificationService {
 			MonthlyTrans monthlyTrans = InstallmentService.calcualteMonthlyTransection(new BigDecimal(amount),
 					Integer.parseInt(installment.getPaymentTerm()), new BigDecimal(installment.getInterestRate()));
 			SoGoodItemInfo info = new SoGoodItemInfo();
-//			info.setCreateDate(DD_MM_YYYY)
+			Optional<CardInstallment> optCardInstallment = requestBodyParameter.getCardInstallment().stream()
+					.filter(e -> e.getTransactionKey()
+							.equals(item.getCreditCard().getCardInstallment().getTransactionKey()))
+					.collect(Collectors.toList()).stream().findFirst();
+			if (optCardInstallment.isPresent()) {
+				CardInstallment cardInstallment = optCardInstallment.get();
+				info.setCreateDate(cardInstallment.getPostDate());
+				info.setTranDate(cardInstallment.getTransectionDate());
+			}
 			info.setFirstPayment(df.format(monthlyTrans.getFirstPayment()));
 			info.setName(item.getCreditCard().getCardInstallment().getTransactionDescription());
 			info.setPrinciple(df.format(monthlyTrans.getPrinciple2Digit()));
 			info.setTotalAmt(df.format(monthlyTrans.getTotalAmt()));
 			info.setTotalInterest(df.format(monthlyTrans.getTotalInterest()));
-//			info.setTranDate(DD_MM_YYYY);
 			itemInfos.add(info);
 		});
 		wrapperInfo.setItems(itemInfos);

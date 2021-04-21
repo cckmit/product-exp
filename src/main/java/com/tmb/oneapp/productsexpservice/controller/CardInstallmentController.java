@@ -115,8 +115,7 @@ public class CardInstallmentController {
 
 					if (data != null) {
 						notificationService.doNotifyApplySoGood(correlationId, accountId, crmId, data,
-								requestBodyParameter.getCardInstallment().stream().findFirst().get()
-										.getPromotionModelNo());
+								requestBodyParameter);
 						if (ifSuccessCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter,
 								oneServiceResponse, cardInstallmentResp, data)) {
 							return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
