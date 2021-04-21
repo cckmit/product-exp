@@ -26,10 +26,10 @@ public enum ResponseCode implements Serializable {
 	RSL_ERROR_CODE("AST_0002", "RSL error", Constants.SERVICE_NAME, FAILED_MESSAGE),
 	ETE_SERVICE_ERROR("0005", "ete service error", Constants.SERVICE_NAME, "ete service error");
 	
-	private String code;
-	private String message;
-	private String service;
-	private String desc;
+	private final String code;
+	private final String message;
+	private final String service;
+	private final String desc;
 
 	private static class Constants {
 		public static final String SERVICE_NAME = "products-exp-service";

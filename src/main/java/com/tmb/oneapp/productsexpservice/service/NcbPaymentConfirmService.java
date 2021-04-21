@@ -120,6 +120,11 @@ public class NcbPaymentConfirmService {
         }
     }
 
+    /**
+     * @param correlationId
+     * @param notificationRecord
+     * @return
+     */
     public boolean sendEmail(String correlationId, List<NotificationRecord> notificationRecord) {
         try {
             NotificationRequest notificationRequest = new NotificationRequest();

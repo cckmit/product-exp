@@ -20,7 +20,7 @@ public interface CacheServiceClient {
      * @return the cache response
      */
     @GetMapping(value = "/apis/cache/{key}")
-    public ResponseEntity<TmbOneServiceResponse<String>> getCacheByKey(
+    ResponseEntity<TmbOneServiceResponse<String>> getCacheByKey(
             @RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID,
             @PathVariable("key") String key);
 
@@ -34,8 +34,8 @@ public interface CacheServiceClient {
      */
     @PostMapping(value = "/apis/cache")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<String>> putCacheByKey(@RequestHeader Map<String, String> headers,
-                                                                       @RequestBody CacheModel cacheModel);
+    ResponseEntity<TmbOneServiceResponse<String>> putCacheByKey(@RequestHeader Map<String, String> headers,
+                                                                @RequestBody CacheModel cacheModel);
 
 
 }

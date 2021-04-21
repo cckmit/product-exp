@@ -41,11 +41,11 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class ProductExpAsynService {
     private static final TMBLogger<ProductExpAsynService> logger = new TMBLogger<>(ProductExpAsynService.class);
-    private InvestmentRequestClient investmentRequestClient;
-    private AccountRequestClient accountRequestClient;
-    private CustomerServiceClient customerServiceClient;
-    private CommonServiceClient commonServiceClient;
-    private CacheServiceClient cacheServiceClient;
+    private final InvestmentRequestClient investmentRequestClient;
+    private final AccountRequestClient accountRequestClient;
+    private final CustomerServiceClient customerServiceClient;
+    private final CommonServiceClient commonServiceClient;
+    private final CacheServiceClient cacheServiceClient;
 
 
     @Autowired

@@ -148,7 +148,7 @@ public class UtilMapTest {
         list.setFundHouseCode("1234");
         fundPaymentDetailRs.setFundRule(list);
         data.setAccount290Url("1234");
-        FundPaymentDetailRs result = utilMap.mappingAccount(Arrays.<CommonData>asList(data), "responseCustomerExp", fundPaymentDetailRs);
+        FundPaymentDetailRs result = utilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp", fundPaymentDetailRs);
         assertNotEquals(data.getAccount290Url(), result);
     }
 
@@ -224,10 +224,10 @@ public class UtilMapTest {
     public void testMappingFundSearchListData() {
         FundClass fundClass = new FundClass();
         fundClass.setFundClassCode("1234");
-        List<FundSearch> result = UtilMap.mappingFundSearchListData(Arrays.<FundClass>asList(fundClass));
+        List<FundSearch> result = UtilMap.mappingFundSearchListData(Arrays.asList(fundClass));
         FundSearch fundSearch = new FundSearch();
         fundSearch.setFundCode("1234");
-        Assert.assertNotEquals(Arrays.<FundSearch>asList(fundSearch), result);
+        Assert.assertNotEquals(Arrays.asList(fundSearch), result);
     }
 
     @Test

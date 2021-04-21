@@ -42,14 +42,14 @@ public class NotificationService {
     @Value("${notification-service.e-noti.default.support.no}")
     private String gobalCallCenter;
     @Value("${notification-service.e-noti.default.template.date}")
-    private String formatTranDate = "dd/MM/yyyy";
+    private static final String DD_MM_YYYY = "dd/MM/yyyy";
     @Value("${notification-service.e-noti.default.template.time}")
-    private String formateTime = "HH:mm";
+    private static final String HH_MM = "HH:mm";
 
-    private NotificationServiceClient notificationClient;
-    private CustomerServiceClient customerClient;
-    private CreditCardClient creditCardClient;
-    private CommonServiceClient commonServiceClient;
+    private final NotificationServiceClient notificationClient;
+    private final CustomerServiceClient customerClient;
+    private final CreditCardClient creditCardClient;
+    private final CommonServiceClient commonServiceClient;
 
     @Autowired
     public NotificationService(NotificationServiceClient notificationServiceClient,
@@ -183,13 +183,7 @@ public class NotificationService {
      * Wrapper for process notification for SET PIN
      *
      * @param notifyCommon
-     * @param xCorrelationId
-     * @param accountId
-     * @param productNameEn
-     * @param productNameTh
      * @param supportNo
-     * @param gobalCallCenter2
-     * @param string
      */
     private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String supportNo, String email,
                                                 String smsNo) {
@@ -252,8 +246,8 @@ public class NotificationService {
                 notifyCommon.setAccountId(accountId);
                 notifyCommon.setCrmId(crmId);
 
-                String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formatTranDate));
-                String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formateTime));
+                String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DD_MM_YYYY));
+                String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HH_MM));
                 sendNotifySuccessForChangeUsage(notifyCommon, requestBodyParameter.getPreviousCreditLimit(),
                         requestBodyParameter.getCurrentCreditLimit(), customerProfileInfo.getEmailAddress(), tranDate,
                         tranTime);
@@ -271,7 +265,6 @@ public class NotificationService {
      * @param tranDate
      * @param tranTime
      * @param email
-     * @param accoundId
      */
     private void sendNotifySuccessForChangeUsage(NotifyCommon notifyCommon, String oldLimit, String newLimit,
                                                  String email, String tranDate, String tranTime) {
@@ -311,7 +304,6 @@ public class NotificationService {
     /**
      * set param for email and sms
      *
-     * @param notifyCommon
      * @param record
      */
     private void setRequestForEmailAndSms(String email, String smsNo, NotificationRecord record) {
@@ -418,7 +410,6 @@ public class NotificationService {
      *
      * @param notifyCommon
      * @param gobalCallCenter
-     * @param accountId
      * @param smsNo
      * @param email
      */

@@ -273,7 +273,7 @@ public class CardInstallmentControllerTest {
         }
         cardInstallmentResp.setStatus(status);
         cardInstallmentResp.setData(res);
-        assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId, requestHeadersParameter, responseHeaders, oneServiceResponse, data, data, res));
+        assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId, requestHeadersParameter, responseHeaders, data, data, res));
 
     }
 }
