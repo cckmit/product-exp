@@ -80,7 +80,7 @@ public class SetPinController {
     @PostMapping(value = "/credit-card/set-pin", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<SetPinResponse>> getSetPin(
             @RequestHeader Map<String, String> requestHeadersParameter,
-            @RequestBody SetPinReqParameter requestBodyParameter) throws UnsupportedEncodingException,
+            @RequestBody SetPinReqParameter requestBodyParameter) throws
             JsonProcessingException, TMBCommonException, TMBCommonExceptionWithResponse {
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
@@ -153,7 +153,7 @@ public class SetPinController {
      * @throws JsonProcessingException
      */
     private TmbServiceResponse<List<Object>> convertExceptionResposeToExceptionRespose(FeignException ex)
-            throws  JsonProcessingException {
+            throws JsonProcessingException {
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
             ByteBuffer responseBuffer = response.get();

@@ -42,9 +42,9 @@ public class NotificationService {
     @Value("${notification-service.e-noti.default.support.no}")
     private String gobalCallCenter;
     @Value("${notification-service.e-noti.default.template.date}")
-    private final String formatTranDate = "dd/MM/yyyy";
+    private static final String formatTranDate = "dd/MM/yyyy";
     @Value("${notification-service.e-noti.default.template.time}")
-    private final String formateTime = "HH:mm";
+    private static final String formateTime = "HH:mm";
 
     private final NotificationServiceClient notificationClient;
     private final CustomerServiceClient customerClient;
@@ -183,13 +183,7 @@ public class NotificationService {
      * Wrapper for process notification for SET PIN
      *
      * @param notifyCommon
-     * @param xCorrelationId
-     * @param accountId
-     * @param productNameEn
-     * @param productNameTh
      * @param supportNo
-     * @param gobalCallCenter2
-     * @param string
      */
     private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String supportNo, String email,
                                                 String smsNo) {
@@ -271,7 +265,6 @@ public class NotificationService {
      * @param tranDate
      * @param tranTime
      * @param email
-     * @param accoundId
      */
     private void sendNotifySuccessForChangeUsage(NotifyCommon notifyCommon, String oldLimit, String newLimit,
                                                  String email, String tranDate, String tranTime) {
@@ -311,7 +304,6 @@ public class NotificationService {
     /**
      * set param for email and sms
      *
-     * @param notifyCommon
      * @param record
      */
     private void setRequestForEmailAndSms(String email, String smsNo, NotificationRecord record) {
@@ -418,7 +410,6 @@ public class NotificationService {
      *
      * @param notifyCommon
      * @param gobalCallCenter
-     * @param accountId
      * @param smsNo
      * @param email
      */

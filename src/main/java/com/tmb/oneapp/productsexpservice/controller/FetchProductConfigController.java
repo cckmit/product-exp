@@ -152,7 +152,7 @@ public class FetchProductConfigController {
 
     @SuppressWarnings("unchecked")
     private <T> TmbServiceResponse<T> exceptionHandling(final FeignException ex)
-            throws UnsupportedEncodingException, JsonProcessingException {
+            throws JsonProcessingException {
         TmbServiceResponse<T> data = new TmbServiceResponse<>();
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
