@@ -31,7 +31,6 @@ public class ProductsVerifyCvvController {
     CreditCardClient creditCardClient;
 
     /**
-     *
      * @param creditCardClient
      */
     @Autowired
@@ -40,7 +39,6 @@ public class ProductsVerifyCvvController {
     }
 
     /**
-     *
      * @param headers
      * @return
      */
@@ -94,14 +92,13 @@ public class ProductsVerifyCvvController {
     }
 
     /**
-     *
      * @param response
      * @param oneServiceResponse
      * @param responseHeaders
      * @param verifyCvvResponse
      * @return
      */
-     ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> getTmbOneServiceResponseResponseEntity(VerifyCvvResponse response, TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse, HttpHeaders responseHeaders, ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvvResponse) {
+    ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> getTmbOneServiceResponseResponseEntity(VerifyCvvResponse response, TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse, HttpHeaders responseHeaders, ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvvResponse) {
         String code = verifyCvvResponse.getBody().getStatus().getCode();
         String message = verifyCvvResponse.getBody().getStatus().getMessage();
         String service = verifyCvvResponse.getBody().getStatus().getService();

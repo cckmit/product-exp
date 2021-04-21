@@ -42,7 +42,8 @@ public class LoanDetailsController {
 
     /**
      * Constructor
-     *  @param accountRequestClient
+     *
+     * @param accountRequestClient
      * @param commonServiceClient
      * @param creditCardLogService
      */
@@ -54,8 +55,6 @@ public class LoanDetailsController {
     }
 
 
-    
-    
     /**
      * @param requestHeadersParameter
      * @param requestBody
@@ -79,29 +78,29 @@ public class LoanDetailsController {
 
             String accountId = requestBody.getAccountNo();
             if (!Strings.isNullOrEmpty(accountId)) {
-                ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> loanResponse = accountRequestClient.getLoanAccountDetail(correlationId,requestBody);
+                ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> loanResponse = accountRequestClient.getLoanAccountDetail(correlationId, requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
-               
+
                 if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-                	LoanDetailsFullResponse loanDetails = loanResponse.getBody().getData();
+                    LoanDetailsFullResponse loanDetails = loanResponse.getBody().getData();
                     String productId = loanResponse.getBody().getData().getAccount().getProductId();
                     ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
                             .getProductConfig(correlationId);
 
 
-                    List<ProductConfig> list  = fetchProductConfigList.getBody().getData();
+                    List<ProductConfig> list = fetchProductConfigList.getBody().getData();
                     Iterator<ProductConfig> iterator = list.iterator();
                     while (iterator.hasNext()) {
                         ProductConfig productConfig = iterator.next();
-                        if(productConfig.getProductCode().equalsIgnoreCase(productId)){
-                        	loanDetails.setProductConfig(productConfig);
+                        if (productConfig.getProductCode().equalsIgnoreCase(productId)) {
+                            loanDetails.setProductConfig(productConfig);
                         }
                     }
 
                     /*  Activity log */
-                    creditCardEvent=creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,loanDetails);
+                    creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter, loanDetails);
                     creditCardLogService.logActivity(creditCardEvent);
                     oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

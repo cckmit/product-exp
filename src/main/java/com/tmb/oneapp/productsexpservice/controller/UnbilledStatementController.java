@@ -34,12 +34,11 @@ public class UnbilledStatementController {
     private final CreditCardClient creditCardClient;
 
 
-
     private static final TMBLogger<UnbilledStatementController> logger = new TMBLogger<>(
             UnbilledStatementController.class);
 
     public UnbilledStatementController(CreditCardClient creditCardClient) {
-        this.creditCardClient = creditCardClient; 
+        this.creditCardClient = creditCardClient;
     }
 
     @LogAround
@@ -47,11 +46,11 @@ public class UnbilledStatementController {
     @PostMapping(value = "credit-card/statement/get-unbilled-statement")
     @ApiImplicitParams({
             @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
-            })
+    })
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getUnBilledStatement(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
-             @RequestBody GetBilledStatementQuery requestBody){
-        
+            @RequestBody GetBilledStatementQuery requestBody) {
+
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
@@ -68,19 +67,18 @@ public class UnbilledStatementController {
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK
                         && billedStatementRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
                     BigDecimal totalUnbilledAmounts = billedStatementRes.getBody().getCardStatement().getTotalUnbilledAmounts();
-                    if(totalUnbilledAmounts ==null)
-                      {
-                          CardStatement cardStatement = billedStatementRes.getBody().getCardStatement();
-                          List<BigDecimal> items;
-                          items = Arrays.asList(cardStatement.getMinPaymentAmounts() , cardStatement.getTotalAmountDue() , cardStatement.getMinimumDue() , cardStatement.getInterests() , cardStatement.getCashAdvanceFee());
+                    if (totalUnbilledAmounts == null) {
+                        CardStatement cardStatement = billedStatementRes.getBody().getCardStatement();
+                        List<BigDecimal> items;
+                        items = Arrays.asList(cardStatement.getMinPaymentAmounts(), cardStatement.getTotalAmountDue(), cardStatement.getMinimumDue(), cardStatement.getInterests(), cardStatement.getCashAdvanceFee());
 
-                          totalUnbilledAmounts = items.stream().filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                          cardStatement.setTotalUnbilledAmounts(totalUnbilledAmounts);
+                        totalUnbilledAmounts = items.stream().filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                        cardStatement.setTotalUnbilledAmounts(totalUnbilledAmounts);
 
 
-                      }
-                   return handlingResponseData(billedStatementRes, oneServiceResponse,
-                         responseHeaders);
+                    }
+                    return handlingResponseData(billedStatementRes, oneServiceResponse,
+                            responseHeaders);
 
                 } else {
 
@@ -113,6 +111,7 @@ public class UnbilledStatementController {
 
         return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
     }
+
     /**
      * @param response
      * @param oneServiceResponse
@@ -120,32 +119,31 @@ public class UnbilledStatementController {
      * @return
      */
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> handlingResponseData(
-           ResponseEntity <BilledStatementResponse> response,
+            ResponseEntity<BilledStatementResponse> response,
             TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse,
             HttpHeaders responseHeaders) {
         BilledStatementResponse responseBody = response.getBody();
 
 
-
-            String moreRecords = responseBody.getCardStatement() != null ? responseBody.getMoreRecords()
-                    : ProductsExpServiceConstant.EMPTY;
-            String searchKeys = responseBody.getCardStatement() != null
-                    ? responseBody.getSearchKeys()
-                    : ProductsExpServiceConstant.EMPTY;
-            Integer totalRecords =responseBody.getCardStatement() != null ? responseBody.getTotalRecords()
-                    : ProductsExpServiceConstant.ZERO;
-            Integer maxRecords =responseBody.getCardStatement() != null ? responseBody.getMaxRecords()
-                    : ProductsExpServiceConstant.ZERO;
-            CardStatement cardStatement =responseBody.getCardStatement();
-            responseBody.setCardStatement(cardStatement);
-            responseBody.setMaxRecords(maxRecords);
-            responseBody.setMoreRecords(moreRecords);
-            responseBody.setSearchKeys(searchKeys);
-            responseBody.setTotalRecords(totalRecords);
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-            oneServiceResponse.setData(responseBody);
-            return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-        }
-
+        String moreRecords = responseBody.getCardStatement() != null ? responseBody.getMoreRecords()
+                : ProductsExpServiceConstant.EMPTY;
+        String searchKeys = responseBody.getCardStatement() != null
+                ? responseBody.getSearchKeys()
+                : ProductsExpServiceConstant.EMPTY;
+        Integer totalRecords = responseBody.getCardStatement() != null ? responseBody.getTotalRecords()
+                : ProductsExpServiceConstant.ZERO;
+        Integer maxRecords = responseBody.getCardStatement() != null ? responseBody.getMaxRecords()
+                : ProductsExpServiceConstant.ZERO;
+        CardStatement cardStatement = responseBody.getCardStatement();
+        responseBody.setCardStatement(cardStatement);
+        responseBody.setMaxRecords(maxRecords);
+        responseBody.setMoreRecords(moreRecords);
+        responseBody.setSearchKeys(searchKeys);
+        responseBody.setTotalRecords(totalRecords);
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        oneServiceResponse.setData(responseBody);
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
     }
+
+}

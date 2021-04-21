@@ -29,6 +29,7 @@ import java.time.Instant;
 public class InstallmentRateController {
     private static final TMBLogger<InstallmentRateController> logger = new TMBLogger<>(InstallmentRateController.class);
     private final CreditCardClient creditCardClient;
+
     @Autowired
     public InstallmentRateController(CreditCardClient creditCardClient) {
         this.creditCardClient = creditCardClient;
@@ -42,7 +43,7 @@ public class InstallmentRateController {
     @LogAround
     @PostMapping(value = "/installment/get-installment-rate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> getLoanAccountDetail(
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true)  @RequestHeader String correlationId,
+            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
             @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody InstallmentRateRequest requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -62,10 +63,9 @@ public class InstallmentRateController {
             String promoSegment = requestBody.getPromoSegment();
 
             if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate) &&
-            !Strings.isNullOrEmpty(amount) && !Strings.isNullOrEmpty(billCycleCutDate)  &&
-                    !Strings.isNullOrEmpty(promoSegment) && !Strings.isNullOrEmpty(cashChillChillFlag) && !Strings.isNullOrEmpty(cashTransferFlag) && !Strings.isNullOrEmpty(getAllDetailFlag))
-             {
-                ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient.getInstallmentRate(correlationId,requestBody);
+                    !Strings.isNullOrEmpty(amount) && !Strings.isNullOrEmpty(billCycleCutDate) &&
+                    !Strings.isNullOrEmpty(promoSegment) && !Strings.isNullOrEmpty(cashChillChillFlag) && !Strings.isNullOrEmpty(cashTransferFlag) && !Strings.isNullOrEmpty(getAllDetailFlag)) {
+                ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient.getInstallmentRate(correlationId, requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
 
@@ -95,7 +95,6 @@ public class InstallmentRateController {
     }
 
     /**
-     *
      * @param responseHeaders
      * @param serviceResponse
      * @return

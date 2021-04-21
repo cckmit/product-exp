@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-
 import feign.FeignException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -94,14 +93,14 @@ public class FetchProductConfigController {
         }
 
     }
-    
+
     /**
      * @param correlationId
      * @param ekycFlag
      * @return ProductConfig list from mongo db
-     * @throws TMBCommonException 
-     * @throws JsonProcessingException 
-     * @throws UnsupportedEncodingException 
+     * @throws TMBCommonException
+     * @throws JsonProcessingException
+     * @throws UnsupportedEncodingException
      */
     @LogAround
     @GetMapping(value = "/filter/{ekycFlag}")
@@ -112,7 +111,7 @@ public class FetchProductConfigController {
     public ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfigListByEKYCFilter(
             @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId,
             @PathVariable String ekycFlag
-    		) throws UnsupportedEncodingException, JsonProcessingException, TMBCommonException {
+    ) throws UnsupportedEncodingException, JsonProcessingException, TMBCommonException {
         TmbOneServiceResponse<List<ProductConfig>> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = this.getResponseHeaders();
         logStartController("/filter/ekycFlag", correlationId);
@@ -120,8 +119,8 @@ public class FetchProductConfigController {
         try {
 
 
-        	List<ProductConfig> productConfigList = getProductConfig(correlationId);
-        	Predicate<ProductConfig> byEKYC = product -> product.getOpenEKyc() != null && product.getOpenEKyc().equals(ekycFlag);
+            List<ProductConfig> productConfigList = getProductConfig(correlationId);
+            Predicate<ProductConfig> byEKYC = product -> product.getOpenEKyc() != null && product.getOpenEKyc().equals(ekycFlag);
             var result = productConfigList.stream().filter(byEKYC)
                     .collect(Collectors.toList());
             oneServiceResponse.setData(result);
@@ -129,105 +128,100 @@ public class FetchProductConfigController {
                     .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
         } catch (FeignException e) {
-			throw handleFeignException(e);
-		} catch (Exception e) {
-			oneServiceResponse.setStatus(getResponseFail(e));
-			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-		} finally {
-			logFinallyController("/filter/ekycFlag", oneServiceResponse);
-		}
-		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+            throw handleFeignException(e);
+        } catch (Exception e) {
+            oneServiceResponse.setStatus(getResponseFail(e));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+        } finally {
+            logFinallyController("/filter/ekycFlag", oneServiceResponse);
+        }
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
     }
-    
+
     private void logStartController(String route, String correlationid) {
-		logger.info("########### Start api name : {} ###########", route);
-		logger.info("Header correlationid: {}", correlationid);
-	}
-	
-	private <T> void logFinallyController(String route, TmbOneServiceResponse<T> response) {
-		logger.info("Response {} : {} ", route, response);
-		logger.info("########### End api name : {} ###########", route);
-	}
-	
-	@SuppressWarnings("unchecked")
-	private <T> TmbServiceResponse<T> exceptionHandling(final FeignException ex)
-			throws UnsupportedEncodingException, JsonProcessingException {
-		TmbServiceResponse<T> data = new TmbServiceResponse<>();
-		Optional<ByteBuffer> response = ex.responseBody();
-		if (response.isPresent()) {
-			ByteBuffer responseBuffer = response.get();
-			String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
-			logger.info("response fail {}", responseObj);
-			data = ((TmbServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
-					TmbServiceResponse.class));
-		}
-		return data;
-
-	}
-
-	/**
-	 *
-	 * @param e
-	 * @return
-	 * @throws UnsupportedEncodingException
-	 * @throws JsonProcessingException
-	 */
-	private TMBCommonException handleFeignException(FeignException e) throws UnsupportedEncodingException, JsonProcessingException {
-		logger.error("Exception in {} :{}", e.getClass().getName(), e.toString());
-		if (e instanceof FeignException.BadRequest)
-	    {
-			TmbServiceResponse<String> body = exceptionHandling(e);
-			return new TMBCommonException(
-					body.getStatus().getCode(),
-					body.getStatus().getMessage(),
-					ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-	    } 
-		
-		return new TMBCommonException(ResponseCode.ETE_SERVICE_ERROR.getCode(),
-				ResponseCode.ETE_SERVICE_ERROR.getMessage(), ResponseCode.ETE_SERVICE_ERROR.getService(),
-				HttpStatus.BAD_REQUEST, null);
-	}
-
-	/**
-	 *
-	 * @param e
-	 * @return
-	 */
-	private TmbStatus getResponseFail(Exception e) {
-		logger.error("Exception :{}", e.toString());
-        return new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-				ResponseCode.FAILED.getService());
+        logger.info("########### Start api name : {} ###########", route);
+        logger.info("Header correlationid: {}", correlationid);
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	private HttpHeaders getResponseHeaders() {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-		return responseHeaders;
-	}
+    private <T> void logFinallyController(String route, TmbOneServiceResponse<T> response) {
+        logger.info("Response {} : {} ", route, response);
+        logger.info("########### End api name : {} ###########", route);
+    }
 
-	/**
-	 *
-	 * @param correlationId
-	 * @return
-	 */
-	private List<ProductConfig> getProductConfig(String correlationId) {
-		logger.info("========== Start call service name : common service ==========");
-		try {
-			logger.info("Request:");
-			var data = commonServiceClient.getProductConfig(correlationId);
-			logger.info("Response product count : {} ", data.getBody().getData().size());
-			return data.getBody().getData();
-		}catch (Exception e) {
-			logger.error("Exception in common service :{}", e.toString());
-			throw e;
-		}finally {
-			logger.info("========== End call service name : common service ==========");
-		}
-		
-	}
+    @SuppressWarnings("unchecked")
+    private <T> TmbServiceResponse<T> exceptionHandling(final FeignException ex)
+            throws UnsupportedEncodingException, JsonProcessingException {
+        TmbServiceResponse<T> data = new TmbServiceResponse<>();
+        Optional<ByteBuffer> response = ex.responseBody();
+        if (response.isPresent()) {
+            ByteBuffer responseBuffer = response.get();
+            String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
+            logger.info("response fail {}", responseObj);
+            data = ((TmbServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
+                    TmbServiceResponse.class));
+        }
+        return data;
+
+    }
+
+    /**
+     * @param e
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws JsonProcessingException
+     */
+    private TMBCommonException handleFeignException(FeignException e) throws UnsupportedEncodingException, JsonProcessingException {
+        logger.error("Exception in {} :{}", e.getClass().getName(), e.toString());
+        if (e instanceof FeignException.BadRequest) {
+            TmbServiceResponse<String> body = exceptionHandling(e);
+            return new TMBCommonException(
+                    body.getStatus().getCode(),
+                    body.getStatus().getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+        }
+
+        return new TMBCommonException(ResponseCode.ETE_SERVICE_ERROR.getCode(),
+                ResponseCode.ETE_SERVICE_ERROR.getMessage(), ResponseCode.ETE_SERVICE_ERROR.getService(),
+                HttpStatus.BAD_REQUEST, null);
+    }
+
+    /**
+     * @param e
+     * @return
+     */
+    private TmbStatus getResponseFail(Exception e) {
+        logger.error("Exception :{}", e.toString());
+        return new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService());
+    }
+
+    /**
+     * @return
+     */
+    private HttpHeaders getResponseHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        return responseHeaders;
+    }
+
+    /**
+     * @param correlationId
+     * @return
+     */
+    private List<ProductConfig> getProductConfig(String correlationId) {
+        logger.info("========== Start call service name : common service ==========");
+        try {
+            logger.info("Request:");
+            var data = commonServiceClient.getProductConfig(correlationId);
+            logger.info("Response product count : {} ", data.getBody().getData().size());
+            return data.getBody().getData();
+        } catch (Exception e) {
+            logger.error("Exception in common service :{}", e.toString());
+            throw e;
+        } finally {
+            logger.info("========== End call service name : common service ==========");
+        }
+
+    }
 }

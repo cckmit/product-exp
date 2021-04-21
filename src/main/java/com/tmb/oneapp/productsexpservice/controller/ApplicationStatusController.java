@@ -40,7 +40,6 @@ public class ApplicationStatusController {
     }
 
     /**
-     *
      * @param requestHeaders
      * @param serviceTypeId
      * @return

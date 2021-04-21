@@ -30,6 +30,7 @@ public class EligibleLeadController {
     private static final TMBLogger<EligibleLeadController> logger = new TMBLogger<>(EligibleLeadController.class);
 
     private final CreditCardClient creditCardClient;
+
     @Autowired
     public EligibleLeadController(CreditCardClient creditCardClient) {
         this.creditCardClient = creditCardClient;
@@ -43,8 +44,8 @@ public class EligibleLeadController {
     @LogAround
     @PostMapping(value = "/loan/get-eligible-lead", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getLoanAccountDetail(
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true)  @RequestHeader String correlationId,
-            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EligibleLeadRequest requestBody)  {
+            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
+            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EligibleLeadRequest requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -57,7 +58,7 @@ public class EligibleLeadController {
             String disbursementDate = requestBody.getDisbursementDate();
 
             if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate)) {
-                ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> loanResponse = creditCardClient.getEligibleLeads(correlationId,requestBody);
+                ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> loanResponse = creditCardClient.getEligibleLeads(correlationId, requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
 
@@ -87,7 +88,6 @@ public class EligibleLeadController {
     }
 
     /**
-     *
      * @param responseHeaders
      * @param serviceResponse
      * @return

@@ -30,6 +30,7 @@ public class BilledStatementWithPeriodController {
     public BilledStatementWithPeriodController(CreditCardClient creditCardClient) {
         this.creditCardClient = creditCardClient;
     }
+
     @LogAround
     @ApiOperation(value = "get billed statement with period")
     @PostMapping(value = "/creditcard-billed-statement-period")
@@ -38,7 +39,7 @@ public class BilledStatementWithPeriodController {
     })
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getBilledStatementWithPeriod(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
-            @RequestBody GetBilledStatementQuery requestBody)  {
+            @RequestBody GetBilledStatementQuery requestBody) {
         logger.info("Get billed statement for correlation id: {}", correlationId);
         TmbOneServiceResponse<BilledStatementResponse> response = new TmbOneServiceResponse<>();
 
@@ -47,8 +48,8 @@ public class BilledStatementWithPeriodController {
 
         try {
 
-            if (requestBody !=null && !Strings.isNullOrEmpty(requestBody.getAccountId()) && !Strings.isNullOrEmpty(correlationId)) {
-                ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient.getBilledStatementWithPeriod(correlationId,requestBody.getAccountId(),requestBody);
+            if (requestBody != null && !Strings.isNullOrEmpty(requestBody.getAccountId()) && !Strings.isNullOrEmpty(correlationId)) {
+                ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient.getBilledStatementWithPeriod(correlationId, requestBody.getAccountId(), requestBody);
 
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK
                         && billedStatementRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
@@ -103,11 +104,11 @@ public class BilledStatementWithPeriodController {
         String searchKeys = billedStatementResponse.getCardStatement() != null
                 ? billedStatementResponse.getSearchKeys()
                 : ProductsExpServiceConstant.EMPTY;
-        Integer totalRecords =billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getTotalRecords()
+        Integer totalRecords = billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getTotalRecords()
                 : ProductsExpServiceConstant.ZERO;
-        Integer maxRecords =billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getMaxRecords()
+        Integer maxRecords = billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getMaxRecords()
                 : ProductsExpServiceConstant.ZERO;
-        CardStatement cardStatement =billedStatementResponse.getCardStatement();
+        CardStatement cardStatement = billedStatementResponse.getCardStatement();
         billedStatementResponse.setCardStatement(cardStatement);
         billedStatementResponse.setMaxRecords(maxRecords);
         billedStatementResponse.setMoreRecords(moreRecords);

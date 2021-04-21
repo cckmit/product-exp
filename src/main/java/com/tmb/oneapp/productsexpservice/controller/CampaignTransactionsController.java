@@ -35,6 +35,7 @@ public class CampaignTransactionsController {
 
     /**
      * Constructor
+     *
      * @param
      * @param creditCardClient
      */
@@ -69,11 +70,11 @@ public class CampaignTransactionsController {
         String moreRecords = requestBodyParameter.getMoreRecords();
 
 
-        String correlationId="32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
 
         try {
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(moreRecords)) {
-                ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> campaignTransactionsDetails = creditCardClient.getCampaignTransactionsDetails(correlationId,requestBodyParameter);
+                ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> campaignTransactionsDetails = creditCardClient.getCampaignTransactionsDetails(correlationId, requestBodyParameter);
                 if (campaignTransactionsDetails != null) {
                     Status status = new Status();
                     status.setStatusCode(campaignTransactionsDetails.getBody().getStatus().getCode());
