@@ -24,7 +24,7 @@ public interface AccountRequestClient {
      * @return the port list
      */
     @GetMapping(value = "${account.service.account.url}", consumes = "application/json", produces = "application/json")
-    public String getPortList(@RequestHeader Map<String, String> headers, @PathVariable("CRM_ID") String cardId);
+    String getPortList(@RequestHeader Map<String, String> headers, @PathVariable("CRM_ID") String cardId);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -34,15 +34,15 @@ public interface AccountRequestClient {
      * @return the fund summary response
      */
     @GetMapping(value = "${account.service.account.list.url}")
-    public String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
+    String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
 
     @PostMapping(value = "${account.service.loan.url}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
+    ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
             @RequestHeader("X-Correlation-ID") String correlationId,
-             @RequestBody AccountId accountId);
+            @RequestBody AccountId accountId);
 
     @PostMapping(value = "${account.service.statement.url}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountStatement(
+    ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountStatement(
             @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody LoanStatementRequest request);
 }

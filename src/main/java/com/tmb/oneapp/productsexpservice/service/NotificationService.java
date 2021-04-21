@@ -42,14 +42,14 @@ public class NotificationService {
     @Value("${notification-service.e-noti.default.support.no}")
     private String gobalCallCenter;
     @Value("${notification-service.e-noti.default.template.date}")
-    private String formatTranDate = "dd/MM/yyyy";
+    private final String formatTranDate = "dd/MM/yyyy";
     @Value("${notification-service.e-noti.default.template.time}")
-    private String formateTime = "HH:mm";
+    private final String formateTime = "HH:mm";
 
-    private NotificationServiceClient notificationClient;
-    private CustomerServiceClient customerClient;
-    private CreditCardClient creditCardClient;
-    private CommonServiceClient commonServiceClient;
+    private final NotificationServiceClient notificationClient;
+    private final CustomerServiceClient customerClient;
+    private final CreditCardClient creditCardClient;
+    private final CommonServiceClient commonServiceClient;
 
     @Autowired
     public NotificationService(NotificationServiceClient notificationServiceClient,

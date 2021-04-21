@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @Service
 public class CreditCardLogService {
-    private static TMBLogger<CreditCardLogService> logger = new TMBLogger<>(CreditCardLogService.class);
+    private static final TMBLogger<CreditCardLogService> logger = new TMBLogger<>(CreditCardLogService.class);
     private final String topicName;
     private final KafkaProducerService kafkaProducerService;
 

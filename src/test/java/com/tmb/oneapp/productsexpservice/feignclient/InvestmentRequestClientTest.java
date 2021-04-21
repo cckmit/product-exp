@@ -43,7 +43,7 @@ public class InvestmentRequestClientTest {
     private final String success_code = "0000";
     private final String notfund_code = "0009";
     private AccDetailBody accDetailBody = null;
-    private FundRuleBody fundRuleBody = null;
+    private final FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     private Map<String, String> createHeader(String correlationId){

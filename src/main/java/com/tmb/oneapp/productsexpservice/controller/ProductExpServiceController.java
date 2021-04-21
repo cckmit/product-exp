@@ -48,7 +48,7 @@ import java.util.List;
 public class ProductExpServiceController {
 
     private static final TMBLogger<ProductExpServiceController> logger = new TMBLogger<>(ProductExpServiceController.class);
-    private ProductsExpService productsExpService;
+    private final ProductsExpService productsExpService;
 
 
     /**

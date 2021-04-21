@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -156,7 +157,7 @@ public class SetPinController {
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
             ByteBuffer responseBuffer = response.get();
-            String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
+            String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
             logger.info("responseObj : {}", responseObj);
             return (TmbServiceResponse) TMBUtils.convertStringToJavaObj(responseObj, TmbServiceResponse.class);
         }

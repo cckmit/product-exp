@@ -51,8 +51,8 @@ public class LoanStatementController {
      */
     @LogAround
     @PostMapping(value = "/loan/get-loan-statement", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountDetail(@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
-                                                                                             @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody LoanStatementRequest requestBody) {
+    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanStatement(@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
+                                                                                         @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody LoanStatementRequest requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -86,12 +86,16 @@ public class LoanStatementController {
             }
 
         } catch (Exception e) {
-            log.error("Error while getting LoanAccountStatement: {}", e);
-            serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+            return getEntity(responseHeaders, serviceResponse, e);
         }
 
+    }
+
+    ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse, Exception e) {
+        log.error("Error while getting LoanAccountStatement: {}", e);
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
     }
 
     /**

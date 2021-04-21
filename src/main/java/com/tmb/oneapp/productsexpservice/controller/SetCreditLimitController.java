@@ -37,8 +37,8 @@ import java.util.Map;
 public class SetCreditLimitController {
     private final CreditCardClient creditCardClient;
     private static final TMBLogger<SetCreditLimitController> logger = new TMBLogger<>(SetCreditLimitController.class);
-    private CreditCardLogService creditCardLogService;
-    private NotificationService notificationService;
+    private final CreditCardLogService creditCardLogService;
+    private final NotificationService notificationService;
 
     /**
      * Constructor

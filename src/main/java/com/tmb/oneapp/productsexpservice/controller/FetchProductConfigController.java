@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -156,7 +157,7 @@ public class FetchProductConfigController {
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
             ByteBuffer responseBuffer = response.get();
-            String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
+            String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
             logger.info("response fail {}", responseObj);
             data = ((TmbServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
                     TmbServiceResponse.class));
