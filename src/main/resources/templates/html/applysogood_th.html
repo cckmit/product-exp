@@ -1,0 +1,22 @@
+<tr>
+	<td colspan="2">
+		<table>
+			<tr>
+				<td>
+					<br>แผนแบ่งจ่าย <span th:text="${interestRatePercent}">${interestRatePercent}</span>% <span th:text="${tenor}">${tenor}</span> เดือน:</td>
+			</tr>
+			<tr th:each="item : ${items}">
+				<td>
+					<br>&nbsp;&nbsp;<span th:text="${item.name}">${item.name}</span>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;จำนวนเงิน : <span th:text="${item.principle}">${item.principle}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;ยอดชำระเดือนแรก : <span th:text="${item.firstPayment}">${item.firstPayment}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;ยอดรวมดอกเบี้ย : <span th:text="${item.totalInterest}">${item.totalInterest}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;ยอดรวม : <span th:text="${item.totalAmt}">${item.totalAmt}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;วันที่ทำรายการ : <span th:text="${item.createDate}">${item.createDate}</span>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;วันที่บันทึก : <span th:text="${item.tranDate}">${item.tranDate}</span></td>
+			</tr>
+		</table>
+		<br>
+		<br>
+	</td>
+</tr>

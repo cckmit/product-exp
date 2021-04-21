@@ -1,0 +1,22 @@
+<tr>
+	<td colspan="2">
+		<table>
+			<tr>
+				<td>
+					<br>Installment payment plan <span th:text="${interestRatePercent}">${interestRatePercent}</span>% interest for <span th:text="${tenor}">${tenor}</span> months:</td>
+			</tr>
+			<tr th:each="item : ${items}">
+				<td>
+					<br>&nbsp;&nbsp;<span th:text="${item.name}">${item.name}</span>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;Amount : <span th:text="${item.principle}">${item.principle}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;First Payment : <span th:text="${item.firstPayment}">${item.firstPayment}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;Total Interest : <span th:text="${item.totalInterest}">${item.totalInterest}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;Total Amount : <span th:text="${item.totalAmt}">${item.totalAmt}</span> ฿
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;Transaction Date : <span th:text="${item.createDate}">${item.createDate}</span>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;Posted Date : <span th:text="${item.tranDate}">${item.tranDate}</span></td>
+			</tr>
+		</table>
+		<br>
+		<br>
+	</td>
+</tr>
