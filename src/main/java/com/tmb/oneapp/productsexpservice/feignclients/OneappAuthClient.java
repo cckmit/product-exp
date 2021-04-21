@@ -14,8 +14,8 @@ import com.tmb.oneapp.productsexpservice.model.setpin.TranslatePinRes;
 public interface OneappAuthClient {
 
 	@PostMapping(value = "${feign.oneapp-auth-service.endpoint}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public TranslatePinRes fetchEcasTranslatePinData(
-			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID,
-			@RequestBody SetPinReqParameter requestBodyParameter);
+    TranslatePinRes fetchEcasTranslatePinData(
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID,
+            @RequestBody SetPinReqParameter requestBodyParameter);
 
 }

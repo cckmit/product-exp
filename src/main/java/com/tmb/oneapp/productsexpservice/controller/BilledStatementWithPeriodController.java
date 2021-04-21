@@ -31,6 +31,11 @@ public class BilledStatementWithPeriodController {
         this.creditCardClient = creditCardClient;
     }
 
+    /**
+     * @param correlationId
+     * @param requestBody
+     * @return
+     */
     @LogAround
     @ApiOperation(value = "get billed statement with period")
     @PostMapping(value = "/creditcard-billed-statement-period")

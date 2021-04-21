@@ -66,14 +66,14 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ProductsExpService {
-    private static TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
-    private InvestmentRequestClient investmentRequestClient;
-    private AccountRequestClient accountRequestClient;
-    private CommonServiceClient commonServiceClient;
-    private ProductExpAsynService productExpAsynService;
+    private static final TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
+    private final InvestmentRequestClient investmentRequestClient;
+    private final AccountRequestClient accountRequestClient;
+    private final CommonServiceClient commonServiceClient;
+    private final ProductExpAsynService productExpAsynService;
     private final KafkaProducerService kafkaProducerService;
     private final String topicName;
-    private CustomerExpServiceClient customerExpServiceClient;
+    private final CustomerExpServiceClient customerExpServiceClient;
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,

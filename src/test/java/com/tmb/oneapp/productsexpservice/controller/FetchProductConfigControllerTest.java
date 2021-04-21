@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -109,7 +110,7 @@ public class FetchProductConfigControllerTest {
     @Test
     void testProductConfigFilterEkycWithETEError() throws Exception {
         String correlationId = "c83936c284cb398fA46CF16F399C";
-        byte[] body = "{\"status\":{\"code\":\"404\",\"message\":\"ETE Service down\",\"service\":\"customers-service\",\"description\":{\"en\":\"Failed\",\"th\":\"Failed\"}},\"data\":null}".getBytes("UTF8");
+        byte[] body = "{\"status\":{\"code\":\"404\",\"message\":\"ETE Service down\",\"service\":\"customers-service\",\"description\":{\"en\":\"Failed\",\"th\":\"Failed\"}},\"data\":null}".getBytes(StandardCharsets.UTF_8);
         feign.Request.Body b = null;
         Map<String, Collection<String>> headers = new HashMap<>();
         RequestTemplate requestTemplate = new RequestTemplate();

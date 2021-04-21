@@ -24,6 +24,10 @@ import java.util.Map;
  * Class responsible for Putting activity logs in Creditcard service
  *
  * @author Admin
+ * @author Admin
+ * @author Admin
+ * @author Admin
+ * @author Admin
  */
 
 /**
@@ -37,7 +41,7 @@ import java.util.Map;
  */
 @Service
 public class CreditCardLogService {
-    private static TMBLogger<CreditCardLogService> logger = new TMBLogger<>(CreditCardLogService.class);
+    private static final TMBLogger<CreditCardLogService> logger = new TMBLogger<>(CreditCardLogService.class);
     private final String topicName;
     private final KafkaProducerService kafkaProducerService;
 
@@ -303,6 +307,15 @@ public class CreditCardLogService {
         logActivity(creditCardEvent);
     }
 
+    /**
+     *
+     * @param status
+     * @param activityId
+     * @param correlationId
+     * @param activityDate
+     * @param accountId
+     * @param failReason
+     */
     @Async
     @LogAround
     public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
@@ -317,6 +330,13 @@ public class CreditCardLogService {
         logActivity(creditCardEvent);
     }
 
+    /**
+     *
+     * @param creditCardEvent
+     * @param reqHeader
+     * @param response
+     * @return
+     */
     public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, LoanDetailsFullResponse response) {
 
         populateBaseEvents(creditCardEvent, reqHeader);
@@ -326,6 +346,13 @@ public class CreditCardLogService {
         return creditCardEvent;
     }
 
+    /**
+     *
+     * @param creditCardEvent
+     * @param reqHeader
+     * @param fetchCardResponse
+     * @return
+     */
     public CreditCardEvent loadCardDetailsEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, FetchCardResponse fetchCardResponse) {
 
         populateBaseEvents(creditCardEvent, reqHeader);

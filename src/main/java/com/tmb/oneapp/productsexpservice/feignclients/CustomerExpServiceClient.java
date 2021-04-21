@@ -10,7 +10,7 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 public interface CustomerExpServiceClient {
 
     @GetMapping(value = "/apis/customer/accounts/saving")
-    public String getAccountSaving(
+    String getAccountSaving(
             @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestHeader("X-CRMID") String crmId
     );

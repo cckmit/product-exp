@@ -368,7 +368,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void validateTMBResponse() throws Exception {
         UtilMap utilMap = new UtilMap();
-        FundAccountRs fundAccountRs = utilMap.validateTMBResponse(null, null, null);
+        FundAccountRs fundAccountRs = UtilMap.validateTMBResponse(null, null, null);
         Assert.assertNull(fundAccountRs);
     }
 
@@ -382,21 +382,21 @@ public class ProductExpServiceCloseTest {
     @Test
     public void isCASADormant() throws Exception {
         UtilMap utilMap = new UtilMap();
-        boolean fundAccountRs = utilMap.isCASADormant(null);
+        boolean fundAccountRs = UtilMap.isCASADormant(null);
         Assert.assertTrue(fundAccountRs);
     }
 
     @Test
     public void convertAccountType() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String fundAccountRs = utilMap.convertAccountType("AAAA");
+        String fundAccountRs = UtilMap.convertAccountType("AAAA");
         Assert.assertEquals("", fundAccountRs);
     }
 
     @Test
     public void isCASADormantException() throws Exception {
         UtilMap utilMap = new UtilMap();
-        boolean fundAccountRs = utilMap.isCASADormant("data not found");
+        boolean fundAccountRs = UtilMap.isCASADormant("data not found");
         Assert.assertFalse(fundAccountRs);
     }
 
@@ -404,28 +404,28 @@ public class ProductExpServiceCloseTest {
     @Test
     public void isBusinessCloseException() throws Exception {
         UtilMap utilMap = new UtilMap();
-        boolean fundAccountRs = utilMap.isBusinessClose("yyy", "xxx");
+        boolean fundAccountRs = UtilMap.isBusinessClose("yyy", "xxx");
         Assert.assertFalse(fundAccountRs);
     }
 
     @Test
     public void addColonDateFormat() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String fundAccountRs = utilMap.deleteColonDateFormat("06:00");
+        String fundAccountRs = UtilMap.deleteColonDateFormat("06:00");
         Assert.assertEquals("0600", fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatStart() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String fundAccountRs = utilMap.deleteColonDateFormat("23:30");
+        String fundAccountRs = UtilMap.deleteColonDateFormat("23:30");
         Assert.assertEquals("2330", fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatFail() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String fundAccountRs = utilMap.deleteColonDateFormat("");
+        String fundAccountRs = UtilMap.deleteColonDateFormat("");
         Assert.assertEquals("", fundAccountRs);
     }
 
