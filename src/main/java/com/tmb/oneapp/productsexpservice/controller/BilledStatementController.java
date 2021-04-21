@@ -33,6 +33,11 @@ public class BilledStatementController {
         this.creditCardClient = creditCardClient;
     }
 
+    /**
+     * @param correlationId
+     * @param requestBody
+     * @return
+     */
     @LogAround
     @ApiOperation(value = "get billed statement ")
     @PostMapping(value = "credit-card/statement/get-billed-statement")

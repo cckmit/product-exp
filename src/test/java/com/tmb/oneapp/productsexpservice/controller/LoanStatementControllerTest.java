@@ -184,7 +184,7 @@ public class LoanStatementControllerTest {
         Exception exception = new Exception("FeignClientException");
         StackTraceElement[] stack = {};
         exception.setStackTrace(stack);
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> entity = loanStatementController.getEntity(headers, serviceResponse, exception);
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> entity = loanStatementController.failedErrorResponse(headers, serviceResponse, exception);
         assertEquals(400, entity.getStatusCodeValue());
     }
 }

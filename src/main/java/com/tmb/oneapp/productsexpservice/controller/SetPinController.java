@@ -153,7 +153,7 @@ public class SetPinController {
      * @throws JsonProcessingException
      */
     private TmbServiceResponse<List<Object>> convertExceptionResposeToExceptionRespose(FeignException ex)
-            throws UnsupportedEncodingException, JsonProcessingException {
+            throws  JsonProcessingException {
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
             ByteBuffer responseBuffer = response.get();

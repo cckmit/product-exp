@@ -140,6 +140,16 @@ public class CardInstallmentController {
 
     }
 
+    /**
+     * @param correlationId
+     * @param requestBodyParameter
+     * @param requestHeadersParameter
+     * @param responseHeaders
+     * @param oneServiceResponse
+     * @param cardInstallmentResp
+     * @param data
+     * @return
+     */
     boolean ifSuccessCaseMatch(String correlationId, CardInstallmentQuery requestBodyParameter, Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp, List<CardInstallmentResponse> data) {
         creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter,
                 requestBodyParameter, data);
