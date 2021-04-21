@@ -42,9 +42,9 @@ public class NotificationService {
     @Value("${notification-service.e-noti.default.support.no}")
     private String gobalCallCenter;
     @Value("${notification-service.e-noti.default.template.date}")
-    private static final String formatTranDate = "dd/MM/yyyy";
+    private static final String DD_MM_YYYY = "dd/MM/yyyy";
     @Value("${notification-service.e-noti.default.template.time}")
-    private static final String formateTime = "HH:mm";
+    private static final String HH_MM = "HH:mm";
 
     private final NotificationServiceClient notificationClient;
     private final CustomerServiceClient customerClient;
@@ -246,8 +246,8 @@ public class NotificationService {
                 notifyCommon.setAccountId(accountId);
                 notifyCommon.setCrmId(crmId);
 
-                String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formatTranDate));
-                String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(formateTime));
+                String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DD_MM_YYYY));
+                String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HH_MM));
                 sendNotifySuccessForChangeUsage(notifyCommon, requestBodyParameter.getPreviousCreditLimit(),
                         requestBodyParameter.getCurrentCreditLimit(), customerProfileInfo.getEmailAddress(), tranDate,
                         tranTime);

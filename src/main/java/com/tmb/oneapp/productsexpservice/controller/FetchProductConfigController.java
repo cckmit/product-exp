@@ -172,7 +172,7 @@ public class FetchProductConfigController {
      * @throws UnsupportedEncodingException
      * @throws JsonProcessingException
      */
-    private TMBCommonException handleFeignException(FeignException e) throws UnsupportedEncodingException, JsonProcessingException {
+    private TMBCommonException handleFeignException(FeignException e) throws  JsonProcessingException {
         logger.error("Exception in {} :{}", e.getClass().getName(), e.toString());
         if (e instanceof FeignException.BadRequest) {
             TmbServiceResponse<String> body = exceptionHandling(e);
