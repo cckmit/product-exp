@@ -23,7 +23,7 @@ import java.util.*;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
 /**
- * ApplicationStatusService process application status information
+ * NcbPaymentConfirmService confirm payment of NCB
  */
 @Service
 public class NcbPaymentConfirmService {
@@ -39,11 +39,20 @@ public class NcbPaymentConfirmService {
     }
 
     /**
-     * Get get HP and RSL application status
+     * confirm payment of NCB
      *
      * @param requestHeaders correlatinoId, crmId, deviceId, accept-language
-     * @param serviceTypeId  service type for this endpoint
-     * @return CustomerProfileResponseData customer data
+     * @param serviceTypeId  serviceTypeId
+     * @param firstnameTh  firstnameTh
+     * @param lastnameTh  lastnameTh
+     * @param firstnameEn  firstnameEn
+     * @param lastnameEn  lastnameEn
+     * @param email  email
+     * @param address  address
+     * @param deliveryMethod  deliveryMethod
+     * @param accountNumber  accountNumber
+     *
+     * @return NcbPaymentConfirmResponse NcbPaymentConfirmResponse
      */
     public NcbPaymentConfirmResponse confirmNcbPayment(Map<String, String> requestHeaders, //NOSONAR lightweight logging
                                                        String serviceTypeId, String firstnameTh, String lastnameTh, String firstnameEn,
@@ -97,7 +106,7 @@ public class NcbPaymentConfirmService {
 
             sendEmail(correlationId, notificationRecordList);
 
-            createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn);
+            createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, deliveryMethod);
 
             // === Check First Time Usage ===
             //GET /apis/customers/firstTimeUsage
@@ -107,6 +116,8 @@ public class NcbPaymentConfirmService {
             //PUT /apis/customers/firstTimeUsage
             if (customerFirstUsage != null) {
                 putFirstTimeUsage(crmId, deviceId, serviceTypeId);
+            } else {
+                postFirstTimeUsage(crmId, deviceId, serviceTypeId);
             }
 
             return response
@@ -121,6 +132,14 @@ public class NcbPaymentConfirmService {
         }
     }
 
+    /**
+     * Send email for confirm payment
+     *
+     * @param correlationId correlationId
+     * @param notificationRecord notificationRecord
+     *
+     * @return boolean status of email sending
+     */
     public boolean sendEmail(String correlationId, List<NotificationRecord> notificationRecord) {
         try {
             NotificationRequest notificationRequest = new NotificationRequest();
@@ -138,17 +157,36 @@ public class NcbPaymentConfirmService {
         return false;
     }
 
-    public String createNcbCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn) {
+    /**
+     * Create CRM case for NCB
+     *
+     * @param crmId crmId
+     * @param correlationId  correlationId
+     * @param firstnameTh  firstnameTh
+     * @param lastnameTh  lastnameTh
+     * @param firstnameEn  firstnameEn
+     * @param lastnameEn  lastnameEn
+     * @param deliveryMethod  deliveryMethod
+     *
+     * @return Map of result
+     */
+    public Map<String, String> createNcbCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn, String deliveryMethod) {
         try {
             String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
             String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
 
-            ResponseEntity<TmbOneServiceResponse<String>> response =
-                    customerServiceClient.submitNcbCustomerCase(crmId, correlationId, firstname, lastname);
+            String serviceTypeMatrixCode = "O0003";
+
+            if(deliveryMethod.equals("by post")) {
+                serviceTypeMatrixCode = "O0001";
+            }
+
+            ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
+                    customerServiceClient.submitNcbCustomerCase(crmId, correlationId, firstname, lastname, serviceTypeMatrixCode);
             return response.getBody().getData(); //NOSONAR lightweight logging
         } catch (Exception e) {
             logger.error("Unexpected error occured : {}", e);
-            return "";
+            return new HashMap<>();
         }
     }
 
@@ -161,18 +199,20 @@ public class NcbPaymentConfirmService {
      */
     public CustomerFirstUsage getFirstTimeUsage(String crmId, String deviceId, String serviceTypeId) {
         try {
-            logger.info("Calling PUT /apis/customers/firstTimeUsage.");
+            logger.info("Calling GET /apis/customers/firstTimeUsage.");
 
             ResponseEntity<TmbOneServiceResponse<CustomerFirstUsage>> response =
                     customerServiceClient.getFirstTimeUsage(crmId, deviceId, serviceTypeId);
 
             if (response != null && response.getStatusCode() == HttpStatus.OK) {
-                logger.info("call to update first time usage completed successfully. " +
-                        "crmId: {}, deviceId: {}", crmId, deviceId);
+                logger.info("call get first time usage completed successfully. " +
+                        "crmId: {}, deviceId: {}", crmId, deviceId);  //NOSONAR lightweight logging
+
+                return response.getBody().getData();  //NOSONAR lightweight logging
             }
         } catch (Exception e) {
-            logger.error("call to update first time usage failed. " +
-                    "crmId: {}, deviceId: {}, error: {}", crmId, deviceId, e);
+            logger.error("call to get first time usage failed. " +
+                    "crmId: {}, deviceId: {}, error: {}", crmId, deviceId, e);  //NOSONAR lightweight logging
         }
 
         return null;
@@ -180,6 +220,33 @@ public class NcbPaymentConfirmService {
 
     /**
      * Insert customer first time use
+     *
+     * @param crmId    customer Id
+     * @param deviceId device Id
+     * @param serviceTypeId serviceType Id
+     */
+    public String postFirstTimeUsage(String crmId, String deviceId, String serviceTypeId) {
+        try {
+            logger.info("Calling POST /apis/customers/firstTimeUsage.");
+
+            ResponseEntity<TmbOneServiceResponse<String>> response =
+                    customerServiceClient.postFirstTimeUsage(crmId, deviceId, serviceTypeId);
+
+            if (response != null && response.getStatusCode() == HttpStatus.OK) {
+                logger.info("call to insert first time usage completed successfully. " +
+                        "crmId: {}, deviceId: {}", crmId, deviceId);
+                return "success";
+            }
+        } catch (Exception e) {
+            logger.error("call to insert first time usage failed. " +
+                    "crmId: {}, deviceId: {}, error: {}", crmId, deviceId, e);
+        }
+
+        return "";
+    }
+
+    /**
+     * Update customer first time use
      *
      * @param crmId    customer Id
      * @param deviceId device Id

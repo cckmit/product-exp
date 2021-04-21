@@ -6,6 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.model.request.ncb.NcbPaymentConfirmBody;
 import com.tmb.oneapp.productsexpservice.model.response.ncb.NcbPaymentConfirmResponse;
 import com.tmb.oneapp.productsexpservice.service.NcbPaymentConfirmService;
 import io.swagger.annotations.*;
@@ -46,21 +47,13 @@ public class NcbPaymentConfirmController {
     })
     public ResponseEntity<TmbOneServiceResponse<NcbPaymentConfirmResponse>> confirmNcbPayment(
             @ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
-            @ApiParam(value = "Service Type Id", defaultValue = "NCBR", required = true) @RequestParam("service_type_id") String serviceTypeId,
-            @ApiParam(value = "FirstnameTh", defaultValue = "NAME", required = true) @RequestParam("firstname_th") String firstnameTh,
-            @ApiParam(value = "LastnameTh", defaultValue = "TEST", required = true) @RequestParam("lastname_th") String lastnameTh,
-            @ApiParam(value = "FirstnameEn", defaultValue = "NAME", required = true) @RequestParam("firstname_en") String firstnameEn,
-            @ApiParam(value = "LastnameEn", defaultValue = "TEST", required = true) @RequestParam("lastname_en") String lastnameEn,
-            @ApiParam(value = "Email", defaultValue = "abc@tmb.com", required = true) @RequestParam("email") String email,
-            @ApiParam(value = "Address", defaultValue = "123/12 abcesafaefae", required = true) @RequestParam("address") String address,
-            @ApiParam(value = "Delivery Method", defaultValue = "by email", required = true) @RequestParam("delivery_method") String deliveryMethod,
-            @ApiParam(value = "Account Number", defaultValue = "1234567890", required = true) @RequestParam("account_number") String accountNumber) {
+            @RequestBody NcbPaymentConfirmBody requestBody) {
 
         TmbOneServiceResponse<NcbPaymentConfirmResponse> response = new TmbOneServiceResponse<>();
 
         try {
             NcbPaymentConfirmResponse ncbPaymentConfirmResponse =
-                    ncbPaymentConfirmService.confirmNcbPayment(requestHeaders, serviceTypeId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, email, address, deliveryMethod, accountNumber);
+                    ncbPaymentConfirmService.confirmNcbPayment(requestHeaders, requestBody.getServiceTypeId(), requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getEmail(), requestBody.getAddress(), requestBody.getDeliveryMethod(), requestBody.getAccountNumber());
 
             response.setData(ncbPaymentConfirmResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(),

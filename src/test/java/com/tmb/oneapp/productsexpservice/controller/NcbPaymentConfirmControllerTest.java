@@ -1,7 +1,11 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.request.ncb.NcbPaymentConfirmBody;
 import com.tmb.oneapp.productsexpservice.model.response.ncb.NcbPaymentConfirmResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.ApplicationStatusService;
@@ -30,18 +34,8 @@ class NcbPaymentConfirmControllerTest {
     private final NcbPaymentConfirmService ncbPaymentConfirmService = Mockito.mock(NcbPaymentConfirmService.class);
     private final NcbPaymentConfirmController ncbPaymentConfirmController = new NcbPaymentConfirmController(ncbPaymentConfirmService);
 
-    private static final String serviceTypeId = "NCBR";
-    private static final String firstnameTh = "NAME";
-    private static final String lastnameTh = "TEST";
-    private static final String firstnameEn = "NAME";
-    private static final String lastnameEn = "TEST";
-    private static final String email = "abc@tmb.com";
-    private static final String address = "123/12 asdfweaoifjawof";
-    private static final String deliveryMethod = "email";
-    private static final String accountNumber = "12345678980";
-
     @Test
-    void confirmNcbPayment_Success() throws TMBCommonException {
+    void confirmNcbPayment_Success() throws TMBCommonException, JsonProcessingException {
         NcbPaymentConfirmResponse ncbPaymentConfirmResponse = new NcbPaymentConfirmResponse();
         ncbPaymentConfirmResponse.setTransactionDate("2021-04-02T10:35");
         ncbPaymentConfirmResponse.setReferenceNo("1234567890");
@@ -56,16 +50,29 @@ class NcbPaymentConfirmControllerTest {
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
 
+        String requestBody = "{\n" +
+                "            \"service_type_id\": \"NCBR\",\n" +
+                "                \"firstname_th\": \"NAME\",\n" +
+                "                \"lastname_th\": \"TEST\",\n" +
+                "                \"firstname_en\": \"NAME\",\n" +
+                "                \"lastname_en\": \"TEST\",\n" +
+                "                \"email\": \"sorawit.s@tcs.com\",\n" +
+                "                \"address\": \"123/12sfwaefawefawefwaf\",\n" +
+                "                \"delivery_method\": \"email\",\n" +
+                "                \"account_number\": \"1234567890\"\n" +
+                "        }";
+
+        NcbPaymentConfirmBody ncbPaymentConfirmBody = new ObjectMapper().readValue(requestBody, NcbPaymentConfirmBody.class);
+
         ResponseEntity<TmbOneServiceResponse<NcbPaymentConfirmResponse>> response =
-                ncbPaymentConfirmController.confirmNcbPayment(header, serviceTypeId, firstnameTh, lastnameTh, firstnameEn, lastnameEn,
-                        email, address, deliveryMethod, accountNumber);
+                ncbPaymentConfirmController.confirmNcbPayment(header, ncbPaymentConfirmBody);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
 
     @Test
-    void confirmNcbPayment_NoData() throws TMBCommonException {
+    void confirmNcbPayment_NoData() throws TMBCommonException, JsonProcessingException {
         NcbPaymentConfirmResponse ncbPaymentConfirmResponse = new NcbPaymentConfirmResponse();
         ncbPaymentConfirmResponse.setTransactionDate("2021-04-02T10:35");
         ncbPaymentConfirmResponse.setReferenceNo("1234567890");
@@ -79,16 +86,29 @@ class NcbPaymentConfirmControllerTest {
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
 
+        String requestBody = "{\n" +
+                "            \"service_type_id\": \"NCBR\",\n" +
+                "                \"firstname_th\": \"NAME\",\n" +
+                "                \"lastname_th\": \"TEST\",\n" +
+                "                \"firstname_en\": \"NAME\",\n" +
+                "                \"lastname_en\": \"TEST\",\n" +
+                "                \"email\": \"sorawit.s@tcs.com\",\n" +
+                "                \"address\": \"123/12sfwaefawefawefwaf\",\n" +
+                "                \"delivery_method\": \"email\",\n" +
+                "                \"account_number\": \"1234567890\"\n" +
+                "        }";
+
+        NcbPaymentConfirmBody ncbPaymentConfirmBody = new ObjectMapper().readValue(requestBody, NcbPaymentConfirmBody.class);
+
         ResponseEntity<TmbOneServiceResponse<NcbPaymentConfirmResponse>> response =
-                ncbPaymentConfirmController.confirmNcbPayment(header, serviceTypeId, firstnameTh, lastnameTh, firstnameEn, lastnameEn,
-                        email, address, deliveryMethod, accountNumber);
+                ncbPaymentConfirmController.confirmNcbPayment(header, ncbPaymentConfirmBody);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
 
     @Test
-    void confirmNcbPayment_Fail() throws TMBCommonException {
+    void confirmNcbPayment_Fail() throws TMBCommonException, JsonProcessingException {
         when(ncbPaymentConfirmService.confirmNcbPayment(anyMap(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new IllegalArgumentException());
@@ -98,9 +118,22 @@ class NcbPaymentConfirmControllerTest {
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
 
+        String requestBody = "{\n" +
+                "            \"service_type_id\": \"NCBR\",\n" +
+                "                \"firstname_th\": \"NAME\",\n" +
+                "                \"lastname_th\": \"TEST\",\n" +
+                "                \"firstname_en\": \"NAME\",\n" +
+                "                \"lastname_en\": \"TEST\",\n" +
+                "                \"email\": \"sorawit.s@tcs.com\",\n" +
+                "                \"address\": \"123/12sfwaefawefawefwaf\",\n" +
+                "                \"delivery_method\": \"email\",\n" +
+                "                \"account_number\": \"1234567890\"\n" +
+                "        }";
+
+        NcbPaymentConfirmBody ncbPaymentConfirmBody = new ObjectMapper().readValue(requestBody, NcbPaymentConfirmBody.class);
+
         ResponseEntity<TmbOneServiceResponse<NcbPaymentConfirmResponse>> response =
-                ncbPaymentConfirmController.confirmNcbPayment(header, serviceTypeId, firstnameTh, lastnameTh, firstnameEn, lastnameEn,
-                        email, address, deliveryMethod, accountNumber);
+                ncbPaymentConfirmController.confirmNcbPayment(header, ncbPaymentConfirmBody);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }

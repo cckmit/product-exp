@@ -93,17 +93,20 @@ class NcbPaymentConfirmServiceTest {
         String lastnameTh = "TEST";
         String firstnameEn = "NAME";
         String lastnameEn = "TEST";
+        String deliveryMethod = "by email";
 
         String caseRef = "12312312";
+        Map<String, String> response = new HashMap<>();
+        response.put("case_number", caseRef);
 
-        TmbOneServiceResponse<String> mockResponseCaseSubmit = new TmbOneServiceResponse<>();
-        mockResponseCaseSubmit.setData(caseRef);
+        TmbOneServiceResponse<Map<String, String>> mockResponseCaseSubmit = new TmbOneServiceResponse<>();
+        mockResponseCaseSubmit.setData(response);
 
-        ResponseEntity<TmbOneServiceResponse<String>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenReturn(mockResponse);
 
-        Assert.assertNotEquals("", ncbPaymentConfirmService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn));
+        Assert.assertNotEquals(new HashMap<>(), ncbPaymentConfirmService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, deliveryMethod));
     }
 
     @Test
@@ -115,9 +118,36 @@ class NcbPaymentConfirmServiceTest {
         String firstnameEn = "c";
         String lastnameEn = "d";
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any())).thenThrow(new IllegalArgumentException());
+        String deliveryMethod = "by email";
 
-        Assert.assertEquals("", ncbPaymentConfirmService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn));
+        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenThrow(new IllegalArgumentException());
+
+        Assert.assertEquals(new HashMap<>(), ncbPaymentConfirmService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, deliveryMethod));
+    }
+
+    @Test
+    void postFirstTimeUsage_Success() {
+        String crmId = "001100000000000000000000051187";
+        String deviceId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+
+        TmbOneServiceResponse<String> mockResponseFirstTimeUsage = new TmbOneServiceResponse<>();
+        mockResponseFirstTimeUsage.setData("");
+
+        ResponseEntity<TmbOneServiceResponse<String>> mockResponse = new ResponseEntity<>(mockResponseFirstTimeUsage, HttpStatus.OK);
+
+        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("NCBR"))).thenReturn(mockResponse);
+
+        Assert.assertNotNull(ncbPaymentConfirmService.postFirstTimeUsage(crmId, deviceId,"NCBR"));
+    }
+
+    @Test
+    void postFirstTimeUsage_Fail() {
+        String crmId = "13513534642645";
+        String deviceId = "";
+
+        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("NCBR"))).thenThrow(new IllegalArgumentException());
+
+        Assert.assertEquals("", ncbPaymentConfirmService.postFirstTimeUsage(crmId, deviceId,"NCBR"));
     }
 
     @Test
@@ -186,13 +216,15 @@ class NcbPaymentConfirmServiceTest {
         notificationRecordList.add(notificationRecord);
 
         String caseRef = "12312312";
+        Map<String, String> response = new HashMap<>();
+        response.put("case_number", caseRef);
 
-        TmbOneServiceResponse<String> mockResponseCaseSubmit = new TmbOneServiceResponse<>();
-        mockResponseCaseSubmit.setData(caseRef);
+        TmbOneServiceResponse<Map<String, String>> mockResponseCaseSubmit = new TmbOneServiceResponse<>();
+        mockResponseCaseSubmit.setData(response);
 
-        ResponseEntity<TmbOneServiceResponse<String>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenReturn(mockResponse);
 
         CustomerFirstUsage customerFirstUsage = new CustomerFirstUsage();
         customerFirstUsage.setCrmId(crmId);
@@ -259,13 +291,15 @@ class NcbPaymentConfirmServiceTest {
         notificationRecordList.add(notificationRecord);
 
         String caseRef = "12312312";
+        Map<String, String> response = new HashMap<>();
+        response.put("case_number", caseRef);
 
-        TmbOneServiceResponse<String> mockResponseCaseSubmit = new TmbOneServiceResponse<>();
-        mockResponseCaseSubmit.setData(caseRef);
+        TmbOneServiceResponse<Map<String, String>> mockResponseCaseSubmit = new TmbOneServiceResponse<>();
+        mockResponseCaseSubmit.setData(response);
 
-        ResponseEntity<TmbOneServiceResponse<String>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenReturn(mockResponse);
 
         CustomerFirstUsage customerFirstUsage = new CustomerFirstUsage();
         customerFirstUsage.setCrmId(crmId);
@@ -297,7 +331,7 @@ class NcbPaymentConfirmServiceTest {
         String correlationId = "";
 
         when(notificationServiceClient.sendMessage(any(), any())).thenThrow(new IllegalArgumentException());
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any())).thenThrow(new IllegalArgumentException());
+        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenThrow(new IllegalArgumentException());
         when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("NCBR"))).thenThrow(new IllegalArgumentException());
         when(customerServiceClient.putFirstTimeUsage(anyString(), anyString(), eq("NCBR")));
 
