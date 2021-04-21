@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.service.CrmSubmitCaseService;
 import io.swagger.annotations.ApiOperation;
@@ -40,12 +41,11 @@ public class CrmSubmitCaseController {
      *
      * @return case_reference
      */
-    @LogAround
     @ApiOperation(value = "Submit Case status data")
     @PostMapping(value = "/crm/submitCase")
     public ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitCaseStatus(
-            @ApiParam(value = "Crm ID", defaultValue = "001100000000000000000001184383", required = true) @Valid @RequestHeader("x-crmid") String crmId,
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader("X-Correlation-ID") String correlationId,
+            @ApiParam(value = "Crm ID", defaultValue = "001100000000000000000001184383", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.X_CRMID) String crmId,
+            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @ApiParam(value = "Firstname TH", defaultValue = "NAME", required = true) @Valid @RequestHeader("firstname_th") String firstnameTh,
             @ApiParam(value = "Lastname TH", defaultValue = "TEST", required = true) @Valid @RequestHeader("lastname_th") String lastnameTh,
             @ApiParam(value = "Firstname EN", defaultValue = "NAME", required = true) @Valid @RequestHeader("firstname_en") String firstnameEn,

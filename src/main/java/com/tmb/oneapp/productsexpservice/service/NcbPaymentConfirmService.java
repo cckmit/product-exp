@@ -78,11 +78,11 @@ public class NcbPaymentConfirmService {
             } else {
                 params.put("custFullNameEN", (firstnameEn + " " + lastnameEn));
             }
-            if(deliveryMethod.equals("email")) {
+            if(deliveryMethod.equals("by email")) {
                 params.put("DeliveryMethodTH", "ทางอีเมล");
                 params.put("DeliveryMethodEN", "By e-mail");
                 params.put("CustDeliveryDetail", email);
-            } else if(deliveryMethod.equals("post")) {
+            } else if(deliveryMethod.equals("by post")) {
                 params.put("DeliveryMethodTH", "ทางไปรษณีย์");
                 params.put("DeliveryMethodEN", "By post");
                 params.put("CustDeliveryDetail", address);
@@ -175,10 +175,10 @@ public class NcbPaymentConfirmService {
             String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
             String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
 
-            String serviceTypeMatrixCode = "O0003";
+            String serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_EMAIL;
 
-            if(deliveryMethod.equals("by post")) {
-                serviceTypeMatrixCode = "O0001";
+            if(deliveryMethod.equals(SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST)) {
+                serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST;
             }
 
             ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =

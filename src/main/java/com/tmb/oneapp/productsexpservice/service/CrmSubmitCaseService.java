@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,7 @@ public class CrmSubmitCaseService {
                     customerServiceClient.submitNcbCustomerCase(crmId, correlationId, firstname, lastname, serviceTypeMatrixCode);
 
             Map<String, String> result = new HashMap<>();
-            String caseNumberSnakeCase = "case_number";
-
-            result.put(caseNumberSnakeCase, response.getBody().getData().get("case_number"));  //NOSONAR lightweight logging
+            result.put(ProductsExpServiceConstant.CASE_NUMBER, response.getBody().getData().get(ProductsExpServiceConstant.CASE_NUMBER));  //NOSONAR lightweight logging
 
             return result; //NOSONAR lightweight logging
         } catch (Exception e) {
