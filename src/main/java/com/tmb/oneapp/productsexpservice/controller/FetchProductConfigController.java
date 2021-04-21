@@ -112,7 +112,7 @@ public class FetchProductConfigController {
     public ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfigListByEKYCFilter(
             @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId,
             @PathVariable String ekycFlag
-    ) throws UnsupportedEncodingException, JsonProcessingException, TMBCommonException {
+    ) throws  JsonProcessingException, TMBCommonException {
         TmbOneServiceResponse<List<ProductConfig>> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = this.getResponseHeaders();
         logStartController("/filter/ekycFlag", correlationId);
