@@ -89,6 +89,8 @@ public class ProductsExpServiceTest {
                 .getFundClass().size(),result.getFundClass().size());
     }
 
+
+
     @Test
     public void testGetFundSummaryWithNoSummaryByPort() throws Exception {
 
