@@ -8,10 +8,7 @@ import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentPromotion;
 import com.tmb.oneapp.productsexpservice.model.loan.Status;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +21,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
+
 @RunWith(JUnit4.class)
 public class EligibleLeadControllerTest {
     @Mock
@@ -44,18 +41,18 @@ public class EligibleLeadControllerTest {
     @Test
     public void testGetLoanAccountDetail() throws Exception {
         TmbOneServiceResponse<EligibleLeadResponse> serverResponse = new TmbOneServiceResponse<>();
-        TmbStatus status= new TmbStatus();
+        TmbStatus status = new TmbStatus();
         status.setService("card-money-transfer");
         status.setMessage("test");
         status.setDescription("test");
         status.setCode("0");
         serverResponse.setStatus(status);
-        EligibleLeadResponse data= new EligibleLeadResponse();
+        EligibleLeadResponse data = new EligibleLeadResponse();
         Status stat = new Status();
         stat.setAccountStatus("success");
         data.setStatus(stat);
         serverResponse.setData(data);
-        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> response= new ResponseEntity<>(serverResponse, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> response = new ResponseEntity<>(serverResponse, HttpStatus.OK);
         when(creditCardClient.getEligibleLeads(anyString(), any())).thenReturn(response);
 
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
@@ -116,7 +113,7 @@ public class EligibleLeadControllerTest {
         when(creditCardClient.getEligibleLeads(any(), any())).thenReturn(tmbOneServiceResponseEntity1);
 
 
-        EligibleLeadRequest requestBody  = new EligibleLeadRequest();
+        EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
         ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanAccountDetail("correlationId", requestBody);
         Assert.assertEquals(400, result.getStatusCodeValue());

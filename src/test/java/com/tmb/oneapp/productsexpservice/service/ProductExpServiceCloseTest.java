@@ -50,7 +50,7 @@ public class ProductExpServiceCloseTest {
 
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-    private final String  topicName = "activity";
+    private final String topicName = "activity";
 
     @BeforeEach
     public void setUp() {
@@ -59,13 +59,13 @@ public class ProductExpServiceCloseTest {
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
-        productExpAsynService =  mock(ProductExpAsynService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient,
-                productExpAsynService, topicName,customerExpServiceClient);
+        productExpAsynService = mock(ProductExpAsynService.class);
+        productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient,
+                productExpAsynService, topicName, customerExpServiceClient);
 
     }
 
-    private Map<String, String> createHeader(String correlationId){
+    private Map<String, String> createHeader(String correlationId) {
         Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -117,7 +117,7 @@ public class ProductExpServiceCloseTest {
     }
 
     @Test
-    public void getFundFFSAndValidationBusinesClose()  {
+    public void getFundFFSAndValidationBusinesClose() {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
         ffsRequestBody.setFundCode("ABSM");
         ffsRequestBody.setFundHouseCode("ABERDEEN");
@@ -188,7 +188,6 @@ public class ProductExpServiceCloseTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
 
-
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
 
@@ -203,7 +202,7 @@ public class ProductExpServiceCloseTest {
     }
 
     @Test
-    public void getFundFFSAndValidationSuccess()  {
+    public void getFundFFSAndValidationSuccess() {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
         ffsRequestBody.setFundCode("ABSM");
         ffsRequestBody.setFundHouseCode("ABERDEEN");
@@ -223,7 +222,6 @@ public class ProductExpServiceCloseTest {
         ffsRequest.setFundHouseCode("ABERDEEN");
         ffsRequest.setOrderType("1");
         ffsRequest.setProcessFlag("Y");
-
 
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
@@ -302,7 +300,6 @@ public class ProductExpServiceCloseTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
 
-
             responseFfs.setData(null);
             responseFfs.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -337,7 +334,7 @@ public class ProductExpServiceCloseTest {
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq );
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);
@@ -385,7 +382,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void isCASADormant() throws Exception {
         UtilMap utilMap = new UtilMap();
-        boolean  fundAccountRs = utilMap.isCASADormant(null);
+        boolean fundAccountRs = utilMap.isCASADormant(null);
         Assert.assertTrue(fundAccountRs);
     }
 
@@ -393,13 +390,13 @@ public class ProductExpServiceCloseTest {
     public void convertAccountType() throws Exception {
         UtilMap utilMap = new UtilMap();
         String fundAccountRs = utilMap.convertAccountType("AAAA");
-        Assert.assertEquals("",fundAccountRs);
+        Assert.assertEquals("", fundAccountRs);
     }
 
     @Test
     public void isCASADormantException() throws Exception {
         UtilMap utilMap = new UtilMap();
-        boolean  fundAccountRs = utilMap.isCASADormant("data not found");
+        boolean fundAccountRs = utilMap.isCASADormant("data not found");
         Assert.assertFalse(fundAccountRs);
     }
 
@@ -407,29 +404,29 @@ public class ProductExpServiceCloseTest {
     @Test
     public void isBusinessCloseException() throws Exception {
         UtilMap utilMap = new UtilMap();
-        boolean  fundAccountRs = utilMap.isBusinessClose("yyy", "xxx");
+        boolean fundAccountRs = utilMap.isBusinessClose("yyy", "xxx");
         Assert.assertFalse(fundAccountRs);
     }
 
     @Test
     public void addColonDateFormat() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.deleteColonDateFormat("06:00");
-        Assert.assertEquals("0600",fundAccountRs);
+        String fundAccountRs = utilMap.deleteColonDateFormat("06:00");
+        Assert.assertEquals("0600", fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatStart() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.deleteColonDateFormat("23:30");
-        Assert.assertEquals("2330",fundAccountRs);
+        String fundAccountRs = utilMap.deleteColonDateFormat("23:30");
+        Assert.assertEquals("2330", fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatFail() throws Exception {
         UtilMap utilMap = new UtilMap();
-        String  fundAccountRs = utilMap.deleteColonDateFormat("");
-        Assert.assertEquals("",fundAccountRs);
+        String fundAccountRs = utilMap.deleteColonDateFormat("");
+        Assert.assertEquals("", fundAccountRs);
     }
 
 

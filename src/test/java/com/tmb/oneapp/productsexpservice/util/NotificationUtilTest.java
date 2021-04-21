@@ -10,7 +10,7 @@ import org.junit.runners.JUnit4;
 public class NotificationUtilTest {
 
     @Test
-    public void testGenerateNotifyCommon()  {
+    public void testGenerateNotifyCommon() {
         NotifyCommon result = NotificationUtil.generateNotifyCommon("xCorrelationId", "channelNameEn", "channelNameTh", "productNameEN", "productNameTH", "custFullNameEn", "custFullNameTH");
         NotifyCommon expected = new NotifyCommon();
         expected.setChannelNameEn("1234");

@@ -33,10 +33,9 @@ public class ProductExpServiceControllerTestFundSummary {
     }
 
 
-
     @Test
     public void testGetFundSummary() throws Exception {
-        FundSummaryBody expectedResponse = null ;
+        FundSummaryBody expectedResponse = null;
         FundSummaryRq rq = new FundSummaryRq();
         rq.setCrmId("test");
         String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
@@ -63,7 +62,7 @@ public class ProductExpServiceControllerTestFundSummary {
 
     @Test
     public void testGetFundSummaryNotFound() throws Exception {
-        FundSummaryBody expectedResponse = null ;
+        FundSummaryBody expectedResponse = null;
         FundSummaryRq rq = new FundSummaryRq();
         rq.setCrmId("test");
         String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";

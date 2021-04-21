@@ -46,25 +46,25 @@ public class BilledStatementWithPeriodControllerTest {
     }
 
     @Test
-    void getBilledStatementWithPeriodDetailsSuccessTest()  {
+    void getBilledStatementWithPeriodDetailsSuccessTest() {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
         String accountId = "0000000050078680472000929";
 
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
-        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929","1","Y","");
+        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929", "1", "Y", "");
         BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
         billedStatementResponse.setStatus(silverlakeStatus);
-        Mockito.when(creditCardClient.getBilledStatementWithPeriod(correlationId,accountId,billedStatementQuery)).thenReturn(new ResponseEntity(billedStatementResponse, HttpStatus.OK ));
+        Mockito.when(creditCardClient.getBilledStatementWithPeriod(correlationId, accountId, billedStatementQuery)).thenReturn(new ResponseEntity(billedStatementResponse, HttpStatus.OK));
 
-        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId,billedStatementQuery);
+        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId, billedStatementQuery);
 
         Assertions.assertEquals(0, Objects.requireNonNull(billedStatement.getBody()).getStatus().getStatusCode());
     }
 
     @Test
-    public void testGetBilledStatement()  {
-        SilverlakeStatus silverlakeStatus= new SilverlakeStatus();
+    public void testGetBilledStatement() {
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
         new BilledStatementResponse().setStatus(silverlakeStatus);
         new BilledStatementResponse().setCardStatement(new CardStatement());
@@ -78,17 +78,17 @@ public class BilledStatementWithPeriodControllerTest {
         billedStatementQuery.setSearchKeys("N");
         billedStatementQuery.setMoreRecords("Y");
         billedStatementQuery.setAccountId("0000000050078680472000929");
-        when(creditCardClient.getBilledStatementWithPeriod(anyString(), anyString(),any())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController.getBilledStatementWithPeriod("32fbd3b2-3f97-4a89-ar39-b4f628fbc8da",billedStatementQuery);
-        assertEquals(200,result.getStatusCode().value());
+        when(creditCardClient.getBilledStatementWithPeriod(anyString(), anyString(), any())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController.getBilledStatementWithPeriod("32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", billedStatementQuery);
+        assertEquals(200, result.getStatusCode().value());
     }
 
     @org.junit.jupiter.api.Test
-    void getBilledStatementSuccessShouldReturnBilledStatementResponseTest()  {
+    void getBilledStatementSuccessShouldReturnBilledStatementResponseTest() {
         String correlationId = "123";
 
         String accountId = "0000000050078680472000929";
-        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929","1","Y","");
+        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929", "1", "Y", "");
 
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
@@ -101,16 +101,16 @@ public class BilledStatementWithPeriodControllerTest {
         CardStatement cardStatement = new CardStatement();
         cardStatement.setPromotionFlag("Y");
         setCreditLimitResp.setCardStatement(cardStatement);
-        ResponseEntity<BilledStatementResponse> value = new ResponseEntity<>(setCreditLimitResp,HttpStatus.OK);
+        ResponseEntity<BilledStatementResponse> value = new ResponseEntity<>(setCreditLimitResp, HttpStatus.OK);
 
-        Mockito.when(creditCardClient.getBilledStatementWithPeriod(any(),any(),any())).thenReturn(value);
+        Mockito.when(creditCardClient.getBilledStatementWithPeriod(any(), any(), any())).thenReturn(value);
 
-        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId,billedStatementQuery);
+        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId, billedStatementQuery);
         assertEquals(200, billedStatement.getStatusCode().value());
     }
 
     @Test
-    public void testHandlingFailedResponse()  {
+    public void testHandlingFailedResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
@@ -125,40 +125,41 @@ public class BilledStatementWithPeriodControllerTest {
         setCreditLimitResp.setCardStatement(cardStatement);
         oneServiceResponse.setData(setCreditLimitResp);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
-        when(creditCardClient.getBilledStatementWithPeriod(any(),any(),any())).thenThrow(new
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        when(creditCardClient.getBilledStatementWithPeriod(any(), any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController
-                .handlingFailedResponse(oneServiceResponse,responseHeaders);
+                .handlingFailedResponse(oneServiceResponse, responseHeaders);
 
         Assert.assertEquals("0001", result.getBody().getStatus().getCode());
     }
+
     @Test
-	void testBilledStatementError() throws Exception {
-		 String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-	     String accountId = "0000000050078680472000929";
-		when(creditCardClient.getReasonList(anyString())).thenThrow(RuntimeException.class);
-		GetBilledStatementQuery requestBody = new GetBilledStatementQuery();
-		requestBody.setAccountId(accountId);
-		requestBody.setMoreRecords("Y");
-		requestBody.setPeriodStatement("2");
-		requestBody.setSearchKeys("N");
-	    ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> billedStatement = billedStatementWithPeriodController.getBilledStatementWithPeriod(correlationId, requestBody);
-		assertNull(billedStatement.getBody().getData());
-	}
-	
-	@Test
-	void testReasonListSuccessNull()  {
-		String correlationId = "c83936c284cb398fA46CF16F399C";
+    void testBilledStatementError() throws Exception {
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        String accountId = "0000000050078680472000929";
+        when(creditCardClient.getReasonList(anyString())).thenThrow(RuntimeException.class);
+        GetBilledStatementQuery requestBody = new GetBilledStatementQuery();
+        requestBody.setAccountId(accountId);
+        requestBody.setMoreRecords("Y");
+        requestBody.setPeriodStatement("2");
+        requestBody.setSearchKeys("N");
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> billedStatement = billedStatementWithPeriodController.getBilledStatementWithPeriod(correlationId, requestBody);
+        assertNull(billedStatement.getBody().getData());
+    }
 
-        ResponseEntity<BilledStatementResponse> response= null;
-        when(creditCardClient.getBilledStatementWithPeriod(any(),any(),any())).thenReturn(response);
-		GetBilledStatementQuery requestBody = new GetBilledStatementQuery("0000000050078680472000929","Y","2","N");
-		 ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> billedStatement = billedStatementWithPeriodController
-				.getBilledStatementWithPeriod(correlationId, requestBody);
-		assertEquals(400, billedStatement.getStatusCodeValue());
+    @Test
+    void testReasonListSuccessNull() {
+        String correlationId = "c83936c284cb398fA46CF16F399C";
 
-	}
-	
+        ResponseEntity<BilledStatementResponse> response = null;
+        when(creditCardClient.getBilledStatementWithPeriod(any(), any(), any())).thenReturn(response);
+        GetBilledStatementQuery requestBody = new GetBilledStatementQuery("0000000050078680472000929", "Y", "2", "N");
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> billedStatement = billedStatementWithPeriodController
+                .getBilledStatementWithPeriod(correlationId, requestBody);
+        assertEquals(400, billedStatement.getStatusCodeValue());
+
+    }
+
 }
 

@@ -151,7 +151,7 @@ public class CardInstallmentControllerTest {
     }
 
     @Test
-    public void testHandlingFailedResponse()  {
+    public void testHandlingFailedResponse() {
         TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse = new TmbOneServiceResponse<>();
         List<CardInstallmentResponse> cardInstallment = new ArrayList();
         for (CardInstallmentResponse installment : cardInstallment) {
@@ -179,8 +179,8 @@ public class CardInstallmentControllerTest {
         cardStatement.setPromotionFlag("Y");
         oneServiceResponse.setData(cardInstallment);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
-        when(creditCardClient.confirmCardInstallment(any(),any())).thenThrow(new
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        when(creditCardClient.confirmCardInstallment(any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();
         TmbStatus tmbStatus = new TmbStatus();
@@ -194,7 +194,7 @@ public class CardInstallmentControllerTest {
     }
 
     @Test
-    public void testpopulateErrorResponse()  {
+    public void testpopulateErrorResponse() {
         TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse = new TmbOneServiceResponse<>();
         List<CardInstallmentResponse> cardInstallment = new ArrayList();
         for (CardInstallmentResponse installment : cardInstallment) {
@@ -222,8 +222,8 @@ public class CardInstallmentControllerTest {
         cardStatement.setPromotionFlag("Y");
         oneServiceResponse.setData(cardInstallment);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
-        when(creditCardClient.confirmCardInstallment(any(),any())).thenThrow(new
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        when(creditCardClient.confirmCardInstallment(any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();
         TmbStatus tmbStatus = new TmbStatus();
@@ -240,8 +240,8 @@ public class CardInstallmentControllerTest {
     void ifSuccessCaseMatch() {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
         CardInstallmentQuery requestHeadersParameter = new CardInstallmentQuery();
-        List<CardInstallment> cardInstallment= new ArrayList<>();
-        for(CardInstallment installment : cardInstallment){
+        List<CardInstallment> cardInstallment = new ArrayList<>();
+        for (CardInstallment installment : cardInstallment) {
             installment.setMonthlyInstallments("12");
             installment.setInterest("12");
             installment.setTransactionKey("12");
@@ -254,8 +254,8 @@ public class CardInstallmentControllerTest {
         requestHeadersParameter.setCardInstallment(cardInstallment);
         Map<String, String> responseHeaders = headerRequestParameter();
         HttpHeaders oneServiceResponse = new HttpHeaders();
-        oneServiceResponse.set("content-type","application/json");
-        TmbOneServiceResponse<List<CardInstallmentResponse>> data= new TmbOneServiceResponse();
+        oneServiceResponse.set("content-type", "application/json");
+        TmbOneServiceResponse<List<CardInstallmentResponse>> data = new TmbOneServiceResponse();
         TmbStatus status = new TmbStatus();
         status.setDescription("test");
         status.setService("card-installment-service");
@@ -265,7 +265,7 @@ public class CardInstallmentControllerTest {
 
         TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = new TmbOneServiceResponse();
         List<CardInstallmentResponse> res = new ArrayList<>();
-        for (CardInstallmentResponse resp: res ){
+        for (CardInstallmentResponse resp : res) {
             StatusResponse statusResponse = new StatusResponse();
             statusResponse.setStatusCode("0");
             resp.setStatus(statusResponse);
@@ -273,7 +273,7 @@ public class CardInstallmentControllerTest {
         }
         cardInstallmentResp.setStatus(status);
         cardInstallmentResp.setData(res);
-         assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId, requestHeadersParameter, responseHeaders, oneServiceResponse, data, data, res));
+        assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId, requestHeadersParameter, responseHeaders, oneServiceResponse, data, data, res));
 
     }
 }

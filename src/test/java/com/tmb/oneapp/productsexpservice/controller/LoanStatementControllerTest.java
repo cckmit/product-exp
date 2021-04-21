@@ -46,8 +46,8 @@ public class LoanStatementControllerTest {
     }
 
     @Test
-    public void testGetLoanAccountDetail()  {
-        String correlationId="c83936c284cb398fA46CF16F399C";
+    public void testGetLoanAccountDetail() {
+        String correlationId = "c83936c284cb398fA46CF16F399C";
         TmbOneServiceResponse<LoanStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setDescription("working");
@@ -67,8 +67,8 @@ public class LoanStatementControllerTest {
     }
 
     @Test
-    public void testGetLoanAccountDetailTest()  {
-        String correlationId="c83936c284cb398fA46CF16F399C";
+    public void testGetLoanAccountDetailTest() {
+        String correlationId = "c83936c284cb398fA46CF16F399C";
         LoanStatementRequest requestBody = new LoanStatementRequest();
         requestBody.setAccountId("00015719933001");
         requestBody.setEndDate("2021-03-25");
@@ -111,7 +111,7 @@ public class LoanStatementControllerTest {
     }
 
     @Test
-    public void testHandlingFailedResponse()  {
+    public void testHandlingFailedResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
@@ -126,8 +126,8 @@ public class LoanStatementControllerTest {
         setCreditLimitResp.setCardStatement(cardStatement);
         oneServiceResponse.setData(setCreditLimitResp);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID,"123");
-        when(accountRequestClient.getLoanAccountStatement(any(),any())).thenThrow(new
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        when(accountRequestClient.getLoanAccountStatement(any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         final TmbOneServiceResponse<LoanStatementResponse> loanStatementResponse = new TmbOneServiceResponse();
         TmbStatus status = new TmbStatus();

@@ -6,8 +6,8 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.loan.*;
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
@@ -37,9 +37,9 @@ public class InstallmentRateControllerTest {
 
     @Test
     public void testGetLoanAccountDetail() {
-        String correlationId="c83936c284cb398fA46CF16F399C";
+        String correlationId = "c83936c284cb398fA46CF16F399C";
         TmbOneServiceResponse<InstallmentRateResponse> serverResponse = new TmbOneServiceResponse<>();
-        InstallmentRateResponse data= new InstallmentRateResponse();
+        InstallmentRateResponse data = new InstallmentRateResponse();
         InstallmentData installment = new InstallmentData();
         installment.setCashChillChillModel("Test");
         data.setInstallmentData(installment);
@@ -132,7 +132,7 @@ public class InstallmentRateControllerTest {
         installmentRateResponse1.setInstallmentData(installmentData1);
         installmentRateResponseTmbOneServiceResponse1.setData(installmentRateResponse1);
         final ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> tmbOneServiceResponseEntity1 = new ResponseEntity<>(installmentRateResponseTmbOneServiceResponse1, HttpStatus.OK);
-        String correlationId="c83936c284cb398fA46CF16F399C";
+        String correlationId = "c83936c284cb398fA46CF16F399C";
 
         InstallmentRateRequest requestBody = new InstallmentRateRequest();
         requestBody.setAmount("1234.00");

@@ -1,21 +1,12 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
-import feign.Response;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeErrorStatus;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -24,8 +15,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 public class ProductsVerifyCvvControllerTest {
 
@@ -121,7 +120,7 @@ public class ProductsVerifyCvvControllerTest {
     }
 
     @Test
-    void testVerifyCvvDetailsData(){
+    void testVerifyCvvDetailsData() {
         Map<String, String> headers = new HashMap<>();
         headers.put(ProductsExpServiceConstant.ACCOUNT_ID, "");
         TmbOneServiceResponse<VerifyCvvResponse> resp = new TmbOneServiceResponse<>();
@@ -136,12 +135,12 @@ public class ProductsVerifyCvvControllerTest {
         tmbStatus.setDescription("verify-cvv");
         tmbStatus.setDescription("Success");
         resp.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> value = new ResponseEntity<>(resp,HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> value = new ResponseEntity<>(resp, HttpStatus.OK);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
         ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> response = productsVerifyCvvController
-                .getTmbOneServiceResponseResponseEntity(data,resp,responseHeaders,value);
+                .getTmbOneServiceResponseResponseEntity(data, resp, responseHeaders, value);
         assertEquals(200, response.getStatusCodeValue());
 
 
