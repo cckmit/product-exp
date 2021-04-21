@@ -11,6 +11,7 @@ public class NotificationConstant {
 	public static final String CHANGE_USAGE_TEMPLATE_VALUE = "ONEAPP_005";
 	public static final String REQUEST_TEMPORARY_TEMPLATE_VALUE = "ONEAPP_006";
 	public static final String BLOCK_CARD_TEMPLATE_VALUE = "ONEAPP_007";
+	public static final String APPLY_SO_GOOD_TEMPLATE_VALUE = "ONEAPP_010";
 
 	public static final String CHANNEL_NAME_TH = "channelNameTH";
 	public static final String CHANNEL_NAME_EN = "channelNameEN";
@@ -33,5 +34,12 @@ public class NotificationConstant {
 	public static final String EXPIRE_DATE = "expiryDate";
 	public static final String REASON_EN = "reasonEN";
 	public static final String REASON_TH = "reasonTH";
+
+	public static final String NO_APPLY_SO_GOOD = "noOfSoGood";
+	public static final String APPLY_SO_GOOD_INSTALLMENT_PLAN = "installmentPlan";
+	public static final String APPLY_SO_GOOD_TERM = "planTerm";
+	public static final String APPLY_SO_GOOD_TOTAL = "TotalAmountTransaction";
+	public static final String TRX_DESC_TH = "TransactionDescriptionTH";
+	public static final String TRX_DESC_EN = "TransactionDescriptionEN";
 
 }
