@@ -184,5 +184,8 @@ public class ProductsExpServiceConstant {
     public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
     public static final String SMART_PORT_CODE = "090" ;
 
+    public static final String SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST = "O0001";
+    public static final String SERVICE_TYPE_MATRIX_CODE_NCB_BY_EMAIL = "O0003";
 
+    public static final String CASE_NUMBER = "case_number";
 }
