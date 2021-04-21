@@ -18,16 +18,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CommonServiceClient {
 
 	@GetMapping(value = "/apis/common/fetch/product-config")
-	public ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfig(
-			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID);
+    ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfig(
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID);
 
 
 	@GetMapping(value = "/apis/common/internal/common/config")
-	public ResponseEntity<TmbOneServiceResponse<List<CommonData>>> getCommonConfigByModule(
-			@RequestHeader("X-Correlation-ID") String correlationId,
-			@RequestParam("search")  String search);
+    ResponseEntity<TmbOneServiceResponse<List<CommonData>>> getCommonConfigByModule(
+            @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestParam("search") String search);
 
 	@GetMapping(value = "/apis/common/product/application/roadmap")
-	public ResponseEntity<TmbOneServiceResponse<List<NodeDetails>>> getProductApplicationRoadMap();
+    ResponseEntity<TmbOneServiceResponse<List<NodeDetails>>> getProductApplicationRoadMap();
 
 }

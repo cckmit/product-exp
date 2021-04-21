@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.activatecreditcard;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -13,11 +15,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TemporaryCreditLimit {
-	private Long amounts;
+	private BigDecimal amounts;
 	private String effectiveDate;
 	private String expiryDate;
 	private String requestReason;
-	private Long previousCreditLimit;
+	private BigDecimal previousCreditLimit;
 	private Long maxTempAllowance;
 	private Long maxTempIncrease;
 }

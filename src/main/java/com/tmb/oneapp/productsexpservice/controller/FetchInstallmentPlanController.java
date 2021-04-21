@@ -27,7 +27,7 @@ import java.util.List;
  *
  */
 @RestController
-@Api(tags = "Fetch Credit Card Reason List Api")
+@Api(tags = "Apply So GooOD Feature Api")
 public class FetchInstallmentPlanController{
     private static final TMBLogger<com.tmb.oneapp.productsexpservice.controller.FetchReasonListController> logger = new TMBLogger<>(com.tmb.oneapp.productsexpservice.controller.FetchReasonListController.class);
     private final CreditCardClient creditCardClient;

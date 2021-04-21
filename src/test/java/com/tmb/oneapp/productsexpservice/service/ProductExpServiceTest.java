@@ -3,32 +3,33 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
@@ -39,7 +40,6 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProc
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
-import org.apache.kafka.common.protocol.types.Field;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +47,7 @@ import org.mockito.exceptions.base.MockitoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -55,7 +56,8 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ProductExpServiceTest {
 
@@ -65,13 +67,14 @@ public class ProductExpServiceTest {
     KafkaProducerService kafkaProducerService;
     CommonServiceClient commonServiceClient;
     ProductExpAsynService productExpAsynService;
+    CustomerExpServiceClient customerExpServiceClient;
 
     private final String success_code = "0000";
     private final String notfund_code = "0009";
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-    private final String  topicName = "activity";
+    private final String topicName = "activity";
 
     @BeforeEach
     public void setUp() {
@@ -81,12 +84,12 @@ public class ProductExpServiceTest {
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsynService = mock(ProductExpAsynService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient, productExpAsynService, topicName);
+        productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient, productExpAsynService, topicName, customerExpServiceClient);
 
     }
 
 
-    private void initAccDetailBody(){
+    private void initAccDetailBody() {
         accDetailBody = new AccDetailBody();
         DetailFund detailFund = new DetailFund();
         detailFund.setFundHouseCode("TTTTT");
@@ -103,7 +106,7 @@ public class ProductExpServiceTest {
 
     }
 
-    private void initFundRuleBody(){
+    private void initFundRuleBody() {
         fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleInfoList = new ArrayList<>();
         FundRuleInfoList list = new FundRuleInfoList();
@@ -113,7 +116,7 @@ public class ProductExpServiceTest {
         fundRuleBody.setFundRuleInfoList(fundRuleInfoList);
     }
 
-    private Map<String, String> createHeader(String correlationId){
+    private Map<String, String> createHeader(String correlationId) {
         Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -145,7 +148,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        CompletableFuture<AccDetailBody> fetchFundAccDetail =  productExpAsynService.fetchFundAccDetail(any(), any());
+        CompletableFuture<AccDetailBody> fetchFundAccDetail = productExpAsynService.fetchFundAccDetail(any(), any());
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
         CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStmtByPort(any(), any());
         CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
@@ -156,11 +159,11 @@ public class ProductExpServiceTest {
 
         FundAccountRs fundAccountRs = UtilMap.validateTMBResponse(accDetailBody, fundRuleBody, statementRs);
 
-         Assert.assertNotNull(fundAccountRs);
-         Assert.assertNotNull(accDetailBody);
+        Assert.assertNotNull(fundAccountRs);
+        Assert.assertNotNull(accDetailBody);
         Assert.assertNotNull(statementRs);
-         FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRq);
-         Assert.assertNotNull(result);
+        FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRq);
+        Assert.assertNotNull(result);
     }
 
     @Test
@@ -196,8 +199,8 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
-        Assert.assertEquals(HttpStatus.OK.value(),responseEntity.getStatusCodeValue());
-        Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
+        Assert.assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
+        Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
         Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
     }
 
@@ -235,13 +238,13 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
         fundRuleResponseEntity = investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody);
-        Assert.assertEquals(HttpStatus.OK,fundRuleResponseEntity.getStatusCode());
-        Assert.assertEquals("TESEQDSSFX",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundCode());
-        Assert.assertEquals("TFUND",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundHouseCode());
-        Assert.assertEquals("20200413",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getTranStartDate());
-        Assert.assertEquals("3",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getOrderType());
-        Assert.assertEquals("3",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getAllotType());
-        Assert.assertEquals("06",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getRiskRate());
+        Assert.assertEquals(HttpStatus.OK, fundRuleResponseEntity.getStatusCode());
+        Assert.assertEquals("TESEQDSSFX", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundCode());
+        Assert.assertEquals("TFUND", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundHouseCode());
+        Assert.assertEquals("20200413", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getTranStartDate());
+        Assert.assertEquals("3", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getOrderType());
+        Assert.assertEquals("3", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getAllotType());
+        Assert.assertEquals("06", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getRiskRate());
     }
 
     @Test
@@ -421,13 +424,13 @@ public class ProductExpServiceTest {
 
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(),  anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(), anyString());
         CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
 
         CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
         FundRuleBody fundRuleBodyCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
-        String  customerExp = fetchCustomerExp.get();
+        String customerExp = fetchCustomerExp.get();
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
 
         Assert.assertNotNull(customerExp);
@@ -471,13 +474,13 @@ public class ProductExpServiceTest {
 
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(),  anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(), anyString());
         CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
 
         CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
         FundRuleBody fundRuleBodyCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
-        String  customerExp = fetchCustomerExp.get();
+        String customerExp = fetchCustomerExp.get();
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
         UtilMap utilMap = new UtilMap();
         Assert.assertNull(custExp);
@@ -634,11 +637,11 @@ public class ProductExpServiceTest {
     @Test
     public void getFundSummaryException() throws Exception {
 
-        FundSummaryRq fundAccountRequest = new FundSummaryRq  ();
+        FundSummaryRq fundAccountRequest = new FundSummaryRq();
         fundAccountRequest.setCrmId("001100000000000000000012025950");
 
         try {
-            when(accountRequestClient.getPortList(any(),any())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getPortList(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -686,6 +689,30 @@ public class ProductExpServiceTest {
         Assert.assertTrue(getFundSummary);
     }
 
+    @Test
+    public void isCustIDExpired() throws Exception {
+
+        FfsRequestBody fundAccountRequest = new FfsRequestBody();
+        fundAccountRequest.setCrmId("001100000000000000000012025950");
+        fundAccountRequest.setFundCode("SCBTMF");
+        fundAccountRequest.setFundHouseCode("SCBAM");
+        fundAccountRequest.setLanguage("en");
+        fundAccountRequest.setProcessFlag("Y");
+        fundAccountRequest.setOrderType("1");
+
+        try {
+            CustomerProfileResponseData fundHolidayBody = null;
+            ObjectMapper mapper = new ObjectMapper();
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustomerProfileResponseData.class);
+
+            when(productExpAsynService.fetchCustomerProfile(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        boolean getFundSummary = productsExpService.isCustIDExpired(fundAccountRequest);
+        Assert.assertFalse(getFundSummary);
+    }
+
 
     @Test
     public void getFundFFSAndValidation() throws Exception {
@@ -699,16 +726,13 @@ public class ProductExpServiceTest {
 
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundListPage> responseList = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         String responseCustomerExp = null;
-        FundListPage fundListPage = null;
         List<CommonData> commonDataList = new ArrayList<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
 
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
-            fundListPage = mapper.readValue(Paths.get("src/test/resources/investment/fund_list_info.json").toFile(), FundListPage.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
             responseEntity.setData(fundRuleBody);
@@ -716,10 +740,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseList.setData(fundListPage);
-            responseList.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
             CommonTime commonTime = new CommonTime();
             commonTime.setStart("06:00");
             commonTime.setEnd("23:00");
@@ -735,7 +756,6 @@ public class ProductExpServiceTest {
 
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseList));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
         } catch (Exception ex) {
@@ -757,18 +777,15 @@ public class ProductExpServiceTest {
 
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundListPage> responseList = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<SuitabilityInfo> responseResponseEntity = new TmbOneServiceResponse<>();
         String responseCustomerExp = null;
-        FundListPage fundListPage = null;
         SuitabilityInfo suitabilityInfo = null;
         List<CommonData> commonDataList = new ArrayList<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
 
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
-            fundListPage = mapper.readValue(Paths.get("src/test/resources/investment/fund_list_info.json").toFile(), FundListPage.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
             suitabilityInfo = mapper.readValue(Paths.get("src/test/resources/investment/suitability.json").toFile(), SuitabilityInfo.class);
 
@@ -782,10 +799,6 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseList.setData(fundListPage);
-            responseList.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             CommonTime commonTime = new CommonTime();
             commonTime.setStart("06:00");
@@ -802,7 +815,6 @@ public class ProductExpServiceTest {
 
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseList));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
             when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseResponseEntity));
@@ -829,14 +841,8 @@ public class ProductExpServiceTest {
 
 
     @Test
-    public void testisBusinessClose() throws Exception {
-        boolean isClose = UtilMap.isBusinessClose("08:01","23:00");
-        Assert.assertFalse(isClose);
-    }
-
-    @Test
     public void testCreateHeader() throws Exception {
-        Map<String, Object> header = UtilMap.createHeader(corrID, 10,1);
+        Map<String, Object> header = UtilMap.createHeader(corrID, 10, 1);
         Assert.assertNotNull(header);
     }
 
@@ -890,15 +896,11 @@ public class ProductExpServiceTest {
 
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundListPage> responseList = new TmbOneServiceResponse<>();
         String responseCustomerExp = null;
         Map<String, String> headers = createHeader(corrID);
-        Map<String, Object> invHeaderReqParameter = UtilMap.createHeader(corrID, 139, 0);
-        FundListPage fundListPage = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            fundListPage = mapper.readValue(Paths.get("src/test/resources/investment/fund_list_info.json").toFile(), FundListPage.class);
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
@@ -907,14 +909,9 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseList.setData(fundListPage);
-            responseList.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
-            when(investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseList));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -925,6 +922,86 @@ public class ProductExpServiceTest {
         Assert.assertEquals(false, isCASADormant);
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
+    }
+
+    @Test
+    public void getFundList() throws Exception {
+        List<FundClassListInfo> fundAccountRs = new ArrayList<>();
+        FundClassListInfo fundAccount = null;
+        FundSummaryResponse fundHolidayBody = null;
+        List<CustFavoriteFundData> favoriteFundData = new ArrayList<>();
+        CustFavoriteFundData favoriteFundData1 = new CustFavoriteFundData();
+
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            fundAccount = mapper.readValue(Paths.get("src/test/resources/investment/fund_list.json").toFile(), FundClassListInfo.class);
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(), FundSummaryResponse.class);
+
+            fundAccountRs.add(fundAccount);
+
+            favoriteFundData1.setFundCode("AAAA");
+            favoriteFundData1.setIsFavorite("N");
+            favoriteFundData1.setId("1");
+            favoriteFundData1.setCustId("100000023333");
+
+            favoriteFundData.add(favoriteFundData1);
+
+            when(productExpAsynService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(fundAccountRs));
+            when(productExpAsynService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsynService.fetchFundFavorite(any(), anyString())).thenReturn(CompletableFuture.completedFuture(favoriteFundData));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        List<FundClassListInfo> listFund = new ArrayList<>();
+        CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
+                productExpAsynService.fetchFundListInfo(any(), anyString(), anyString());
+        CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsynService.fetchFundSummary(any(), any());
+        CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsynService.fetchFundFavorite(any(), anyString());
+        CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
+
+        listFund = fetchFundListInfo.get();
+        FundSummaryResponse fundSummaryResponse = fetchFundSummary.get();
+        List<CustFavoriteFundData> custFavoriteFundDataList = fetchFundFavorite.get();
+        listFund = UtilMap.mappingFollowingFlag(listFund, custFavoriteFundDataList);
+        listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
+
+        CacheModel cacheModel = UtilMap.mappingCache("teeeeeeee", "abc");
+        Assert.assertNotNull(cacheModel);
+
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+
+        Assert.assertNotNull(listFund);
+        List<FundClassListInfo> result = productsExpService.getFundList(corrID, fundListRq);
+        Assert.assertNotNull(result);
+    }
+
+
+    @Test
+    public void getFundListWithException() throws Exception {
+
+        try {
+            when(productExpAsynService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
+            when(productExpAsynService.fetchFundSummary(any(), any())).thenReturn(null);
+            when(productExpAsynService.fetchFundFavorite(any(), anyString())).thenReturn(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+        List<FundClassListInfo> result = productsExpService.getFundList(corrID, fundListRq);
+        Assert.assertNotNull(result);
     }
 
 

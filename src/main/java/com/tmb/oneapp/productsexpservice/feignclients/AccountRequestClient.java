@@ -1,8 +1,13 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
+
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -19,7 +24,7 @@ public interface AccountRequestClient {
      * @return the port list
      */
     @GetMapping(value = "${account.service.account.url}", consumes = "application/json", produces = "application/json")
-    public String getPortList(@RequestHeader Map<String, String> headers, @PathVariable("CRM_ID") String cardId);
+    String getPortList(@RequestHeader Map<String, String> headers, @PathVariable("CRM_ID") String cardId);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -29,5 +34,15 @@ public interface AccountRequestClient {
      * @return the fund summary response
      */
     @GetMapping(value = "${account.service.account.list.url}")
-    public String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
+    String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
+
+    @PostMapping(value = "${account.service.loan.url}", consumes = "application/json", produces = "application/json")
+    ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
+            @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestBody AccountId accountId);
+
+    @PostMapping(value = "${account.service.statement.url}", consumes = "application/json", produces = "application/json")
+    ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountStatement(
+            @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestBody LoanStatementRequest request);
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class GetCardResponse {
+public class FetchCardResponse {
 	private SilverlakeStatus status;
 	private CreditCardDetail creditCard;
 	private ProductCodeData  productCodeData;

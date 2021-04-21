@@ -10,7 +10,6 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -32,15 +31,23 @@ public class ProductsActivateCardController {
     private static final TMBLogger<ProductsActivateCardController> logger = new TMBLogger<>(
             ProductsActivateCardController.class);
 
-    private CreditCardClient creditCardClient;
-    private NotificationService notificationService;
+    private final CreditCardClient creditCardClient;
+    private final NotificationService notificationService;
 
+    /**
+     * @param creditCardClient
+     * @param notificationService
+     */
     @Autowired
-    public ProductsActivateCardController(CreditCardClient creditCardClient,NotificationService notificationService) {
+    public ProductsActivateCardController(CreditCardClient creditCardClient, NotificationService notificationService) {
         this.creditCardClient = creditCardClient;
         this.notificationService = notificationService;
     }
 
+    /**
+     * @param headers
+     * @return
+     */
     @LogAround
     @ApiOperation(value = "Activate card Api")
     @ApiImplicitParams({

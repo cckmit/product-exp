@@ -21,6 +21,7 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";
     public static final String SUCCESS_CODE = "0000";
+    public static final Integer SILVER_LAKE_SUCCESS_CODE = 0;
     public static final String SUCCESS_MESSAGE = "success";
     public static final String SERVICE_NAME = "product-exp-service";
     public static final String FUND_CODE_ACCDETAIL = "TMB50";
@@ -128,6 +129,8 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_ENTERED_CVV_NO = "00700101";
     public static final String ACTIVITY_ID_CONFIRM_PIN_SUCCESS = "00700102";
     public static final String ACTIVITY_ID_CARD_ACTIVATION = "00700103";
+    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN="00700600";
+    public static final String ACTIVITY_ID_LOAD_CARD_DETAILS="00700800";
     public static final String METHOD = "SCAN/KEY IN";
     public static final String UNIT_HOLDER = "PT000000000000587870";
     public static final String SUITABILITY_EXPIRED = "2";
@@ -176,5 +179,10 @@ public class ProductsExpServiceConstant {
     public static final String UTF_8 = "utf-8";
     public static final String SET_PIN_ACTIVITY_LOG = "00700302";
     public static final String FAILED = "Failed";
+
+    public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
+    public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
+    public static final String SMART_PORT_CODE = "090" ;
+
 
 }

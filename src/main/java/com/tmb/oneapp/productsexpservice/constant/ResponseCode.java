@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.constant;
 
 import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -22,12 +23,13 @@ public enum ResponseCode implements Serializable {
 	HP_RSL_DATA_NOT_FOUND("AST_0001", "data not found", Constants.SERVICE_NAME, "success"),
 	HP_RSL_ERROR("AST_0004", "HP and RSL error", Constants.SERVICE_NAME, FAILED_MESSAGE),
 	HP_ERROR_CODE("AST_0003", "HP error", Constants.SERVICE_NAME, FAILED_MESSAGE),
-	RSL_ERROR_CODE("AST_0002", "RSL error", Constants.SERVICE_NAME, FAILED_MESSAGE);
-
-	private String code;
-	private String message;
-	private String service;
-	private String desc;
+	RSL_ERROR_CODE("AST_0002", "RSL error", Constants.SERVICE_NAME, FAILED_MESSAGE),
+	ETE_SERVICE_ERROR("0005", "ete service error", Constants.SERVICE_NAME, "ete service error");
+	
+	private final String code;
+	private final String message;
+	private final String service;
+	private final String desc;
 
 	private static class Constants {
 		public static final String SERVICE_NAME = "products-exp-service";

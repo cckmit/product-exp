@@ -162,7 +162,7 @@ class NcbPaymentConfirmServiceTest {
 
         when(customerServiceClient.putFirstTimeUsage(anyString(), anyString(), eq("NCBR"))).thenReturn(mockResponse);
 
-        Assert.assertNotNull(ncbPaymentConfirmService.putFirstTimeUsage(crmId, deviceId,"NCBR"));
+        Assert.assertNotNull(ncbPaymentConfirmService.putFirstTimeUsage(crmId, deviceId, "NCBR"));
     }
 
     @Test
@@ -172,7 +172,7 @@ class NcbPaymentConfirmServiceTest {
 
         when(customerServiceClient.putFirstTimeUsage(anyString(), anyString(), eq("NCBR"))).thenThrow(new IllegalArgumentException());
 
-        Assert.assertEquals("", ncbPaymentConfirmService.putFirstTimeUsage(crmId, deviceId,"NCBR"));
+        Assert.assertEquals("", ncbPaymentConfirmService.putFirstTimeUsage(crmId, deviceId, "NCBR"));
     }
 
     @Test
@@ -246,7 +246,7 @@ class NcbPaymentConfirmServiceTest {
         header.put("x-crmid", crmId);
         header.put("device-id", "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da");
 
-        NcbPaymentConfirmResponse ncbPaymentConfirmResponse = ncbPaymentConfirmService.confirmNcbPayment(header, "NCBR", "กขค","งจ", "NAME", "TEST", "abc@tmb.com", "123/12 asdfwaefawef", "email", "1234567890");
+        NcbPaymentConfirmResponse ncbPaymentConfirmResponse = ncbPaymentConfirmService.confirmNcbPayment(header, "NCBR", "กขค", "งจ", "NAME", "TEST", "abc@tmb.com", "123/12 asdfwaefawef", "email", "1234567890");
         Assert.assertNotNull(ncbPaymentConfirmResponse);
     }
 
@@ -321,7 +321,7 @@ class NcbPaymentConfirmServiceTest {
         header.put("x-crmid", crmId);
         header.put("device-id", "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da");
 
-        NcbPaymentConfirmResponse ncbPaymentConfirmResponse = ncbPaymentConfirmService.confirmNcbPayment(header, "NCBR", "กขค","งจ", "NAME", "TEST", "abc@tmb.com", "123/12 asdfwaefawef", "post", "1234567890");
+        NcbPaymentConfirmResponse ncbPaymentConfirmResponse = ncbPaymentConfirmService.confirmNcbPayment(header, "NCBR", "กขค", "งจ", "NAME", "TEST", "abc@tmb.com", "123/12 asdfwaefawef", "post", "1234567890");
         Assert.assertNotNull(ncbPaymentConfirmResponse);
     }
 
@@ -340,7 +340,7 @@ class NcbPaymentConfirmServiceTest {
         header.put("x-crmid", crmId);
         header.put("device-id", "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da");
 
-        NcbPaymentConfirmResponse ncbPaymentConfirmResponse = ncbPaymentConfirmService.confirmNcbPayment(header, "NCBR", "","", "NAME", "TEST", "abc@tmb.com", "123/12 asdfwaefawef", "email", "1234567890");
+        NcbPaymentConfirmResponse ncbPaymentConfirmResponse = ncbPaymentConfirmService.confirmNcbPayment(header, "NCBR", "", "", "NAME", "TEST", "abc@tmb.com", "123/12 asdfwaefawef", "email", "1234567890");
         Assert.assertNotNull(ncbPaymentConfirmResponse);
     }
 }

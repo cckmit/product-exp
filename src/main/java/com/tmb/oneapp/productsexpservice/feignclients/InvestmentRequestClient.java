@@ -8,16 +8,19 @@ import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestB
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListPage;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,7 +38,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fundrule.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<FundRuleBody>> callInvestmentFundRuleService(@RequestHeader Map<String, String> headers, @RequestBody FundRuleRequestBody fundRuleRequestBody);
+    ResponseEntity<TmbOneServiceResponse<FundRuleBody>> callInvestmentFundRuleService(@RequestHeader Map<String, String> headers, @RequestBody FundRuleRequestBody fundRuleRequestBody);
 
     /**
      * Call investment fund acc detail service response entity.
@@ -46,7 +49,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.accountdetail.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<AccDetailBody>> callInvestmentFundAccDetailService(@RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRq);
+    ResponseEntity<TmbOneServiceResponse<AccDetailBody>> callInvestmentFundAccDetailService(@RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRq);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -57,7 +60,18 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.summary.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> callInvestmentFundSummaryService(@RequestHeader Map<String, String> headers
+    ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> callInvestmentFundSummaryService(@RequestHeader Map<String, String> headers
+            , @RequestBody UnitHolder unitHolder);
+
+    /***
+     * Call investment to get fund sumaary by port
+     * @param headers
+     * @param unitHolder
+     * @return
+     */
+    @PostMapping(value = "${investment.service.fund.summary.by.port.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> callInvestmentFundSummaryByPortService(@RequestHeader Map<String, String> headers
             , @RequestBody UnitHolder unitHolder);
 
     /**
@@ -68,7 +82,7 @@ public interface InvestmentRequestClient {
      * @return the fund summary response
      */
     @GetMapping(value = "${investment.service.fund.holiday.url}")
-    public ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> callInvestmentFundHolidayService(@RequestHeader Map<String, String> headers, @PathVariable("fundCode") String fundCode);
+    ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> callInvestmentFundHolidayService(@RequestHeader Map<String, String> headers, @PathVariable("fundCode") String fundCode);
 
 
     /**
@@ -79,7 +93,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.listinfo.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<FundListPage>> callInvestmentFundListInfoService(@RequestHeader Map<String, Object> headers);
+    ResponseEntity<TmbOneServiceResponse<FundListBody>> callInvestmentFundListInfoService(@RequestHeader Map<String, String> headers);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -90,7 +104,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.factsheet.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<FfsResponse>> callInvestmentFundFactSheetService(@RequestHeader Map<String, String> headers
+    ResponseEntity<TmbOneServiceResponse<FfsResponse>> callInvestmentFundFactSheetService(@RequestHeader Map<String, String> headers
             , @RequestBody FfsRequestBody ffsRequestBody);
 
     /**
@@ -102,7 +116,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.suitability.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> callInvestmentFundSuitabilityService(@RequestHeader Map<String, String> headers
+    ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> callInvestmentFundSuitabilityService(@RequestHeader Map<String, String> headers
             , @RequestBody SuitabilityBody suitabilityBody);
 
 
@@ -116,7 +130,18 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.stmtbyport.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<StatementResponse>> callInvestmentStmtByPortService(@RequestHeader Map<String, String> headers
+    ResponseEntity<TmbOneServiceResponse<StatementResponse>> callInvestmentStmtByPortService(@RequestHeader Map<String, String> headers
             , @RequestBody OrderStmtByPortRq orderStmtByPortRq);
+
+
+    /**
+     * Call investment fund favorite service fund favorite response.
+     *
+     * @param headers  the headers
+     * @return the fund favorite response
+     */
+    @PostMapping(value = "${investment.service.fund.listfavorite.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestHeader String crmId);
 
 }

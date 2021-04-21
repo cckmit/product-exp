@@ -4,23 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
-import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
-import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,10 +32,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.Mockito.when;
 
 public class ProductExpServiceControllerTest {
     @Mock
@@ -56,12 +57,12 @@ public class ProductExpServiceControllerTest {
     }
 
 
-    private FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody){
+    private FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody) {
         FundRule fundRule = new FundRule();
         List<FundRuleInfoList> fundRuleInfoList = null;
         AccountDetail accountDetail = new AccountDetail();
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
-        if(!StringUtils.isEmpty(fundRuleBody)) {
+        if (!StringUtils.isEmpty(fundRuleBody)) {
             fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
@@ -74,7 +75,7 @@ public class ProductExpServiceControllerTest {
         return fundAccountDetail;
     }
 
-    private void initAccDetailBody(){
+    private void initAccDetailBody() {
         accDetailBody = new AccDetailBody();
         DetailFund detailFund = new DetailFund();
         detailFund.setFundHouseCode("TTTTT");
@@ -83,7 +84,7 @@ public class ProductExpServiceControllerTest {
 
     }
 
-    private void initFundRuleBody(){
+    private void initFundRuleBody() {
         fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleInfoList = new ArrayList<>();
         FundRuleInfoList list = new FundRuleInfoList();
@@ -93,7 +94,7 @@ public class ProductExpServiceControllerTest {
         fundRuleBody.setFundRuleInfoList(fundRuleInfoList);
     }
 
-    private void initSuccessResponseAccDetail(){
+    private void initSuccessResponseAccDetail() {
         fundAccountRs = new FundAccountRs();
         FundAccountDetail details = new FundAccountDetail();
         FundRule fundRule = new FundRule();
@@ -205,7 +206,7 @@ public class ProductExpServiceControllerTest {
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
     }
-    
+
 
     @Test
     public void testgetFundPrePaymentDetail() throws Exception {
@@ -263,7 +264,6 @@ public class ProductExpServiceControllerTest {
                 .getFundAccountDetail(corrID, fundAccountRq);
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
-
 
 
     @Test
@@ -418,6 +418,63 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
                 .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundListException() throws Exception {
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+        when(productsExpService.getFundList(corrID, fundListRq)).thenThrow(MockitoException.class);
+
+        ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
+                .getFundListInfo(corrID, fundListRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundListNotfound() throws Exception {
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+        try {
+            when(productsExpService.getFundList(corrID, fundListRq)).thenReturn(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
+                .getFundListInfo(corrID, fundListRq);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+    }
+
+    @Test
+    public void getFundList() throws Exception {
+        List<String> unitStr = new ArrayList<>();
+        unitStr.add("PT0000001111111");
+        FundListRq fundListRq = new FundListRq();
+        fundListRq.setCrmId("12343455555");
+        fundListRq.setUnitHolderNo(unitStr);
+
+
+        List<FundClassListInfo> list = new ArrayList<>();
+        FundClassListInfo fundClassListInfo = new FundClassListInfo();
+        fundClassListInfo.setFundCode("ABCC");
+        list.add(fundClassListInfo);
+
+        try {
+            when(productsExpService.getFundList(corrID, fundListRq)).thenReturn(list);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
+                .getFundListInfo(corrID, fundListRq);
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
