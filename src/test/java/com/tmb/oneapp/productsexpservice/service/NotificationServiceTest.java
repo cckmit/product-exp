@@ -1,5 +1,16 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
+import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,32 +21,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tmb.common.model.CustomerProfileResponseData;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardCreditLimit;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.TemporaryCreditLimit;
-import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class NotificationServiceTest {

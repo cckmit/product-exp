@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.model.request.notification.Notification
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
 import com.tmb.oneapp.productsexpservice.model.response.ncb.NcbPaymentConfirmResponse;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -59,21 +58,21 @@ public class NcbPaymentConfirmService {
 
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("template_name", "ncb_payment_completed");
-            if(firstnameTh.isEmpty() && lastnameTh.isEmpty()) {
+            if (firstnameTh.isEmpty() && lastnameTh.isEmpty()) {
                 params.put("custFullNameTH", "");
             } else {
                 params.put("custFullNameTH", (firstnameTh + " " + lastnameTh));
             }
-            if(firstnameEn.isEmpty() && lastnameEn.isEmpty()) {
+            if (firstnameEn.isEmpty() && lastnameEn.isEmpty()) {
                 params.put("custFullNameEN", "");
             } else {
                 params.put("custFullNameEN", (firstnameEn + " " + lastnameEn));
             }
-            if(deliveryMethod.equals("email")) {
+            if (deliveryMethod.equals("email")) {
                 params.put("DeliveryMethodTH", "ทางอีเมล");
                 params.put("DeliveryMethodEN", "By e-mail");
                 params.put("CustDeliveryDetail", email);
-            } else if(deliveryMethod.equals("post")) {
+            } else if (deliveryMethod.equals("post")) {
                 params.put("DeliveryMethodTH", "ทางไปรษณีย์");
                 params.put("DeliveryMethodEN", "By post");
                 params.put("CustDeliveryDetail", address);
@@ -131,7 +130,7 @@ public class NcbPaymentConfirmService {
                 logger.info("Send Email success");
                 return true;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error("Send Email error: {}", e);
         }
 
@@ -140,8 +139,8 @@ public class NcbPaymentConfirmService {
 
     public String createNcbCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn) {
         try {
-            String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
-            String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
+            String firstname = (!firstnameTh.isEmpty()) ? firstnameTh : firstnameEn;
+            String lastname = (!lastnameEn.isEmpty()) ? lastnameTh : lastnameEn;
 
             ResponseEntity<TmbOneServiceResponse<String>> response =
                     customerServiceClient.submitNcbCustomerCase(crmId, correlationId, firstname, lastname);
@@ -155,8 +154,8 @@ public class NcbPaymentConfirmService {
     /**
      * Get customer first time use
      *
-     * @param crmId    customer Id
-     * @param deviceId device Id
+     * @param crmId         customer Id
+     * @param deviceId      device Id
      * @param serviceTypeId serviceType Id
      */
     public CustomerFirstUsage getFirstTimeUsage(String crmId, String deviceId, String serviceTypeId) {
@@ -181,8 +180,8 @@ public class NcbPaymentConfirmService {
     /**
      * Insert customer first time use
      *
-     * @param crmId    customer Id
-     * @param deviceId device Id
+     * @param crmId         customer Id
+     * @param deviceId      device Id
      * @param serviceTypeId serviceType Id
      */
     public String putFirstTimeUsage(String crmId, String deviceId, String serviceTypeId) {

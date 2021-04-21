@@ -3,8 +3,6 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.response.ncb.NcbPaymentConfirmResponse;
-import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
-import com.tmb.oneapp.productsexpservice.service.ApplicationStatusService;
 import com.tmb.oneapp.productsexpservice.service.NcbPaymentConfirmService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
@@ -48,7 +45,7 @@ class NcbPaymentConfirmControllerTest {
 
         when(ncbPaymentConfirmService.confirmNcbPayment(anyMap(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString(), anyString(), anyString(), anyString()))
-        .thenReturn(ncbPaymentConfirmResponse);
+                .thenReturn(ncbPaymentConfirmResponse);
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CORRELATION_ID, "correlationId");

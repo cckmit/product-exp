@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimit
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -47,7 +46,8 @@ public class SetCreditLimitController {
 	 * @param creditCardClient
 	 */
 	@Autowired
-	public SetCreditLimitController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService,NotificationService notificationService) {
+	public SetCreditLimitController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService,
+			NotificationService notificationService) {
 		this.creditCardClient = creditCardClient;
 		this.creditCardLogService = creditCardLogService;
 		this.notificationService = notificationService;
@@ -76,10 +76,9 @@ public class SetCreditLimitController {
 
 		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		String activityDate = Long.toString(System.currentTimeMillis());
-		
 		String accountId = requestBodyParameter.getAccountId();
-        String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
-		
+		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
+
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate,
 				ProductsExpServiceConstant.CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT);
 		creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
@@ -94,7 +93,7 @@ public class SetCreditLimitController {
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 			oneServiceResponse.setData(response.getBody().getData());
-		
+
 			if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
 				activityDate = Long.toString(System.currentTimeMillis());
 				creditCardEvent = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), activityDate,
@@ -105,7 +104,8 @@ public class SetCreditLimitController {
 
 				/* Activity log -- MODE_PERMANENT */
 				creditCardLogService.logActivity(creditCardEvent);
-				notificationService.doNotifySuccessForChangeUsageLimit(correlationId,accountId,crmId,requestBodyParameter);
+				notificationService.doNotifySuccessForChangeUsageLimit(correlationId, accountId, crmId,
+						requestBodyParameter);
 			} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
 				activityDate = Long.toString(System.currentTimeMillis());
 				creditCardEvent = new CreditCardEvent(correlationId.toLowerCase(Locale.ROOT), activityDate,
@@ -116,7 +116,8 @@ public class SetCreditLimitController {
 
 				/* Activity log -- MODE_TEMPORARY */
 				creditCardLogService.logActivity(creditCardEvent);
-				notificationService.doNotifySuccessForTemporaryLimit(correlationId,accountId,crmId,requestBodyParameter);
+				notificationService.doNotifySuccessForTemporaryLimit(correlationId, accountId, crmId,
+						requestBodyParameter);
 			}
 			return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 		} catch (Exception ex) {
@@ -127,7 +128,7 @@ public class SetCreditLimitController {
 					activityDate, ProductsExpServiceConstant.ACTIVITY_ID_TEMP_REASON_OF_REQUEST);
 			creditCardTempLimit = creditCardLogService.onClickNextButtonLimitEvent(creditCardTempLimit,
 					requestHeadersParameter, requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
-			creditCardTempLimit.setFailReason(ex.getMessage()!=null?ex.getMessage():"");
+			creditCardTempLimit.setFailReason(ex.getMessage() != null ? ex.getMessage() : "");
 			creditCardTempLimit.setActivityStatus(ProductsExpServiceConstant.FAILURE);
 			creditCardLogService.logActivity(creditCardTempLimit);
 
@@ -136,7 +137,7 @@ public class SetCreditLimitController {
 					requestBodyParameter, ProductsExpServiceConstant.MODE_TEMPORARY);
 			creditCardEvent = creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter,
 					requestBodyParameter);
-			creditCardEvent.setFailReason(ex.getMessage()!=null?ex.getMessage():"");
+			creditCardEvent.setFailReason(ex.getMessage() != null ? ex.getMessage() : "");
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 			/* Activity log */

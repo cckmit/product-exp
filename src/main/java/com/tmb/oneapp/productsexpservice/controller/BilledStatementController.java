@@ -41,7 +41,7 @@ public class BilledStatementController {
     })
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getBilledStatement(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
-            @RequestBody GetBilledStatementQuery requestBody)  {
+            @RequestBody GetBilledStatementQuery requestBody) {
         logger.info("Get billed statement for correlation id: {}", correlationId);
         TmbOneServiceResponse<BilledStatementResponse> response = new TmbOneServiceResponse<>();
 
@@ -51,14 +51,14 @@ public class BilledStatementController {
 
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)) {
                 ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient
-                       .getBilledStatement(correlationId,accountId);
+                        .getBilledStatement(correlationId, accountId);
 
 
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK
                         && billedStatementRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
 
                     return handlingResponseData(billedStatementRes, response,
-                         responseHeaders);
+                            responseHeaders);
 
                 } else {
                     return this.handlingFailedResponse(response, responseHeaders);
@@ -102,26 +102,26 @@ public class BilledStatementController {
 
         BilledStatementResponse response = billedStatementRes.getBody();
 
-            String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
-                    : ProductsExpServiceConstant.EMPTY;
-            String searchKeys = response.getCardStatement() != null
-                    ? response.getSearchKeys()
-                    : ProductsExpServiceConstant.EMPTY;
-            Integer totalRecords =response.getCardStatement() != null ? response.getTotalRecords()
-                    : ProductsExpServiceConstant.ZERO;
-            Integer maxRecords =response.getCardStatement() != null ? response.getMaxRecords()
-                    : ProductsExpServiceConstant.ZERO;
-            CardStatement cardStatement =response.getCardStatement();
-            response.setCardStatement(cardStatement);
-            response.setMaxRecords(maxRecords);
-            response.setMoreRecords(moreRecords);
-            response.setSearchKeys(searchKeys);
-            response.setTotalRecords(totalRecords);
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-            oneServiceResponse.setData(response);
-            return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-        }
-
+        String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
+                : ProductsExpServiceConstant.EMPTY;
+        String searchKeys = response.getCardStatement() != null
+                ? response.getSearchKeys()
+                : ProductsExpServiceConstant.EMPTY;
+        Integer totalRecords = response.getCardStatement() != null ? response.getTotalRecords()
+                : ProductsExpServiceConstant.ZERO;
+        Integer maxRecords = response.getCardStatement() != null ? response.getMaxRecords()
+                : ProductsExpServiceConstant.ZERO;
+        CardStatement cardStatement = response.getCardStatement();
+        response.setCardStatement(cardStatement);
+        response.setMaxRecords(maxRecords);
+        response.setMoreRecords(moreRecords);
+        response.setSearchKeys(searchKeys);
+        response.setTotalRecords(totalRecords);
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        oneServiceResponse.setData(response);
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
     }
+
+}
 

@@ -32,7 +32,7 @@ public class FetchInstallmentPlanControllerTest {
     }
 
     @Test
-    void testInstallmentPlanListSuccess()  {
+    void testInstallmentPlanListSuccess() {
         String correlationId = "c83936c284cb398fA46CF16F399C";
         TmbOneServiceResponse<List<InstallmentPlan>> oneServiceResponse = new TmbOneServiceResponse();
         InstallmentPlan plan = new InstallmentPlan();
@@ -55,7 +55,7 @@ public class FetchInstallmentPlanControllerTest {
     }
 
     @Test
-    void testInstallmentPlanListSuccessNull()  {
+    void testInstallmentPlanListSuccessNull() {
         String correlationId = "c83936c284cb398fA46CF16F399C";
         ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> response = null;
         when(creditCardClient.getInstallmentPlan(anyString())).thenReturn(response);
@@ -66,7 +66,7 @@ public class FetchInstallmentPlanControllerTest {
     }
 
     @Test
-    void testInstallmentPlanListError()  {
+    void testInstallmentPlanListError() {
         String correlationId = "c83936c284cb398fA46CF16F399C";
         when(creditCardClient.getInstallmentPlan(anyString())).thenThrow(RuntimeException.class);
         ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> InstallmentPlanRes = fetchInstallmentPlanController

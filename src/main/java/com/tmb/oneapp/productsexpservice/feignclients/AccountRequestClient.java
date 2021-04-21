@@ -41,7 +41,7 @@ public interface AccountRequestClient {
             @RequestHeader("X-Correlation-ID") String correlationId,
              @RequestBody AccountId accountId);
 
-    @PostMapping(value = "${account.service.statement.url}",consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "${account.service.statement.url}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountStatement(
             @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody LoanStatementRequest request);
