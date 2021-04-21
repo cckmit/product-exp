@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
@@ -233,6 +234,47 @@ public class CardInstallmentControllerTest {
         loanStatementResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> result = cardInstallmentController.dataNotFoundErrorResponse(responseHeaders, oneServiceResponse);
         Assert.assertEquals("0009", result.getBody().getStatus().getCode());
+    }
+
+    @Test
+    void ifSuccessCaseMatch() {
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        CardInstallmentQuery requestHeadersParameter = new CardInstallmentQuery();
+        List<CardInstallment> cardInstallment= new ArrayList<>();
+        for(CardInstallment installment : cardInstallment){
+            installment.setMonthlyInstallments("12");
+            installment.setInterest("12");
+            installment.setTransactionKey("12");
+            installment.setModelType("Test");
+            installment.setAmounts("1234");
+            installment.setTransactionDescription("Test");
+            cardInstallment.add(installment);
+        }
+        requestHeadersParameter.setCardInstallment(cardInstallment);
+        requestHeadersParameter.setCardInstallment(cardInstallment);
+        Map<String, String> responseHeaders = headerRequestParameter();
+        HttpHeaders oneServiceResponse = new HttpHeaders();
+        oneServiceResponse.set("content-type","application/json");
+        TmbOneServiceResponse<List<CardInstallmentResponse>> data= new TmbOneServiceResponse();
+        TmbStatus status = new TmbStatus();
+        status.setDescription("test");
+        status.setService("card-installment-service");
+        status.setCode("0");
+        status.setMessage("test");
+        data.setStatus(status);
+
+        TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = new TmbOneServiceResponse();
+        List<CardInstallmentResponse> res = new ArrayList<>();
+        for (CardInstallmentResponse resp: res ){
+            StatusResponse statusResponse = new StatusResponse();
+            statusResponse.setStatusCode("0");
+            resp.setStatus(statusResponse);
+            res.add(resp);
+        }
+        cardInstallmentResp.setStatus(status);
+        cardInstallmentResp.setData(res);
+         assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId, requestHeadersParameter, responseHeaders, oneServiceResponse, data, data, res));
+
     }
 }
 

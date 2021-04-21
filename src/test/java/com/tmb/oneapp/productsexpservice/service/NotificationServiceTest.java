@@ -195,11 +195,11 @@ public class NotificationServiceTest {
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
-		
+
 		CreditCardDetail cardDetail = new CreditCardDetail();
 		cardDetail.setProductId("VTOPBR");
 		cardResponse.setCreditCard(cardDetail);
-		
+
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
@@ -385,26 +385,20 @@ public class NotificationServiceTest {
 		productData.setProductNameEN("So Fast Credit Card");
 		productData.setProductNameTH("โซฟาสต์");
 		cardResponse.setProductCodeData(productData);
-		SilverlakeStatus silverLake = new SilverlakeStatus();
-		silverLake.setStatusCode(0);
-		cardResponse.setStatus(silverLake);
+		SilverlakeStatus silverlake = new SilverlakeStatus();
+		silverlake.setStatusCode(0);
+		cardResponse.setStatus(silverlake);
 		CreditCardDetail creditCard = new CreditCardDetail();
 		creditCard.setAccountId("0000000050079650011000193");
 		creditCard.setCardId("050079650011000193");
 		creditCard.setDirectDepositBank("YES");
 		cardResponse.setCreditCard(creditCard);
 		cardResponse.setProductCodeData(productData);
-<<<<<<< HEAD
-		String accountId="0000000050079650011000193";
-		String correlationId="1234";
-		creditCardClient.getCreditCardDetails(correlationId, accountId);
-=======
 		String accountId = "0000000050079650011000193";
 		String correlationId = "1234";
 		ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
 				accountId);
 
->>>>>>> 495eb72894a9f8f95e5aaf58b18ee3d0f1f82c6f
 		when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
