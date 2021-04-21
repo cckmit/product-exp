@@ -7,9 +7,9 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementRequest;
-import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementResponse;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +25,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 
 @RestController
-@Api(tags = "Fetch Home loan account statement")
-public class LoanStatementController {
-    private static final TMBLogger<LoanStatementController> log = new TMBLogger<>(LoanStatementController.class);
-    private final AccountRequestClient accountRequestClient;
+@Api(tags = "Credit Card-Cash For You")
+public class EligibleLeadController {
+    private static final TMBLogger<EligibleLeadController> logger = new TMBLogger<>(EligibleLeadController.class);
 
+    private final CreditCardClient creditCardClient;
 
-    /**
-     * Constructor
-     *
-     * @param accountRequestClient
-     */
     @Autowired
-    public LoanStatementController(AccountRequestClient accountRequestClient) {
-        this.accountRequestClient = accountRequestClient;
-
-
+    public EligibleLeadController(CreditCardClient creditCardClient) {
+        this.creditCardClient = creditCardClient;
     }
-
 
     /**
      * @param correlationId
@@ -50,28 +42,29 @@ public class LoanStatementController {
      * @return
      */
     @LogAround
-    @PostMapping(value = "/loan/get-loan-statement", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getLoanAccountDetail(@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
-                                                                                             @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody LoanStatementRequest requestBody) {
+    @PostMapping(value = "/loan/get-eligible-lead", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getLoanAccountDetail(
+            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
+            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EligibleLeadRequest requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<EligibleLeadResponse> serviceResponse = new TmbOneServiceResponse<>();
 
 
         try {
 
-            String accountId = requestBody.getAccountId();
-            String startDate = requestBody.getStartDate();
-            String endDate = requestBody.getEndDate();
-            if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-                ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> loanResponse = accountRequestClient.getLoanAccountStatement(correlationId, requestBody);
+            String groupAccountId = requestBody.getGroupAccountId();
+            String disbursementDate = requestBody.getDisbursementDate();
+
+            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate)) {
+                ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> loanResponse = creditCardClient.getEligibleLeads(correlationId, requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
 
                 if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-                    LoanStatementResponse loanDetails = loanResponse.getBody().getData();
+                    EligibleLeadResponse loanDetails = loanResponse.getBody().getData();
 
                     serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
@@ -86,7 +79,7 @@ public class LoanStatementController {
             }
 
         } catch (Exception e) {
-            log.error("Error while getting LoanAccountStatement: {}", e);
+            logger.error("Error while getting eligible lead controller: {}", e);
             serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
@@ -99,11 +92,10 @@ public class LoanStatementController {
      * @param serviceResponse
      * @return
      */
-    ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse) {
+    private ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<EligibleLeadResponse> serviceResponse) {
         serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
         return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
     }
 }
-

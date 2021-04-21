@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -21,8 +20,6 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
-import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
-import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +32,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.Mockito.when;
 
 public class ProductExpServiceControllerTest {
     @Mock
@@ -58,12 +57,12 @@ public class ProductExpServiceControllerTest {
     }
 
 
-    private FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody){
+    private FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody) {
         FundRule fundRule = new FundRule();
         List<FundRuleInfoList> fundRuleInfoList = null;
         AccountDetail accountDetail = new AccountDetail();
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
-        if(!StringUtils.isEmpty(fundRuleBody)) {
+        if (!StringUtils.isEmpty(fundRuleBody)) {
             fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
@@ -76,7 +75,7 @@ public class ProductExpServiceControllerTest {
         return fundAccountDetail;
     }
 
-    private void initAccDetailBody(){
+    private void initAccDetailBody() {
         accDetailBody = new AccDetailBody();
         DetailFund detailFund = new DetailFund();
         detailFund.setFundHouseCode("TTTTT");
@@ -85,7 +84,7 @@ public class ProductExpServiceControllerTest {
 
     }
 
-    private void initFundRuleBody(){
+    private void initFundRuleBody() {
         fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleInfoList = new ArrayList<>();
         FundRuleInfoList list = new FundRuleInfoList();
@@ -95,7 +94,7 @@ public class ProductExpServiceControllerTest {
         fundRuleBody.setFundRuleInfoList(fundRuleInfoList);
     }
 
-    private void initSuccessResponseAccDetail(){
+    private void initSuccessResponseAccDetail() {
         fundAccountRs = new FundAccountRs();
         FundAccountDetail details = new FundAccountDetail();
         FundRule fundRule = new FundRule();
@@ -207,7 +206,7 @@ public class ProductExpServiceControllerTest {
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
     }
-    
+
 
     @Test
     public void testgetFundPrePaymentDetail() throws Exception {
@@ -265,7 +264,6 @@ public class ProductExpServiceControllerTest {
                 .getFundAccountDetail(corrID, fundAccountRq);
         Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
-
 
 
     @Test

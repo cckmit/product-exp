@@ -22,52 +22,52 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class FetchReasonListControllerTest {
-	FetchReasonListController fetchReasonListController;
-	@Mock
-	CreditCardClient creditCardClient;
+    FetchReasonListController fetchReasonListController;
+    @Mock
+    CreditCardClient creditCardClient;
 
-	@BeforeEach
-	void setUp() {
-		MockitoAnnotations.initMocks(this);
-		fetchReasonListController = new FetchReasonListController(creditCardClient);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        fetchReasonListController = new FetchReasonListController(creditCardClient);
 
-	}
+    }
 
-	@Test
-	void testReasonListSuccess() throws Exception {
-		String correlationId = "c83936c284cb398fA46CF16F399C";
-		TmbOneServiceResponse<List<Reason>> oneServiceResponse = new TmbOneServiceResponse<List<Reason>>();
-		Reason reason = new Reason();
-		reason.setReasonCode("200");
-		List<Reason> list = new ArrayList<>();
-		list.add(reason);
-		ResponseEntity<TmbOneServiceResponse<List<Reason>>> response = new ResponseEntity<TmbOneServiceResponse<List<Reason>>>(
-				oneServiceResponse, HttpStatus.OK);
-		when(creditCardClient.getReasonList(anyString())).thenReturn(response);
-		ResponseEntity<TmbOneServiceResponse<List<Reason>>> reasonRes = fetchReasonListController
-				.reasonList(correlationId);
-		assertEquals(200, reasonRes.getStatusCodeValue());
+    @Test
+    void testReasonListSuccess() throws Exception {
+        String correlationId = "c83936c284cb398fA46CF16F399C";
+        TmbOneServiceResponse<List<Reason>> oneServiceResponse = new TmbOneServiceResponse<List<Reason>>();
+        Reason reason = new Reason();
+        reason.setReasonCode("200");
+        List<Reason> list = new ArrayList<>();
+        list.add(reason);
+        ResponseEntity<TmbOneServiceResponse<List<Reason>>> response = new ResponseEntity<TmbOneServiceResponse<List<Reason>>>(
+                oneServiceResponse, HttpStatus.OK);
+        when(creditCardClient.getReasonList(anyString())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<List<Reason>>> reasonRes = fetchReasonListController
+                .reasonList(correlationId);
+        assertEquals(200, reasonRes.getStatusCodeValue());
 
-	}
-	
-	@Test
-	void testReasonListSuccessNull() throws Exception {
-		String correlationId = "c83936c284cb398fA46CF16F399C";
-		ResponseEntity<TmbOneServiceResponse<List<Reason>>> response = null;
-		when(creditCardClient.getReasonList(anyString())).thenReturn(response);
-		ResponseEntity<TmbOneServiceResponse<List<Reason>>> reasonRes = fetchReasonListController
-				.reasonList(correlationId);
-		assertEquals(400, reasonRes.getStatusCodeValue());
+    }
 
-	}
+    @Test
+    void testReasonListSuccessNull() throws Exception {
+        String correlationId = "c83936c284cb398fA46CF16F399C";
+        ResponseEntity<TmbOneServiceResponse<List<Reason>>> response = null;
+        when(creditCardClient.getReasonList(anyString())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<List<Reason>>> reasonRes = fetchReasonListController
+                .reasonList(correlationId);
+        assertEquals(400, reasonRes.getStatusCodeValue());
 
-	@Test
-	void testReasonListError() throws Exception {
-		String correlationId = "c83936c284cb398fA46CF16F399C";
-		when(creditCardClient.getReasonList(anyString())).thenThrow(RuntimeException.class);
-		ResponseEntity<TmbOneServiceResponse<List<Reason>>> reasonRes = fetchReasonListController
-				.reasonList(correlationId);
-		assertNull(reasonRes.getBody().getData());
-	}
+    }
+
+    @Test
+    void testReasonListError() throws Exception {
+        String correlationId = "c83936c284cb398fA46CF16F399C";
+        when(creditCardClient.getReasonList(anyString())).thenThrow(RuntimeException.class);
+        ResponseEntity<TmbOneServiceResponse<List<Reason>>> reasonRes = fetchReasonListController
+                .reasonList(correlationId);
+        assertNull(reasonRes.getBody().getData());
+    }
 
 }

@@ -47,6 +47,7 @@ import org.mockito.exceptions.base.MockitoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -55,7 +56,8 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ProductExpServiceTest {
 
@@ -72,7 +74,7 @@ public class ProductExpServiceTest {
     private AccDetailBody accDetailBody = null;
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-    private final String  topicName = "activity";
+    private final String topicName = "activity";
 
     @BeforeEach
     public void setUp() {
@@ -82,12 +84,12 @@ public class ProductExpServiceTest {
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsynService = mock(ProductExpAsynService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient,accountRequestClient,kafkaProducerService, commonServiceClient, productExpAsynService, topicName,customerExpServiceClient);
+        productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient, productExpAsynService, topicName, customerExpServiceClient);
 
     }
 
 
-    private void initAccDetailBody(){
+    private void initAccDetailBody() {
         accDetailBody = new AccDetailBody();
         DetailFund detailFund = new DetailFund();
         detailFund.setFundHouseCode("TTTTT");
@@ -104,7 +106,7 @@ public class ProductExpServiceTest {
 
     }
 
-    private void initFundRuleBody(){
+    private void initFundRuleBody() {
         fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleInfoList = new ArrayList<>();
         FundRuleInfoList list = new FundRuleInfoList();
@@ -114,7 +116,7 @@ public class ProductExpServiceTest {
         fundRuleBody.setFundRuleInfoList(fundRuleInfoList);
     }
 
-    private Map<String, String> createHeader(String correlationId){
+    private Map<String, String> createHeader(String correlationId) {
         Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -146,7 +148,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        CompletableFuture<AccDetailBody> fetchFundAccDetail =  productExpAsynService.fetchFundAccDetail(any(), any());
+        CompletableFuture<AccDetailBody> fetchFundAccDetail = productExpAsynService.fetchFundAccDetail(any(), any());
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
         CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStmtByPort(any(), any());
         CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
@@ -157,11 +159,11 @@ public class ProductExpServiceTest {
 
         FundAccountRs fundAccountRs = UtilMap.validateTMBResponse(accDetailBody, fundRuleBody, statementRs);
 
-         Assert.assertNotNull(fundAccountRs);
-         Assert.assertNotNull(accDetailBody);
+        Assert.assertNotNull(fundAccountRs);
+        Assert.assertNotNull(accDetailBody);
         Assert.assertNotNull(statementRs);
-         FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRq);
-         Assert.assertNotNull(result);
+        FundAccountRs result = productsExpService.getFundAccountDetail(corrID, fundAccountRq);
+        Assert.assertNotNull(result);
     }
 
     @Test
@@ -197,8 +199,8 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
-        Assert.assertEquals(HttpStatus.OK.value(),responseEntity.getStatusCodeValue());
-        Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
+        Assert.assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
+        Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
         Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
     }
 
@@ -236,13 +238,13 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
         fundRuleResponseEntity = investmentRequestClient.callInvestmentFundRuleService(createHeader(corrID), fundRuleRequestBody);
-        Assert.assertEquals(HttpStatus.OK,fundRuleResponseEntity.getStatusCode());
-        Assert.assertEquals("TESEQDSSFX",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundCode());
-        Assert.assertEquals("TFUND",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundHouseCode());
-        Assert.assertEquals("20200413",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getTranStartDate());
-        Assert.assertEquals("3",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getOrderType());
-        Assert.assertEquals("3",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getAllotType());
-        Assert.assertEquals("06",fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getRiskRate());
+        Assert.assertEquals(HttpStatus.OK, fundRuleResponseEntity.getStatusCode());
+        Assert.assertEquals("TESEQDSSFX", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundCode());
+        Assert.assertEquals("TFUND", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundHouseCode());
+        Assert.assertEquals("20200413", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getTranStartDate());
+        Assert.assertEquals("3", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getOrderType());
+        Assert.assertEquals("3", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getAllotType());
+        Assert.assertEquals("06", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getRiskRate());
     }
 
     @Test
@@ -422,13 +424,13 @@ public class ProductExpServiceTest {
 
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(),  anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(), anyString());
         CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
 
         CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
         FundRuleBody fundRuleBodyCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
-        String  customerExp = fetchCustomerExp.get();
+        String customerExp = fetchCustomerExp.get();
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
 
         Assert.assertNotNull(customerExp);
@@ -472,13 +474,13 @@ public class ProductExpServiceTest {
 
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(),  anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(), anyString());
         CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
 
         CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
         FundRuleBody fundRuleBodyCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
-        String  customerExp = fetchCustomerExp.get();
+        String customerExp = fetchCustomerExp.get();
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
         UtilMap utilMap = new UtilMap();
         Assert.assertNull(custExp);
@@ -635,11 +637,11 @@ public class ProductExpServiceTest {
     @Test
     public void getFundSummaryException() throws Exception {
 
-        FundSummaryRq fundAccountRequest = new FundSummaryRq  ();
+        FundSummaryRq fundAccountRequest = new FundSummaryRq();
         fundAccountRequest.setCrmId("001100000000000000000012025950");
 
         try {
-            when(accountRequestClient.getPortList(any(),any())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getPortList(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -838,10 +840,9 @@ public class ProductExpServiceTest {
     }
 
 
-
     @Test
     public void testCreateHeader() throws Exception {
-        Map<String, Object> header = UtilMap.createHeader(corrID, 10,1);
+        Map<String, Object> header = UtilMap.createHeader(corrID, 10, 1);
         Assert.assertNotNull(header);
     }
 

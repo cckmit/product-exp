@@ -30,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -62,7 +63,6 @@ public class ProductExpAsynService {
     }
 
 
-
     /**
      * Method fetchFundAccDetail get Fund account detail
      *
@@ -74,7 +74,7 @@ public class ProductExpAsynService {
     @Async
     public CompletableFuture<AccDetailBody> fetchFundAccDetail(Map<String, String> invHeaderReqParameter, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<AccDetailBody>>  response = investmentRequestClient
+            ResponseEntity<TmbOneServiceResponse<AccDetailBody>> response = investmentRequestClient
                     .callInvestmentFundAccDetailService(invHeaderReqParameter, fundAccountRequestBody);
 
             return CompletableFuture.completedFuture(response.getBody().getData());
@@ -101,7 +101,7 @@ public class ProductExpAsynService {
     @Async
     public CompletableFuture<FundRuleBody> fetchFundRule(Map<String, String> invHeaderReqParameter, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<FundRuleBody>>  responseEntity = investmentRequestClient
+            ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = investmentRequestClient
                     .callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
 
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
@@ -142,7 +142,6 @@ public class ProductExpAsynService {
                     null);
         }
     }
-
 
 
     /**
@@ -252,7 +251,7 @@ public class ProductExpAsynService {
      * @param invHeaderReqParameter
      * @param correlationId
      * @param key
-     * @return CompletableFuture<List<FundClassList>>
+     * @return CompletableFuture<List < FundClassList>>
      */
     @LogAround
     @Async
@@ -261,13 +260,13 @@ public class ProductExpAsynService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
-            if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
+            if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
                 ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
                         investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
                 fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
                 String fundClassStr = mapper.writeValueAsString(fundClassLists);
                 cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
-            }else{
+            } else {
                 String fundStr = responseCache.getBody().getData();
                 TypeFactory typeFactory = mapper.getTypeFactory();
                 fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
@@ -316,7 +315,7 @@ public class ProductExpAsynService {
      *
      * @param invHeaderReqParameter
      * @param crmId
-     * @return CompletableFuture<List<CustFavoriteFundData>>
+     * @return CompletableFuture<List < CustFavoriteFundData>>
      */
     @LogAround
     @Async

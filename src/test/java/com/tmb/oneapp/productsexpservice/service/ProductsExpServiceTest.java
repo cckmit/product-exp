@@ -45,7 +45,6 @@ public class ProductsExpServiceTest {
     }
 
 
-
     @Test
     public void testGetFundSummary() throws Exception {
 
@@ -78,17 +77,16 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
-            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(),any()))
+            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        FundSummaryBody result = productsExpService.getFundSummary(corrID,rq);
+        FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
-                .getFundClass().size(),result.getFundClass().size());
+                .getFundClass().size(), result.getFundClass().size());
     }
-
 
 
     @Test
@@ -123,15 +121,15 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
-            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(),any()))
+            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        FundSummaryBody result = productsExpService.getFundSummary(corrID,rq);
+        FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
-                .getFundClass().size(),result.getFundClass().size());
+                .getFundClass().size(), result.getFundClass().size());
         Assert.assertNull(expectedResponse.getBody().getSummaryByPort());
     }
 

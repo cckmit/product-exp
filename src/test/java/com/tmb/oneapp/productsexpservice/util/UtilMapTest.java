@@ -47,7 +47,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testValidateTMBResponse()   {
+    public void testValidateTMBResponse() {
         AccDetailBody body = new AccDetailBody();
         DetailFund detailFund = new DetailFund();
         detailFund.setFundHouseCode("1234");
@@ -57,7 +57,7 @@ public class UtilMapTest {
         body.setDetailFund(detailFund);
         FundRuleBody fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
-        for(FundRuleInfoList ruleInfoList:fundRuleList){
+        for (FundRuleInfoList ruleInfoList : fundRuleList) {
             ruleInfoList.setFundHouseCode("123");
             fundRuleList.add(ruleInfoList);
         }
@@ -65,8 +65,7 @@ public class UtilMapTest {
         StatementResponse statementResponse = new StatementResponse();
         statementResponse.setTotalRecord("10");
         List<StatementList> list = new ArrayList<>();
-        for(StatementList statementList : list)
-        {
+        for (StatementList statementList : list) {
             statementList.setTranTypeEN("Normal");
             statementList.setFundCode("1234");
             statementList.setEffectiveDate("28-03-2021");
@@ -89,7 +88,7 @@ public class UtilMapTest {
         body.setDetailFund(detailFund);
         FundRuleBody fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
-        for(FundRuleInfoList ruleInfoList:fundRuleList){
+        for (FundRuleInfoList ruleInfoList : fundRuleList) {
             ruleInfoList.setFundHouseCode("123");
             fundRuleList.add(ruleInfoList);
         }
@@ -97,8 +96,7 @@ public class UtilMapTest {
         StatementResponse statementResponse = new StatementResponse();
         statementResponse.setTotalRecord("10");
         List<StatementList> list = new ArrayList<>();
-        for(StatementList statementList : list)
-        {
+        for (StatementList statementList : list) {
             statementList.setTranTypeEN("Normal");
             statementList.setFundCode("1234");
             statementList.setEffectiveDate("28-03-2021");
@@ -111,18 +109,17 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingPaymentResponse()  {
+    public void testMappingPaymentResponse() {
         FundRuleBody fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
-        for(FundRuleInfoList ruleInfoList:fundRuleList){
+        for (FundRuleInfoList ruleInfoList : fundRuleList) {
             ruleInfoList.setFundHouseCode("123");
             fundRuleList.add(ruleInfoList);
         }
         fundRuleBody.setFundRuleInfoList(fundRuleList);
         FundHolidayBody fundHolidayBody = new FundHolidayBody();
         List<FundHolidayClassList> list = new ArrayList<>();
-        for(FundHolidayClassList fundHolidayClassList: list)
-        {
+        for (FundHolidayClassList fundHolidayClassList : list) {
             fundHolidayClassList.setFundCode("1234");
             fundHolidayClassList.setHolidayDesc("Enjoy");
             fundHolidayClassList.setHolidayDate("12-12-2012");
@@ -131,28 +128,28 @@ public class UtilMapTest {
         fundHolidayBody.setFundClassList(list);
         List<CommonData> responseCommon = new ArrayList();
         CommonData data = new CommonData();
-        for(CommonData common: responseCommon){
+        for (CommonData common : responseCommon) {
             common.setAccount221Url("www.gmail.com");
             common.setAccount290Url("www.123.com");
             responseCommon.add(common);
         }
         data.setAccount221Url("www.gmail.com");
         data.setChannel("1234");
-         responseCommon.add(data);
+        responseCommon.add(data);
         Assert.assertNotEquals("www.gmail.com", data.getAccount290Url());
     }
 
-   @Test
+    @Test
     public void testMappingAccount() throws Exception {
         CommonData data = new CommonData();
         data.setChannel("1234");
-       FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
-       FundRuleInfoList list = new FundRuleInfoList();
-       list.setFundHouseCode("1234");
-       fundPaymentDetailRs.setFundRule(list);
-       data.setAccount290Url("1234");
-       FundPaymentDetailRs result = utilMap.mappingAccount(Arrays.<CommonData>asList(data), "responseCustomerExp", fundPaymentDetailRs);
-       assertNotEquals(data.getAccount290Url(),result);
+        FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
+        FundRuleInfoList list = new FundRuleInfoList();
+        list.setFundHouseCode("1234");
+        fundPaymentDetailRs.setFundRule(list);
+        data.setAccount290Url("1234");
+        FundPaymentDetailRs result = utilMap.mappingAccount(Arrays.<CommonData>asList(data), "responseCustomerExp", fundPaymentDetailRs);
+        assertNotEquals(data.getAccount290Url(), result);
     }
 
     @Test
@@ -168,23 +165,23 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testCreateHeader()  {
+    public void testCreateHeader() {
         Map<String, Object> result = UtilMap.createHeader("1234", 0, 0);
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("X-Correlation-ID","1234");
-        hashMap.put("content-type","application/json");
-        hashMap.put("pageNo","0");
-        hashMap.put("pageSize","0");
+        hashMap.put("X-Correlation-ID", "1234");
+        hashMap.put("content-type", "application/json");
+        hashMap.put("pageNo", "0");
+        hashMap.put("pageSize", "0");
         Assert.assertNotEquals(hashMap, result);
     }
 
     @Test
-    public void testCreateHeader2()  {
-        String correlationId="1234";
+    public void testCreateHeader2() {
+        String correlationId = "1234";
         Map<String, String> result = UtilMap.createHeader(correlationId);
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("X-Correlation-ID","1234");
-        hashMap.put("content-type","application/json");
+        hashMap.put("X-Correlation-ID", "1234");
+        hashMap.put("content-type", "application/json");
         Assert.assertEquals(hashMap, result);
     }
 
@@ -198,13 +195,13 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testIsCustIDExpired()  {
+    public void testIsCustIDExpired() {
         boolean result = UtilMap.isCustIDExpired(null);
         Assert.assertEquals(false, result);
     }
 
     @Test
-    public void testIsCASADormant()  {
+    public void testIsCASADormant() {
         boolean result = UtilMap.isCASADormant("responseCustomerExp");
         Assert.assertEquals(false, result);
     }
@@ -224,7 +221,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingFundSearchListData()  {
+    public void testMappingFundSearchListData() {
         FundClass fundClass = new FundClass();
         fundClass.setFundClassCode("1234");
         List<FundSearch> result = UtilMap.mappingFundSearchListData(Arrays.<FundClass>asList(fundClass));
@@ -244,7 +241,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingRequestFundRule()  {
+    public void testMappingRequestFundRule() {
         FundAccountRq fundAccountRq = new FundAccountRq();
         fundAccountRq.setFundCode("1234");
         FundRuleRequestBody result = UtilMap.mappingRequestFundRule(fundAccountRq);
@@ -264,7 +261,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingRequestAlternative()  {
+    public void testMappingRequestAlternative() {
         FfsRequestBody body = new FfsRequestBody();
         body.setFundCode("1234");
         AlternativeRq result = UtilMap.mappingRequestAlternative(body);

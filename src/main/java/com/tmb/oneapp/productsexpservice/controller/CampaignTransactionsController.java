@@ -28,13 +28,14 @@ import java.util.Map;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
 
 @RestController
-@Api(tags = "Campaign Transactions Api")
+@Api(tags = "Apply So GooOD Feature Api")
 public class CampaignTransactionsController {
     private final CreditCardClient creditCardClient;
     private static final TMBLogger<CampaignTransactionsController> logger = new TMBLogger<>(CampaignTransactionsController.class);
 
     /**
      * Constructor
+     *
      * @param
      * @param creditCardClient
      */
@@ -69,11 +70,11 @@ public class CampaignTransactionsController {
         String moreRecords = requestBodyParameter.getMoreRecords();
 
 
-        String correlationId="32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
 
         try {
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(moreRecords)) {
-                ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> campaignTransactionsDetails = creditCardClient.getCampaignTransactionsDetails(correlationId,requestBodyParameter);
+                ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> campaignTransactionsDetails = creditCardClient.getCampaignTransactionsDetails(correlationId, requestBodyParameter);
                 if (campaignTransactionsDetails != null) {
                     Status status = new Status();
                     status.setStatusCode(campaignTransactionsDetails.getBody().getStatus().getCode());

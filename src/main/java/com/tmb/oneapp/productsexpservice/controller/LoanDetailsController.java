@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Api(tags = "Fetch Home loan account details")
+@Api(tags = "Credit Card-Cash For You")
 public class LoanDetailsController {
     private static final TMBLogger<LoanDetailsController> log = new TMBLogger<>(LoanDetailsController.class);
     private final AccountRequestClient accountRequestClient;
@@ -42,7 +42,8 @@ public class LoanDetailsController {
 
     /**
      * Constructor
-     *  @param accountRequestClient
+     *
+     * @param accountRequestClient
      * @param commonServiceClient
      * @param creditCardLogService
      */
@@ -54,8 +55,6 @@ public class LoanDetailsController {
     }
 
 
-    
-    
     /**
      * @param requestHeadersParameter
      * @param requestBody
@@ -64,7 +63,7 @@ public class LoanDetailsController {
     @LogAround
     @PostMapping(value = "/loan/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getLoanAccountDetail(
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @Valid @RequestHeader Map<String, String> requestHeadersParameter,
+            @ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid @RequestHeader Map<String, String> requestHeadersParameter,
             @ApiParam(value = "Account ID", defaultValue = "00016109738001", required = true) @RequestBody AccountId requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -79,29 +78,29 @@ public class LoanDetailsController {
 
             String accountId = requestBody.getAccountNo();
             if (!Strings.isNullOrEmpty(accountId)) {
-                ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> loanResponse = accountRequestClient.getLoanAccountDetail(correlationId,requestBody);
+                ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> loanResponse = accountRequestClient.getLoanAccountDetail(correlationId, requestBody);
                 int statusCodeValue = loanResponse.getStatusCodeValue();
                 HttpStatus statusCode = loanResponse.getStatusCode();
-               
+
                 if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-                	LoanDetailsFullResponse loanDetails = loanResponse.getBody().getData();
+                    LoanDetailsFullResponse loanDetails = loanResponse.getBody().getData();
                     String productId = loanResponse.getBody().getData().getAccount().getProductId();
                     ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
                             .getProductConfig(correlationId);
 
 
-                    List<ProductConfig> list  = fetchProductConfigList.getBody().getData();
+                    List<ProductConfig> list = fetchProductConfigList.getBody().getData();
                     Iterator<ProductConfig> iterator = list.iterator();
                     while (iterator.hasNext()) {
                         ProductConfig productConfig = iterator.next();
-                        if(productConfig.getProductCode().equalsIgnoreCase(productId)){
-                        	loanDetails.setProductConfig(productConfig);
+                        if (productConfig.getProductCode().equalsIgnoreCase(productId)) {
+                            loanDetails.setProductConfig(productConfig);
                         }
                     }
 
                     /*  Activity log */
-                    creditCardEvent=creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,loanDetails);
+                    creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter, loanDetails);
                     creditCardLogService.logActivity(creditCardEvent);
                     oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
