@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.service.CaseService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,8 @@ public class CaseController {
             @ApiImplicitParam(name = DEVICE_ID, defaultValue = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true)
     })
     public ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> getCaseStatus(
-            @RequestHeader Map<String, String> requestHeaders,
+            @ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
+            @ApiParam(value = "Service Type Id", defaultValue = "NCBR", required = true)
             @RequestParam("service_type_id") String serviceTypeId
     ) {
         TmbOneServiceResponse<CaseStatusResponse> response = new TmbOneServiceResponse<>();
