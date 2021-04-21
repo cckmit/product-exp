@@ -13,6 +13,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -151,6 +152,22 @@ public class InstallmentRateControllerTest {
 
         // Verify the results
         Assert.assertEquals(400, loanAccountDetail.getStatusCodeValue());
+
+    }
+
+    @Test
+    void getTmbOneServiceResponseResponseEntity() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("content-type","application/json");
+        TmbOneServiceResponse<InstallmentRateResponse> serviceResponse = new TmbOneServiceResponse<>();
+        TmbStatus status = new TmbStatus();
+        status.setService("installment-controller-service");
+        status.setCode("0");
+        status.setMessage("Success");
+        status.setDescription("Success");
+        serviceResponse.setStatus(status);
+        ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> responseEntity = installmentRateController.getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
+        Assert.assertEquals(400, responseEntity.getStatusCodeValue());
 
     }
 }
