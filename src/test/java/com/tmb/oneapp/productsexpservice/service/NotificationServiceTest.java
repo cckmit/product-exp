@@ -195,11 +195,10 @@ public class NotificationServiceTest {
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
 		cardResponse.setStatus(silverlake);
-		
+
 		CreditCardDetail cardDetail = new CreditCardDetail();
 		cardDetail.setProductId("VTOPBR");
 		cardResponse.setCreditCard(cardDetail);
-		
 
 		when(customerServiceClient.getCustomerProfile(any(), any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
@@ -219,7 +218,7 @@ public class NotificationServiceTest {
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
 
-		notificationService.doNotifySuccessForSetPin(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		notificationService.doNotifySuccessForBlockCard(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
 		Assert.assertTrue(true);
 	}
