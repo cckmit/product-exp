@@ -14,8 +14,8 @@ import lombok.AllArgsConstructor;
 public class CreditCardInstallment {
 
         @JsonProperty("account_id")
-        private String accountId;
+        private final String accountId;
         @JsonProperty("card_installment")
-        private CardInstallment cardInstallment;
+        private final CardInstallment cardInstallment;
 
     }

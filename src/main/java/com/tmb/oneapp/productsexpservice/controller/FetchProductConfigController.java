@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -111,7 +112,7 @@ public class FetchProductConfigController {
     public ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfigListByEKYCFilter(
             @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId,
             @PathVariable String ekycFlag
-    ) throws UnsupportedEncodingException, JsonProcessingException, TMBCommonException {
+    ) throws  JsonProcessingException, TMBCommonException {
         TmbOneServiceResponse<List<ProductConfig>> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = this.getResponseHeaders();
         logStartController("/filter/ekycFlag", correlationId);
@@ -151,12 +152,12 @@ public class FetchProductConfigController {
 
     @SuppressWarnings("unchecked")
     private <T> TmbServiceResponse<T> exceptionHandling(final FeignException ex)
-            throws UnsupportedEncodingException, JsonProcessingException {
+            throws JsonProcessingException {
         TmbServiceResponse<T> data = new TmbServiceResponse<>();
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
             ByteBuffer responseBuffer = response.get();
-            String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
+            String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
             logger.info("response fail {}", responseObj);
             data = ((TmbServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
                     TmbServiceResponse.class));
@@ -171,7 +172,7 @@ public class FetchProductConfigController {
      * @throws UnsupportedEncodingException
      * @throws JsonProcessingException
      */
-    private TMBCommonException handleFeignException(FeignException e) throws UnsupportedEncodingException, JsonProcessingException {
+    private TMBCommonException handleFeignException(FeignException e) throws  JsonProcessingException {
         logger.error("Exception in {} :{}", e.getClass().getName(), e.toString());
         if (e instanceof FeignException.BadRequest) {
             TmbServiceResponse<String> body = exceptionHandling(e);

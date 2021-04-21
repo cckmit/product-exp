@@ -43,7 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
 public class UtilMap {
-    private static TMBLogger<UtilMap> logger = new TMBLogger<>(UtilMap.class);
+    private static final TMBLogger<UtilMap> logger = new TMBLogger<>(UtilMap.class);
 
 
     /**
