@@ -41,7 +41,6 @@ public class NotificationServiceTest {
 	CreditCardClient creditCardClient;
 	@Mock
 	CommonServiceClient commonServiceClient;
-
 	private NotificationService notificationService;
 
 	@BeforeEach
