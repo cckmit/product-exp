@@ -177,7 +177,7 @@ public class NcbPaymentConfirmService {
 
             String serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_EMAIL;
 
-            if(deliveryMethod.equals(SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST)) {
+            if(deliveryMethod.equals("by post")) {
                 serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST;
             }
 
