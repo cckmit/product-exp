@@ -378,8 +378,8 @@ public class NotificationService {
 								? cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
 										.getAmounts().toString()
 								: null;
-				String reasonEN = requestBodyParameter.getEnglishDes();
-				String reasonTH = requestBodyParameter.getReasonDescEn();
+				String reasonEN = requestBodyParameter.getReasonDesEn();
+				String reasonTH = requestBodyParameter.getReasonDesTh();
 				sendNotifySuccessForRequestTemporary(notifyCommon, customerProfileInfo.getEmailAddress(), expiryDate,
 						tempLimit, reasonEN, reasonTH);
 
