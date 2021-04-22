@@ -222,7 +222,7 @@ public class NotificationServiceTest {
 		req.setAccountId("0000000050079650011000193");
 		req.setCurrentCreditLimit("120000");
 		req.setEffectiveDate("2021-04-02");
-		req.setEnglishDes("For oversea emergency");
+		req.setReasonDesEn("For oversea emergency");
 		req.setExpiryDate("1478-04-01T17:17:56.000Z");
 		req.setMode("temporary");
 		req.setPreviousCreditLimit("50000");
@@ -284,7 +284,7 @@ public class NotificationServiceTest {
 		req.setAccountId("0000000050079650011000193");
 		req.setCurrentCreditLimit("120000");
 		req.setEffectiveDate("2021-04-02");
-		req.setEnglishDes("For oversea emergency");
+		req.setReasonDesEn("For oversea emergency");
 		req.setExpiryDate("1478-04-01T17:17:56.000Z");
 		req.setMode("temporary");
 		req.setPreviousCreditLimit("50000");
