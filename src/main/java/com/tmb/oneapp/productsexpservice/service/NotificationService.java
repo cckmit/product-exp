@@ -98,8 +98,9 @@ public class NotificationService {
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(xCorrelationId, defaultChannelEn,
-						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(), null,
-						null);
+						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
+						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
+						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
 				sendActivationCardEmail(notifyCommon, customerProfileInfo.getEmailAddress());
@@ -140,6 +141,8 @@ public class NotificationService {
 			Map<String, Object> params = new HashMap<>();
 			params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.ACTIVE_CARD_TEMPLATE_VALUE);
 			params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
+			params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
+			params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 			params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
 			params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
 			params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
@@ -555,7 +558,7 @@ public class NotificationService {
 	 * @param data
 	 * @param requestBodyParameter
 	 */
-//	@Async
+	@Async
 	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
 			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
 		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
