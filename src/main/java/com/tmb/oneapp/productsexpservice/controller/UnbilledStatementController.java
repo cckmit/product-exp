@@ -9,7 +9,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
-import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class UnbilledStatementController {
     })
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getUnBilledStatement(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
-            @RequestBody GetBilledStatementQuery requestBody) {
+            @RequestBody GetUnbilledStatementQuery requestBody) {
 
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -66,7 +66,7 @@ public class UnbilledStatementController {
             oneServiceResponse.setData(oneServiceResponse.getData());
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)) {
                 ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient
-                        .getUnBilledStatement(correlationId, accountId);
+                        .getUnBilledStatement(correlationId, requestBody);
 
 
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK

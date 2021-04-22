@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
@@ -52,10 +53,10 @@ public interface CreditCardClient {
             @RequestHeader("X-Correlation-ID") String correlationId,
             @PathVariable(value = "ACCOUNT_ID") String accountId);
 
-    @GetMapping(value = "/apis/creditcard/creditcard-unbilled-statement/{ACCOUNT_ID}")
+    @GetMapping(value = "/apis/creditcard/creditcard-unbilled-statement")
     ResponseEntity<BilledStatementResponse> getUnBilledStatement(
             @RequestHeader("X-Correlation-ID") String correlationId,
-            @PathVariable(value = "ACCOUNT_ID") String accountId);
+            @RequestBody GetUnbilledStatementQuery getUnBilledStatement);
 
     @PostMapping(value = "/apis/creditcard/creditcard-billed-statement-period/{ACCOUNT_ID}")
     ResponseEntity<BilledStatementResponse> getBilledStatementWithPeriod(
