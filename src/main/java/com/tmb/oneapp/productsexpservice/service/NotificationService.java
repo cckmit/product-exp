@@ -353,7 +353,7 @@ public class NotificationService {
 	 * @param crmId
 	 * @param requestBodyParameter
 	 */
-//	@Async
+	@Async
 	public void doNotifySuccessForTemporaryLimit(String correlationId, String accountId, String crmId,
 			SetCreditLimitReq requestBodyParameter) {
 		logger.info("xCorrelationId:{} request customer name in th and en to temporary limit", correlationId);
