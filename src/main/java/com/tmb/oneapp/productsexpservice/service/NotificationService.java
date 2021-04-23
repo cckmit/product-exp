@@ -24,6 +24,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -42,9 +46,10 @@ public class NotificationService {
 	@Value("${notification-service.e-noti.default.support.no}")
 	private String gobalCallCenter;
 	@Value("${notification-service.e-noti.default.template.date}")
-	private static final String DD_MM_YYYY = "dd/MM/yyyy";
+	private static final String HTML_DATE_FORMAT = "dd/MM/yyyy";
 	@Value("${notification-service.e-noti.default.template.time}")
 	private static final String HH_MM = "HH:mm";
+	private DecimalFormat df = new DecimalFormat("#,###.00");
 
 	private final NotificationServiceClient notificationClient;
 	private final CustomerServiceClient customerClient;
@@ -249,11 +254,12 @@ public class NotificationService {
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
 
-				String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DD_MM_YYYY));
+				String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HTML_DATE_FORMAT));
 				String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HH_MM));
-				sendNotifySuccessForChangeUsage(notifyCommon, requestBodyParameter.getPreviousCreditLimit(),
-						requestBodyParameter.getCurrentCreditLimit(), customerProfileInfo.getEmailAddress(), tranDate,
-						tranTime);
+				sendNotifySuccessForChangeUsage(notifyCommon,
+						formateForCurrency(requestBodyParameter.getPreviousCreditLimit()),
+						formateForCurrency(requestBodyParameter.getCurrentCreditLimit()),
+						customerProfileInfo.getEmailAddress(), tranDate, tranTime);
 
 			}
 		}
@@ -358,13 +364,14 @@ public class NotificationService {
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
-				String expiryDate = cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
-						.getExpiryDate();
-				String tempLimit = cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
-						.getAmounts() != null
+				String expiryDate = formateExpireDate(
+						cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit().getExpiryDate());
+
+				String tempLimit = formateForCurrency(
+						cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit().getAmounts() != null
 								? cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
 										.getAmounts().toString()
-								: null;
+								: null);
 				String reasonEN = requestBodyParameter.getReasonDescEn();
 				String reasonTH = requestBodyParameter.getReasonDesTh();
 				sendNotifySuccessForRequestTemporary(notifyCommon, customerProfileInfo.getEmailAddress(), expiryDate,
@@ -372,6 +379,40 @@ public class NotificationService {
 
 			}
 		}
+	}
+
+	private String formateForCurrency(String moneyString) {
+		if (StringUtils.isEmpty(moneyString)) {
+			return null;
+		}
+
+		BigDecimal money = new BigDecimal(moneyString);
+
+		return df.format(money);
+	}
+
+	/**
+	 * Conversion rate
+	 * 
+	 * @param expiryDate
+	 * @return
+	 */
+	private String formateExpireDate(String expiryDate) {
+		if (StringUtils.isEmpty(expiryDate)) {
+			return null;
+		}
+		String sourcePattern = "yyyy-MM-dd";
+
+		SimpleDateFormat sourceDateFormat = new SimpleDateFormat(sourcePattern);
+		SimpleDateFormat targetDateFormat = new SimpleDateFormat(HTML_DATE_FORMAT);
+		String htmlDate = null;
+		try {
+			Date sourceDate = sourceDateFormat.parse(expiryDate);
+			htmlDate = targetDateFormat.format(sourceDate);
+		} catch (ParseException e) {
+			logger.error(e.toString(), e);
+		}
+		return htmlDate;
 	}
 
 	/**
