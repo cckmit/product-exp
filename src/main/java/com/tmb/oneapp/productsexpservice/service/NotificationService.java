@@ -46,7 +46,7 @@ public class NotificationService {
 	@Value("${notification-service.e-noti.default.support.no}")
 	private String gobalCallCenter;
 	@Value("${notification-service.e-noti.default.template.date}")
-	private static final String HTML_DATE_FORMAT = "yyyy-MM-dd";
+	private static final String HTML_DATE_FORMAT = "dd/MM/yyyy";
 	@Value("${notification-service.e-noti.default.template.time}")
 	private static final String HH_MM = "HH:mm";
 	private DecimalFormat df = new DecimalFormat("#,###.00");
