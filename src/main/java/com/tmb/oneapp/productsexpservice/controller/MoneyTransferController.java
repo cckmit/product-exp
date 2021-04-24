@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.google.common.base.Strings;
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -9,8 +8,12 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.loan.*;
-import io.swagger.annotations.*;
+import com.tmb.oneapp.productsexpservice.model.loan.DepositRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.DepositResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,11 +37,12 @@ public class MoneyTransferController {
     public MoneyTransferController(CreditCardClient creditCardClient) {
         this.creditCardClient = creditCardClient;
     }
+
     @LogAround
     @PostMapping(value = "/card-money-transfer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Card money Transfer")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") })
+            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
 
     public ResponseEntity<TmbOneServiceResponse<DepositResponse>> cardMoneyTransfer(
             @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
@@ -61,7 +65,7 @@ public class MoneyTransferController {
             String waiverCode = requestBody.getDeposit().getWaiverCode();
             String toAccountType = requestBody.getDeposit().getToAccountType();
             if (!Strings.isNullOrEmpty(toAccountId) && !Strings.isNullOrEmpty(amounts) && !Strings.isNullOrEmpty(expiredDate) &&
-            !Strings.isNullOrEmpty(modelType) && !Strings.isNullOrEmpty(fromAccountId) &&
+                    !Strings.isNullOrEmpty(modelType) && !Strings.isNullOrEmpty(fromAccountId) &&
                     !Strings.isNullOrEmpty(referenceCode) && !Strings.isNullOrEmpty(fromAccountType) && !Strings.isNullOrEmpty(transferredDate) &&
                     !Strings.isNullOrEmpty(waiverCode) && !Strings.isNullOrEmpty(toAccountType
             )
@@ -92,6 +96,7 @@ public class MoneyTransferController {
         }
 
     }
+
     ResponseEntity<TmbOneServiceResponse<DepositResponse>> failedErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<DepositResponse> serviceResponse, Exception e) {
         logger.error("Error while getting LoanAccountStatement: {}", e);
         serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
