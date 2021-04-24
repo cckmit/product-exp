@@ -74,6 +74,7 @@ public class MoneyTransferControllerTest {
         depositRequest.setFromAccountType("test");
         depositRequest.setToAccountId("1234");
         depositRequest.setWaiverCode("1234");
+        depositRequest.setToAccountType("Test");
         requestBody.setDeposit(depositRequest);
         ResponseEntity<TmbOneServiceResponse<DepositResponse>> response = moneyTransferController.cardMoneyTransfer(correlationId, requestBody);
 

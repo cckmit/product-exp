@@ -30,6 +30,8 @@ public class SetCreditLimitReq {
 	@JsonProperty("reason_desc_en")
 	private String reasonDescEn;
 	@JsonProperty("englishDes")
-	private String englishDes;
+	private String reasonDesEn;
+	@JsonProperty("reason_desc_th")
+	private String reasonDesTh;
 
 }
