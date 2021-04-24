@@ -6,10 +6,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
-import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
-import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
-import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
-import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.*;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
@@ -95,4 +92,9 @@ public interface CreditCardClient {
     ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> getInstallmentRate(
             @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody InstallmentRateRequest requestBodyParameter);
+
+    @PostMapping(value = "/apis/creditcard/card-money-transfer")
+     ResponseEntity<TmbOneServiceResponse<DepositResponse>> cardMoneyTransfer(
+            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
+            @RequestBody DepositRequest requestBodyParameter);
 }
