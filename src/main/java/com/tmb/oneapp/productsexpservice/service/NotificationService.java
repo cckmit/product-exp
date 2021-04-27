@@ -599,7 +599,7 @@ public class NotificationService {
 	 * @param data
 	 * @param requestBodyParameter
 	 */
-	@Async
+//	@Async
 	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
 			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
 		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
@@ -742,11 +742,11 @@ public class NotificationService {
 		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
 		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.NO_APPLY_SO_GOOD, soGoodWrapper.getItems().size());
-		params.put(NotificationConstant.APPLY_SO_GOOD_INSTALLMENT_PLAN, installmentPlanRate);
+		params.put(NotificationConstant.APPLY_SO_GOOD_INSTALLMENT_PLAN, formateForCurrency(installmentPlanRate) );
 		params.put(NotificationConstant.APPLY_SO_GOOD_TERM, term);
 		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
 		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
-		params.put(NotificationConstant.APPLY_SO_GOOD_TOTAL, soGoodTotalAmt);
+		params.put(NotificationConstant.APPLY_SO_GOOD_TOTAL, formateForCurrency(soGoodTotalAmt));
 		params.put(NotificationConstant.TRX_DESC_TH, totalDesTh);
 		params.put(NotificationConstant.TRX_DESC_EN, totalDesEn);
 
