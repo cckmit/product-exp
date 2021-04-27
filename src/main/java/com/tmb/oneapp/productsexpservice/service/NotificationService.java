@@ -9,13 +9,22 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
+import com.tmb.oneapp.productsexpservice.model.MonthlyTrans;
+import com.tmb.oneapp.productsexpservice.model.SoGoodItemInfo;
+import com.tmb.oneapp.productsexpservice.model.SoGoodWrapper;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.oneapp.productsexpservice.model.request.notification.*;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 import com.tmb.oneapp.productsexpservice.util.NotificationUtil;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -31,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.SILVER_LAKE_SUCCESS_CODE;
 
@@ -46,24 +57,28 @@ public class NotificationService {
 	@Value("${notification-service.e-noti.default.support.no}")
 	private String gobalCallCenter;
 	@Value("${notification-service.e-noti.default.template.date}")
+
 	private static final String HTML_DATE_FORMAT = "dd/MM/yyyy";
 	@Value("${notification-service.e-noti.default.template.time}")
 	private static final String HH_MM = "HH:mm";
-	private DecimalFormat df = new DecimalFormat("#,###.00");
+	private static final DecimalFormat df = new DecimalFormat("#,###.00");
 
 	private final NotificationServiceClient notificationClient;
 	private final CustomerServiceClient customerClient;
 	private final CreditCardClient creditCardClient;
 	private final CommonServiceClient commonServiceClient;
+	private final TemplateService templateService;
 
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
 			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
-			CommonServiceClient commonServiceClient) {
+			CommonServiceClient commonServiceClient, TemplateService templateService) {
+
 		this.notificationClient = notificationServiceClient;
 		this.customerClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
 		this.commonServiceClient = commonServiceClient;
+		this.templateService = templateService;
 	}
 
 	/**
@@ -364,7 +379,8 @@ public class NotificationService {
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
-				String expiryDate = formateExpireDate(
+
+				String expiryDate = formateDateWithStandard(
 						cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit().getExpiryDate());
 
 				String tempLimit = formateForCurrency(
@@ -382,13 +398,15 @@ public class NotificationService {
 	}
 
 	private String formateForCurrency(String moneyString) {
-		if (StringUtils.isEmpty(moneyString)) {
-			return null;
+
+		try {
+			BigDecimal money = new BigDecimal(moneyString);
+			return df.format(money);
+		} catch (Exception e) {
+			logger.error("Invalid money input "+moneyString);
 		}
 
-		BigDecimal money = new BigDecimal(moneyString);
-
-		return df.format(money);
+		return null;
 	}
 
 	/**
@@ -397,7 +415,7 @@ public class NotificationService {
 	 * @param expiryDate
 	 * @return
 	 */
-	private String formateExpireDate(String expiryDate) {
+	private String formateDateWithStandard(String expiryDate) {
 		if (StringUtils.isEmpty(expiryDate)) {
 			return null;
 		}
@@ -572,6 +590,186 @@ public class NotificationService {
 			productCodeData.setIconId(productConfig.getIconId());
 		}
 		return productCodeData;
+	}
+
+	/**
+	 * Expose for notify apply so good
+	 * 
+	 * @param correlationId
+	 * @param accountId
+	 * @param crmId
+	 * @param data
+	 * @param requestBodyParameter
+	 */
+	@Async
+	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
+			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
+		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
+
+		List<CardInstallmentResponse> successItems = fillerForSuccessCardInstallmentRequest(data);
+		if (CollectionUtils.isNotEmpty(successItems)) {
+			InstallmentPlan installment = lookUpInstallment(correlationId,
+					requestBodyParameter.getCardInstallment().get(0).getPromotionModelNo());
+			BigDecimal totalAmt = calculateTotalSoGoodAmt(successItems);
+			ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
+					.getCustomerProfile(new HashMap<String, String>(), crmId);
+			if (Objects.nonNull(installment) && Objects.nonNull(response.getBody())) {
+				CustomerProfileResponseData profileResponseData = response.getBody().getData();
+				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
+						defaultChannelTh, null, null,
+						profileResponseData.getEngFname() + " " + profileResponseData.getEngLname(),
+						profileResponseData.getThaFname() + " " + profileResponseData.getThaLname());
+				notifyCommon.setAccountId(accountId);
+				notifyCommon.setCrmId(crmId);
+				SoGoodWrapper soGoodWrapperInfo = generateSoGoodWraperModel(installment, successItems,
+						requestBodyParameter);
+				sendNotifyApplySoGood(notifyCommon, profileResponseData.getEmailAddress(),
+						profileResponseData.getPhoneNoFull(), soGoodWrapperInfo, totalAmt);
+			}
+
+		}
+	}
+
+	/**
+	 * Process generate model for so good warpper model
+	 * 
+	 * @param installment
+	 * @param successItems
+	 * @param requestBodyParameter
+	 * @return
+	 */
+	private SoGoodWrapper generateSoGoodWraperModel(InstallmentPlan installment,
+			List<CardInstallmentResponse> successItems, CardInstallmentQuery requestBodyParameter) {
+		SoGoodWrapper wrapperInfo = new SoGoodWrapper();
+		wrapperInfo.setTenor(installment.getPaymentTerm());
+		wrapperInfo.setInterestRatePercent(installment.getInterestRate());
+
+		List<SoGoodItemInfo> itemInfos = new ArrayList<>();
+		successItems.forEach(item -> {
+			Double amount = item.getCreditCard().getCardInstallment().getAmounts();
+			MonthlyTrans monthlyTrans = InstallmentService.calcualteMonthlyTransection(new BigDecimal(amount),
+					Integer.parseInt(installment.getPaymentTerm()), new BigDecimal(installment.getInterestRate()));
+			SoGoodItemInfo info = new SoGoodItemInfo();
+			Optional<CardInstallment> optCardInstallment = requestBodyParameter.getCardInstallment().stream()
+					.filter(e -> e.getTransactionKey()
+							.equals(item.getCreditCard().getCardInstallment().getTransactionKey()))
+					.collect(Collectors.toList()).stream().findFirst();
+			if (optCardInstallment.isPresent()) {
+				CardInstallment cardInstallment = optCardInstallment.get();
+				info.setCreateDate(formateDateWithStandard(cardInstallment.getPostDate()));
+				info.setTranDate(formateDateWithStandard(cardInstallment.getTransectionDate()));
+			}
+			info.setFirstPayment(df.format(monthlyTrans.getFirstPayment()));
+			info.setName(item.getCreditCard().getCardInstallment().getTransactionDescription());
+			info.setPrinciple(df.format(monthlyTrans.getPrinciple2Digit()));
+			info.setTotalAmt(df.format(monthlyTrans.getTotalAmt()));
+			info.setTotalInterest(df.format(monthlyTrans.getTotalInterest()));
+			itemInfos.add(info);
+		});
+		wrapperInfo.setItems(itemInfos);
+		return wrapperInfo;
+	}
+
+	/**
+	 * Calculate total So Good Amount
+	 * 
+	 * @param successItems
+	 * @return
+	 */
+	private BigDecimal calculateTotalSoGoodAmt(List<CardInstallmentResponse> successItems) {
+		BigDecimal totalAmt = BigDecimal.ZERO;
+		for (CardInstallmentResponse installment : successItems) {
+			Double amount = installment.getCreditCard().getCardInstallment().getAmounts();
+			totalAmt = totalAmt.add(new BigDecimal(amount));
+		}
+		return totalAmt;
+	}
+
+	/**
+	 * Find out select InstallmentPlan
+	 * 
+	 * @param correlationId
+	 * @param promotionModelNo
+	 * @return
+	 */
+	private InstallmentPlan lookUpInstallment(String correlationId, String promotionModelNo) {
+		ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> responseInstallments = creditCardClient
+				.getInstallmentPlan(correlationId);
+		List<InstallmentPlan> installmentPlans = responseInstallments.getBody().getData();
+		InstallmentPlan reqInstallmentPlan = null;
+		for (InstallmentPlan installmentplan : installmentPlans) {
+			if (installmentplan.getInstallmentsPlan().equals(promotionModelNo)) {
+				reqInstallmentPlan = installmentplan;
+			}
+		}
+		return reqInstallmentPlan;
+	}
+
+	/**
+	 * fillter for succes installment request
+	 * 
+	 * @param data
+	 * @return
+	 */
+	private List<CardInstallmentResponse> fillerForSuccessCardInstallmentRequest(List<CardInstallmentResponse> data) {
+		List<CardInstallmentResponse> successCardInstallments = new ArrayList<>();
+		data.forEach(e -> {
+			if (e.getStatus().getStatusCode().equals("0")) {
+				successCardInstallments.add(e);
+			}
+		});
+		return successCardInstallments;
+	}
+
+	/**
+	 * Wrapper for apply so good
+	 * 
+	 * @param notifyCommon
+	 * @param email
+	 * @param phoneNo
+	 * @param SoGoodWrapper
+	 */
+	private void sendNotifyApplySoGood(NotifyCommon notifyCommon, String email, String phoneNo,
+			SoGoodWrapper soGoodWrapper, BigDecimal totalAmt) {
+		NotificationRequest notificationRequest = new NotificationRequest();
+		List<NotificationRecord> notificationRecords = new ArrayList<>();
+		NotificationRecord record = new NotificationRecord();
+
+		String term = soGoodWrapper.getTenor();
+		String soGoodTotalFormatedAmt = df.format(totalAmt);
+
+		Context ctx = new Context();
+		ctx.setVariable("items", soGoodWrapper.getItems());
+
+		String totalDesTh = templateService.getSoGoodItemTh(ctx);
+		String totalDesEn = templateService.getSoGoodItemEn(ctx);
+
+		Map<String, Object> params = new HashMap<>();
+		params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.APPLY_SO_GOOD_TEMPLATE_VALUE);
+		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
+		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
+		params.put(NotificationConstant.NO_APPLY_SO_GOOD, soGoodWrapper.getItems().size());
+		params.put(NotificationConstant.APPLY_SO_GOOD_INSTALLMENT_PLAN, soGoodWrapper.getInterestRatePercent());
+		params.put(NotificationConstant.APPLY_SO_GOOD_TERM, term);
+		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
+		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
+		params.put(NotificationConstant.APPLY_SO_GOOD_TOTAL, soGoodTotalFormatedAmt);
+		params.put(NotificationConstant.TRX_DESC_TH, totalDesTh);
+		params.put(NotificationConstant.TRX_DESC_EN, totalDesEn);
+
+		record.setParams(params);
+		record.setCrmId(notifyCommon.getCrmId());
+		record.setLanguage(NotificationConstant.LOCALE_TH);
+
+		setRequestForEmailAndSms(email, phoneNo, record);
+
+		notificationRecords.add(record);
+		notificationRequest.setRecords(notificationRecords);
+
+		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+				.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+		processResultLog(sendEmailResponse, notificationRequest);
 	}
 
 }

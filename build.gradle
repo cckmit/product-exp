@@ -87,6 +87,7 @@ dependencies {
 	}
 	implementation group: 'redis.clients', name: 'jedis', version: '3.5.1'
 	implementation group: 'org.thymeleaf', name: 'thymeleaf-spring5', version: '3.0.11.RELEASE'
+	implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
 	testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
 }
 

@@ -41,6 +41,8 @@ public class NotificationServiceTest {
 	CreditCardClient creditCardClient;
 	@Mock
 	CommonServiceClient commonServiceClient;
+	@Mock
+	TemplateService templateService;
 
 	private NotificationService notificationService;
 
@@ -48,7 +50,7 @@ public class NotificationServiceTest {
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		notificationService = new NotificationService(notificationServiceClient, customerServiceClient,
-				creditCardClient, commonServiceClient);
+				creditCardClient, commonServiceClient, templateService);
 	}
 
 	@Test
