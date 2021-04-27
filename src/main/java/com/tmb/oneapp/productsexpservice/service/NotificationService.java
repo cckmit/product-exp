@@ -380,7 +380,7 @@ public class NotificationService {
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
 
-				String expiryDate = formateExpireDate(
+				String expiryDate = formateDateWithStandard(
 						cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit().getExpiryDate());
 
 				String tempLimit = formateForCurrency(
@@ -401,9 +401,18 @@ public class NotificationService {
 		if (StringUtils.isEmpty(moneyString)) {
 			return null;
 		}
+		BigDecimal money = null;
+		try {
+			money = new BigDecimal(moneyString);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		if(Objects.isNull(money)) {
+			return null;
+		}
 
-		BigDecimal money = new BigDecimal(moneyString);
-
+		
 		return df.format(money);
 	}
 
@@ -413,7 +422,7 @@ public class NotificationService {
 	 * @param expiryDate
 	 * @return
 	 */
-	private String formateExpireDate(String expiryDate) {
+	private String formateDateWithStandard(String expiryDate) {
 		if (StringUtils.isEmpty(expiryDate)) {
 			return null;
 		}
@@ -617,6 +626,8 @@ public class NotificationService {
 						defaultChannelTh, null, null,
 						profileResponseData.getEngFname() + " " + profileResponseData.getEngLname(),
 						profileResponseData.getThaFname() + " " + profileResponseData.getThaLname());
+				notifyCommon.setAccountId(accountId);
+				notifyCommon.setCrmId(crmId);
 				SoGoodWrapper soGoodWrapperInfo = generateSoGoodWraperModel(installment, successItems,
 						requestBodyParameter);
 				sendNotifyApplySoGood(notifyCommon, profileResponseData.getEmailAddress(),
@@ -637,7 +648,6 @@ public class NotificationService {
 	private SoGoodWrapper generateSoGoodWraperModel(InstallmentPlan installment,
 			List<CardInstallmentResponse> successItems, CardInstallmentQuery requestBodyParameter) {
 		SoGoodWrapper wrapperInfo = new SoGoodWrapper();
-		wrapperInfo.setInterestRatePercent(installment.getInterestRate());
 		wrapperInfo.setTenor(installment.getPaymentTerm());
 		List<SoGoodItemInfo> itemInfos = new ArrayList<SoGoodItemInfo>();
 		successItems.forEach(item -> {
@@ -651,8 +661,8 @@ public class NotificationService {
 					.collect(Collectors.toList()).stream().findFirst();
 			if (optCardInstallment.isPresent()) {
 				CardInstallment cardInstallment = optCardInstallment.get();
-				info.setCreateDate(cardInstallment.getPostDate());
-				info.setTranDate(cardInstallment.getTransectionDate());
+				info.setCreateDate(formateDateWithStandard(cardInstallment.getPostDate()));
+				info.setTranDate(formateDateWithStandard(cardInstallment.getTransectionDate()));
 			}
 			info.setFirstPayment(df.format(monthlyTrans.getFirstPayment()));
 			info.setName(item.getCreditCard().getCardInstallment().getTransactionDescription());
@@ -691,8 +701,13 @@ public class NotificationService {
 		ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> responseInstallments = creditCardClient
 				.getInstallmentPlan(correlationId);
 		List<InstallmentPlan> installmentPlans = responseInstallments.getBody().getData();
-		return installmentPlans.stream().filter(e -> e.equals(promotionModelNo)).collect(Collectors.toList()).stream()
-				.findFirst().get();
+		InstallmentPlan reqInstallmentPlan = null;
+		for(InstallmentPlan installmentplan : installmentPlans) {
+			if(installmentplan.getInstallmentsPlan().equals(promotionModelNo)) {
+				reqInstallmentPlan = installmentplan;
+			}
+		}
+		return reqInstallmentPlan;
 	}
 
 	/**
@@ -725,14 +740,11 @@ public class NotificationService {
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 		NotificationRecord record = new NotificationRecord();
 
-		String installmentPlanRate = soGoodWrapper.getInterestRatePercent();
 		String term = soGoodWrapper.getTenor();
-		String soGoodTotalAmt = df.format(totalAmt);
+		String soGoodTotalFormatedAmt = df.format(totalAmt);
 
 		Context ctx = new Context();
 		ctx.setVariable("items", soGoodWrapper.getItems());
-		ctx.setVariable("interestRatePercent", soGoodWrapper.getInterestRatePercent());
-		ctx.setVariable("tenor", soGoodWrapper.getTenor());
 
 		String totalDesTh = templateService.getSoGoodItemTh(ctx);
 		String totalDesEn = templateService.getSoGoodItemEn(ctx);
@@ -742,11 +754,11 @@ public class NotificationService {
 		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
 		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.NO_APPLY_SO_GOOD, soGoodWrapper.getItems().size());
-		params.put(NotificationConstant.APPLY_SO_GOOD_INSTALLMENT_PLAN, formateForCurrency(installmentPlanRate) );
+		params.put(NotificationConstant.APPLY_SO_GOOD_INSTALLMENT_PLAN, soGoodWrapper.getTenor());
 		params.put(NotificationConstant.APPLY_SO_GOOD_TERM, term);
 		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
 		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
-		params.put(NotificationConstant.APPLY_SO_GOOD_TOTAL, formateForCurrency(soGoodTotalAmt));
+		params.put(NotificationConstant.APPLY_SO_GOOD_TOTAL, soGoodTotalFormatedAmt);
 		params.put(NotificationConstant.TRX_DESC_TH, totalDesTh);
 		params.put(NotificationConstant.TRX_DESC_EN, totalDesEn);
 

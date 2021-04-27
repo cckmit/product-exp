@@ -1,10 +1,6 @@
 <tr>
 	<td colspan="2">
 		<table>
-			<tr>
-				<td>
-					<br>แผนแบ่งจ่าย <span th:text="${interestRatePercent}">${interestRatePercent}</span>% <span th:text="${tenor}">${tenor}</span> เดือน:</td>
-			</tr>
 			<tr th:each="item : ${items}">
 				<td>
 					<br>&nbsp;&nbsp;<span th:text="${item.name}">${item.name}</span>

@@ -59,12 +59,10 @@ public class TemplateServiceTest {
 		soGoodItems.add(infoB);
 		
 		
-		soGoodWrapper.setInterestRatePercent("InterrestRatePercent");
 		soGoodWrapper.setTenor("6");
 		soGoodWrapper.setItems(soGoodItems);
 		
 		ctx.setVariable("items", soGoodWrapper.getItems());
-		ctx.setVariable("interestRatePercent", soGoodWrapper.getInterestRatePercent());
 		ctx.setVariable("tenor", soGoodWrapper.getTenor());
 		
 
