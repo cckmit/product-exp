@@ -142,6 +142,6 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.listfavorite.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestHeader String crmId);
+    ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestBody String crmId);
 
 }
