@@ -649,6 +649,8 @@ public class NotificationService {
 			List<CardInstallmentResponse> successItems, CardInstallmentQuery requestBodyParameter) {
 		SoGoodWrapper wrapperInfo = new SoGoodWrapper();
 		wrapperInfo.setTenor(installment.getPaymentTerm());
+		wrapperInfo.setInterestRatePercent(installment.getInterestRate());
+		
 		List<SoGoodItemInfo> itemInfos = new ArrayList<SoGoodItemInfo>();
 		successItems.forEach(item -> {
 			Double amount = item.getCreditCard().getCardInstallment().getAmounts();
@@ -754,7 +756,7 @@ public class NotificationService {
 		params.put(NotificationConstant.CUSTOMER_NAME_EN, notifyCommon.getCustFullNameEn());
 		params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
 		params.put(NotificationConstant.NO_APPLY_SO_GOOD, soGoodWrapper.getItems().size());
-		params.put(NotificationConstant.APPLY_SO_GOOD_INSTALLMENT_PLAN, soGoodWrapper.getTenor());
+		params.put(NotificationConstant.APPLY_SO_GOOD_INSTALLMENT_PLAN, soGoodWrapper.getInterestRatePercent());
 		params.put(NotificationConstant.APPLY_SO_GOOD_TERM, term);
 		params.put(NotificationConstant.ACCOUNT_ID, notifyCommon.getAccountId());
 		params.put(NotificationConstant.SUPPORT_NO, gobalCallCenter);
