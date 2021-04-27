@@ -398,22 +398,15 @@ public class NotificationService {
 	}
 
 	private String formateForCurrency(String moneyString) {
-		if (StringUtils.isEmpty(moneyString)) {
-			return null;
-		}
-		BigDecimal money = null;
+
 		try {
-			money = new BigDecimal(moneyString);
+			BigDecimal money = new BigDecimal(moneyString);
+			return df.format(money);
 		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		if(Objects.isNull(money)) {
-			return null;
+			logger.error("Invalid money input "+moneyString);
 		}
 
-		
-		return df.format(money);
+		return null;
 	}
 
 	/**
@@ -608,7 +601,7 @@ public class NotificationService {
 	 * @param data
 	 * @param requestBodyParameter
 	 */
-//	@Async
+	@Async
 	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
 			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
 		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
@@ -616,7 +609,7 @@ public class NotificationService {
 		List<CardInstallmentResponse> successItems = fillerForSuccessCardInstallmentRequest(data);
 		if (CollectionUtils.isNotEmpty(successItems)) {
 			InstallmentPlan installment = lookUpInstallment(correlationId,
-					requestBodyParameter.getCardInstallment().stream().findFirst().get().getPromotionModelNo());
+					requestBodyParameter.getCardInstallment().get(0).getPromotionModelNo());
 			BigDecimal totalAmt = calculateTotalSoGoodAmt(successItems);
 			ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
 					.getCustomerProfile(new HashMap<String, String>(), crmId);
@@ -650,8 +643,8 @@ public class NotificationService {
 		SoGoodWrapper wrapperInfo = new SoGoodWrapper();
 		wrapperInfo.setTenor(installment.getPaymentTerm());
 		wrapperInfo.setInterestRatePercent(installment.getInterestRate());
-		
-		List<SoGoodItemInfo> itemInfos = new ArrayList<SoGoodItemInfo>();
+
+		List<SoGoodItemInfo> itemInfos = new ArrayList<>();
 		successItems.forEach(item -> {
 			Double amount = item.getCreditCard().getCardInstallment().getAmounts();
 			MonthlyTrans monthlyTrans = InstallmentService.calcualteMonthlyTransection(new BigDecimal(amount),
@@ -704,8 +697,8 @@ public class NotificationService {
 				.getInstallmentPlan(correlationId);
 		List<InstallmentPlan> installmentPlans = responseInstallments.getBody().getData();
 		InstallmentPlan reqInstallmentPlan = null;
-		for(InstallmentPlan installmentplan : installmentPlans) {
-			if(installmentplan.getInstallmentsPlan().equals(promotionModelNo)) {
+		for (InstallmentPlan installmentplan : installmentPlans) {
+			if (installmentplan.getInstallmentsPlan().equals(promotionModelNo)) {
 				reqInstallmentPlan = installmentplan;
 			}
 		}
@@ -719,7 +712,7 @@ public class NotificationService {
 	 * @return
 	 */
 	private List<CardInstallmentResponse> fillerForSuccessCardInstallmentRequest(List<CardInstallmentResponse> data) {
-		List<CardInstallmentResponse> successCardInstallments = new ArrayList<CardInstallmentResponse>();
+		List<CardInstallmentResponse> successCardInstallments = new ArrayList<>();
 		data.forEach(e -> {
 			if (e.getStatus().getStatusCode().equals("0")) {
 				successCardInstallments.add(e);
