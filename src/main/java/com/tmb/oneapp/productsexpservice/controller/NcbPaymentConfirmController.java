@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -44,7 +43,6 @@ public class NcbPaymentConfirmController {
      * @param requestHeaders
      * @param requestBody NcbPaymentConfirmBody
      */
-    @LogAround
     @ApiOperation(value = "NCB Payment Confirm")
     @PostMapping(value = "/NCB/paymentConfirm")
     @ApiImplicitParams({
@@ -59,6 +57,7 @@ public class NcbPaymentConfirmController {
         TmbOneServiceResponse<NcbPaymentConfirmResponse> response = new TmbOneServiceResponse<>();
 
         try {
+            logger.info("product-exp-service confirmNcbPayment method start Time : {} ", System.currentTimeMillis());
             NcbPaymentConfirmResponse ncbPaymentConfirmResponse =
                     ncbPaymentConfirmService.confirmNcbPayment(requestHeaders, requestBody.getServiceTypeId(), requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getEmail(), requestBody.getAddress(), requestBody.getDeliveryMethod(), requestBody.getAccountNumber());
 
@@ -71,7 +70,7 @@ public class NcbPaymentConfirmController {
                     .body(response);
 
         } catch (Exception e) {
-            logger.error("Error calling GET /application/status : {}", e);
+            logger.error("Error product-exp-service confirmNcbPayment : {}", e);
             response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
                     ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);

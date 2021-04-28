@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,7 +42,7 @@ public class NcbPaymentConfirmService {
     /**
      * confirm payment of NCB
      *
-     * @param requestHeaders correlatinoId, crmId, deviceId, accept-language
+     * @param requestHeaders correlationId, crmId, deviceId, accept-language
      * @param serviceTypeId  serviceTypeId
      * @param firstnameTh  firstnameTh
      * @param lastnameTh  lastnameTh
@@ -58,6 +59,7 @@ public class NcbPaymentConfirmService {
                                                        String serviceTypeId, String firstnameTh, String lastnameTh, String firstnameEn,
                                                        String lastnameEn, String email, String address, String deliveryMethod, String accountNumber) throws TMBCommonException {
         try {
+            logger.info("product-exp-service confirmNcbPayment method start Time : {} ", System.currentTimeMillis());
             NcbPaymentConfirmResponse response = new NcbPaymentConfirmResponse();
 
             String correlationId = requestHeaders.get(X_CORRELATION_ID);
@@ -108,12 +110,8 @@ public class NcbPaymentConfirmService {
 
             createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, deliveryMethod);
 
-            // === Check First Time Usage ===
-            //GET /apis/customers/firstTimeUsage
             CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId, serviceTypeId);
-            logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
 
-            //PUT /apis/customers/firstTimeUsage
             if (customerFirstUsage != null) {
                 putFirstTimeUsage(crmId, deviceId, serviceTypeId);
             } else {
@@ -142,6 +140,7 @@ public class NcbPaymentConfirmService {
      */
     public boolean sendEmail(String correlationId, List<NotificationRecord> notificationRecord) {
         try {
+            logger.info("sendEmail start time : {}", System.currentTimeMillis());
             NotificationRequest notificationRequest = new NotificationRequest();
             notificationRequest.setRecords(notificationRecord);
             TmbOneServiceResponse<NotificationResponse> response = notificationServiceClient.sendMessage(correlationId, notificationRequest);
@@ -172,8 +171,15 @@ public class NcbPaymentConfirmService {
      */
     public Map<String, String> createNcbCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn, String deliveryMethod) {
         try {
+            logger.info("createNcbCase start time : {}", System.currentTimeMillis());
+
             String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
             String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
+
+            byte[] bytesFirstname = firstname.getBytes(StandardCharsets.UTF_8);
+            firstname = new String(bytesFirstname, StandardCharsets.UTF_8);
+            byte[] bytesLastname = lastname.getBytes(StandardCharsets.UTF_8);
+            lastname = new String(bytesLastname, StandardCharsets.UTF_8);
 
             String serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_EMAIL;
 
@@ -185,7 +191,7 @@ public class NcbPaymentConfirmService {
                     customerServiceClient.submitNcbCustomerCase(crmId, correlationId, firstname, lastname, serviceTypeMatrixCode);
             return response.getBody().getData(); //NOSONAR lightweight logging
         } catch (Exception e) {
-            logger.error("Unexpected error occured : {}", e);
+            logger.error("createNcbCase error : {}", e);
             return new HashMap<>();
         }
     }

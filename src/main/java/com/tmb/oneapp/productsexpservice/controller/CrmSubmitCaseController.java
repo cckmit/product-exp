@@ -21,7 +21,7 @@ import java.util.Map;
 
 
 /**
- * CrmCaseController request mapping will handle apis call
+ * CrmSubmitCaseController request mapping will handle apis call
  * and then navigate to respective method
  */
 @RestController
@@ -75,7 +75,7 @@ public class CrmSubmitCaseController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(caseStatusTrackingResponse);
         } catch (Exception e) {
-            logger.error("Unable to getCaseStatusTracking data : {} ", e);
+            logger.error("submitCaseStatus error : {} ", e);
             caseStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 
