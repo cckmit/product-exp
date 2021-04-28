@@ -4,10 +4,8 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.model.request.Crm.CrmSubmitCaseBody;
-import com.tmb.oneapp.productsexpservice.model.request.ncb.NcbPaymentConfirmBody;
+import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSubmitCaseBody;
 import com.tmb.oneapp.productsexpservice.service.CrmSubmitCaseService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.Map;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;

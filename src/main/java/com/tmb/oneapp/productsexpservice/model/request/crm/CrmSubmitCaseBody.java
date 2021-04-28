@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.request.Crm;
+package com.tmb.oneapp.productsexpservice.model.request.crm;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
