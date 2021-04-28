@@ -104,7 +104,7 @@ class NcbPaymentConfirmServiceTest {
 
         ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenReturn(mockResponse);
 
         Assert.assertNotEquals(new HashMap<>(), ncbPaymentConfirmService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, deliveryMethod));
     }
@@ -120,7 +120,7 @@ class NcbPaymentConfirmServiceTest {
 
         String deliveryMethod = "by email";
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenThrow(new IllegalArgumentException());
+        when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenThrow(new IllegalArgumentException());
 
         Assert.assertEquals(new HashMap<>(), ncbPaymentConfirmService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, deliveryMethod));
     }
@@ -224,7 +224,7 @@ class NcbPaymentConfirmServiceTest {
 
         ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenReturn(mockResponse);
 
         CustomerFirstUsage customerFirstUsage = new CustomerFirstUsage();
         customerFirstUsage.setCrmId(crmId);
@@ -299,7 +299,7 @@ class NcbPaymentConfirmServiceTest {
 
         ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenReturn(mockResponse);
 
         CustomerFirstUsage customerFirstUsage = new CustomerFirstUsage();
         customerFirstUsage.setCrmId(crmId);
@@ -331,7 +331,7 @@ class NcbPaymentConfirmServiceTest {
         String correlationId = "";
 
         when(notificationServiceClient.sendMessage(any(), any())).thenThrow(new IllegalArgumentException());
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenThrow(new IllegalArgumentException());
+        when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenThrow(new IllegalArgumentException());
         when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("NCBR"))).thenThrow(new IllegalArgumentException());
         when(customerServiceClient.putFirstTimeUsage(anyString(), anyString(), eq("NCBR")));
 

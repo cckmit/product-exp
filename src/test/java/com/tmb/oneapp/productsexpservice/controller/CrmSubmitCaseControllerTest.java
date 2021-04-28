@@ -33,7 +33,7 @@ class CrmSubmitCaseControllerTest {
 
         result.put(caseNumberSnakeCase, "123456789");
 
-        when(crmSubmitCaseService.createNcbCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
+        when(crmSubmitCaseService.createCrmCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenReturn(result);
 
         Map<String, String> header = new HashMap<>();
@@ -59,7 +59,7 @@ class CrmSubmitCaseControllerTest {
 
     @Test
     void submitCaseStatus_Data_Not_Found() throws JsonProcessingException {
-        when(crmSubmitCaseService.createNcbCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
+        when(crmSubmitCaseService.createCrmCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenReturn(new HashMap<>());
 
         Map<String, String> header = new HashMap<>();
@@ -85,7 +85,7 @@ class CrmSubmitCaseControllerTest {
 
     @Test
     void submitCaseStatus_Fail() throws JsonProcessingException {
-        when(crmSubmitCaseService.createNcbCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
+        when(crmSubmitCaseService.createCrmCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenThrow(new IllegalArgumentException());
 
         Map<String, String> header = new HashMap<>();

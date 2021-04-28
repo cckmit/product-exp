@@ -7,6 +7,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
+import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
@@ -187,8 +188,10 @@ public class NcbPaymentConfirmService {
                 serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST;
             }
 
+            CustomerCaseSubmitBody customerCaseSubmitBody = new CustomerCaseSubmitBody(firstname, lastname, serviceTypeMatrixCode);
+
             ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
-                    customerServiceClient.submitNcbCustomerCase(crmId, correlationId, firstname, lastname, serviceTypeMatrixCode);
+                    customerServiceClient.submitCustomerCase(crmId, correlationId, customerCaseSubmitBody);
             return response.getBody().getData(); //NOSONAR lightweight logging
         } catch (Exception e) {
             logger.error("createNcbCase error : {}", e);

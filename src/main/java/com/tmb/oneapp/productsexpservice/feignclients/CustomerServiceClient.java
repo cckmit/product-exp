@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
+import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -88,17 +89,14 @@ public interface CustomerServiceClient {
      *
      * @param crmId customer ID
      * @param correlationId correlationId
-     * @param firstname user's firstname
-     * @param lastname user's lastname
+     * @param requestBody CustomerCaseSubmitBody
      *
-     * @return String of
+     * @return Map<String, String>
      */
     @PostMapping(value = "/apis/customers/case/submit")
-    ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitNcbCustomerCase(
+    ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitCustomerCase(
             @RequestHeader(value = X_CRMID) String crmId,
             @RequestHeader(value = "X-Correlation-ID") String correlationId,
-            @RequestHeader(value = "firstname") String firstname,
-            @RequestHeader(value = "lastname") String lastname,
-            @RequestHeader(value = "service_type_matrix_code") String serviceTypeMatrixCode
+            @RequestBody CustomerCaseSubmitBody requestBody
     );
 }

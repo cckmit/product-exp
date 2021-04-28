@@ -63,7 +63,7 @@ public class CrmSubmitCaseController {
         try {
             String crmId = requestHeaders.get(X_CRMID);
             String correlationId = requestHeaders.get(X_CORRELATION_ID);
-            final Map<String, String> caseStatusTracking = crmSubmitCaseService.createNcbCase(crmId, correlationId, requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getServiceTypeMatrixCode());
+            final Map<String, String> caseStatusTracking = crmSubmitCaseService.createCrmCase(crmId, correlationId, requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getServiceTypeMatrixCode());
 
             if (caseStatusTracking.isEmpty()) {
                 caseStatusTrackingResponse.setStatus(new TmbStatus("0009",
