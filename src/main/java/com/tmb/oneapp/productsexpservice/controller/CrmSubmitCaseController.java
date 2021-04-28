@@ -6,18 +6,25 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.model.request.Crm.CrmSubmitCaseBody;
+import com.tmb.oneapp.productsexpservice.model.request.ncb.NcbPaymentConfirmBody;
 import com.tmb.oneapp.productsexpservice.service.CrmSubmitCaseService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Map;
+
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
 
 /**
@@ -44,21 +51,22 @@ public class CrmSubmitCaseController {
      */
     @ApiOperation(value = "Submit Case status data")
     @PostMapping(value = "/crm/submitCase")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+            @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000000051187", required = true, dataType = "string", paramType = "header"),
+    })
     public ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitCaseStatus(
-            @ApiParam(value = "Crm ID", defaultValue = "001100000000000000000001184383", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.X_CRMID) String crmId,
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
-            @ApiParam(value = "Firstname TH", defaultValue = "NAME", required = true) @Valid @RequestHeader("firstname_th") String firstnameTh,
-            @ApiParam(value = "Lastname TH", defaultValue = "TEST", required = true) @Valid @RequestHeader("lastname_th") String lastnameTh,
-            @ApiParam(value = "Firstname EN", defaultValue = "NAME", required = true) @Valid @RequestHeader("firstname_en") String firstnameEn,
-            @ApiParam(value = "Lastname EN", defaultValue = "TEST", required = true) @Valid @RequestHeader("lastname_en") String lastnameEn,
-            @ApiParam(value = "Service Type Matrix Code", defaultValue = "O0001", required = true) @Valid @RequestHeader("service_type_matrix_code") String serviceTypeMatrixCode) {
+            @ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
+            @RequestBody CrmSubmitCaseBody requestBody) {
 
         logger.info("product-exp-service submitCaseStatus method start Time : {} ", System.currentTimeMillis());
 
         TmbOneServiceResponse<Map<String, String>> caseStatusTrackingResponse = new TmbOneServiceResponse<>();
 
         try {
-            final Map<String, String> caseStatusTracking = crmSubmitCaseService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode);
+            String crmId = requestHeaders.get(X_CRMID);
+            String correlationId = requestHeaders.get(X_CORRELATION_ID);
+            final Map<String, String> caseStatusTracking = crmSubmitCaseService.createNcbCase(crmId, correlationId, requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getServiceTypeMatrixCode());
 
             if (caseStatusTracking.isEmpty()) {
                 caseStatusTrackingResponse.setStatus(new TmbStatus("0009",

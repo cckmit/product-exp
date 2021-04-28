@@ -1,6 +1,10 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.request.Crm.CrmSubmitCaseBody;
+import com.tmb.oneapp.productsexpservice.model.request.ncb.NcbPaymentConfirmBody;
 import com.tmb.oneapp.productsexpservice.service.CrmSubmitCaseService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -23,7 +28,7 @@ class CrmSubmitCaseControllerTest {
     private final CrmSubmitCaseController crmSubmitCaseController = new CrmSubmitCaseController(crmSubmitCaseService);
 
     @Test
-    void submitCaseStatus_Success() {
+    void submitCaseStatus_Success() throws JsonProcessingException {
         Map<String, String> result = new HashMap<>();
         String caseNumberSnakeCase = "case_number";
 
@@ -32,49 +37,74 @@ class CrmSubmitCaseControllerTest {
         when(crmSubmitCaseService.createNcbCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenReturn(result);
 
-        String correlationId = "1234";
-        String serviceTypeMatrixCode = "O0001";
-        String crmId = "001100000000000000000099999998";
-        String firstname = "abc";
-        String lastname = "def";
+        Map<String, String> header = new HashMap<>();
+        header.put(X_CRMID, "crmId");
+        header.put(X_CORRELATION_ID, "correlationId");
+
+        String requestBody = "{\n" +
+                "                \"firstname_th\": \"NAME\",\n" +
+                "                \"lastname_th\": \"TEST\",\n" +
+                "                \"firstname_en\": \"NAME\",\n" +
+                "                \"lastname_en\": \"TEST\",\n" +
+                "                \"service_type_matrix_code\": \"O0001\"\n" +
+                "        }";
+
+        CrmSubmitCaseBody crmSubmitCaseBody = new ObjectMapper().readValue(requestBody, CrmSubmitCaseBody.class);
 
         ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
-                crmSubmitCaseController.submitCaseStatus(crmId, correlationId, firstname, lastname, firstname, lastname, serviceTypeMatrixCode);
+                crmSubmitCaseController.submitCaseStatus(header, crmSubmitCaseBody);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
 
     @Test
-    void submitCaseStatus_Data_Not_Found() {
+    void submitCaseStatus_Data_Not_Found() throws JsonProcessingException {
         when(crmSubmitCaseService.createNcbCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenReturn(new HashMap<>());
 
-        String correlationId = "";
-        String serviceTypeMatrixCode = "";
-        String crmId = "";
-        String firstname = "";
-        String lastname = "";
+        Map<String, String> header = new HashMap<>();
+        header.put(X_CRMID, "crmId");
+        header.put(X_CORRELATION_ID, "correlationId");
+
+        String requestBody = "{\n" +
+                "                \"firstname_th\": \"NAME\",\n" +
+                "                \"lastname_th\": \"TEST\",\n" +
+                "                \"firstname_en\": \"NAME\",\n" +
+                "                \"lastname_en\": \"TEST\",\n" +
+                "                \"service_type_matrix_code\": \"O0001\"\n" +
+                "        }";
+
+        CrmSubmitCaseBody crmSubmitCaseBody = new ObjectMapper().readValue(requestBody, CrmSubmitCaseBody.class);
 
         ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
-                crmSubmitCaseController.submitCaseStatus(crmId, correlationId, firstname, lastname, firstname, lastname, serviceTypeMatrixCode);
+                crmSubmitCaseController.submitCaseStatus(header, crmSubmitCaseBody);
+
 
         assertNotEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void submitCaseStatus_Fail() {
+    void submitCaseStatus_Fail() throws JsonProcessingException {
         when(crmSubmitCaseService.createNcbCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenThrow(new IllegalArgumentException());
 
-        String correlationId = "";
-        String serviceTypeMatrixCode = "";
-        String crmId = "";
-        String firstname = "";
-        String lastname = "";
+        Map<String, String> header = new HashMap<>();
+        header.put(X_CRMID, "crmId");
+        header.put(X_CORRELATION_ID, "correlationId");
+
+        String requestBody = "{\n" +
+                "                \"firstname_th\": \"NAME\",\n" +
+                "                \"lastname_th\": \"TEST\",\n" +
+                "                \"firstname_en\": \"NAME\",\n" +
+                "                \"lastname_en\": \"TEST\",\n" +
+                "                \"service_type_matrix_code\": \"O0001\"\n" +
+                "        }";
+
+        CrmSubmitCaseBody crmSubmitCaseBody = new ObjectMapper().readValue(requestBody, CrmSubmitCaseBody.class);
 
         ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
-                crmSubmitCaseController.submitCaseStatus(crmId, correlationId, firstname, lastname, firstname, lastname, serviceTypeMatrixCode);
+                crmSubmitCaseController.submitCaseStatus(header, crmSubmitCaseBody);
 
         assertNotEquals(HttpStatus.OK, response.getStatusCode());
     }
