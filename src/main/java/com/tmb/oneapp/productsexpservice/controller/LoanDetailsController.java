@@ -94,56 +94,13 @@ public class LoanDetailsController {
 
 				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-					LoanDetailsFullResponse loanDetails = loanResponse.getBody().getData();
-					String productId = loanResponse.getBody().getData().getAccount().getProductId();
-					Rates rates = loanResponse.getBody().getData().getAccount().getRates();
-					String currentInterestRate = rates.getCurrentInterestRate();
-					String originalInterestRate = rates.getOriginalInterestRate();
-					String monthlyPaymentAmount = loanDetails.getAccount().getPayment().getMonthlyPaymentAmount();
-					Double monthlyPayment = ConversionUtil.stringToDouble(monthlyPaymentAmount);
-					DecimalFormat df = new DecimalFormat("#,###,##0.00");
-					Payment payment = loanDetails.getAccount().getPayment();
-
-					String formattedPayment = df.format(monthlyPayment);
-					payment.setMonthlyPaymentAmount(formattedPayment);
-					String currentInterestRateInPercent = currentInterestRate.concat(" %");
-					String originalInterestRateInPercent = originalInterestRate.concat(" %");
-					rates.setCurrentInterestRate(currentInterestRateInPercent);
-					rates.setOriginalInterestRate(originalInterestRateInPercent);
-					ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
-							.getProductConfig(correlationId);
-
-					List<ProductConfig> list = fetchProductConfigList.getBody().getData();
-					Iterator<ProductConfig> iterator = list.iterator();
-					while (iterator.hasNext()) {
-						ProductConfig productConfig = iterator.next();
-						if (productConfig.getProductCode().equalsIgnoreCase(productId)) {
-							loanDetails.setProductConfig(productConfig);
-						}
-					}
-
-					/* Activity log */
-					creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent,
-							requestHeadersParameter, loanDetails);
-					creditCardLogService.logActivity(creditCardEvent);
-					oneServiceResponse
-							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-					oneServiceResponse.setData(loanDetails);
-					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+					return getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, correlationId, creditCardEvent, loanResponse);
 				} else {
-					oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-							ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(),
-							ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-							ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+					return getFailedResponse(responseHeaders, oneServiceResponse);
 
 				}
 			} else {
-				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-						ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+				return getFailedResponse(responseHeaders, oneServiceResponse);
 			}
 
 		} catch (Exception e) {
@@ -153,5 +110,53 @@ public class LoanDetailsController {
 			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 		}
 
+	}
+
+	 ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getTmbOneServiceResponseResponseEntity(Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders, TmbOneServiceResponse<LoanDetailsFullResponse> oneServiceResponse, String correlationId, CreditCardEvent creditCardEvent, ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> loanResponse) {
+		LoanDetailsFullResponse loanDetails = loanResponse.getBody().getData();
+		String productId = loanResponse.getBody().getData().getAccount().getProductId();
+		Rates rates = loanResponse.getBody().getData().getAccount().getRates();
+		String currentInterestRate = rates.getCurrentInterestRate();
+		String originalInterestRate = rates.getOriginalInterestRate();
+		String monthlyPaymentAmount = loanDetails.getAccount().getPayment().getMonthlyPaymentAmount();
+		Double monthlyPayment = ConversionUtil.stringToDouble(monthlyPaymentAmount);
+		DecimalFormat df = new DecimalFormat("#,###,##0.00");
+		Payment payment = loanDetails.getAccount().getPayment();
+
+		String formattedPayment = df.format(monthlyPayment);
+		payment.setMonthlyPaymentAmount(formattedPayment);
+		String currentInterestRateInPercent = currentInterestRate.concat(" %");
+		String originalInterestRateInPercent = originalInterestRate.concat(" %");
+		rates.setCurrentInterestRate(currentInterestRateInPercent);
+		rates.setOriginalInterestRate(originalInterestRateInPercent);
+		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
+				.getProductConfig(correlationId);
+
+		List<ProductConfig> list = fetchProductConfigList.getBody().getData();
+		Iterator<ProductConfig> iterator = list.iterator();
+		while (iterator.hasNext()) {
+			ProductConfig productConfig = iterator.next();
+			if (productConfig.getProductCode().equalsIgnoreCase(productId)) {
+				loanDetails.setProductConfig(productConfig);
+			}
+		}
+
+		/* Activity log */
+		creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent,
+				requestHeadersParameter, loanDetails);
+		creditCardLogService.logActivity(creditCardEvent);
+		oneServiceResponse
+				.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+						ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		oneServiceResponse.setData(loanDetails);
+		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+	}
+
+	ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> getFailedResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanDetailsFullResponse> oneServiceResponse) {
+		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+				ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(),
+				ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+				ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+		return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 	}
 }
