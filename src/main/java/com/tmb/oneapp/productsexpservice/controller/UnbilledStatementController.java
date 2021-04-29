@@ -71,19 +71,7 @@ public class UnbilledStatementController {
 
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK
                         && billedStatementRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
-                    BigDecimal totalUnbilledAmounts = billedStatementRes.getBody().getCardStatement().getTotalUnbilledAmounts();
-                    if (totalUnbilledAmounts == null) {
-                        CardStatement cardStatement = billedStatementRes.getBody().getCardStatement();
-                        List<BigDecimal> items;
-                        items = Arrays.asList(cardStatement.getMinPaymentAmounts(), cardStatement.getTotalAmountDue(), cardStatement.getMinimumDue(), cardStatement.getInterests(), cardStatement.getCashAdvanceFee());
-
-                        totalUnbilledAmounts = items.stream().filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                        cardStatement.setTotalUnbilledAmounts(totalUnbilledAmounts);
-
-
-                    }
-                    return handlingResponseData(billedStatementRes, oneServiceResponse,
-                            responseHeaders);
+                    return getTmbOneServiceResponseResponse(oneServiceResponse, responseHeaders, billedStatementRes);
 
                 } else {
 
@@ -102,6 +90,28 @@ public class UnbilledStatementController {
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
         }
         return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+    }
+
+    /**
+     * @param oneServiceResponse
+     * @param responseHeaders
+     * @param billedStatementRes
+     * @return
+     */
+    ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getTmbOneServiceResponseResponse(TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse, HttpHeaders responseHeaders, ResponseEntity<BilledStatementResponse> billedStatementRes) {
+        BigDecimal totalUnbilledAmounts = billedStatementRes.getBody().getCardStatement().getTotalUnbilledAmounts();
+        if (totalUnbilledAmounts == null) {
+            CardStatement cardStatement = billedStatementRes.getBody().getCardStatement();
+            List<BigDecimal> items;
+            items = Arrays.asList(cardStatement.getMinPaymentAmounts(), cardStatement.getTotalAmountDue(), cardStatement.getMinimumDue(), cardStatement.getInterests(), cardStatement.getCashAdvanceFee());
+
+            totalUnbilledAmounts = items.stream().filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+            cardStatement.setTotalUnbilledAmounts(totalUnbilledAmounts);
+
+
+        }
+        return handlingResponseData(billedStatementRes, oneServiceResponse,
+                responseHeaders);
     }
 
     /**

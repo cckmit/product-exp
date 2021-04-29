@@ -71,13 +71,21 @@ public class BilledStatementWithPeriodController {
             }
 
         } catch (Exception exception) {
-            logger.error("Unable to fetch billed statement for this account ID: {}", exception);
-            response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-                    ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+            generalError(response, exception);
 
             return ResponseEntity.badRequest().headers(responseHeaders).body(response);
         }
         return ResponseEntity.badRequest().headers(responseHeaders).body(response);
+    }
+
+    /**
+     * @param response
+     * @param exception
+     */
+    void generalError(TmbOneServiceResponse<BilledStatementResponse> response, Exception exception) {
+        logger.error("Unable to fetch billed statement for this account ID: {}", exception);
+        response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+                ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
     }
 
     /**

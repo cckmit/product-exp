@@ -1,0 +1,56 @@
+{
+	"predicates": [{
+		"equals": {
+			"path": "/apis/products/lending/get-preload-data",
+			"method": "GET"
+		}
+	}],
+	"responses": [{
+		"is": {
+			"statusCode": 200,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"body": {
+				"status": {
+					"code": "0000",
+					"message": "success",
+					"service": "customers-exp-service",
+					"description": "success"
+				},
+				"data": {
+
+					"customerFullTH": "",
+					"customerFullEN": "",
+					"birthdate": "",
+					"citizenId": "",
+					"expireDate": "",
+					"nationality": "",
+					"mobileNo": "",
+					"remark": "",
+					"adddressInfo": "",
+					"address": {
+						"houseNo": "",
+						"roomNo": "",
+						"floorNo": "",
+						"moo": "",
+						"soi": "",
+						"villageOrbuilding": "",
+						"street": "",
+						"zipcode": "",
+						"provinceNameTh": "",
+						"provinceNameEn": "",
+						"provinceCode": "",
+						"districtNameTh": "",
+						"districtNameEn": "",
+						"subDistrictNameTh": "",
+						"subDistrictNameEn": "",
+						"postcode": ""
+					}
+				}
+
+			}
+		}
+
+	}]
+}
