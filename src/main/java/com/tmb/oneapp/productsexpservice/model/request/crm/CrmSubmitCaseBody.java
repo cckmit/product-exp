@@ -26,4 +26,6 @@ public class CrmSubmitCaseBody {
     private String lastnameEn;
     @ApiModelProperty(notes = "ServiceTypeMatrixCode", example="O0004")
     private String serviceTypeMatrixCode;
+    @ApiModelProperty(notes = "Note", example="awefwefwaefwef")
+    private String note;
 }

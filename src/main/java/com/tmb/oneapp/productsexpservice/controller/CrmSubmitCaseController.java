@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -48,6 +49,7 @@ public class CrmSubmitCaseController {
      */
     @ApiOperation(value = "Submit Case status data")
     @PostMapping(value = "/crm/submitCase")
+    @LogAround
     @ApiImplicitParams({
             @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
             @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000000051187", required = true, dataType = "string", paramType = "header"),
@@ -56,16 +58,12 @@ public class CrmSubmitCaseController {
             @ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
             @RequestBody CrmSubmitCaseBody requestBody) {
 
-        logger.info("product-exp-service submitCaseStatus method start Time : {} ", System.currentTimeMillis());
-
         TmbOneServiceResponse<Map<String, String>> caseStatusTrackingResponse = new TmbOneServiceResponse<>();
 
         try {
-            String crmId = requestHeaders.get(X_CRMID);
-            String correlationId = requestHeaders.get(X_CORRELATION_ID);
-            final Map<String, String> caseStatusTracking = crmSubmitCaseService.createCrmCase(crmId, correlationId, requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getServiceTypeMatrixCode());
+            final Map<String, String> caseCreateResult = crmSubmitCaseService.createCrmCase(requestHeaders.get(X_CRMID), requestHeaders.get(X_CORRELATION_ID), requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getServiceTypeMatrixCode(), requestBody.getNote());
 
-            if (caseStatusTracking.isEmpty()) {
+            if (caseCreateResult == null) {
                 caseStatusTrackingResponse.setStatus(new TmbStatus("0009",
                         ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService()));
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -73,7 +71,7 @@ public class CrmSubmitCaseController {
                         .body(caseStatusTrackingResponse);
             }
 
-            caseStatusTrackingResponse.setData(caseStatusTracking);
+            caseStatusTrackingResponse.setData(caseCreateResult);
             caseStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
             return ResponseEntity.status(HttpStatus.OK)

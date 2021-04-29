@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -56,11 +57,11 @@ public class NcbPaymentConfirmService {
      *
      * @return NcbPaymentConfirmResponse NcbPaymentConfirmResponse
      */
+    @LogAround
     public NcbPaymentConfirmResponse confirmNcbPayment(Map<String, String> requestHeaders, //NOSONAR lightweight logging
                                                        String serviceTypeId, String firstnameTh, String lastnameTh, String firstnameEn,
                                                        String lastnameEn, String email, String address, String deliveryMethod, String accountNumber) throws TMBCommonException {
         try {
-            logger.info("product-exp-service confirmNcbPayment method start Time : {} ", System.currentTimeMillis());
             NcbPaymentConfirmResponse response = new NcbPaymentConfirmResponse();
 
             String correlationId = requestHeaders.get(X_CORRELATION_ID);
@@ -139,9 +140,9 @@ public class NcbPaymentConfirmService {
      *
      * @return boolean status of email sending
      */
+    @LogAround
     public boolean sendEmail(String correlationId, List<NotificationRecord> notificationRecord) {
         try {
-            logger.info("sendEmail start time : {}", System.currentTimeMillis());
             NotificationRequest notificationRequest = new NotificationRequest();
             notificationRequest.setRecords(notificationRecord);
             TmbOneServiceResponse<NotificationResponse> response = notificationServiceClient.sendMessage(correlationId, notificationRequest);
@@ -170,10 +171,9 @@ public class NcbPaymentConfirmService {
      *
      * @return Map of result
      */
+    @LogAround
     public Map<String, String> createNcbCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn, String deliveryMethod) {
         try {
-            logger.info("createNcbCase start time : {}", System.currentTimeMillis());
-
             String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
             String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
 
@@ -188,7 +188,7 @@ public class NcbPaymentConfirmService {
                 serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST;
             }
 
-            CustomerCaseSubmitBody customerCaseSubmitBody = new CustomerCaseSubmitBody(firstname, lastname, serviceTypeMatrixCode);
+            CustomerCaseSubmitBody customerCaseSubmitBody = new CustomerCaseSubmitBody(firstname, lastname, serviceTypeMatrixCode, "");
 
             ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
                     customerServiceClient.submitCustomerCase(crmId, correlationId, customerCaseSubmitBody);

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -37,10 +38,9 @@ public class CrmSubmitCaseService {
      *
      * @return NcbPaymentConfirmResponse NcbPaymentConfirmResponse
      */
-    public Map<String, String> createCrmCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn, String serviceTypeMatrixCode) {
+    @LogAround
+    public Map<String, String> createCrmCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn, String serviceTypeMatrixCode, String note) { //NOSONAR lightweight logging
         try {
-            logger.info("product-exp-service createNcbCase method start Time : {} ", System.currentTimeMillis());
-
             String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
             String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
 
@@ -49,7 +49,7 @@ public class CrmSubmitCaseService {
             byte[] bytesLastname = lastname.getBytes(StandardCharsets.UTF_8);
             lastname = new String(bytesLastname, StandardCharsets.UTF_8);
 
-            CustomerCaseSubmitBody customerCaseSubmitBody = new CustomerCaseSubmitBody(firstname, lastname, serviceTypeMatrixCode);
+            CustomerCaseSubmitBody customerCaseSubmitBody = new CustomerCaseSubmitBody(firstname, lastname, serviceTypeMatrixCode, note);
 
             ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
                     customerServiceClient.submitCustomerCase(crmId, correlationId, customerCaseSubmitBody);
@@ -60,7 +60,7 @@ public class CrmSubmitCaseService {
             return result; //NOSONAR lightweight logging
         } catch (Exception e) {
             logger.error("createNcbCase error : {}", e);
-            return new HashMap<>();
+            return null;
         }
     }
 }

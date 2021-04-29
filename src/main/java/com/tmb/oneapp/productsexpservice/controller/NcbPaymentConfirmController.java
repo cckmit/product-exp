@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -45,6 +46,7 @@ public class NcbPaymentConfirmController {
      */
     @ApiOperation(value = "NCB Payment Confirm")
     @PostMapping(value = "/NCB/paymentConfirm")
+    @LogAround
     @ApiImplicitParams({
             @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
             @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000000051187", required = true, dataType = "string", paramType = "header"),
@@ -57,7 +59,6 @@ public class NcbPaymentConfirmController {
         TmbOneServiceResponse<NcbPaymentConfirmResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            logger.info("product-exp-service confirmNcbPayment method start Time : {} ", System.currentTimeMillis());
             NcbPaymentConfirmResponse ncbPaymentConfirmResponse =
                     ncbPaymentConfirmService.confirmNcbPayment(requestHeaders, requestBody.getServiceTypeId(), requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getEmail(), requestBody.getAddress(), requestBody.getDeliveryMethod(), requestBody.getAccountNumber());
 

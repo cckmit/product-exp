@@ -34,7 +34,7 @@ class CrmSubmitCaseControllerTest {
         result.put(caseNumberSnakeCase, "123456789");
 
         when(crmSubmitCaseService.createCrmCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
-                anyString())).thenReturn(result);
+                anyString(), anyString())).thenReturn(result);
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CRMID, "crmId");
@@ -45,7 +45,8 @@ class CrmSubmitCaseControllerTest {
                 "                \"lastname_th\": \"TEST\",\n" +
                 "                \"firstname_en\": \"NAME\",\n" +
                 "                \"lastname_en\": \"TEST\",\n" +
-                "                \"service_type_matrix_code\": \"O0001\"\n" +
+                "                \"service_type_matrix_code\": \"O0001\",\n" +
+                "                 \"note\": \"wfawefawf\"" +
                 "        }";
 
         CrmSubmitCaseBody crmSubmitCaseBody = new ObjectMapper().readValue(requestBody, CrmSubmitCaseBody.class);
@@ -60,7 +61,7 @@ class CrmSubmitCaseControllerTest {
     @Test
     void submitCaseStatus_Data_Not_Found() throws JsonProcessingException {
         when(crmSubmitCaseService.createCrmCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
-                anyString())).thenReturn(new HashMap<>());
+                anyString(), anyString())).thenReturn(null);
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CRMID, "crmId");
@@ -71,7 +72,8 @@ class CrmSubmitCaseControllerTest {
                 "                \"lastname_th\": \"TEST\",\n" +
                 "                \"firstname_en\": \"NAME\",\n" +
                 "                \"lastname_en\": \"TEST\",\n" +
-                "                \"service_type_matrix_code\": \"O0001\"\n" +
+                "                \"service_type_matrix_code\": \"O0001\",\n" +
+                "                 \"note\": \"wfawefawf\"" +
                 "        }";
 
         CrmSubmitCaseBody crmSubmitCaseBody = new ObjectMapper().readValue(requestBody, CrmSubmitCaseBody.class);
@@ -86,7 +88,7 @@ class CrmSubmitCaseControllerTest {
     @Test
     void submitCaseStatus_Fail() throws JsonProcessingException {
         when(crmSubmitCaseService.createCrmCase(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
-                anyString())).thenThrow(new IllegalArgumentException());
+                anyString(), anyString())).thenThrow(new IllegalArgumentException());
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CRMID, "crmId");
@@ -97,7 +99,8 @@ class CrmSubmitCaseControllerTest {
                 "                \"lastname_th\": \"TEST\",\n" +
                 "                \"firstname_en\": \"NAME\",\n" +
                 "                \"lastname_en\": \"TEST\",\n" +
-                "                \"service_type_matrix_code\": \"O0001\"\n" +
+                "                \"service_type_matrix_code\": \"O0001\",\n" +
+                "                 \"note\": \"wfawefawf\"" +
                 "        }";
 
         CrmSubmitCaseBody crmSubmitCaseBody = new ObjectMapper().readValue(requestBody, CrmSubmitCaseBody.class);

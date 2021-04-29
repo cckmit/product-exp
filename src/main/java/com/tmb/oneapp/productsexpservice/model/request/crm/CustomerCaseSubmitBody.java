@@ -22,4 +22,6 @@ public class CustomerCaseSubmitBody {
     private String lastname;
     @ApiModelProperty(notes = "ServiceTypeMatrixCode", example="O0001")
     private String serviceTypeMatrixCode;
+    @ApiModelProperty(notes = "Note", example="awefwefwaefwef")
+    private String note;
 }

@@ -32,6 +32,7 @@ class CrmSubmitCaseServiceTest {
         String firstnameEn = "NAME";
         String lastnameEn = "TEST";
         String serviceTypeMatrixCode = "O0001";
+        String note = "adwadaw";
 
         String caseRef = "12312312";
         Map<String, String> response = new HashMap<>();
@@ -44,7 +45,7 @@ class CrmSubmitCaseServiceTest {
 
         when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenReturn(mockResponse);
 
-        assertNotEquals(null, crmSubmitCaseService.createCrmCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode));
+        assertNotEquals(null, crmSubmitCaseService.createCrmCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode, note));
     }
 
     @Test
@@ -58,8 +59,10 @@ class CrmSubmitCaseServiceTest {
 
         String serviceTypeMatrixCode = "O0001";
 
+        String note = "adwadaw";
+
         when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenThrow(new IllegalArgumentException());
 
-        assertEquals(new HashMap<>(), crmSubmitCaseService.createCrmCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode));
+        assertNull(crmSubmitCaseService.createCrmCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode, note));
     }
 }
