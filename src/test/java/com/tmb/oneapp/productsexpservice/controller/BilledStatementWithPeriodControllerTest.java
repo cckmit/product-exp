@@ -23,8 +23,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -111,6 +110,18 @@ public class BilledStatementWithPeriodControllerTest {
 
     @Test
     public void testHandlingFailedResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        when(creditCardClient.getBilledStatementWithPeriod(any(), any(), any())).thenThrow(new
+                IllegalStateException("Error occurred"));
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController
+                .handlingFailedResponse(oneServiceResponse, responseHeaders);
+
+        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+    }
+
+    private TmbOneServiceResponse<BilledStatementResponse> getTmbOneServiceResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
@@ -124,14 +135,7 @@ public class BilledStatementWithPeriodControllerTest {
         cardStatement.setPromotionFlag("Y");
         setCreditLimitResp.setCardStatement(cardStatement);
         oneServiceResponse.setData(setCreditLimitResp);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
-        when(creditCardClient.getBilledStatementWithPeriod(any(), any(), any())).thenThrow(new
-                IllegalStateException("Error occurred"));
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController
-                .handlingFailedResponse(oneServiceResponse, responseHeaders);
-
-        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+        return oneServiceResponse;
     }
 
     @Test
@@ -161,5 +165,14 @@ public class BilledStatementWithPeriodControllerTest {
 
     }
 
+    @Test
+    void generalError() {
+        TmbOneServiceResponse<BilledStatementResponse> response = getTmbOneServiceResponse();
+        Exception exception = new Exception();
+        StackTraceElement[] stackTrace = {};
+        exception.setStackTrace(stackTrace);
+        billedStatementWithPeriodController.generalError(response, exception);
+        assertNotNull(exception);
+    }
 }
 

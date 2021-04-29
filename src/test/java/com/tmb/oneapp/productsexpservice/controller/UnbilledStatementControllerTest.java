@@ -6,7 +6,6 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
-import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import org.junit.Assert;
@@ -25,8 +24,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -90,18 +88,7 @@ public class UnbilledStatementControllerTest {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
         String accountId = "0000000050078680472000929";
 
-        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
-        silverlakeStatus.setStatusCode(0);
-        BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
-        setCreditLimitResp.setStatus(silverlakeStatus);
-        setCreditLimitResp.setTotalRecords(10);
-        setCreditLimitResp.setMaxRecords(100);
-        setCreditLimitResp.setMoreRecords("100");
-        setCreditLimitResp.setSearchKeys("N");
-        CardStatement cardStatement = new CardStatement();
-        cardStatement.setPromotionFlag("Y");
-        setCreditLimitResp.setCardStatement(cardStatement);
-        ResponseEntity<BilledStatementResponse> value = new ResponseEntity<>(setCreditLimitResp, HttpStatus.OK);
+        ResponseEntity<BilledStatementResponse> value = getResponseEntity();
 
         Mockito.when(creditCardClient.getUnBilledStatement(any(), any())).thenReturn(value);
 
@@ -113,11 +100,7 @@ public class UnbilledStatementControllerTest {
         assertEquals(200, actual.getStatusCode().value());
     }
 
-    @Test
-    void handlingResponseDataTest() {
-        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-
-
+    private ResponseEntity<BilledStatementResponse> getResponseEntity() {
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
         BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
@@ -129,11 +112,27 @@ public class UnbilledStatementControllerTest {
         CardStatement cardStatement = new CardStatement();
         cardStatement.setPromotionFlag("Y");
         setCreditLimitResp.setCardStatement(cardStatement);
-        ResponseEntity<BilledStatementResponse> response = new ResponseEntity<>(setCreditLimitResp, HttpStatus.OK);
+        return new ResponseEntity<>(setCreditLimitResp, HttpStatus.OK);
+    }
+
+    @Test
+    void handlingResponseDataTest() {
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+
+
+        ResponseEntity<BilledStatementResponse> response = getResponseEntity();
 
         Mockito.when(creditCardClient.getUnBilledStatement(any(), any())).thenReturn(response);
 
 
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getBilledStatementResponse();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(correlationId, "34343");
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> actual = unbilledStatementController.handlingResponseData(response, oneServiceResponse, responseHeaders);
+        assertEquals(200, actual.getStatusCode().value());
+    }
+
+    private TmbOneServiceResponse<BilledStatementResponse> getBilledStatementResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setCode("0");
@@ -147,10 +146,7 @@ public class UnbilledStatementControllerTest {
         data.setMaxRecords(10);
         data.setTotalRecords(100);
         oneServiceResponse.setData(data);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(correlationId, "34343");
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> actual = unbilledStatementController.handlingResponseData(response, oneServiceResponse, responseHeaders);
-        assertEquals(200, actual.getStatusCode().value());
+        return oneServiceResponse;
     }
 
     @Test
@@ -203,5 +199,16 @@ public class UnbilledStatementControllerTest {
         assertEquals(400, billedStatement.getStatusCodeValue());
 
     }
+
+    @Test
+    void getTmbOneServiceResponseResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getBilledStatementResponse();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setBearerAuth("1234");
+        ResponseEntity<BilledStatementResponse> billedStatementRes = getResponseEntity();
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> response = unbilledStatementController.getTmbOneServiceResponseResponse(oneServiceResponse, responseHeaders, billedStatementRes);
+        assertNotNull(response);
+    }
+
 }
 

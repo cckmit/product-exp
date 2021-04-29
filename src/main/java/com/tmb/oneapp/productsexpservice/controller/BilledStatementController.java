@@ -74,12 +74,22 @@ public class BilledStatementController {
             }
 
         } catch (Exception ex) {
-            logger.error("Unable to fetch billed statement for this account ID: {}", ex);
-            response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-                    ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-
-            return ResponseEntity.badRequest().headers(responseHeaders).body(response);
+            return generalErrorResponse(response, responseHeaders, ex);
         }
+        return ResponseEntity.badRequest().headers(responseHeaders).body(response);
+    }
+
+    /**
+     * @param response
+     * @param responseHeaders
+     * @param ex
+     * @return
+     */
+    ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> generalErrorResponse(TmbOneServiceResponse<BilledStatementResponse> response, HttpHeaders responseHeaders, Exception ex) {
+        logger.error("Unable to fetch billed statement for this account ID: {}", ex);
+        response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+                ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+
         return ResponseEntity.badRequest().headers(responseHeaders).body(response);
     }
 
