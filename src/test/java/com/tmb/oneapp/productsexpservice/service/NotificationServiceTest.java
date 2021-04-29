@@ -9,8 +9,11 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
+import com.tmb.oneapp.productsexpservice.model.SoGoodItemInfo;
+import com.tmb.oneapp.productsexpservice.model.SoGoodWrapper;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
+import com.tmb.oneapp.productsexpservice.model.request.notification.NotifyCommon;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -489,6 +492,44 @@ public class NotificationServiceTest {
 
     @Test
     public void testDoNotifyApplySoGood() {
+        CardInstallmentResponse response = getCardInstallmentResponse();
+        CardInstallmentQuery requestBody = new CardInstallmentQuery();
+        requestBody.setAccountId("1234");
+        List<CardInstallment> cardInstallment = new ArrayList<>();
+        CardInstallment element = new CardInstallment();
+        InstallmentPlan installmentplan = getInstallmentPlan();
+        List<InstallmentPlan> plan = new ArrayList<>();
+        installmentplan.setInstallmentsPlan("1234");
+        installmentplan.setChannel("1234");
+        installmentplan.setPlanSeqId("1234");
+        installmentplan.setInterestRate("1234");
+        installmentplan.setPaymentTerm("1234");
+        installmentplan.setPlanStatus("success");
+        plan.add(installmentplan);
+        requestBody.setCardInstallment(cardInstallment);
+        TmbOneServiceResponse<List<InstallmentPlan>> tmbResponse = new TmbOneServiceResponse();
+        CardInstallment cardInstall = new CardInstallment();
+        cardInstall.setInterest("1234");
+
+        TmbStatus tmbStatus = getTmbStatus();
+        tmbResponse.setStatus(tmbStatus);
+        tmbResponse.setData(plan);
+        element.setPostDate("1234");
+
+        cardInstallment.add(element);
+
+
+        tmbResponse.setStatus(tmbStatus);
+        tmbResponse.setData(plan);
+
+        ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> responseInstallments = new ResponseEntity(tmbResponse, HttpStatus.OK);
+        when(creditCardClient.getInstallmentPlan(any())).thenReturn(responseInstallments);
+
+        notificationService.doNotifyApplySoGood("correlationId", "accountId", "crmId", Arrays.asList(response), requestBody);
+        assertNotEquals(null, responseInstallments);
+    }
+
+    private CardInstallmentResponse getCardInstallmentResponse() {
         CardInstallmentResponse response = new CardInstallmentResponse();
         StatusResponse status = new StatusResponse();
         status.setStatusCode("0");
@@ -516,12 +557,10 @@ public class NotificationServiceTest {
         model.setAccountId("124");
         response.setStatus(status);
         response.setCreditCard(model);
-        CardInstallmentQuery requestBody = new CardInstallmentQuery();
-        TmbOneServiceResponse<List<InstallmentPlan>> tmbResponse = new TmbOneServiceResponse();
-        CardInstallment cardInstall = new CardInstallment();
-        cardInstall.setInterest("1234");
-        List<CardInstallment> cardInstallment = new ArrayList<>();
-        CardInstallment element = new CardInstallment();
+        return response;
+    }
+
+    private InstallmentPlan getInstallmentPlan() {
         InstallmentPlan installment = new InstallmentPlan();
         installment.setInstallmentsPlan("1234");
         installment.setChannel("1234");
@@ -530,39 +569,79 @@ public class NotificationServiceTest {
         installment.setPaymentTerm("1234");
         installment.setPlanStatus("success");
         installment.setMerchantNo("1234");
-        List<InstallmentPlan> plan = new ArrayList<>();
-        for (InstallmentPlan installmentplan : plan) {
-            installmentplan.setInstallmentsPlan("1234");
-            installmentplan.setChannel("1234");
-            installmentplan.setPlanSeqId("1234");
-            installment.setInterestRate("1234");
-            installment.setPaymentTerm("1234");
-            installment.setPlanStatus("success");
-            plan.add(installmentplan);
-        }
-        plan.add(installment);
+        return installment;
+    }
+
+    private TmbStatus getTmbStatus() {
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setService("notification-service");
         tmbStatus.setDescription("notification");
         tmbStatus.setCode("1234");
         tmbStatus.setMessage("1234");
-        tmbResponse.setStatus(tmbStatus);
-        tmbResponse.setData(plan);
-        element.setPostDate("1234");
-
-        cardInstallment.add(element);
-        requestBody.setAccountId("1234");
-        requestBody.setCardInstallment(cardInstallment);
-
-
-        tmbResponse.setStatus(tmbStatus);
-        tmbResponse.setData(plan);
-
-        ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> responseInstallments = new ResponseEntity(tmbResponse, HttpStatus.OK);
-        when(creditCardClient.getInstallmentPlan(any())).thenReturn(responseInstallments);
-
-        notificationService.doNotifyApplySoGood("correlationId", "accountId", "crmId", Arrays.asList(response), requestBody);
-        assertNotEquals(null, responseInstallments);
+        return tmbStatus;
     }
 
+
+    @Test
+    void sendNotifyApplySoGood() {
+        NotifyCommon notifyCommon = new NotifyCommon();
+        notifyCommon.setCrmId("1234");
+        notifyCommon.setAccountId("1234");
+        notifyCommon.setProductNameEN("test");
+        String email = "test@test.com";
+        String phoneNo = "9899776640";
+        SoGoodWrapper soGoodWrapper = new SoGoodWrapper();
+        List<SoGoodItemInfo> items = new ArrayList<>();
+        SoGoodItemInfo soGoodItemInfo = new SoGoodItemInfo();
+        soGoodItemInfo.setCreateDate("10-10-2020");
+        soGoodItemInfo.setFirstPayment("1234");
+        soGoodItemInfo.setName("test");
+        items.add(soGoodItemInfo);
+        soGoodWrapper.setItems(items);
+        soGoodWrapper.setTenor("6");
+        soGoodWrapper.setInterestRatePercent("10.00");
+        BigDecimal totalAmt = BigDecimal.valueOf(100.00);
+        TmbOneServiceResponse<NotificationResponse> response = new TmbOneServiceResponse<>();
+        response.setStatus(getTmbStatus());
+        NotificationResponse notification = new NotificationResponse();
+        notification.setStatus(0);
+        notification.setGuid("123");
+        notification.setSuccess(true);
+        notification.setMessage("Success");
+        response.setData(notification);
+        when(notificationServiceClient.sendMessage(any(), any())).thenReturn(response);
+        notificationService.sendNotifyApplySoGood(notifyCommon, email, phoneNo, soGoodWrapper, totalAmt);
+        assertNotNull(response);
+    }
+
+    @Test
+    void generateSoGoodWraperModel() {
+        InstallmentPlan installment = getInstallmentPlan();
+        CardInstallmentResponse response = getCardInstallmentResponse();
+        List<CardInstallmentResponse> successItems = new ArrayList<>();
+        successItems.add(response);
+        CardInstallmentQuery requestBody = new CardInstallmentQuery();
+        requestBody.setAccountId("1234");
+        List<CardInstallment> cardInstallment = new ArrayList<>();
+        CardInstallment element = new CardInstallment();
+        InstallmentPlan installmentplan = getInstallmentPlan();
+        List<InstallmentPlan> plan = new ArrayList<>();
+        installmentplan.setInstallmentsPlan("1234");
+        installmentplan.setChannel("1234");
+        installmentplan.setPlanSeqId("1234");
+        installmentplan.setInterestRate("1234");
+        installmentplan.setPaymentTerm("1234");
+        installmentplan.setPlanStatus("success");
+        plan.add(installmentplan);
+        requestBody.setCardInstallment(cardInstallment);
+        SoGoodWrapper soGoodWrapper = notificationService.generateSoGoodWraperModel(installment, successItems, requestBody);
+        assertNotNull(soGoodWrapper);
+
+    }
+
+    @Test
+    void testGetString() {
+        String date = notificationService.getString("10-10-2020");
+        assertNotNull(date);
+    }
 }
