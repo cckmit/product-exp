@@ -24,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -342,16 +343,12 @@ public class LoanDetailsControllerTest {
         payment.setMonthlyPaymentAmount("1234");
         account.setPayment(payment);
         oneServiceResponse.setData(data);
-        Map<String, String> requestHeadersParameter = headerRequestParameter("1234");
-        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, "", "");
         LoanDetailsFullResponse loanDetails = new LoanDetailsFullResponse();
         loanDetails.setAccount(account);
-        StatusResponse status = new StatusResponse();
-        status.setCode("0");
-        status.setDescription("Success");
-        loanDetails.setStatus(status);
-        String productId = "1234";
+        StatusResponse statusResponse = new StatusResponse();
+        statusResponse.setCode("0");
+        statusResponse.setDescription("Success");
+        loanDetails.setStatus(statusResponse);
         Rates rates = new Rates();
         rates.setCurrentInterestRate("1234");
         rates.setOriginalInterestRate("12334");
@@ -366,11 +363,33 @@ public class LoanDetailsControllerTest {
         list.add(config);
         resp.setData(list);
         resp.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = new ResponseEntity<>(resp, HttpStatus.OK);
-        when(commonServiceClient.getProductConfig(any())).thenReturn(response);
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> tmbOneServiceResponseResponseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, correlationId, creditCardEvent, loanDetails, productId, rates);
-        assertNotNull(tmbOneServiceResponseResponseEntity);
+        ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> responseEntity = new ResponseEntity<>(resp, HttpStatus.OK);
+        when(commonServiceClient.getProductConfig(any())).thenReturn(responseEntity);
+        Map<String, String> reqHeaders= headerRequestParameter("1234");
+        AccountId accountNo = new AccountId();
+        accountNo.setAccountNo("1223");
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, accountNo);
+
+        assertNotNull(result);
+
     }
+
+    @Test
+    void testLoanDetailsNull() {
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        FetchCreditCardDetailsReq req = new FetchCreditCardDetailsReq();
+        Account accountId = new Account();
+        accountId.setBranchId("001");
+        accountId.setProductId("ABHA");
+        AccountId accountNo = new AccountId();
+        accountNo.setAccountNo("00016109738001");
+        req.setAccountId("0000000050078360018000167");
+        when(accountRequestClient.getLoanAccountDetail(any(), any())).thenThrow(NullPointerException.class);
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            accountRequestClient.getLoanAccountDetail(correlationId, accountNo);
+        });
+    }
+
 
     @Test
     void testGetTmbOneServiceResponseResponseEntity() {
@@ -392,7 +411,8 @@ public class LoanDetailsControllerTest {
         account.setDebitAccount(debitAccount);
         data.setAccount(account);
         oneServiceResponse.setData(data);
-        homeLoanController.getTmbOneServiceResponse(responseHeaders, oneServiceResponse);
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> tmbOneServiceResponse = homeLoanController.getFailedResponse(responseHeaders, oneServiceResponse);
+        assertNotNull(tmbOneServiceResponse);
     }
 
     public Map<String, String> headerRequestParameter(String correlationId) {
@@ -400,5 +420,62 @@ public class LoanDetailsControllerTest {
         reqData.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
         return reqData;
 
+    }
+
+    @Test
+    void testGetTmbOneServiceResponseRespons() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setBearerAuth("1234");
+        TmbOneServiceResponse<LoanDetailsFullResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setMessage("test");
+        tmbStatus.setService("test");
+        tmbStatus.setCode("test");
+        tmbStatus.setDescription("test");
+        oneServiceResponse.setStatus(tmbStatus);
+        LoanDetailsFullResponse data = new LoanDetailsFullResponse();
+        Account account = new Account();
+        DebitAccount debitAccount = new DebitAccount();
+        debitAccount.setAutoDebitDate("test");
+        debitAccount.setId("1234");
+        debitAccount.setAutoDebitMethod("credit-card");
+        account.setDebitAccount(debitAccount);
+        data.setAccount(account);
+        Payment payment = new Payment();
+        payment.setMonthlyPaymentAmount("1234");
+        account.setPayment(payment);
+        oneServiceResponse.setData(data);
+        Map<String, String> requestHeadersParameter = headerRequestParameter("1234");
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, "", "");
+        LoanDetailsFullResponse loanDetails = new LoanDetailsFullResponse();
+        loanDetails.setAccount(account);
+        StatusResponse status = new StatusResponse();
+        status.setCode("0");
+        status.setDescription("Success");
+        loanDetails.setStatus(status);
+        Rates rates = new Rates();
+        rates.setCurrentInterestRate("1234");
+        rates.setOriginalInterestRate("12334");
+        account.setRates(rates);
+        TmbOneServiceResponse<List<ProductConfig>> resp = new TmbOneServiceResponse<>();
+        List<ProductConfig> list = new ArrayList<>();
+        ProductConfig config = new ProductConfig();
+        config.setProductCode("1234");
+        config.setProductNameEN("test");
+        config.setOpenEkyc("1234");
+        config.setIconId("1234");
+        config.setProductNameTH("test");
+        list.add(config);
+        resp.setData(list);
+        resp.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = new ResponseEntity<>(resp, HttpStatus.OK);
+        when(commonServiceClient.getProductConfig(any())).thenReturn(response);
+        TmbOneServiceResponse<LoanDetailsFullResponse> res= new TmbOneServiceResponse<>();
+        res.setStatus(tmbStatus);
+        res.setData(data);
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> loanResponse = new ResponseEntity<>(res,HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, correlationId, creditCardEvent, loanResponse);
+        assertNotNull(responseEntity);
     }
 }
