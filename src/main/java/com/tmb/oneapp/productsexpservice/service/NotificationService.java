@@ -604,8 +604,9 @@ public class NotificationService {
 	@Async
 	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
 			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
-		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
-
+		if (logger.isDebugEnabled()) {
+			logger.info(String.format("xCorrelationId:{ %s} request apply SO Good with  %s ",correlationId, requestBodyParameter));
+		}
 		List<CardInstallmentResponse> successItems = fillerForSuccessCardInstallmentRequest(data);
 		if (CollectionUtils.isNotEmpty(successItems)) {
 			InstallmentPlan installment = lookUpInstallment(correlationId,
