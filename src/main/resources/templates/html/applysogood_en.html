@@ -1,13 +1,13 @@
-<tr th:each="item : ${items}">
-	<td colspan="2">
-		<br>&nbsp;&nbsp;<span th:text="${item.name}">${item.name}</span>
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;Amount : <span th:text="${item.principle}">${item.principle}</span> ฿
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;First Payment : <span th:text="${item.firstPayment}">${item.firstPayment}</span> ฿
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;Total Interest : <span th:text="${item.totalInterest}">${item.totalInterest}</span> ฿
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;Total Amount : <span th:text="${item.totalAmt}">${item.totalAmt}</span> ฿
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;Transaction Date : <span th:text="${item.createDate}">${item.createDate}</span>
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;Posted Date : <span th:text="${item.tranDate}">${item.tranDate}</span>
-		<br>
-		<br>
-	</td>
-</tr>
+<table style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" width="100%">
+	<tr th:each="item : ${items}">
+		<td style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;">
+			&nbsp;&nbsp;<span style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" th:text="${item.name}">${item.name}</span><br />
+						&nbsp;&nbsp;&nbsp;&nbsp;Amount : <span style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" th:text="${item.principle}">${item.principle}</span> ฿<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;First Payment : <span style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" th:text="${item.firstPayment}">${item.firstPayment}</span> ฿<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;Total Interest : <span style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" th:text="${item.totalInterest}">${item.totalInterest}</span> ฿<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;Total Amount : <span style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" th:text="${item.totalAmt}">${item.totalAmt}</span> ฿<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;Transaction Date : <span style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" th:text="${item.createDate}">${item.createDate}</span><br />
+						&nbsp;&nbsp;&nbsp;&nbsp;Posted Date : <span style="margin: 0px; font-family: 'Cordia New'; font-size: 17px;" th:text="${item.tranDate}">${item.tranDate}</span><br />
+		</td>
+	</tr>
+</table>
