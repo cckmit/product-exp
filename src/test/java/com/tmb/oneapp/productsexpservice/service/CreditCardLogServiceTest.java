@@ -194,7 +194,7 @@ public class CreditCardLogServiceTest {
         status.setErrorStatus(null);
         response.setStatus(status);
         installment.add(response);
-        logService.applySoGoodConfirmEvent(correlationId, reqHeader, query, installment);
+        logService.generateApplySoGoodConfirmEvent(correlationId, reqHeader, query, installment);
         assertEquals("0", status.getStatusCode());
 
     }
@@ -228,7 +228,7 @@ public class CreditCardLogServiceTest {
         status.setErrorStatus(null);
         response.setStatus(status);
         installment.add(response);
-        logService.applySoGoodConfirmEvent(correlationId, hashMap, query, installment);
+        logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, query, installment);
         assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
     }
 
