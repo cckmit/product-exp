@@ -32,6 +32,7 @@ class CrmSubmitCaseServiceTest {
         String firstnameEn = "NAME";
         String lastnameEn = "TEST";
         String serviceTypeMatrixCode = "O0001";
+        String note = "adwadaw";
 
         String caseRef = "12312312";
         Map<String, String> response = new HashMap<>();
@@ -42,9 +43,9 @@ class CrmSubmitCaseServiceTest {
 
         ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(mockResponseCaseSubmit, HttpStatus.OK);
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenReturn(mockResponse);
 
-        assertNotEquals(null, crmSubmitCaseService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode));
+        assertNotEquals(null, crmSubmitCaseService.createCrmCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode, note));
     }
 
     @Test
@@ -58,8 +59,10 @@ class CrmSubmitCaseServiceTest {
 
         String serviceTypeMatrixCode = "O0001";
 
-        when(customerServiceClient.submitNcbCustomerCase(any(), any(), any(), any(), any())).thenThrow(new IllegalArgumentException());
+        String note = "adwadaw";
 
-        assertEquals(new HashMap<>(), crmSubmitCaseService.createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode));
+        when(customerServiceClient.submitCustomerCase(any(), any(), any())).thenThrow(new IllegalArgumentException());
+
+        assertNull(crmSubmitCaseService.createCrmCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, serviceTypeMatrixCode, note));
     }
 }
