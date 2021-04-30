@@ -27,8 +27,10 @@ import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
+import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
@@ -53,10 +55,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -145,28 +144,35 @@ public class ProductsExpService {
 
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-
+            List<String> ports = new ArrayList<>();
+            List<String> ptestPortList = new ArrayList<>();
+            PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
+            ptesBodyRequest.setRmNumber(rq.getCrmId());
             portData = customerExpServiceClient.getAccountSaving(correlationId, rq.getCrmId());
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
+                    investmentRequestClient.getPtesPort(invHeaderReqParameter,ptesBodyRequest);
+
+
+            Optional<List<PtesDetail>> ptesDetailList =
+            Optional.ofNullable(ptestDetailResult).map(tmbOneServiceResponseResponseEntity -> tmbOneServiceResponseResponseEntity.getBody())
+                    .map(body -> body.getData());
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
-            if (!StringUtils.isEmpty(portData)) {
+              if (!StringUtils.isEmpty(portData)) {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
                 JsonNode dataNode = node.get("data");
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
-                List<String> ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
+                 ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
                 });
 
-                List<String> ptesList = ports
-                        .stream()
-                        .filter(port -> port.startsWith("PTES"))
-                        .collect(Collectors.toList());
-                List<String> ptList = ports
-                        .stream()
-                        .filter(port -> port.startsWith("PT"))
-                        .collect(Collectors.toList());
+              if(ptesDetailList.isPresent()){
+                   ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
+                          .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
 
-                result.setPortsUnitHolder(ports);
+              }
+              ports.addAll(ptestPortList);
+               result.setPortsUnitHolder(ports);
                 unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
                 fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
                 summaryByPortResponse = investmentRequestClient
@@ -176,8 +182,20 @@ public class ProductsExpService {
                     var body = fundSummaryData.getBody();
                     var summaryByPort = summaryByPortResponse.getBody();
 
-                    setFundSummaryBody(result, ptesList, ptList, body, summaryByPort);
+                    setFundSummaryBody(result, ports, body, summaryByPort);
                 }
+            }
+            result.setPortsUnitHolder(ports);
+            unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
+            summaryByPortResponse = investmentRequestClient
+                    .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, fundSummaryData);
+            if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
+                var body = fundSummaryData.getBody();
+                var summaryByPort = summaryByPortResponse.getBody();
+
+                 setFundSummaryBody(result,ports, body, summaryByPort);
             }
             return result;
         } catch (Exception ex) {
@@ -189,12 +207,10 @@ public class ProductsExpService {
     /***
      * Set The FundSummaryBody
      * @param result
-     * @param ptesList
-     * @param ptList
      * @param body
      * @param summaryByPort
      */
-    private void setFundSummaryBody(FundSummaryBody result, List<String> ptesList, List<String> ptList, TmbOneServiceResponse<FundSummaryResponse> body, TmbOneServiceResponse<FundSummaryByPortResponse> summaryByPort) {
+    private void setFundSummaryBody(FundSummaryBody result, List<String> ports, TmbOneServiceResponse<FundSummaryResponse> body, TmbOneServiceResponse<FundSummaryByPortResponse> summaryByPort) {
         if (body != null) {
             FundClassList fundClassList = body.getData().getBody().getFundClassList();
             List<FundClass> fundClass = fundClassList.getFundClass();
@@ -218,21 +234,23 @@ public class ProductsExpService {
                     .getSummarySmartPortUnrealizedProfitPercent());
             List smartPort = fundClassData.stream().filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
                     .collect(Collectors.toList());
-            List notSmartPort = fundClassData.stream().filter(port -> !ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
-                    .collect(Collectors.toList());
 
             if (summaryByPort != null && summaryByPort.getData() != null && summaryByPort.getData().getBody() != null &&
                     !summaryByPort.getData().getBody().getPortfolioList().isEmpty()) {
                 result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
             }
-            if (!ptesList.isEmpty()) {
-                result.setIsPtes(Boolean.TRUE);
-            }
-            if (!ptList.isEmpty() && !notSmartPort.isEmpty()) {
-                result.setIsPt(Boolean.TRUE);
-            }
+            List<String> ptPorts = ports.stream()
+                    .filter(port -> port.startsWith("PT")).collect(Collectors.toList());
+            List<String> ptestPorts = ports.stream()
+                    .filter(port -> port.startsWith("PTES")).collect(Collectors.toList());
             if (!smartPort.isEmpty()) {
                 result.setIsSmartPort(Boolean.TRUE);
+            }
+            if(!ptPorts.isEmpty()){
+                result.setIsPt(Boolean.TRUE);
+            }
+            if(!ptestPorts.isEmpty()){
+                result.setIsPtes(Boolean.TRUE);
             }
 
         }

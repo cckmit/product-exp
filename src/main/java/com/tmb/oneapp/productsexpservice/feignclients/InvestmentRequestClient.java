@@ -6,8 +6,10 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
+import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
+import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -143,5 +145,12 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.fund.listfavorite.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestBody String crmId);
+
+    @PostMapping(value = "${investment.service.fund.get.ptes.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> getPtesPort(@RequestHeader Map<String, String> headers
+            , @RequestBody PtesBodyRequest request);
+
+
 
 }
