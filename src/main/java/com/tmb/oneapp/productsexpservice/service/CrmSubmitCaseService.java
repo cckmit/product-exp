@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +58,7 @@ public class CrmSubmitCaseService {
 
             Map<String, String> result = new HashMap<>();
             result.put(ProductsExpServiceConstant.CASE_NUMBER, response.getBody().getData().get(ProductsExpServiceConstant.CASE_NUMBER));  //NOSONAR lightweight logging
+            result.put(ProductsExpServiceConstant.TRANSACTION_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new Date()));
 
             return result; //NOSONAR lightweight logging
         } catch (Exception e) {
