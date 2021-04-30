@@ -44,9 +44,9 @@ public class NcbPaymentConfirmController {
      * @param requestHeaders
      * @param requestBody NcbPaymentConfirmBody
      */
-    @LogAround
     @ApiOperation(value = "NCB Payment Confirm")
     @PostMapping(value = "/NCB/paymentConfirm")
+    @LogAround
     @ApiImplicitParams({
             @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
             @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000000051187", required = true, dataType = "string", paramType = "header"),
@@ -71,7 +71,7 @@ public class NcbPaymentConfirmController {
                     .body(response);
 
         } catch (Exception e) {
-            logger.error("Error calling GET /application/status : {}", e);
+            logger.error("Error product-exp-service confirmNcbPayment : {}", e);
             response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
                     ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);

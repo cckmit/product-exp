@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -105,6 +106,18 @@ public class BilledStatementControllerTest {
     @Test
     public void testHandlingFailedResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        billedStatementResponse(oneServiceResponse);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        when(creditCardClient.getUnBilledStatement(any(), any())).thenThrow(new
+                IllegalStateException("Error occurred"));
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController
+                .handlingFailedResponse(oneServiceResponse, responseHeaders);
+
+        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+    }
+
+    private void billedStatementResponse(TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse) {
         BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(1);
@@ -117,14 +130,6 @@ public class BilledStatementControllerTest {
         cardStatement.setPromotionFlag("Y");
         setCreditLimitResp.setCardStatement(cardStatement);
         oneServiceResponse.setData(setCreditLimitResp);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
-        when(creditCardClient.getUnBilledStatement(any(), any())).thenThrow(new
-                IllegalStateException("Error occurred"));
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController
-                .handlingFailedResponse(oneServiceResponse, responseHeaders);
-
-        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
     }
 
     @Test
@@ -173,6 +178,28 @@ public class BilledStatementControllerTest {
                 .getBilledStatement(correlationId, requestBody);
         assertEquals(400, billedStatement.getStatusCodeValue());
 
+    }
+
+    @Test
+    void testGeneralErrorResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(1);
+        setCreditLimitResp.setStatus(silverlakeStatus);
+        setCreditLimitResp.setTotalRecords(10);
+        setCreditLimitResp.setMaxRecords(100);
+        setCreditLimitResp.setMoreRecords("100");
+        setCreditLimitResp.setSearchKeys("N");
+        CardStatement cardStatement = new CardStatement();
+        cardStatement.setPromotionFlag("Y");
+        setCreditLimitResp.setCardStatement(cardStatement);
+        oneServiceResponse.setData(setCreditLimitResp);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setBearerAuth("1234");
+        Exception exception = new Exception("Index out Of bounds ");
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> errorResponse = billedStatementController.generalErrorResponse(oneServiceResponse, responseHeaders, exception);
+        assertNotNull(errorResponse);
     }
 }
 

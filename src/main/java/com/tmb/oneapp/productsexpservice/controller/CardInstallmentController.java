@@ -94,11 +94,6 @@ public class CardInstallmentController {
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		String activityDate = Long.toString(System.currentTimeMillis());
 
-		if (logger.isDebugEnabled()) {
-			logger.info(String.format("ConfirmCardInstallment %s , Header Param %s", requestBodyParameter.toString(),
-					requestHeadersParameter));
-		}
-
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -108,16 +103,9 @@ public class CardInstallmentController {
 			String accountId = requestBodyParameter.getAccountId();
 
 			if (accountId != null) {
-				if (logger.isDebugEnabled()) {
-					logger.info(
-							String.format("Request call external confirmCardInstallment %s ", requestBodyParameter));
-				}
 				ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> cardInstallment = creditCardClient
 						.confirmCardInstallment(correlationId, requestBodyParameter);
 				TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = cardInstallment.getBody();
-				if (logger.isDebugEnabled()) {
-					logger.info(String.format("Response external confirmCardInstallment %s ", cardInstallmentResp));
-				}
 				if (cardInstallmentResp != null) {
 
 					Status status = new Status();
@@ -126,7 +114,6 @@ public class CardInstallmentController {
 					List<CardInstallmentResponse> data = cardInstallmentResp.getData();
 
 					if (data != null) {
-						
 						notificationService.doNotifyApplySoGood(correlationId, accountId, crmId, data,
 								requestBodyParameter);
 						if (ifSuccessCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter,
@@ -140,10 +127,7 @@ public class CardInstallmentController {
 
 				}
 			} else {
-				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-						ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+				return dataNotFoundErrorResponse(responseHeaders, oneServiceResponse);
 			}
 		} catch (Exception e) {
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
@@ -174,8 +158,8 @@ public class CardInstallmentController {
 			TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse,
 			TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp,
 			List<CardInstallmentResponse> data) {
-		creditCardLogService.generateApplySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter,
-				data);
+		creditCardLogService.generateApplySoGoodConfirmEvent(correlationId, requestHeadersParameter,
+				requestBodyParameter, data);
 
 		boolean success = data.stream().anyMatch(t -> t.getStatus().getStatusCode().equals("0"));
 
@@ -184,6 +168,7 @@ public class CardInstallmentController {
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		} else {
+
 			return true;
 		}
 		return false;
@@ -217,5 +202,4 @@ public class CardInstallmentController {
 				ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
 		return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 	}
-
 }

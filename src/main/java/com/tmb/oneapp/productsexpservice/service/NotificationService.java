@@ -23,7 +23,6 @@ import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.oneapp.productsexpservice.model.request.notification.*;
 import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
 import com.tmb.oneapp.productsexpservice.util.NotificationUtil;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -403,7 +402,7 @@ public class NotificationService {
 			BigDecimal money = new BigDecimal(moneyString);
 			return df.format(money);
 		} catch (Exception e) {
-			logger.error("Invalid money input "+moneyString);
+			logger.error("Invalid money input " + moneyString);
 		}
 
 		return null;
@@ -411,7 +410,7 @@ public class NotificationService {
 
 	/**
 	 * Conversion rate
-	 * 
+	 *
 	 * @param expiryDate
 	 * @return
 	 */
@@ -419,6 +418,14 @@ public class NotificationService {
 		if (StringUtils.isEmpty(expiryDate)) {
 			return null;
 		}
+		return getString(expiryDate);
+	}
+
+	/**
+	 * @param expiryDate
+	 * @return
+	 */
+	String getString(String expiryDate) {
 		String sourcePattern = "yyyy-MM-dd";
 
 		SimpleDateFormat sourceDateFormat = new SimpleDateFormat(sourcePattern);
@@ -594,7 +601,7 @@ public class NotificationService {
 
 	/**
 	 * Expose for notify apply so good
-	 * 
+	 *
 	 * @param correlationId
 	 * @param accountId
 	 * @param crmId
@@ -604,9 +611,8 @@ public class NotificationService {
 	@Async
 	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
 			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
-		if (logger.isDebugEnabled()) {
-			logger.info(String.format("xCorrelationId:{ %s} request apply SO Good with  %s ",correlationId, requestBodyParameter));
-		}
+		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
+
 		List<CardInstallmentResponse> successItems = fillerForSuccessCardInstallmentRequest(data);
 		if (CollectionUtils.isNotEmpty(successItems)) {
 			InstallmentPlan installment = lookUpInstallment(correlationId,
@@ -633,14 +639,14 @@ public class NotificationService {
 
 	/**
 	 * Process generate model for so good warpper model
-	 * 
+	 *
 	 * @param installment
 	 * @param successItems
 	 * @param requestBodyParameter
 	 * @return
 	 */
-	private SoGoodWrapper generateSoGoodWraperModel(InstallmentPlan installment,
-			List<CardInstallmentResponse> successItems, CardInstallmentQuery requestBodyParameter) {
+	SoGoodWrapper generateSoGoodWraperModel(InstallmentPlan installment, List<CardInstallmentResponse> successItems,
+			CardInstallmentQuery requestBodyParameter) {
 		SoGoodWrapper wrapperInfo = new SoGoodWrapper();
 		wrapperInfo.setTenor(installment.getPaymentTerm());
 		wrapperInfo.setInterestRatePercent(installment.getInterestRate());
@@ -673,11 +679,11 @@ public class NotificationService {
 
 	/**
 	 * Calculate total So Good Amount
-	 * 
+	 *
 	 * @param successItems
 	 * @return
 	 */
-	private BigDecimal calculateTotalSoGoodAmt(List<CardInstallmentResponse> successItems) {
+	BigDecimal calculateTotalSoGoodAmt(List<CardInstallmentResponse> successItems) {
 		BigDecimal totalAmt = BigDecimal.ZERO;
 		for (CardInstallmentResponse installment : successItems) {
 			Double amount = installment.getCreditCard().getCardInstallment().getAmounts();
@@ -688,12 +694,12 @@ public class NotificationService {
 
 	/**
 	 * Find out select InstallmentPlan
-	 * 
+	 *
 	 * @param correlationId
 	 * @param promotionModelNo
 	 * @return
 	 */
-	private InstallmentPlan lookUpInstallment(String correlationId, String promotionModelNo) {
+	InstallmentPlan lookUpInstallment(String correlationId, String promotionModelNo) {
 		ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> responseInstallments = creditCardClient
 				.getInstallmentPlan(correlationId);
 		List<InstallmentPlan> installmentPlans = responseInstallments.getBody().getData();
@@ -708,11 +714,11 @@ public class NotificationService {
 
 	/**
 	 * fillter for succes installment request
-	 * 
+	 *
 	 * @param data
 	 * @return
 	 */
-	private List<CardInstallmentResponse> fillerForSuccessCardInstallmentRequest(List<CardInstallmentResponse> data) {
+	List<CardInstallmentResponse> fillerForSuccessCardInstallmentRequest(List<CardInstallmentResponse> data) {
 		List<CardInstallmentResponse> successCardInstallments = new ArrayList<>();
 		data.forEach(e -> {
 			if (e.getStatus().getStatusCode().equals("0")) {
@@ -724,14 +730,14 @@ public class NotificationService {
 
 	/**
 	 * Wrapper for apply so good
-	 * 
+	 *
 	 * @param notifyCommon
 	 * @param email
 	 * @param phoneNo
 	 * @param SoGoodWrapper
 	 */
-	private void sendNotifyApplySoGood(NotifyCommon notifyCommon, String email, String phoneNo,
-			SoGoodWrapper soGoodWrapper, BigDecimal totalAmt) {
+	void sendNotifyApplySoGood(NotifyCommon notifyCommon, String email, String phoneNo, SoGoodWrapper soGoodWrapper,
+			BigDecimal totalAmt) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 		NotificationRecord record = new NotificationRecord();

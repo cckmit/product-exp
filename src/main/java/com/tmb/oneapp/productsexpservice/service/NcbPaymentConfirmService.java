@@ -1,12 +1,14 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
+import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
 import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,7 +44,7 @@ public class NcbPaymentConfirmService {
     /**
      * confirm payment of NCB
      *
-     * @param requestHeaders correlatinoId, crmId, deviceId, accept-language
+     * @param requestHeaders correlationId, crmId, deviceId, accept-language
      * @param serviceTypeId  serviceTypeId
      * @param firstnameTh  firstnameTh
      * @param lastnameTh  lastnameTh
@@ -54,6 +57,7 @@ public class NcbPaymentConfirmService {
      *
      * @return NcbPaymentConfirmResponse NcbPaymentConfirmResponse
      */
+    @LogAround
     public NcbPaymentConfirmResponse confirmNcbPayment(Map<String, String> requestHeaders, //NOSONAR lightweight logging
                                                        String serviceTypeId, String firstnameTh, String lastnameTh, String firstnameEn,
                                                        String lastnameEn, String email, String address, String deliveryMethod, String accountNumber) throws TMBCommonException {
@@ -108,12 +112,8 @@ public class NcbPaymentConfirmService {
 
             createNcbCase(crmId, correlationId, firstnameTh, lastnameTh, firstnameEn, lastnameEn, deliveryMethod);
 
-            // === Check First Time Usage ===
-            //GET /apis/customers/firstTimeUsage
             CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(crmId, deviceId, serviceTypeId);
-            logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
 
-            //PUT /apis/customers/firstTimeUsage
             if (customerFirstUsage != null) {
                 putFirstTimeUsage(crmId, deviceId, serviceTypeId);
             } else {
@@ -140,6 +140,7 @@ public class NcbPaymentConfirmService {
      *
      * @return boolean status of email sending
      */
+    @LogAround
     public boolean sendEmail(String correlationId, List<NotificationRecord> notificationRecord) {
         try {
             NotificationRequest notificationRequest = new NotificationRequest();
@@ -170,10 +171,16 @@ public class NcbPaymentConfirmService {
      *
      * @return Map of result
      */
+    @LogAround
     public Map<String, String> createNcbCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn, String deliveryMethod) {
         try {
             String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
             String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
+
+            byte[] bytesFirstname = firstname.getBytes(StandardCharsets.UTF_8);
+            firstname = new String(bytesFirstname, StandardCharsets.UTF_8);
+            byte[] bytesLastname = lastname.getBytes(StandardCharsets.UTF_8);
+            lastname = new String(bytesLastname, StandardCharsets.UTF_8);
 
             String serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_EMAIL;
 
@@ -181,11 +188,13 @@ public class NcbPaymentConfirmService {
                 serviceTypeMatrixCode = SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST;
             }
 
+            CustomerCaseSubmitBody customerCaseSubmitBody = new CustomerCaseSubmitBody(firstname, lastname, serviceTypeMatrixCode, "");
+
             ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
-                    customerServiceClient.submitNcbCustomerCase(crmId, correlationId, firstname, lastname, serviceTypeMatrixCode);
+                    customerServiceClient.submitCustomerCase(crmId, correlationId, customerCaseSubmitBody);
             return response.getBody().getData(); //NOSONAR lightweight logging
         } catch (Exception e) {
-            logger.error("Unexpected error occured : {}", e);
+            logger.error("createNcbCase error : {}", e);
             return new HashMap<>();
         }
     }
