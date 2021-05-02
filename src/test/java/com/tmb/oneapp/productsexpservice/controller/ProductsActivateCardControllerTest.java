@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
@@ -11,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -90,4 +92,16 @@ public class ProductsActivateCardControllerTest {
 
     }
 
+    @Test
+    void testDataNotFoundError() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("test", "test");
+        TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode("0");
+        tmbStatus.setService("activate-card-service");
+        oneServiceResponse.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> response = productsActivateCardController.dataNotFoundError(responseHeaders, oneServiceResponse);
+        assertEquals(400, response.getStatusCodeValue());
+    }
 }

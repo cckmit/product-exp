@@ -140,7 +140,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingAccount() throws Exception {
+    public void testMappingAccount() {
         CommonData data = new CommonData();
         data.setChannel("1234");
         FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
@@ -153,13 +153,13 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testConvertAccountType() throws Exception {
+    public void testConvertAccountType() {
         String result = UtilMap.convertAccountType("productType");
         Assert.assertEquals("", result);
     }
 
     @Test
-    public void testIsBusinessClose() throws Exception {
+    public void testIsBusinessClose() {
         boolean result = UtilMap.isBusinessClose("startTime", "endTime");
         Assert.assertEquals(false, result);
     }
@@ -207,13 +207,13 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testDeleteColonDateFormat() throws Exception {
+    public void testDeleteColonDateFormat() {
         String result = UtilMap.deleteColonDateFormat("timeHHmm");
         Assert.assertEquals("timeHHmm", result);
     }
 
     @Test
-    public void testMappingFundListData() throws Exception {
+    public void testMappingFundListData() {
         FundClass fundClass = new FundClass();
         fundClass.setFundClassCode("1234");
         List<FundClass> result = UtilMap.mappingFundListData(Arrays.asList(fundClass));
@@ -231,7 +231,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingRequestFundAcc() throws Exception {
+    public void testMappingRequestFundAcc() {
         FundAccountRq fundAccountRq = new FundAccountRq();
         fundAccountRq.setFundCode("1234");
         FundAccountRequestBody result = UtilMap.mappingRequestFundAcc(fundAccountRq);
@@ -251,7 +251,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingRequestStmtByPort() throws Exception {
+    public void testMappingRequestStmtByPort() {
         FundAccountRq fundAccountRq = new FundAccountRq();
         fundAccountRq.setFundCode("1234");
         OrderStmtByPortRq result = UtilMap.mappingRequestStmtByPort(fundAccountRq, "startPage", "endPage");
@@ -271,7 +271,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMapTmbOneServiceResponse() throws Exception {
+    public void testMapTmbOneServiceResponse() {
         TmbOneServiceResponse result = UtilMap.mapTmbOneServiceResponse(null);
         Assert.assertEquals(null, result);
     }

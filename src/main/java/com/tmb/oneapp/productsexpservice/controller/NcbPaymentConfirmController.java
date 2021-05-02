@@ -42,7 +42,7 @@ public class NcbPaymentConfirmController {
 
     /**
      * @param requestHeaders
-     * @param requestBody NcbPaymentConfirmBody
+     * @param requestBody    NcbPaymentConfirmBody
      */
     @ApiOperation(value = "NCB Payment Confirm")
     @PostMapping(value = "/NCB/paymentConfirm")

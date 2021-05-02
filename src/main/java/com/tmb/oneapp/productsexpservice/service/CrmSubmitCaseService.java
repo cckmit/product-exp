@@ -27,24 +27,24 @@ public class CrmSubmitCaseService {
     public CrmSubmitCaseService(CustomerServiceClient customerServiceClient) {
         this.customerServiceClient = customerServiceClient;
     }
+
     /**
      * confirm payment of NCB
      *
-     * @param crmId crmId
-     * @param correlationId  correlationId
-     * @param firstnameTh  firstnameTh
-     * @param lastnameTh  lastnameTh
-     * @param firstnameEn  firstnameEn
-     * @param lastnameEn  lastnameEn
+     * @param crmId                 crmId
+     * @param correlationId         correlationId
+     * @param firstnameTh           firstnameTh
+     * @param lastnameTh            lastnameTh
+     * @param firstnameEn           firstnameEn
+     * @param lastnameEn            lastnameEn
      * @param serviceTypeMatrixCode serviceTypeMatrixCode
-     *
      * @return NcbPaymentConfirmResponse NcbPaymentConfirmResponse
      */
     @LogAround
     public Map<String, String> createCrmCase(String crmId, String correlationId, String firstnameTh, String lastnameTh, String firstnameEn, String lastnameEn, String serviceTypeMatrixCode, String note) { //NOSONAR lightweight logging
         try {
-            String firstname = (!firstnameTh.isEmpty())? firstnameTh : firstnameEn;
-            String lastname = (!lastnameEn.isEmpty())? lastnameTh : lastnameEn;
+            String firstname = (!firstnameTh.isEmpty()) ? firstnameTh : firstnameEn;
+            String lastname = (!lastnameEn.isEmpty()) ? lastnameTh : lastnameEn;
 
             byte[] bytesFirstname = firstname.getBytes(StandardCharsets.UTF_8);
             firstname = new String(bytesFirstname, StandardCharsets.UTF_8);

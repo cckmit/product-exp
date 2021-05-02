@@ -127,4 +127,5 @@ public class FetchProductConfigControllerTest {
             fetchProductConfigController.getProductConfigListByEKYCFilter(correlationId, "1");
         });
     }
+
 }

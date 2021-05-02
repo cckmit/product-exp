@@ -80,17 +80,11 @@ public class ProductsActivateCardController {
                     notificationService.sendCardActiveEmail(correlationId, accountId, crmId);
                     return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
                 } else {
-                    oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                            ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                    return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                    return dataNotFoundError(responseHeaders, oneServiceResponse);
 
                 }
             } else {
-                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                return dataNotFoundError(responseHeaders, oneServiceResponse);
             }
 
         } catch (Exception e) {
@@ -100,5 +94,12 @@ public class ProductsActivateCardController {
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
         }
 
+    }
+
+    ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> dataNotFoundError(HttpHeaders responseHeaders, TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse) {
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
     }
 }

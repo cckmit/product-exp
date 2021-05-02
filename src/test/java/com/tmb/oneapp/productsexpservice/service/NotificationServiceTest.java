@@ -644,4 +644,27 @@ public class NotificationServiceTest {
         String date = notificationService.getString("10-10-2020");
         assertNotNull(date);
     }
+
+
+    @Test
+    void testCardInstallmentData() {
+        SoGoodItemInfo info = new SoGoodItemInfo();
+        info.setName("test");
+        CardInstallment value = new CardInstallment();
+        value.setInterest("1234");
+        Optional<CardInstallment> optCardInstallment = Optional.of(value);
+
+        notificationService.cardInstallmentData(info, optCardInstallment);
+        assertNotNull(optCardInstallment);
+    }
+
+    @Test
+    void testProductCodeData() {
+        ProductConfig productConfig = new ProductConfig();
+        productConfig.setProductCode("test");
+        ProductCodeData productCodeData = new ProductCodeData();
+        productCodeData.setProductNameEN("test");
+        notificationService.productCodeData(productConfig, productCodeData);
+        assertNotNull(productConfig);
+    }
 }

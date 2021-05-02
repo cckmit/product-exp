@@ -59,7 +59,7 @@ public class UnbilledStatementControllerTest {
 
         Mockito.when(creditCardClient.getUnBilledStatement(any(), any())).thenReturn(new ResponseEntity(getCardResponse, HttpStatus.OK));
 
-        GetUnbilledStatementQuery requestBody= new GetUnbilledStatementQuery();
+        GetUnbilledStatementQuery requestBody = new GetUnbilledStatementQuery();
         requestBody.setSearchKeys("");
         requestBody.setAccountId("0000000050078680472000929");
         requestBody.setMoreRecords("N");

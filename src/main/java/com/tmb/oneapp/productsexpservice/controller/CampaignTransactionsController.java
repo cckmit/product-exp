@@ -94,16 +94,20 @@ public class CampaignTransactionsController {
                     return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
                 }
             } else {
-                oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-                return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                return dataNotFoundError(responseHeaders, oneServiceResponse);
             }
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
                     ResponseCode.GENERAL_ERROR.getService(), HttpStatus.BAD_REQUEST, null);
         }
 
+    }
+
+    ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> dataNotFoundError(HttpHeaders responseHeaders, TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse) {
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
     }
 }
 

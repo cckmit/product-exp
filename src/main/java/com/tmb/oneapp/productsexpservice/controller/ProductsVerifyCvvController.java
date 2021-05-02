@@ -111,11 +111,26 @@ public class ProductsVerifyCvvController {
             return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
         } else {
 
-            oneServiceResponse.setStatus(
-                    new TmbStatus(code, message,
-                            service, ResponseCode.FAILED.getDesc()));
-            oneServiceResponse.setData(response);
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+            return failureResponse(response, oneServiceResponse, responseHeaders, code, message, service);
         }
+    }
+
+    ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> failureResponse(VerifyCvvResponse response, TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse, HttpHeaders responseHeaders, String code, String message, String service) {
+        failedResponse(response, oneServiceResponse, code, message, service);
+        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+    }
+
+    /**
+     * @param response
+     * @param oneServiceResponse
+     * @param code
+     * @param message
+     * @param service
+     */
+    public void failedResponse(VerifyCvvResponse response, TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse, String code, String message, String service) {
+        oneServiceResponse.setStatus(
+                new TmbStatus(code, message,
+                        service, ResponseCode.FAILED.getDesc()));
+        oneServiceResponse.setData(response);
     }
 }
