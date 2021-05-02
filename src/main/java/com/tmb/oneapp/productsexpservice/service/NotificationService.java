@@ -681,9 +681,11 @@ public class NotificationService {
     }
 
     void cardInstallmentData(SoGoodItemInfo info, Optional<CardInstallment> optCardInstallment) {
-        CardInstallment cardInstallment = optCardInstallment.get();
-        info.setCreateDate(formateDateWithStandard(cardInstallment.getPostDate()));
-        info.setTranDate(formateDateWithStandard(cardInstallment.getTransectionDate()));
+        if (optCardInstallment.isPresent()) {
+            CardInstallment cardInstallment = optCardInstallment.get();
+            info.setCreateDate(formateDateWithStandard(cardInstallment.getPostDate()));
+            info.setTranDate(formateDateWithStandard(cardInstallment.getTransectionDate()));
+        }
     }
 
     /**
