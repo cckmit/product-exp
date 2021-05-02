@@ -143,7 +143,7 @@ public class CardInstallmentController {
         return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
     }
-
+    
 
     /**
      * @param correlationId
@@ -159,7 +159,7 @@ public class CardInstallmentController {
                                TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse,
                                TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp,
                                List<CardInstallmentResponse> data) {
-        creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter,
+        creditCardLogService.generateApplySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter,
                 data);
 
         boolean success = data.stream().anyMatch(t -> t.getStatus().getStatusCode().equals("0"));
