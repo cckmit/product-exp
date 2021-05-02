@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -337,7 +338,7 @@ public class CreditCardLogService {
      * @param response
      * @return
      */
-    public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, LoanDetailsFullResponse response) {
+    public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, HomeLoanFullInfoResponse response) {
 
         populateBaseEvents(creditCardEvent, reqHeader);
 

@@ -260,11 +260,7 @@ public class CardInstallmentControllerTest {
 		HttpHeaders oneServiceResponse = new HttpHeaders();
 		oneServiceResponse.set("content-type", "application/json");
 		TmbOneServiceResponse<List<CardInstallmentResponse>> data = new TmbOneServiceResponse();
-		TmbStatus status = new TmbStatus();
-		status.setDescription("test");
-		status.setService("card-installment-service");
-		status.setCode("0");
-		status.setMessage("test");
+		TmbStatus status = getTmbStatus();
 		data.setStatus(status);
 
 		TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = new TmbOneServiceResponse();
@@ -281,4 +277,25 @@ public class CardInstallmentControllerTest {
 				responseHeaders, data, data, res));
 
 	}
+
+	private TmbStatus getTmbStatus() {
+		TmbStatus status = new TmbStatus();
+		status.setDescription("test");
+		status.setService("card-installment-service");
+		status.setCode("0");
+		status.setMessage("test");
+		return status;
+	}
+
+	@Test
+    void testSuccessResponse() {
+		TmbOneServiceResponse<List<CardInstallmentResponse>> response = new TmbOneServiceResponse<>();
+		TmbStatus status = getTmbStatus();
+		response.setStatus(status);
+		TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = response;
+		cardInstallmentController.successResponse(response,cardInstallmentResp);
+		assertNotNull(response);
+    }
+
+
 }

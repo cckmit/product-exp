@@ -64,9 +64,7 @@ public class CaseController {
         if (!requestHeaders.containsKey(X_CORRELATION_ID) ||
                 !requestHeaders.containsKey(X_CRMID) ||
                 !requestHeaders.containsKey(DEVICE_ID)) {
-            response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-                    ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+            return getErrorStatus(response);
         }
 
         try {
@@ -82,11 +80,15 @@ public class CaseController {
 
         } catch (Exception e) {
             logger.error("Error calling GET /case/status : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-                    ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+            return getErrorStatus(response);
         }
 
+    }
+
+    public ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> getErrorStatus(TmbOneServiceResponse<CaseStatusResponse> response) {
+        response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+                ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+        return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
     }
 
 

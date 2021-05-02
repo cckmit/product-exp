@@ -23,7 +23,7 @@ public class SpringFoxConfig {
     @Value("${spring.application.name}")
     private String appName;
 
-    @Value("${swagger.host:apis-portal.oneapp.tmbbank.local}")
+    @Value("${swagger.host:localhost:8082}")
     private String swaggerHost;
 
     @Value("${spring.application.description}")

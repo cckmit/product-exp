@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -81,7 +80,7 @@ public class SetPinController {
     public ResponseEntity<TmbOneServiceResponse<SetPinResponse>> getSetPin(
             @RequestHeader Map<String, String> requestHeadersParameter,
             @RequestBody SetPinReqParameter requestBodyParameter) throws
-            JsonProcessingException, TMBCommonException, TMBCommonExceptionWithResponse {
+            JsonProcessingException, TMBCommonException, TMBCommonExceptionWithResponse, UnsupportedEncodingException {
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
             String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
@@ -146,18 +145,12 @@ public class SetPinController {
 
     }
 
-    /**
-     * @param ex
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     */
     private TmbServiceResponse<List<Object>> convertExceptionResposeToExceptionRespose(FeignException ex)
-            throws JsonProcessingException {
+            throws UnsupportedEncodingException, JsonProcessingException {
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
             ByteBuffer responseBuffer = response.get();
-            String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
+            String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
             logger.info("responseObj : {}", responseObj);
             return (TmbServiceResponse) TMBUtils.convertStringToJavaObj(responseObj, TmbServiceResponse.class);
         }

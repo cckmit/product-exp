@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
@@ -37,6 +38,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class ProductExpServiceControllerTest {
@@ -147,12 +149,12 @@ public class ProductExpServiceControllerTest {
         }
         ResponseEntity<TmbOneServiceResponse<FundAccountRs>> actualResult = productExpServiceController
                 .getFundAccountDetail(corrID, fundAccountRq);
-        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
-        Assert.assertEquals(success_code, actualResult.getBody().getStatus().getCode());
+        assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        assertEquals(success_code, actualResult.getBody().getStatus().getCode());
 
         FundAccountRs newResponse = actualResult.getBody().getData();
-        Assert.assertEquals(fundAccountRs, newResponse);
-        Assert.assertEquals(fundAccountRs.getDetails().getAccountDetail().getOrdersHistories().size(),
+        assertEquals(fundAccountRs, newResponse);
+        assertEquals(fundAccountRs.getDetails().getAccountDetail().getOrdersHistories().size(),
                 newResponse.getDetails().getAccountDetail().getOrdersHistories().size());
 
     }
@@ -172,7 +174,7 @@ public class ProductExpServiceControllerTest {
         }
         ResponseEntity<TmbOneServiceResponse<FundAccountRs>> actualResult = productExpServiceController
                 .getFundAccountDetail(corrID, fundAccountRq);
-        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
@@ -203,7 +205,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundAccountRs>> actualResult = productExpServiceController
                 .getFundAccountDetail(corrID, fundAccountRq);
-        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
     }
 
@@ -228,7 +230,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> actualResult = productExpServiceController
                 .getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
-        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getFundRule());
         Assert.assertNotNull(actualResult.getBody().getData().getDepositAccountList());
         Assert.assertNotNull(actualResult.getBody().getData().getFundHolidayList());
@@ -262,7 +264,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundAccountRs>> actualResult = productExpServiceController
                 .getFundAccountDetail(corrID, fundAccountRq);
-        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
 
@@ -291,7 +293,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
-        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
 
@@ -322,7 +324,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
-        Assert.assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
     }
 
     @Test
@@ -337,7 +339,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
-        Assert.assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
     }
 
     @Test
@@ -355,7 +357,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
                 .getFundFFSAndValidation(corrID, ffsRequestBody);
-        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
 
@@ -373,7 +375,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
                 .validateAlternativeSellAndSwitch(corrID, alternativeRq);
-        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
@@ -388,7 +390,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
                 .validateAlternativeSellAndSwitch(corrID, alternativeRq);
-        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
@@ -418,7 +420,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
                 .validateAlternativeSellAndSwitch(corrID, alternativeRq);
-        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
     @Test
@@ -433,7 +435,7 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
                 .getFundListInfo(corrID, fundListRq);
-        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
@@ -451,7 +453,7 @@ public class ProductExpServiceControllerTest {
         }
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
                 .getFundListInfo(corrID, fundListRq);
-        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
@@ -475,9 +477,28 @@ public class ProductExpServiceControllerTest {
         }
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
                 .getFundListInfo(corrID, fundListRq);
-        Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
+        assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
 
+    @Test
+    void testDataNotFoundError() {
+        TmbOneServiceResponse<FundPaymentDetailRs> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbStatus status = new TmbStatus();
+        status.setService("products-exp-service");
+        oneServiceResponse.setStatus(status);
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> response = productExpServiceController.dataNotFoundError(oneServiceResponse);
+        assertEquals(404,response.getStatusCodeValue());
+    }
+
+    @Test
+    void testErrorResponse() {
+        TmbOneServiceResponse<FundResponse> oneServiceResponse= new TmbOneServiceResponse<>();
+        FundResponse data = new FundResponse();
+        data.setError(true);
+        oneServiceResponse.setData(data);
+        ResponseEntity<TmbOneServiceResponse<FundResponse>> errorResponse = productExpServiceController.errorResponse(oneServiceResponse, data);
+        assertEquals(400,errorResponse.getStatusCodeValue());
+    }
 }
 

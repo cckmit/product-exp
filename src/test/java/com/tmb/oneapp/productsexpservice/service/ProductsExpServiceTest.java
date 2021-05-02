@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
@@ -11,7 +12,12 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -20,11 +26,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class ProductsExpServiceTest {
@@ -133,5 +142,88 @@ public class ProductsExpServiceTest {
         Assert.assertNull(expectedResponse.getBody().getSummaryByPort());
     }
 
+    @Test
+    void testFfsRsAndValidation() {
+        FfsRequestBody requestBodyParameter = new FfsRequestBody();
+        requestBodyParameter.setCrmId("1234");
+        requestBodyParameter.setLanguage("English");
+        requestBodyParameter.setUnitHolderNo("1234");
+        requestBodyParameter.setFundCode("1234");
+        requestBodyParameter.setFundHouseCode("1234");
+        requestBodyParameter.setOrderType("1234");
+        requestBodyParameter.setProcessFlag("Y");
+        FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
+        FfsData ffsData = new FfsData();
+        ffsData.setFactSheetData("test");
+        ffsRsAndValidation.setBody(ffsData);
+        boolean rsAndValidation = productsExpService.ffsRsAndValidation("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", requestBodyParameter, ffsRsAndValidation);
+        assertFalse(rsAndValidation);
+    }
+
+    @Test
+    void testFundResponseSuccess() {
+        FundResponse fundResponse = getFundResponse();
+        productsExpService.fundResponseSuccess(fundResponse);
+        assertNotNull(fundResponse);
+    }
+
+    private FundResponse getFundResponse() {
+        FundResponse fundResponse = new FundResponse();
+        fundResponse.setError(false);
+        fundResponse.setErrorCode(ProductsExpServiceConstant.ID_EXPIRED_CODE);
+        fundResponse.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_MESSAGE);
+        fundResponse.setErrorMsg(ProductsExpServiceConstant.ID_EXPIRED_DESC);
+        return fundResponse;
+    }
+
+    @Test
+    void testFundResponseError() {
+        FundResponse fundResponse = getFundResponse();
+        productsExpService.fundResponseError(getFundResponse(),true);
+        assertNotNull(fundResponse);
+    }
+
+    @Test
+    void testFundResponseData() {
+        FundResponse fundResponse=getFundResponse();;
+        CommonTime noneServiceHour= new CommonTime();
+        noneServiceHour.setStart("00:00");
+        noneServiceHour.setEnd("12:00");
+        productsExpService.fundResponseData(fundResponse,noneServiceHour);
+        assertNotNull(noneServiceHour);
+
+    }
+    @Test
+    void testErrorResponse() {
+        FfsRsAndValidation validation= new FfsRsAndValidation();
+        validation.setError(true);
+        productsExpService.errorResponse(validation,true);
+        assertNotNull(validation);
+    }
+
+    @Test
+    void testFfsData() {
+        FfsRsAndValidation validation= new FfsRsAndValidation();
+        validation.setError(true);
+        TmbOneServiceResponse<FfsResponse> response = new TmbOneServiceResponse<>();
+        FfsResponse data= new FfsResponse();
+        FfsData body= new FfsData();
+        body.setFactSheetData("test");
+        data.setBody(body);
+        response.setData(data);
+        ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
+        productsExpService.ffsData(validation,responseEntity);
+        assertNotNull(responseEntity);
+    }
+
+    @Test
+    void testErrorData() {
+        FfsRsAndValidation validation= new FfsRsAndValidation();
+        validation.setError(true);
+        FundResponse fundResponse= new FundResponse();
+        fundResponse.setError(true);
+        productsExpService.errorData(validation,fundResponse);
+        assertNotNull(fundResponse);
+    }
 }
 

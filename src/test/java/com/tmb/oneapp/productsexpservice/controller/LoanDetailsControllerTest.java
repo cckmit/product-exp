@@ -73,11 +73,11 @@ public class LoanDetailsControllerTest {
         AccountId accountNo = new AccountId();
         accountNo.setAccountNo("00016109738001");
         response.setAccount(accountId);
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
         when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
         AccountId id = new AccountId();
         id.setAccountNo("00016109738001");
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, id);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, id);
 
         Assert.assertEquals(400, result.getStatusCodeValue());
     }
@@ -85,7 +85,7 @@ public class LoanDetailsControllerTest {
     @Test
     public void testGetLoanAccountDetailElseCase() {
         Map<String, String> reqHeaders = headerRequestParameter("c83936c284cb398fA46CF16F399C");
-        LoanDetailsFullResponse response = new LoanDetailsFullResponse();
+        HomeLoanFullInfoResponse response = new HomeLoanFullInfoResponse();
         StatusResponse status = new StatusResponse();
         status.setCode("0000");
         status.setDescription("Success");
@@ -94,11 +94,11 @@ public class LoanDetailsControllerTest {
         accountId.setBranchId("001");
         accountId.setProductId("ABHA");
         response.setAccount(accountId);
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> serviceResponse = new ResponseEntity(HttpStatus.OK);
         when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
         AccountId account = new AccountId();
         account.setAccountNo("00016109738001");
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
         Assert.assertEquals(400, result.getStatusCodeValue());
 
     }
@@ -112,9 +112,9 @@ public class LoanDetailsControllerTest {
         requestBody.setAccountNo("accountNo");
 
         // Configure AccountRequestClient.getLoanAccountDetail(...).
-        final TmbOneServiceResponse<LoanDetailsFullResponse> loanDetailsFullResponseTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        final TmbOneServiceResponse<HomeLoanFullInfoResponse> loanDetailsFullResponseTmbOneServiceResponse = new TmbOneServiceResponse<>();
         loanDetailsFullResponseTmbOneServiceResponse.setStatus(new TmbStatus("code", "message", "service", "description"));
-        final LoanDetailsFullResponse loanDetailsFullResponse = new LoanDetailsFullResponse();
+        final HomeLoanFullInfoResponse loanDetailsFullResponse = new HomeLoanFullInfoResponse();
         final StatusResponse status = new StatusResponse();
         status.setCode("code");
         status.setDescription("description");
@@ -172,7 +172,7 @@ public class LoanDetailsControllerTest {
         productConfig.setOpenEkyc("openEkyc");
         loanDetailsFullResponse.setProductConfig(productConfig);
         loanDetailsFullResponseTmbOneServiceResponse.setData(loanDetailsFullResponse);
-        final ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> tmbOneServiceResponseEntity = new ResponseEntity<>(loanDetailsFullResponseTmbOneServiceResponse, HttpStatus.OK);
+        final ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> tmbOneServiceResponseEntity = new ResponseEntity<>(loanDetailsFullResponseTmbOneServiceResponse, HttpStatus.OK);
         when(accountRequestClient.getLoanAccountDetail(anyString(), any())).thenReturn(tmbOneServiceResponseEntity);
 
         // Configure CommonServiceClient.getProductConfig(...).
@@ -193,7 +193,7 @@ public class LoanDetailsControllerTest {
         when(creditCardLogService.viewLoanLandingScreenEvent(any(), any(), any())).thenReturn(creditCardEvent);
 
         // Run the test
-        final ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(requestHeadersParameter, requestBody);
+        final ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(requestHeadersParameter, requestBody);
 
         Assert.assertEquals(400, result.getStatusCodeValue());
     }
@@ -259,7 +259,7 @@ public class LoanDetailsControllerTest {
         tmbOneServiceResponse.setData(response);
         tmbOneServiceResponse.setStatus(tmbStatus);
 
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> serviceResponse = new ResponseEntity(tmbOneServiceResponse, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> serviceResponse = new ResponseEntity(tmbOneServiceResponse, HttpStatus.OK);
         TmbOneServiceResponse<List<ProductConfig>> listTmbOneServiceResponse = new TmbOneServiceResponse<>();
         listTmbOneServiceResponse.setStatus(tmbStatus);
         List<ProductConfig> list = new ArrayList<>();
@@ -277,7 +277,7 @@ public class LoanDetailsControllerTest {
         when(accountRequestClient.getLoanAccountDetail(any(), any())).thenReturn(serviceResponse);
         AccountId account = new AccountId();
         account.setAccountNo("00016109738001");
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, account);
         Assert.assertNotNull(result.getStatusCodeValue());
     }
 
@@ -297,7 +297,7 @@ public class LoanDetailsControllerTest {
         status.setCode("1234");
         status.setDescription("Sucessful");
         response.setStatus(status);
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, accountNo);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, accountNo);
 
         assertNotNull(result);
 
@@ -368,7 +368,7 @@ public class LoanDetailsControllerTest {
         Map<String, String> reqHeaders= headerRequestParameter("1234");
         AccountId accountNo = new AccountId();
         accountNo.setAccountNo("1223");
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, accountNo);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(reqHeaders, accountNo);
 
         assertNotNull(result);
 
@@ -395,14 +395,14 @@ public class LoanDetailsControllerTest {
     void testGetTmbOneServiceResponseResponseEntity() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setBearerAuth("1234");
-        TmbOneServiceResponse<LoanDetailsFullResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setMessage("test");
         tmbStatus.setService("test");
         tmbStatus.setCode("test");
         tmbStatus.setDescription("test");
         oneServiceResponse.setStatus(tmbStatus);
-        LoanDetailsFullResponse data = new LoanDetailsFullResponse();
+        HomeLoanFullInfoResponse data = new HomeLoanFullInfoResponse();
         Account account = new Account();
         DebitAccount debitAccount = new DebitAccount();
         debitAccount.setAutoDebitDate("test");
@@ -411,7 +411,7 @@ public class LoanDetailsControllerTest {
         account.setDebitAccount(debitAccount);
         data.setAccount(account);
         oneServiceResponse.setData(data);
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> tmbOneServiceResponse = homeLoanController.getFailedResponse(responseHeaders, oneServiceResponse);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> tmbOneServiceResponse = homeLoanController.getFailedResponse(responseHeaders, oneServiceResponse);
         assertNotNull(tmbOneServiceResponse);
     }
 
@@ -426,14 +426,14 @@ public class LoanDetailsControllerTest {
     void testGetTmbOneServiceResponseRespons() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setBearerAuth("1234");
-        TmbOneServiceResponse<LoanDetailsFullResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setMessage("test");
         tmbStatus.setService("test");
         tmbStatus.setCode("test");
         tmbStatus.setDescription("test");
         oneServiceResponse.setStatus(tmbStatus);
-        LoanDetailsFullResponse data = new LoanDetailsFullResponse();
+        HomeLoanFullInfoResponse data = new HomeLoanFullInfoResponse();
         Account account = new Account();
         DebitAccount debitAccount = new DebitAccount();
         debitAccount.setAutoDebitDate("test");
@@ -448,7 +448,7 @@ public class LoanDetailsControllerTest {
         Map<String, String> requestHeadersParameter = headerRequestParameter("1234");
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, "", "");
-        LoanDetailsFullResponse loanDetails = new LoanDetailsFullResponse();
+        HomeLoanFullInfoResponse loanDetails = new HomeLoanFullInfoResponse();
         loanDetails.setAccount(account);
         StatusResponse status = new StatusResponse();
         status.setCode("0");
@@ -471,11 +471,11 @@ public class LoanDetailsControllerTest {
         resp.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = new ResponseEntity<>(resp, HttpStatus.OK);
         when(commonServiceClient.getProductConfig(any())).thenReturn(response);
-        TmbOneServiceResponse<LoanDetailsFullResponse> res= new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<HomeLoanFullInfoResponse> res= new TmbOneServiceResponse<>();
         res.setStatus(tmbStatus);
         res.setData(data);
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> loanResponse = new ResponseEntity<>(res,HttpStatus.OK);
-        ResponseEntity<TmbOneServiceResponse<LoanDetailsFullResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, correlationId, creditCardEvent, loanResponse);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse = new ResponseEntity<>(res,HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, correlationId, creditCardEvent, loanResponse);
         assertNotNull(responseEntity);
     }
 }

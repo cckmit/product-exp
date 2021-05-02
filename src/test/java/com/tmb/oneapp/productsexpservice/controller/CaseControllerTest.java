@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.CaseService;
 import org.junit.jupiter.api.Test;
@@ -64,4 +65,19 @@ class CaseControllerTest {
     }
 
 
+    @Test
+    void getErrorStatus() {
+        TmbOneServiceResponse<CaseStatusResponse> response = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus= new TmbStatus();
+        tmbStatus.setDescription("error");
+        tmbStatus.setMessage("error");
+        tmbStatus.setService("case-service");
+        tmbStatus.setCode("0001");
+        response.setStatus(tmbStatus);
+        CaseStatusResponse data = new CaseStatusResponse();
+        data.setServiceTypeId("1234");
+        response.setData(data);
+        ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> result = caseController.getErrorStatus(response);
+        assertEquals(400,result.getStatusCodeValue());
+    }
 }

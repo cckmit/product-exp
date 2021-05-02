@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -107,5 +108,17 @@ public class CampaignTransactionsControllerTest {
         Assertions.assertThrows(TMBCommonException.class,
                 () -> campaignTransactionsController.campaignTransactionResponse(requestBodyParameter, requestHeadersParameter));
 
+    }
+
+    @Test
+    void dataNotFoundError() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("test","test");
+        TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse= new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus= new TmbStatus();
+        tmbStatus.setCode("1");
+        oneServiceResponse.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> result = campaignTransactionsController.dataNotFoundError(responseHeaders, oneServiceResponse);
+        assertEquals(400,result.getStatusCodeValue());
     }
 }

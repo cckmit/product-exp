@@ -1,13 +1,18 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import feign.FeignException;
 import feign.FeignException.FeignClientException;
 import feign.Request;
 import feign.Request.HttpMethod;
 import feign.RequestTemplate;
+import feign.Response;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -18,11 +23,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -127,4 +135,5 @@ public class FetchProductConfigControllerTest {
             fetchProductConfigController.getProductConfigListByEKYCFilter(correlationId, "1");
         });
     }
+
 }
