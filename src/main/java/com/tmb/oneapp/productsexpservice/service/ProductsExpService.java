@@ -294,7 +294,7 @@ public class ProductsExpService {
         return ffsRsAndValidation;
     }
 
-     void errorData(FfsRsAndValidation ffsRsAndValidation, FundResponse fundResponse) {
+    void errorData(FfsRsAndValidation ffsRsAndValidation, FundResponse fundResponse) {
         ffsRsAndValidation.setError(true);
         ffsRsAndValidation.setErrorCode(fundResponse.getErrorCode());
         ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
@@ -330,7 +330,7 @@ public class ProductsExpService {
         return false;
     }
 
-     void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
+    void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
         FfsData ffsData = new FfsData();
         ffsData.setFactSheetData(responseEntity.getBody().getData().getBody().getFactSheetData());
         ffsRsAndValidation.setBody(ffsData);
@@ -407,7 +407,7 @@ public class ProductsExpService {
         return ffsRsAndValidation;
     }
 
-     void errorResponse(FfsRsAndValidation ffsRsAndValidation, boolean isNotValid) {
+    void errorResponse(FfsRsAndValidation ffsRsAndValidation, boolean isNotValid) {
         ffsRsAndValidation.setError(isNotValid);
         ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
         ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);

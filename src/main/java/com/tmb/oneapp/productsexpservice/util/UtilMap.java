@@ -33,12 +33,15 @@ import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementRe
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
+
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import org.springframework.http.MediaType;
+
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
@@ -54,10 +57,10 @@ public class UtilMap {
      * @param statementRs
      * @return FundAccountRs
      */
-    public static FundAccountRs validateTMBResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementRs){
-        if((StringUtils.isEmpty(accDetailBody) && StringUtils.isEmpty(fundRuleBody))){
+    public static FundAccountRs validateTMBResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementRs) {
+        if ((StringUtils.isEmpty(accDetailBody) && StringUtils.isEmpty(fundRuleBody))) {
             return null;
-        } else{
+        } else {
             FundAccountRs fundAccountRs = new FundAccountRs();
             UtilMap utilMap = new UtilMap();
             FundAccountDetail fundAccountDetail = utilMap.mappingResponse(accDetailBody,
@@ -74,14 +77,14 @@ public class UtilMap {
      * @param fundRuleBody
      * @return FundAccountDetail
      */
-    public FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse){
+    public FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse) {
 
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
         List<StatementList> statementList = statementResponse.getStatementList();
         FundOrderHistory order = null;
-        for(StatementList stmt : statementList) {
+        for (StatementList stmt : statementList) {
             order = new FundOrderHistory();
             BeanUtils.copyProperties(stmt, order);
             ordersHistories.add(order);
@@ -107,13 +110,13 @@ public class UtilMap {
     public FundPaymentDetailRs mappingPaymentResponse(FundRuleBody fundRuleBody,
                                                       FundHolidayBody fundHolidayBody,
                                                       List<CommonData> responseCommon,
-                                                      String responseCustomerExp){
-        if(StringUtils.isEmpty(fundRuleBody)
-                || StringUtils.isEmpty(responseCustomerExp)){
+                                                      String responseCustomerExp) {
+        if (StringUtils.isEmpty(fundRuleBody)
+                || StringUtils.isEmpty(responseCustomerExp)) {
             return null;
-        }else{
+        } else {
             FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
-            if(!StringUtils.isEmpty(fundHolidayBody)) {
+            if (!StringUtils.isEmpty(fundHolidayBody)) {
                 FundHolidayClassList fundHolidayUnit = null;
                 List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
                 List<FundHolidayClassList> fundHolidayClassListRs = fundHolidayBody.getFundClassList();
@@ -148,7 +151,7 @@ public class UtilMap {
      */
     public FundPaymentDetailRs mappingAccount(List<CommonData> responseCommon,
                                               String responseCustomerExp,
-                                              FundPaymentDetailRs fundPaymentDetailRs){
+                                              FundPaymentDetailRs fundPaymentDetailRs) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = null;
@@ -161,8 +164,8 @@ public class UtilMap {
             for (int i = 0; i < size; i++) {
                 JsonNode itr = arrayNode.get(i);
                 String accCode = itr.get("product_code").textValue();
-                for(String productCode : eligibleAccountCodeBuy) {
-                    if(productCode.equals(accCode)) {
+                for (String productCode : eligibleAccountCodeBuy) {
+                    if (productCode.equals(accCode)) {
                         depositAccount = new DepositAccount();
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
                         depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
@@ -187,20 +190,20 @@ public class UtilMap {
     /**
      * Generic Method to convert Account Type form 3 digits to 1 digit
      *
-     *
      * @param productType
      * @return String Account Type
      */
-    public static String convertAccountType(String productType){
+    public static String convertAccountType(String productType) {
         String accType = "";
-        switch (productType){
-            case ProductsExpServiceConstant.ACC_TYPE_SDA :
+        switch (productType) {
+            case ProductsExpServiceConstant.ACC_TYPE_SDA:
                 accType = ProductsExpServiceConstant.ACC_TYPE_SAVING;
                 break;
-            case ProductsExpServiceConstant.ACC_TYPE_DDA :
+            case ProductsExpServiceConstant.ACC_TYPE_DDA:
                 accType = ProductsExpServiceConstant.ACC_TYPE_CURRENT;
                 break;
-            default: accType = "";
+            default:
+                accType = "";
         }
         return accType;
     }
@@ -209,23 +212,23 @@ public class UtilMap {
      * Generic Method to Get Current Date with Format
      *
      * @param startTime the start HHMM
-     * @param endTime the end HHMM
+     * @param endTime   the end HHMM
      * @return boolean
      */
-    public static boolean isBusinessClose(String startTime, String endTime){
+    public static boolean isBusinessClose(String startTime, String endTime) {
         boolean isClose = true;
         try {
-            if(!StringUtils.isEmpty(startTime)
+            if (!StringUtils.isEmpty(startTime)
                     && !StringUtils.isEmpty(endTime)) {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_HHMM);
                 String getCurrentTime = sdf.format(cal.getTime());
-                if((getCurrentTime.compareTo(deleteColonDateFormat(startTime)) > 0) &&
-                        (getCurrentTime.compareTo(deleteColonDateFormat(endTime)) > 0)){
+                if ((getCurrentTime.compareTo(deleteColonDateFormat(startTime)) > 0) &&
+                        (getCurrentTime.compareTo(deleteColonDateFormat(endTime)) > 0)) {
                     return isClose;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }
         return false;
@@ -273,7 +276,7 @@ public class UtilMap {
                     && suitabilityInfo.getSuitValidation().equals(ProductsExpServiceConstant.SUITABILITY_EXPIRED)) {
                 return isExpire;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }
         return false;
@@ -293,7 +296,7 @@ public class UtilMap {
                 String getCurrentTime = sdf.format(cal.getTime());
                 return getCurrentTime.compareTo(customerProfileResponseData.getIdExpireDate()) > 0;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }
         return false;
@@ -305,10 +308,10 @@ public class UtilMap {
      * @param responseCustomerExp
      * @return boolean
      */
-    public static boolean isCASADormant(String responseCustomerExp){
-        if(StringUtils.isEmpty(responseCustomerExp)){
+    public static boolean isCASADormant(String responseCustomerExp) {
+        if (StringUtils.isEmpty(responseCustomerExp)) {
             return true;
-        }else{
+        } else {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = null;
@@ -322,14 +325,15 @@ public class UtilMap {
                     BigDecimal balance = new BigDecimal(itr.get("current_balance").textValue());
                     BigDecimal zeroBalance = new BigDecimal("0");
                     switch (accStatus) {
-                        case ProductsExpServiceConstant.ACTIVE_STATUS_CODE :
-                        case ProductsExpServiceConstant.INACTIVE_STATUS_CODE :
-                            if((balance.compareTo(zeroBalance) == 0)) countDormant.add(i);
+                        case ProductsExpServiceConstant.ACTIVE_STATUS_CODE:
+                        case ProductsExpServiceConstant.INACTIVE_STATUS_CODE:
+                            if ((balance.compareTo(zeroBalance) == 0)) countDormant.add(i);
                             break;
-                        case ProductsExpServiceConstant.DORMANT_STATUS_CODE :
+                        case ProductsExpServiceConstant.DORMANT_STATUS_CODE:
                             countDormant.add(i);
                             break;
-                        default: break;
+                        default:
+                            break;
                     }
                 }
                 return (size == countDormant.size());
@@ -346,10 +350,10 @@ public class UtilMap {
      * @param timeHHmm
      * @return String
      */
-    public static String deleteColonDateFormat(String timeHHmm){
+    public static String deleteColonDateFormat(String timeHHmm) {
         String changeTime = "";
-        if(!StringUtils.isEmpty(timeHHmm)){
-           return timeHHmm.replace(":", "");
+        if (!StringUtils.isEmpty(timeHHmm)) {
+            return timeHHmm.replace(":", "");
         }
         return changeTime;
     }
@@ -360,7 +364,7 @@ public class UtilMap {
      * @param fundClass
      * @return List<FundClass>
      */
-    public static List<FundClass> mappingFundListData(List<FundClass> fundClass){
+    public static List<FundClass> mappingFundListData(List<FundClass> fundClass) {
         List<FundClass> fundClassData = new ArrayList<>();
         try {
             for (FundClass fundClassLoop : fundClass) {
@@ -372,7 +376,7 @@ public class UtilMap {
                 }
                 fundClassData.add(fundClassLoop);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return fundClassData;
@@ -384,7 +388,7 @@ public class UtilMap {
      * @param fundClass
      * @return List<FundSearch>
      */
-    public static List<FundSearch>  mappingFundSearchListData(List<FundClass> fundClass){
+    public static List<FundSearch> mappingFundSearchListData(List<FundClass> fundClass) {
         List<FundSearch> searchList = new ArrayList<>();
         List<FundSearch> fundListDistinctByFundCode = new ArrayList<>();
         FundSearch fundSearch = null;
@@ -413,7 +417,7 @@ public class UtilMap {
             Set<String> nameSet = new HashSet<>();
             fundListDistinctByFundCode = searchList.stream().filter(e -> nameSet.add(e.getFundCode())).collect(Collectors.toList());
             return fundListDistinctByFundCode;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return searchList;
@@ -425,7 +429,7 @@ public class UtilMap {
      * @param fundAccountRq
      * @return FundAccountRequestBody
      */
-    public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRq fundAccountRq){
+    public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRq fundAccountRq) {
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
         fundAccountRequestBody.setFundCode(fundAccountRq.getFundCode());
         fundAccountRequestBody.setServiceType(fundAccountRq.getServiceType());
@@ -440,14 +444,14 @@ public class UtilMap {
      * @param fundAccountRq
      * @return FundRuleRequestBody
      */
-    public static FundRuleRequestBody mappingRequestFundRule(Object fundAccountRq){
+    public static FundRuleRequestBody mappingRequestFundRule(Object fundAccountRq) {
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        if(fundAccountRq instanceof FundAccountRq) {
+        if (fundAccountRq instanceof FundAccountRq) {
             FundAccountRq fundAccount = (FundAccountRq) fundAccountRq;
             fundRuleRequestBody.setFundCode(fundAccount.getFundCode());
             fundRuleRequestBody.setFundHouseCode(fundAccount.getFundHouseCode());
             fundRuleRequestBody.setTranType(fundAccount.getTranType());
-        }else if(fundAccountRq instanceof FundPaymentDetailRq){
+        } else if (fundAccountRq instanceof FundPaymentDetailRq) {
             FundPaymentDetailRq fundAccount = (FundPaymentDetailRq) fundAccountRq;
             fundRuleRequestBody.setFundCode(fundAccount.getFundCode());
             fundRuleRequestBody.setFundHouseCode(fundAccount.getFundHouseCode());
@@ -463,7 +467,7 @@ public class UtilMap {
      * @param fundAccountRq
      * @return OrderStmtByPortRq
      */
-    public static OrderStmtByPortRq mappingRequestStmtByPort(FundAccountRq fundAccountRq, String startPage, String endPage){
+    public static OrderStmtByPortRq mappingRequestStmtByPort(FundAccountRq fundAccountRq, String startPage, String endPage) {
         OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
         orderStmtByPortRq.setPortfolioNumber(fundAccountRq.getUnitHolderNo());
         orderStmtByPortRq.setFundCode(fundAccountRq.getFundCode());
@@ -478,7 +482,7 @@ public class UtilMap {
      * @param ffsRequestBody
      * @return AlternativeRq
      */
-    public static AlternativeRq mappingRequestAlternative(FfsRequestBody ffsRequestBody){
+    public static AlternativeRq mappingRequestAlternative(FfsRequestBody ffsRequestBody) {
         AlternativeRq alternativeRq = new AlternativeRq();
         alternativeRq.setCrmId(ffsRequestBody.getCrmId());
         alternativeRq.setFundCode(ffsRequestBody.getFundCode());
@@ -512,7 +516,7 @@ public class UtilMap {
      * @param key
      * @return CacheModel
      */
-    public static CacheModel mappingCache(String jsonStr, String key){
+    public static CacheModel mappingCache(String jsonStr, String key) {
         CacheModel cacheModel = new CacheModel();
         cacheModel.setKey(key);
         cacheModel.setTtl(ProductsExpServiceConstant.INVESTMENT_CACHE_TIME_EXPIRE);
@@ -527,15 +531,15 @@ public class UtilMap {
      * @param custFavoriteFundDataList
      * @return List<FundClassList>
      */
-    public static List<FundClassListInfo> mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustFavoriteFundData> custFavoriteFundDataList){
+    public static List<FundClassListInfo> mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustFavoriteFundData> custFavoriteFundDataList) {
         List<FundClassListInfo> fundClassLists = new ArrayList<>();
-        for(FundClassListInfo fundClass : fundClassList){
-            for(CustFavoriteFundData custFavoriteFund : custFavoriteFundDataList){
-                if(custFavoriteFund.getFundCode().equals(fundClass.getFundCode())){
+        for (FundClassListInfo fundClass : fundClassList) {
+            for (CustFavoriteFundData custFavoriteFund : custFavoriteFundDataList) {
+                if (custFavoriteFund.getFundCode().equals(fundClass.getFundCode())) {
                     fundClass.setFollowingFlag(ProductsExpServiceConstant.PROCESS_FLAG_Y);
                 }
             }
-            if(StringUtils.isEmpty(fundClass.getFollowingFlag())){
+            if (StringUtils.isEmpty(fundClass.getFollowingFlag())) {
                 fundClass.setFollowingFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
             }
             fundClassLists.add(fundClass);
@@ -550,20 +554,20 @@ public class UtilMap {
      * @param fundSummaryResponse
      * @return List<FundClassList>
      */
-    public static List<FundClassListInfo> mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryResponse fundSummaryResponse){
+    public static List<FundClassListInfo> mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryResponse fundSummaryResponse) {
         List<FundClassListInfo> fundClassLists = new ArrayList<>();
         try {
-            for(FundClassListInfo fundClass : fundClassList) {
+            for (FundClassListInfo fundClass : fundClassList) {
                 for (FundClass fundClassLoop : fundSummaryResponse.getBody().getFundClassList().getFundClass()) {
                     List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
                     mappingBoughtFlagWithFundHouse(fundClass, fundHouseList);
                 }
-                if(StringUtils.isEmpty(fundClass.getBoughtFlag())){
+                if (StringUtils.isEmpty(fundClass.getBoughtFlag())) {
                     fundClass.setBoughtFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
                 }
                 fundClassLists.add(fundClass);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return fundClassLists;
@@ -576,7 +580,7 @@ public class UtilMap {
      * @param fundHouseList
      * @return FundClassListInfo
      */
-    public static FundClassListInfo mappingBoughtFlagWithFundHouse(FundClassListInfo fundClass, List<FundHouse> fundHouseList){
+    public static FundClassListInfo mappingBoughtFlagWithFundHouse(FundClassListInfo fundClass, List<FundHouse> fundHouseList) {
         try {
             for (FundHouse fundHouse : fundHouseList) {
                 FundList fundList = fundHouse.getFundList();
@@ -587,13 +591,11 @@ public class UtilMap {
                     }
                 }
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return fundClass;
     }
-
-
 
 
 }

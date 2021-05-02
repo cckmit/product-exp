@@ -140,11 +140,11 @@ public class CreditCardControllerTest {
     @Test
     void testDataNotFoundError() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("test","test");
+        httpHeaders.set("test", "test");
         TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         CreditCardEvent creditCardEvent = testData(oneServiceResponse);
         ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> errorResponse = creditCardController.dataNotFoundError(httpHeaders, oneServiceResponse, creditCardEvent);
-        assertEquals(400,errorResponse.getStatusCodeValue());
+        assertEquals(400, errorResponse.getStatusCodeValue());
     }
 
     private CreditCardEvent testData(TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse) {
@@ -159,17 +159,17 @@ public class CreditCardControllerTest {
         tmbStatus.setMessage("Failure");
         tmbStatus.setDescription("Failed response");
         oneServiceResponse.setStatus(tmbStatus);
-        CreditCardEvent creditCardEvent = new CreditCardEvent("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","test","00700700");
+        CreditCardEvent creditCardEvent = new CreditCardEvent("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "test", "00700700");
         return creditCardEvent;
     }
 
     @Test
     void testGetFailedResponse() {
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("test","test");
+        responseHeaders.set("test", "test");
         TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         CreditCardEvent creditCardEvent = testData(oneServiceResponse);
         ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> failedResponse = creditCardController.getFailedResponse(responseHeaders, oneServiceResponse, creditCardEvent);
-        assertEquals(400,failedResponse.getStatusCodeValue());
+        assertEquals(400, failedResponse.getStatusCodeValue());
     }
 }

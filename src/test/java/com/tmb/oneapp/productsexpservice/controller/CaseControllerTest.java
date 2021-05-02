@@ -68,7 +68,7 @@ class CaseControllerTest {
     @Test
     void getErrorStatus() {
         TmbOneServiceResponse<CaseStatusResponse> response = new TmbOneServiceResponse<>();
-        TmbStatus tmbStatus= new TmbStatus();
+        TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setDescription("error");
         tmbStatus.setMessage("error");
         tmbStatus.setService("case-service");
@@ -78,6 +78,6 @@ class CaseControllerTest {
         data.setServiceTypeId("1234");
         response.setData(data);
         ResponseEntity<TmbOneServiceResponse<CaseStatusResponse>> result = caseController.getErrorStatus(response);
-        assertEquals(400,result.getStatusCodeValue());
+        assertEquals(400, result.getStatusCodeValue());
     }
 }

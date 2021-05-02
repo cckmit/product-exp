@@ -143,7 +143,7 @@ public class CardInstallmentController {
         return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
     }
-    
+
 
     /**
      * @param correlationId

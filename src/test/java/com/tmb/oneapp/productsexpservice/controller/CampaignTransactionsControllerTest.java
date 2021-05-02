@@ -113,12 +113,12 @@ public class CampaignTransactionsControllerTest {
     @Test
     void dataNotFoundError() {
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("test","test");
-        TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse= new TmbOneServiceResponse<>();
-        TmbStatus tmbStatus= new TmbStatus();
+        responseHeaders.set("test", "test");
+        TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode("1");
         oneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> result = campaignTransactionsController.dataNotFoundError(responseHeaders, oneServiceResponse);
-        assertEquals(400,result.getStatusCodeValue());
+        assertEquals(400, result.getStatusCodeValue());
     }
 }

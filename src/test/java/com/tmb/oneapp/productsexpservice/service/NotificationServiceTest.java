@@ -648,23 +648,23 @@ public class NotificationServiceTest {
 
     @Test
     void testCardInstallmentData() {
-        SoGoodItemInfo info= new SoGoodItemInfo();
+        SoGoodItemInfo info = new SoGoodItemInfo();
         info.setName("test");
-        CardInstallment value= new CardInstallment();
+        CardInstallment value = new CardInstallment();
         value.setInterest("1234");
         Optional<CardInstallment> optCardInstallment = Optional.of(value);
 
-        notificationService.cardInstallmentData(info,optCardInstallment);
+        notificationService.cardInstallmentData(info, optCardInstallment);
         assertNotNull(optCardInstallment);
     }
 
     @Test
     void testProductCodeData() {
-        ProductConfig productConfig= new ProductConfig();
+        ProductConfig productConfig = new ProductConfig();
         productConfig.setProductCode("test");
         ProductCodeData productCodeData = new ProductCodeData();
         productCodeData.setProductNameEN("test");
-        notificationService.productCodeData(productConfig,productCodeData);
+        notificationService.productCodeData(productConfig, productCodeData);
         assertNotNull(productConfig);
     }
 }

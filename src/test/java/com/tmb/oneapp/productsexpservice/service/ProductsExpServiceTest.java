@@ -179,50 +179,52 @@ public class ProductsExpServiceTest {
     @Test
     void testFundResponseError() {
         FundResponse fundResponse = getFundResponse();
-        productsExpService.fundResponseError(getFundResponse(),true);
+        productsExpService.fundResponseError(getFundResponse(), true);
         assertNotNull(fundResponse);
     }
 
     @Test
     void testFundResponseData() {
-        FundResponse fundResponse=getFundResponse();;
-        CommonTime noneServiceHour= new CommonTime();
+        FundResponse fundResponse = getFundResponse();
+        ;
+        CommonTime noneServiceHour = new CommonTime();
         noneServiceHour.setStart("00:00");
         noneServiceHour.setEnd("12:00");
-        productsExpService.fundResponseData(fundResponse,noneServiceHour);
+        productsExpService.fundResponseData(fundResponse, noneServiceHour);
         assertNotNull(noneServiceHour);
 
     }
+
     @Test
     void testErrorResponse() {
-        FfsRsAndValidation validation= new FfsRsAndValidation();
+        FfsRsAndValidation validation = new FfsRsAndValidation();
         validation.setError(true);
-        productsExpService.errorResponse(validation,true);
+        productsExpService.errorResponse(validation, true);
         assertNotNull(validation);
     }
 
     @Test
     void testFfsData() {
-        FfsRsAndValidation validation= new FfsRsAndValidation();
+        FfsRsAndValidation validation = new FfsRsAndValidation();
         validation.setError(true);
         TmbOneServiceResponse<FfsResponse> response = new TmbOneServiceResponse<>();
-        FfsResponse data= new FfsResponse();
-        FfsData body= new FfsData();
+        FfsResponse data = new FfsResponse();
+        FfsData body = new FfsData();
         body.setFactSheetData("test");
         data.setBody(body);
         response.setData(data);
         ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
-        productsExpService.ffsData(validation,responseEntity);
+        productsExpService.ffsData(validation, responseEntity);
         assertNotNull(responseEntity);
     }
 
     @Test
     void testErrorData() {
-        FfsRsAndValidation validation= new FfsRsAndValidation();
+        FfsRsAndValidation validation = new FfsRsAndValidation();
         validation.setError(true);
-        FundResponse fundResponse= new FundResponse();
+        FundResponse fundResponse = new FundResponse();
         fundResponse.setError(true);
-        productsExpService.errorData(validation,fundResponse);
+        productsExpService.errorData(validation, fundResponse);
         assertNotNull(fundResponse);
     }
 }

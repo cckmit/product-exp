@@ -103,7 +103,7 @@ public class CampaignTransactionsController {
 
     }
 
-     ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> dataNotFoundError(HttpHeaders responseHeaders, TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse) {
+    ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> dataNotFoundError(HttpHeaders responseHeaders, TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse) {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));

@@ -94,14 +94,14 @@ public class ProductsActivateCardControllerTest {
 
     @Test
     void testDataNotFoundError() {
-        HttpHeaders responseHeaders= new HttpHeaders();
-        responseHeaders.set("test","test");
-        TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse= new TmbOneServiceResponse<>();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("test", "test");
+        TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode("0");
         tmbStatus.setService("activate-card-service");
         oneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> response = productsActivateCardController.dataNotFoundError(responseHeaders, oneServiceResponse);
-        assertEquals(400,response.getStatusCodeValue());
+        assertEquals(400, response.getStatusCodeValue());
     }
 }

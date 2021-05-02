@@ -488,17 +488,17 @@ public class ProductExpServiceControllerTest {
         status.setService("products-exp-service");
         oneServiceResponse.setStatus(status);
         ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> response = productExpServiceController.dataNotFoundError(oneServiceResponse);
-        assertEquals(404,response.getStatusCodeValue());
+        assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
     void testErrorResponse() {
-        TmbOneServiceResponse<FundResponse> oneServiceResponse= new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         FundResponse data = new FundResponse();
         data.setError(true);
         oneServiceResponse.setData(data);
         ResponseEntity<TmbOneServiceResponse<FundResponse>> errorResponse = productExpServiceController.errorResponse(oneServiceResponse, data);
-        assertEquals(400,errorResponse.getStatusCodeValue());
+        assertEquals(400, errorResponse.getStatusCodeValue());
     }
 }
 

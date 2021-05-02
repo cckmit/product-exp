@@ -124,7 +124,7 @@ public class EligibleLeadControllerTest {
         eligibleLeadResponse(serviceResponse);
         Exception exception = new Exception("Data Not Found");
         ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> failedResponse = eligibleLeadController.getFailedResponse(responseHeaders, serviceResponse, exception);
-        assertEquals(400,failedResponse.getStatusCodeValue());
+        assertEquals(400, failedResponse.getStatusCodeValue());
     }
 }
 

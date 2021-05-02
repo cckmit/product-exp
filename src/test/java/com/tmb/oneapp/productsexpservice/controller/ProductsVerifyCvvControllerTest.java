@@ -176,10 +176,10 @@ public class ProductsVerifyCvvControllerTest {
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setDescription("Failed response");
         oneServiceResponse.setStatus(tmbStatus);
-        String code="0001";
-        String message="failed Response";
-        String service="verify-cvv service";
-        productsVerifyCvvController.failedResponse(response,oneServiceResponse,code,message,service);
+        String code = "0001";
+        String message = "failed Response";
+        String service = "verify-cvv service";
+        productsVerifyCvvController.failedResponse(response, oneServiceResponse, code, message, service);
         assertNotNull(oneServiceResponse);
     }
 }

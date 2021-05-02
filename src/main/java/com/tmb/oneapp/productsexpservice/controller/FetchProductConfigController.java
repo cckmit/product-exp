@@ -112,7 +112,7 @@ public class FetchProductConfigController {
     public ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfigListByEKYCFilter(
             @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId,
             @PathVariable String ekycFlag
-    ) throws  JsonProcessingException, TMBCommonException {
+    ) throws JsonProcessingException, TMBCommonException {
         TmbOneServiceResponse<List<ProductConfig>> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = this.getResponseHeaders();
         logStartController("/filter/ekycFlag", correlationId);
@@ -172,7 +172,7 @@ public class FetchProductConfigController {
      * @throws UnsupportedEncodingException
      * @throws JsonProcessingException
      */
-    private TMBCommonException handleFeignException(FeignException e) throws  JsonProcessingException {
+    private TMBCommonException handleFeignException(FeignException e) throws JsonProcessingException {
         logger.error("Exception in {} :{}", e.getClass().getName(), e.toString());
         if (e instanceof FeignException.BadRequest) {
             TmbServiceResponse<String> body = exceptionHandling(e);

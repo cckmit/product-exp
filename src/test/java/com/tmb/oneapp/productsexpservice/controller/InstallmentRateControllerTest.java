@@ -158,7 +158,7 @@ public class InstallmentRateControllerTest {
     @Test
     void getTmbOneServiceResponseResponseEntity() {
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("content-type","application/json");
+        responseHeaders.set("content-type", "application/json");
         TmbOneServiceResponse<InstallmentRateResponse> serviceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setService("installment-controller-service");

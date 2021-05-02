@@ -107,7 +107,7 @@ public class MoneyTransferControllerTest {
         depositResponse.setDeposit(deposit);
         depositResponseTmbOneServiceResponse.setData(depositResponse);
         Exception e = new Exception();
-        StackTraceElement[] failed={};
+        StackTraceElement[] failed = {};
         e.setStackTrace(failed);
         ResponseEntity<TmbOneServiceResponse<DepositResponse>> result = moneyTransferController.failedErrorResponse(responseHeaders, depositResponseTmbOneServiceResponse, e);
         Assert.assertEquals("0001", result.getBody().getStatus().getCode());

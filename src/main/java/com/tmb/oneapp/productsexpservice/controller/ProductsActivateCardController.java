@@ -96,7 +96,7 @@ public class ProductsActivateCardController {
 
     }
 
-     ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> dataNotFoundError(HttpHeaders responseHeaders, TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse) {
+    ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> dataNotFoundError(HttpHeaders responseHeaders, TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse) {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
                 ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
