@@ -111,9 +111,13 @@ public class ProductsVerifyCvvController {
             return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
         } else {
 
-            failedResponse(response, oneServiceResponse, code, message, service);
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+            return failureResponse(response, oneServiceResponse, responseHeaders, code, message, service);
         }
+    }
+
+    ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> failureResponse(VerifyCvvResponse response, TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse, HttpHeaders responseHeaders, String code, String message, String service) {
+        failedResponse(response, oneServiceResponse, code, message, service);
+        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
     }
 
     /**

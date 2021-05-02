@@ -257,7 +257,6 @@ public class ProductExpAsynService {
     @LogAround
     @Async
     public CompletableFuture<List<FundClassListInfo>> fetchFundListInfo(Map<String, String> invHeaderReqParameter, String correlationId, String key) throws TMBCommonException {
-        List<FundClassListInfo> fundClassLists = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
             return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
