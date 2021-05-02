@@ -13,7 +13,6 @@ public class ProductsExpServiceConstant {
 
     public static final String HEADER_TIMESTAMP = "Timestamp";
     public static final String CONTENT_TYPE = "content-type";
-    public static final String INITIALIZE_SSL_CONTEXT = "[initializeSSLContext] ";
     public static final String EXCEPTION_OCCURED = "Exception occured : {}";
     public static final String HEADER_CORRELATION_ID = "X-Correlation-ID";
     public static final String HEADER_CORRELATION_ID_DESC = "Correlation ID";
@@ -24,20 +23,14 @@ public class ProductsExpServiceConstant {
     public static final Integer SILVER_LAKE_SUCCESS_CODE = 0;
     public static final String SUCCESS_MESSAGE = "success";
     public static final String SERVICE_NAME = "product-exp-service";
-    public static final String FUND_CODE_ACCDETAIL = "TMB50";
-    public static final String FUND_CODE_RULE = "TESEQDSSFX";
-    public static final String FUND_HOUSE_CODE_RULE = "TFUND";
     public static final String DATA_NOT_FOUND_CODE = "0009";
     public static final String DATA_NOT_FOUND_MESSAGE = "DATA NOT FOUND";
     public static final String X_CORRELATION_ID = "x-correlation-id";
-    public static final String X_CORELATION_ID = "X-CORRELATION-ID";
     public static final String ACCOUNT_ID = "account-id";
     public static final int ZERO = 0;
     public static final String EMPTY = "";
     public static final String CVV = "cvv";
     public static final String CARD_EXPIRY = "card-expiry";
-    public static final String REDIS_KEY_PORTLIST = "invesment-portlist";
-    public static final String REDIS_KEY_FUND_SUMMARY = "invesment-fundsummary";
     public static final String ACC_TYPE_SDA = "SDA";
     public static final String ACC_TYPE_DDA = "DDA";
     public static final String ACC_TYPE_SAVING = "S";
@@ -55,10 +48,6 @@ public class ProductsExpServiceConstant {
     public static final String SERVICE_OUR_CLOSE_MESSAGE = "NOT ALLOW TO PROCESSING";
     public static final String SERVICE_OUR_CLOSE_DESC = "Error";
 
-    /* OF SHELF */
-    public static final String OF_SHELF_FUND_CODE = "msg_alt_05";
-    public static final String OF_SHELF_FUND_MESSAGE = "NOT ALLOW TO PURCHASE";
-    public static final String OF_SHELF_FUND_DESC = "FUND DO NOT ALLOW TO PURCHASE";
 
     /* SUITABILITY EXPIRED */
     public static final String SUITABILITY_EXPIRED_CODE = "msg_alt_04";
@@ -93,10 +82,6 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_LOG_FAILURE = "Off business hour";
 
 
-    public static final String ACTIVE_STATUS = "ACTIVE";
-    public static final String INACTIVE_STATUS = "INACTIVE";
-    public static final String DORMANT_STATUS = "DORMANT";
-
     public static final String ACTIVE_STATUS_CODE = "0";
     public static final String INACTIVE_STATUS_CODE = "1";
     public static final String DORMANT_STATUS_CODE = "2";
@@ -105,11 +90,9 @@ public class ProductsExpServiceConstant {
     public static final String BUSINESS_HR_CLOSE = "N";
     public static final String ACTIVITY_ID_TEMP = "00700200";
     public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "00700201";
-    public static final String CHANGE_TEMP_CONFIRM_PIN_SUCCESS_CASE = "00700202";
     public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "00700203";
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "00700700";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
-    public static final String CHANGE_TYPE_TEMP = "req-temp-limit";
     public static final String SUCCESS = "Success";
     public static final String FAILURE = "Failure";
     public static final String X_FORWARD_FOR = "x-forward-for";
@@ -120,16 +103,9 @@ public class ProductsExpServiceConstant {
     public static final String DEVICE_ID = "device-id";
     public static final String DEVICE_MODEL = "device-model";
     public static final String ACCEPT_LANGUAGE = "accept-language";
-    public static final String FIRST_NAME_TH = "firstname_th";
-    public static final String LAST_NAME_TH = "lastname_th";
-    public static final String FIRST_NAME_EN = "firstname_en";
-    public static final String LAST_NAME_EN = "lastname_en";
     public static final String MODE_PERMANENT = "permanent";
     public static final String MODE_TEMPORARY = "temporary";
     public static final String ACTIVITY_ID_VERIFY_CARD_NO = "00700100";
-    public static final String ACTIVITY_ID_ENTERED_CVV_NO = "00700101";
-    public static final String ACTIVITY_ID_CONFIRM_PIN_SUCCESS = "00700102";
-    public static final String ACTIVITY_ID_CARD_ACTIVATION = "00700103";
     public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN="00700600";
     public static final String ACTIVITY_ID_LOAD_CARD_DETAILS="00700800";
     public static final String METHOD = "SCAN/KEY IN";
@@ -149,12 +125,9 @@ public class ProductsExpServiceConstant {
     //In progress
     public static final String APPLICATION_STATUS_IN_PROGRESS = "in_progress";
     //Completed
-    public static final String APPLICATION_STATUS_APPROVED = "approved";
     public static final String APPLICATION_STATUS_REJECTED = "rejected";
     public static final String APPLICATION_STATUS_COMPLETED = "completed";
     public static final String APPLICATION_STATUS_INCOMPLETE = "incomplete";
-    public static final String APPLICATION_STATUS_EXPIRED = "expired";
-    public static final String APPLICATION_STATUS_CUSTOMER_CANCEL = "customer_cancel";
     public static final String ACCEPT_LANGUAGE_EN = "en";
     public static final String ACCEPT_LANGUAGE_TH = "th";
     public static final String APPLICATION_STATUS_CC = "CC";
@@ -168,11 +141,9 @@ public class ProductsExpServiceConstant {
     //ACTIVITY IDs
     public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
-    public static final String APPLICATION_TRACKING_TUTORIAL_ACTIVITY_ID = "101500301";
 
     //Case status screen names
     public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";
-    public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_AST = "tutorial application tracking";
 
     public static final String FIXED_START_PAGE = "1";
     public static final String FIXED_END_PAGE = "5";
