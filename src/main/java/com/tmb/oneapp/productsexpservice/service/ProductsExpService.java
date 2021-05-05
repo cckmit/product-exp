@@ -155,7 +155,9 @@ public class ProductsExpService {
 
             Optional<List<PtesDetail>> ptesDetailList =
                     Optional.ofNullable(ptestDetailResult).map(tmbOneServiceResponseResponseEntity -> tmbOneServiceResponseResponseEntity.getBody())
-                            .map(body -> body.getData());
+                                .map(TmbOneServiceResponse ::getData);
+
+
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
             if (!StringUtils.isEmpty(portData)) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -224,7 +226,7 @@ public class ProductsExpService {
                     .getSummarySmartPortUnrealizedProfit());
             result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody()
                     .getSummarySmartPortUnrealizedProfitPercent());
-            List smartPort = fundClassData.stream().filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
+            List<FundClass> smartPort = fundClassData.stream().filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
                     .collect(Collectors.toList());
 
             if (summaryByPort != null && summaryByPort.getData() != null && summaryByPort.getData().getBody() != null &&
