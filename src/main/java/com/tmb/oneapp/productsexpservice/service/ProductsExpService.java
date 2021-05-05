@@ -184,7 +184,6 @@ public class ProductsExpService {
                 var body = fundSummaryData.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
                 this.setFundSummaryBody(result, ports, body, summaryByPort);
-
             }
             return result;
 
