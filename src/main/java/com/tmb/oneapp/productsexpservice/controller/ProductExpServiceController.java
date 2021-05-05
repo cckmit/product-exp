@@ -116,7 +116,7 @@ public class ProductExpServiceController {
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
         FundSummaryBody fundSummaryResponse = productsExpService.getFundSummary(correlationId, fundSummaryRq);
-        if (!StringUtils.isEmpty(fundSummaryResponse)) {
+        if (fundSummaryResponse != null) {
             oneServiceResponse.setData(fundSummaryResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,

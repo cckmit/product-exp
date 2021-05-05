@@ -150,41 +150,27 @@ public class ProductsExpService {
             ptesBodyRequest.setRmNumber(rq.getCrmId());
             portData = customerExpServiceClient.getAccountSaving(correlationId, rq.getCrmId());
             ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
-                    investmentRequestClient.getPtesPort(invHeaderReqParameter,ptesBodyRequest);
+                    investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
 
 
             Optional<List<PtesDetail>> ptesDetailList =
-            Optional.ofNullable(ptestDetailResult).map(tmbOneServiceResponseResponseEntity -> tmbOneServiceResponseResponseEntity.getBody())
-                    .map(body -> body.getData());
-
+                    Optional.ofNullable(ptestDetailResult).map(tmbOneServiceResponseResponseEntity -> tmbOneServiceResponseResponseEntity.getBody())
+                            .map(body -> body.getData());
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
-              if (!StringUtils.isEmpty(portData)) {
+            if (!StringUtils.isEmpty(portData)) {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
                 JsonNode dataNode = node.get("data");
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
-                 ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
+                ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
                 });
-
-              if(ptesDetailList.isPresent()){
-                   ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
-                          .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
-
-              }
-              ports.addAll(ptestPortList);
-               result.setPortsUnitHolder(ports);
-                unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
-                summaryByPortResponse = investmentRequestClient
-                        .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
-                logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, fundSummaryData);
-                if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
-                    var body = fundSummaryData.getBody();
-                    var summaryByPort = summaryByPortResponse.getBody();
-
-                    setFundSummaryBody(result, ports, body, summaryByPort);
-                }
             }
+            if (ptesDetailList.isPresent()) {
+                ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
+                        .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
+
+            }
+            ports.addAll(ptestPortList);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
@@ -195,13 +181,19 @@ public class ProductsExpService {
                 var body = fundSummaryData.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
 
-                 setFundSummaryBody(result,ports, body, summaryByPort);
+                setFundSummaryBody(result, ports, body, summaryByPort);
+
             }
             return result;
+
+
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
+
         }
+
+
     }
 
     /***
@@ -246,10 +238,10 @@ public class ProductsExpService {
             if (!smartPort.isEmpty()) {
                 result.setIsSmartPort(Boolean.TRUE);
             }
-            if(!ptPorts.isEmpty()){
+            if (!ptPorts.isEmpty()) {
                 result.setIsPt(Boolean.TRUE);
             }
-            if(!ptestPorts.isEmpty()){
+            if (!ptestPorts.isEmpty()) {
                 result.setIsPtes(Boolean.TRUE);
             }
 
@@ -655,3 +647,5 @@ public class ProductsExpService {
 
 
 }
+
+

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -12,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
+import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -24,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.io.FileInputStream;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -54,6 +57,8 @@ public class ProductsExpServiceTest {
         FundSummaryResponse expectedResponse = new FundSummaryResponse();
         FundSummaryByPortResponse fundSummaryByPortResponse;
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
+        List<PtesDetail> ptesDetailList = null ;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
 
         try {
@@ -65,20 +70,31 @@ public class ProductsExpServiceTest {
             ObjectMapper mapperPort = new ObjectMapper();
             fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
                     FundSummaryByPortResponse.class);
+            ptesDetailList =  mapperPort.readValue(Paths.get("src/test/resources/investment/ptest.json").toFile(),
+                    new TypeReference <List<PtesDetail>>() {
+                    });
             oneServiceResponse.setData(expectedResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            oneServiceResponsePtes.setData(ptesDetailList);
+            oneServiceResponsePtes.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
             portResponse.setData(fundSummaryByPortResponse);
             portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
-            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
-                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
+            when(investmentRequestClient.getPtesPort(any(),any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                    .body(oneServiceResponsePtes));
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -86,6 +102,7 @@ public class ProductsExpServiceTest {
         FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
+        Assert.assertEquals(Boolean.TRUE,result.getIsPtes());
     }
 
 
