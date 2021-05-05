@@ -73,6 +73,7 @@ public class ProductsExpService {
     private final KafkaProducerService kafkaProducerService;
     private final String topicName;
     private final CustomerExpServiceClient customerExpServiceClient;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
@@ -137,7 +138,7 @@ public class ProductsExpService {
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, FundSummaryRq rq) {
         FundSummaryBody result = new FundSummaryBody();
-        String portData;
+
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData = null;
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse = null;
@@ -148,7 +149,7 @@ public class ProductsExpService {
             List<String> ptestPortList = new ArrayList<>();
             PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
             ptesBodyRequest.setRmNumber(rq.getCrmId());
-            portData = customerExpServiceClient.getAccountSaving(correlationId, rq.getCrmId());
+            String portData = customerExpServiceClient.getAccountSaving(correlationId, rq.getCrmId());
             ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
                     investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
 
@@ -160,7 +161,7 @@ public class ProductsExpService {
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
             if (!StringUtils.isEmpty(portData)) {
-                ObjectMapper mapper = new ObjectMapper();
+                 mapper = new ObjectMapper();
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
                 JsonNode dataNode = node.get("data");
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
@@ -178,12 +179,11 @@ public class ProductsExpService {
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
             summaryByPortResponse = investmentRequestClient
                     .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, fundSummaryData);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE +  "{}" , fundSummaryData);
             if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                 var body = fundSummaryData.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
-
-                setFundSummaryBody(result, ports, body, summaryByPort);
+                this.setFundSummaryBody(result, ports, body, summaryByPort);
 
             }
             return result;
