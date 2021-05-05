@@ -146,6 +146,12 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestBody String crmId);
 
+    /**
+     * Call investment to get ptest port
+     * @param headers
+     * @param request
+     * @return
+     */
     @PostMapping(value = "${investment.service.fund.get.ptes.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> getPtesPort(@RequestHeader Map<String, String> headers
