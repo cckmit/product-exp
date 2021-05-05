@@ -154,8 +154,8 @@ public class ProductsExpService {
 
 
             Optional<List<PtesDetail>> ptesDetailList =
-                    Optional.ofNullable(ptestDetailResult).map(tmbOneServiceResponseResponseEntity -> tmbOneServiceResponseResponseEntity.getBody())
-                                .map(TmbOneServiceResponse ::getData);
+                    Optional.ofNullable(ptestDetailResult).map(ResponseEntity ::getBody)
+                            .map(TmbOneServiceResponse ::getData);
 
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
