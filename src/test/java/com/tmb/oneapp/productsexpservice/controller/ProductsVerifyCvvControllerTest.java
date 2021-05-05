@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -165,4 +166,42 @@ public class ProductsVerifyCvvControllerTest {
 
     }
 
+    @Test
+    void failedResponse() {
+        VerifyCvvResponse response = new VerifyCvvResponse();
+        TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+
+        SilverlakeStatus status = new SilverlakeStatus();
+        status.setStatusCode(0);
+        response.setStatus(status);
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setDescription("Failed response");
+        oneServiceResponse.setStatus(tmbStatus);
+        String code = "0001";
+        String message = "failed Response";
+        String service = "verify-cvv service";
+        productsVerifyCvvController.failedResponse(response, oneServiceResponse, code, message, service);
+        assertNotNull(oneServiceResponse);
+    }
+
+    @Test
+    void failureResponse() {
+        VerifyCvvResponse response = new VerifyCvvResponse();
+
+        TmbOneServiceResponse<VerifyCvvResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+
+        SilverlakeStatus status = new SilverlakeStatus();
+        status.setStatusCode(0);
+        response.setStatus(status);
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setDescription("Failed response");
+        oneServiceResponse.setStatus(tmbStatus);
+        String code = "0001";
+        String message = "failed Response";
+        String service = "verify-cvv service";
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setBearerAuth("test");
+        ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> result = productsVerifyCvvController.failureResponse(response, oneServiceResponse, responseHeaders, code, message, service);
+        assertEquals(400,result.getStatusCodeValue());
+    }
 }

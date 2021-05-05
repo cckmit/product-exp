@@ -592,11 +592,15 @@ public class NotificationService {
                 .findAny().orElse(null);
         ProductCodeData productCodeData = new ProductCodeData();
         if (Objects.nonNull(productConfig)) {
-            productCodeData.setProductNameTH(productConfig.getProductNameTH());
-            productCodeData.setProductNameEN(productConfig.getProductNameEN());
-            productCodeData.setIconId(productConfig.getIconId());
+            productCodeData(productConfig, productCodeData);
         }
         return productCodeData;
+    }
+
+    void productCodeData(ProductConfig productConfig, ProductCodeData productCodeData) {
+        productCodeData.setProductNameTH(productConfig.getProductNameTH());
+        productCodeData.setProductNameEN(productConfig.getProductNameEN());
+        productCodeData.setIconId(productConfig.getIconId());
     }
 
     /**
@@ -637,6 +641,7 @@ public class NotificationService {
         }
     }
 
+
     /**
      * Process generate model for so good warpper model
      *
@@ -662,9 +667,7 @@ public class NotificationService {
                             .equals(item.getCreditCard().getCardInstallment().getTransactionKey()))
                     .collect(Collectors.toList()).stream().findFirst();
             if (optCardInstallment.isPresent()) {
-                CardInstallment cardInstallment = optCardInstallment.get();
-                info.setCreateDate(formateDateWithStandard(cardInstallment.getPostDate()));
-                info.setTranDate(formateDateWithStandard(cardInstallment.getTransectionDate()));
+                cardInstallmentData(info, optCardInstallment);
             }
             info.setFirstPayment(df.format(monthlyTrans.getFirstPayment()));
             info.setName(item.getCreditCard().getCardInstallment().getTransactionDescription());
@@ -675,6 +678,14 @@ public class NotificationService {
         });
         wrapperInfo.setItems(itemInfos);
         return wrapperInfo;
+    }
+
+    void cardInstallmentData(SoGoodItemInfo info, Optional<CardInstallment> optCardInstallment) {
+        if (optCardInstallment.isPresent()) {
+            CardInstallment cardInstallment = optCardInstallment.get();
+            info.setCreateDate(formateDateWithStandard(cardInstallment.getPostDate()));
+            info.setTranDate(formateDateWithStandard(cardInstallment.getTransectionDate()));
+        }
     }
 
     /**

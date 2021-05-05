@@ -6,6 +6,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
 import com.tmb.oneapp.productsexpservice.model.loan.Account;
+import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.junit.Assert;
@@ -194,7 +195,7 @@ public class CreditCardLogServiceTest {
         status.setErrorStatus(null);
         response.setStatus(status);
         installment.add(response);
-        logService.applySoGoodConfirmEvent(correlationId, reqHeader, query, installment);
+        logService.generateApplySoGoodConfirmEvent(correlationId, reqHeader, query, installment);
         assertEquals("0", status.getStatusCode());
 
     }
@@ -228,7 +229,7 @@ public class CreditCardLogServiceTest {
         status.setErrorStatus(null);
         response.setStatus(status);
         installment.add(response);
-        logService.applySoGoodConfirmEvent(correlationId, hashMap, query, installment);
+        logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, query, installment);
         assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
     }
 
@@ -305,7 +306,7 @@ public class CreditCardLogServiceTest {
         Map<String, String> hashMap = new HashMap();
         hashMap.put("1", "creditCard");
         hashMap.put("2", "debitCard");
-        LoanDetailsFullResponse response = new LoanDetailsFullResponse();
+        HomeLoanFullInfoResponse response = new HomeLoanFullInfoResponse();
         com.tmb.oneapp.productsexpservice.model.loan.StatusResponse status = new com.tmb.oneapp.productsexpservice.model.loan.StatusResponse();
         status.setCode("0");
         status.setDescription("Available");

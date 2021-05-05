@@ -11,7 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
-import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -20,25 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Class responsible for Putting activity logs in Creditcard service
- *
- * @author Admin
- * @author Admin
- * @author Admin
- * @author Admin
- * @author Admin
- */
-
-/**
- * @author Admin
- *
- */
-
-/**
- * @author Admin
- *
- */
 @Service
 public class CreditCardLogService {
     private static final TMBLogger<CreditCardLogService> logger = new TMBLogger<>(CreditCardLogService.class);
@@ -178,29 +159,26 @@ public class CreditCardLogService {
         return creditCardEvent;
     }
 
-
     /**
      * @param correlationId
      * @param reqHeader
      * @param requestBody
-     * @return
+     * @param data
      */
-    public void applySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, List<CardInstallmentResponse> data) {
-
+    public void generateApplySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader,
+                                                CardInstallmentQuery requestBody, List<CardInstallmentResponse> data) {
 
         List<CardInstallment> cardInstallment = requestBody.getCardInstallment();
 
         for (CardInstallment installment : cardInstallment) {
-            CreditCardEvent creditCardEvent = getCreditCardEvent(correlationId, reqHeader, requestBody, data, installment);
-
+            CreditCardEvent creditCardEvent = getCreditCardEvent(correlationId, reqHeader, requestBody, data,
+                    installment);
             logActivity(creditCardEvent);
-
         }
 
     }
 
     /**
-     *
      * @param correlationId
      * @param reqHeader
      * @param requestBody
@@ -208,8 +186,10 @@ public class CreditCardLogService {
      * @param installment
      * @return
      */
-    CreditCardEvent getCreditCardEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, List<CardInstallmentResponse> data, CardInstallment installment) {
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()), ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
+    CreditCardEvent getCreditCardEvent(String correlationId, Map<String, String> reqHeader,
+                                       CardInstallmentQuery requestBody, List<CardInstallmentResponse> data, CardInstallment installment) {
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
+                ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
         creditCardEvent.setPlan(installment.getPromotionModelNo());
         creditCardEvent.setTransactionDescription(installment.getTransactionDescription());
         populateBaseEvents(creditCardEvent, reqHeader);
@@ -232,8 +212,8 @@ public class CreditCardLogService {
         for (CardInstallmentResponse cardResp : data) {
             String transactionKey = cardResp.getCreditCard().getCardInstallment().getTransactionKey();
 
-            if (cardResp.getStatus().getErrorStatus() != null && !cardResp.getStatus().getErrorStatus().isEmpty() &&
-                    transactionKey.equalsIgnoreCase(installment.getTransactionKey())) {
+            if (cardResp.getStatus().getErrorStatus() != null && !cardResp.getStatus().getErrorStatus().isEmpty()
+                    && transactionKey.equalsIgnoreCase(installment.getTransactionKey())) {
 
                 creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
                 creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
@@ -244,7 +224,6 @@ public class CreditCardLogService {
         }
         return creditCardEvent;
     }
-
 
     /**
      * method for populating base events for Activity logs
@@ -283,7 +262,6 @@ public class CreditCardLogService {
         }
     }
 
-
     /**
      * Activity log for finish block card
      *
@@ -308,7 +286,6 @@ public class CreditCardLogService {
     }
 
     /**
-     *
      * @param status
      * @param activityId
      * @param correlationId
@@ -331,13 +308,13 @@ public class CreditCardLogService {
     }
 
     /**
-     *
      * @param creditCardEvent
      * @param reqHeader
      * @param response
      * @return
      */
-    public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, LoanDetailsFullResponse response) {
+    public CreditCardEvent viewLoanLandingScreenEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
+                                                      HomeLoanFullInfoResponse response) {
 
         populateBaseEvents(creditCardEvent, reqHeader);
 
@@ -347,13 +324,13 @@ public class CreditCardLogService {
     }
 
     /**
-     *
      * @param creditCardEvent
      * @param reqHeader
      * @param fetchCardResponse
      * @return
      */
-    public CreditCardEvent loadCardDetailsEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader, FetchCardResponse fetchCardResponse) {
+    public CreditCardEvent loadCardDetailsEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
+                                                FetchCardResponse fetchCardResponse) {
 
         populateBaseEvents(creditCardEvent, reqHeader);
 
@@ -361,6 +338,5 @@ public class CreditCardLogService {
         creditCardEvent.setProductName(fetchCardResponse.getProductCodeData().getProductNameEN());
         return creditCardEvent;
     }
-
 
 }

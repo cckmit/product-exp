@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.tmb.common.exception.model.TMBCommonException;
@@ -256,22 +257,9 @@ public class ProductExpAsynService {
     @LogAround
     @Async
     public CompletableFuture<List<FundClassListInfo>> fetchFundListInfo(Map<String, String> invHeaderReqParameter, String correlationId, String key) throws TMBCommonException {
-        List<FundClassListInfo> fundClassLists = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
-            ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
-            if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
-                ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
-                        investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
-                fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
-                String fundClassStr = mapper.writeValueAsString(fundClassLists);
-                cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
-            } else {
-                String fundStr = responseCache.getBody().getData();
-                TypeFactory typeFactory = mapper.getTypeFactory();
-                fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
-            }
-            return CompletableFuture.completedFuture(fundClassLists);
+            return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             throw new TMBCommonException(
@@ -281,6 +269,31 @@ public class ProductExpAsynService {
                     HttpStatus.OK,
                     null);
         }
+    }
+
+    /**
+     * @param invHeaderReqParameter
+     * @param correlationId
+     * @param key
+     * @param mapper
+     * @return
+     * @throws JsonProcessingException
+     */
+    CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter, String correlationId, String key, ObjectMapper mapper) throws JsonProcessingException {
+        List<FundClassListInfo> fundClassLists;
+        ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
+            ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
+                    investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
+            fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
+            String fundClassStr = mapper.writeValueAsString(fundClassLists);
+            cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
+        } else {
+            String fundStr = responseCache.getBody().getData();
+            TypeFactory typeFactory = mapper.getTypeFactory();
+            fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
+        }
+        return CompletableFuture.completedFuture(fundClassLists);
     }
 
 

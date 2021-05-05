@@ -79,12 +79,16 @@ public class EligibleLeadController {
             }
 
         } catch (Exception e) {
-            logger.error("Error while getting eligible lead controller: {}", e);
-            serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+            return getFailedResponse(responseHeaders, serviceResponse, e);
         }
 
+    }
+
+    ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getFailedResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<EligibleLeadResponse> serviceResponse, Exception e) {
+        logger.error("Error while getting eligible lead controller: {}", e);
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService()));
+        return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
     }
 
     /**

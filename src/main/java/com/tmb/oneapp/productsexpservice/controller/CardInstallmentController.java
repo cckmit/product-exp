@@ -144,6 +144,7 @@ public class CardInstallmentController {
 
     }
 
+
     /**
      * @param correlationId
      * @param requestBodyParameter
@@ -158,20 +159,28 @@ public class CardInstallmentController {
                                TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse,
                                TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp,
                                List<CardInstallmentResponse> data) {
-        creditCardLogService.applySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter,
+        creditCardLogService.generateApplySoGoodConfirmEvent(correlationId, requestHeadersParameter, requestBodyParameter,
                 data);
 
         boolean success = data.stream().anyMatch(t -> t.getStatus().getStatusCode().equals("0"));
 
         if (success) {
-            oneServiceResponse.setData(cardInstallmentResp.getData());
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            successResponse(oneServiceResponse, cardInstallmentResp);
         } else {
 
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param oneServiceResponse
+     * @param cardInstallmentResp
+     */
+    void successResponse(TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp) {
+        oneServiceResponse.setData(cardInstallmentResp.getData());
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
     }
 
     /**

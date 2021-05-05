@@ -24,11 +24,10 @@ import java.util.List;
 /**
  * FetchReasonListController request mapping will handle apis call and then
  * navigate to respective method
- *
  */
 @RestController
 @Api(tags = "Apply So GooOD Feature Api")
-public class FetchInstallmentPlanController{
+public class FetchInstallmentPlanController {
     private static final TMBLogger<com.tmb.oneapp.productsexpservice.controller.FetchReasonListController> logger = new TMBLogger<>(com.tmb.oneapp.productsexpservice.controller.FetchReasonListController.class);
     private final CreditCardClient creditCardClient;
 
@@ -51,7 +50,7 @@ public class FetchInstallmentPlanController{
     @LogAround
     @GetMapping(value = "/fetch-installment-plan")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") })
+            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
     public ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> getInstallmentPlan(
             @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId) {
         HttpHeaders responseHeaders = new HttpHeaders();

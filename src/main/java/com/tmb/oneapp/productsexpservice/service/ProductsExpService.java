@@ -299,34 +299,53 @@ public class ProductsExpService {
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
             ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
-            if (!ffsRsAndValidation.isError()) {
-                ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
-                try {
-                    Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-                    responseEntity = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, ffsRequestBody);
-                    logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-                    if (!StringUtils.isEmpty(responseEntity) && responseEntity.getStatusCode() == HttpStatus.OK) {
-                        FfsData ffsData = new FfsData();
-                        ffsData.setFactSheetData(responseEntity.getBody().getData().getBody().getFactSheetData());
-                        ffsRsAndValidation.setBody(ffsData);
-                    } else {
-                        ffsRsAndValidation.setError(true);
-                        ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
-                        ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
-                        ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
-                    }
-                } catch (Exception e) {
-                    logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-                    return null;
-                }
-            }
+            if (ffsRsAndValidation(correlationId, ffsRequestBody, ffsRsAndValidation)) return null;
         } else {
-            ffsRsAndValidation.setError(true);
-            ffsRsAndValidation.setErrorCode(fundResponse.getErrorCode());
-            ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
-            ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
+            errorData(ffsRsAndValidation, fundResponse);
         }
         return ffsRsAndValidation;
+    }
+
+    void errorData(FfsRsAndValidation ffsRsAndValidation, FundResponse fundResponse) {
+        ffsRsAndValidation.setError(true);
+        ffsRsAndValidation.setErrorCode(fundResponse.getErrorCode());
+        ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
+        ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
+    }
+
+    /**
+     * @param correlationId
+     * @param ffsRequestBody
+     * @param ffsRsAndValidation
+     * @return
+     */
+    boolean ffsRsAndValidation(String correlationId, FfsRequestBody ffsRequestBody, FfsRsAndValidation ffsRsAndValidation) {
+        if (!ffsRsAndValidation.isError()) {
+            ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
+            try {
+                Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+                responseEntity = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, ffsRequestBody);
+                logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
+                if (!StringUtils.isEmpty(responseEntity) && responseEntity.getStatusCode() == HttpStatus.OK) {
+                    ffsData(ffsRsAndValidation, responseEntity);
+                } else {
+                    ffsRsAndValidation.setError(true);
+                    ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
+                    ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+                    ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+                }
+            } catch (Exception e) {
+                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
+        FfsData ffsData = new FfsData();
+        ffsData.setFactSheetData(responseEntity.getBody().getData().getBody().getFactSheetData());
+        ffsRsAndValidation.setBody(ffsData);
     }
 
     /**
@@ -347,13 +366,20 @@ public class ProductsExpService {
             ffsRequestBody.setCrmId(alternativeRq.getCrmId());
             fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
-                fundResponse.setError(false);
-                fundResponse.setErrorCode(ProductsExpServiceConstant.SUCCESS_CODE);
-                fundResponse.setErrorMsg(ProductsExpServiceConstant.SUCCESS_MESSAGE);
-                fundResponse.setErrorDesc(ProductsExpServiceConstant.SUCCESS);
+                fundResponseSuccess(fundResponse);
             }
         }
         return fundResponse;
+    }
+
+    /**
+     * @param fundResponse
+     */
+    void fundResponseSuccess(FundResponse fundResponse) {
+        fundResponse.setError(false);
+        fundResponse.setErrorCode(ProductsExpServiceConstant.SUCCESS_CODE);
+        fundResponse.setErrorMsg(ProductsExpServiceConstant.SUCCESS_MESSAGE);
+        fundResponse.setErrorDesc(ProductsExpServiceConstant.SUCCESS);
     }
 
 
@@ -384,19 +410,20 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
         }
         if (!isStoped && isCustIDExpired(ffsRequestBody)) {
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.ID_EXPIRED_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.ID_EXPIRED_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_DESC);
+            fundResponseError(ffsRsAndValidation, isNotValid);
             isStoped = true;
         }
         if (!isStoped && isBusinessClose(correlationId, ffsRequestBody)) {
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
+            errorResponse(ffsRsAndValidation, isNotValid);
         }
         return ffsRsAndValidation;
+    }
+
+    void errorResponse(FfsRsAndValidation ffsRsAndValidation, boolean isNotValid) {
+        ffsRsAndValidation.setError(isNotValid);
+        ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
+        ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
+        ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
     }
 
 
@@ -421,12 +448,20 @@ public class ProductsExpService {
             isStoped = true;
         }
         if (!isStoped && isCustIDExpired(ffsRequestBody)) {
-            fundResponse.setError(isNotValid);
-            fundResponse.setErrorCode(ProductsExpServiceConstant.ID_EXPIRED_CODE);
-            fundResponse.setErrorMsg(ProductsExpServiceConstant.ID_EXPIRED_MESSAGE);
-            fundResponse.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_DESC);
+            fundResponseError(fundResponse, isNotValid);
         }
         return fundResponse;
+    }
+
+    /**
+     * @param fundResponse
+     * @param isNotValid
+     */
+    void fundResponseError(FundResponse fundResponse, boolean isNotValid) {
+        fundResponse.setError(isNotValid);
+        fundResponse.setErrorCode(ProductsExpServiceConstant.ID_EXPIRED_CODE);
+        fundResponse.setErrorMsg(ProductsExpServiceConstant.ID_EXPIRED_MESSAGE);
+        fundResponse.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_DESC);
     }
 
     /**
@@ -445,10 +480,7 @@ public class ProductsExpService {
                 CommonData commonData = commonDataList.get(0);
                 CommonTime noneServiceHour = commonData.getNoneServiceHour();
                 if (UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
-                    fundResponse.setError(true);
-                    fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
-                    fundResponse.setErrorMsg(noneServiceHour.getStart());
-                    fundResponse.setErrorDesc(noneServiceHour.getEnd());
+                    fundResponseData(fundResponse, noneServiceHour);
                 }
             }
             return fundResponse;
@@ -460,6 +492,17 @@ public class ProductsExpService {
             fundResponse.setErrorDesc(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             return fundResponse;
         }
+    }
+
+    /**
+     * @param fundResponse
+     * @param noneServiceHour
+     */
+    void fundResponseData(FundResponse fundResponse, CommonTime noneServiceHour) {
+        fundResponse.setError(true);
+        fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
+        fundResponse.setErrorMsg(noneServiceHour.getStart());
+        fundResponse.setErrorDesc(noneServiceHour.getEnd());
     }
 
 

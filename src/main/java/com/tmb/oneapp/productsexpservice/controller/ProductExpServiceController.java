@@ -157,12 +157,20 @@ public class ProductExpServiceController {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
         } else {
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-                    ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-            oneServiceResponse.setData(null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+            return dataNotFoundError(oneServiceResponse);
         }
+    }
+
+    /**
+     * @param oneServiceResponse
+     * @return
+     */
+    ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> dataNotFoundError(TmbOneServiceResponse<FundPaymentDetailRs> oneServiceResponse) {
+        oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
+                ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
+        oneServiceResponse.setData(null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 
     /**
@@ -254,11 +262,7 @@ public class ProductExpServiceController {
             fundResponse = productsExpService.validateAlternativeSellAndSwitch(correlationId, alternativeRq);
             if (fundResponse.isError()) {
 
-                oneServiceResponse.setStatus(new TmbStatus(fundResponse.getErrorCode(),
-                        fundResponse.getErrorMsg(),
-                        ProductsExpServiceConstant.SERVICE_NAME, fundResponse.getErrorDesc()));
-                oneServiceResponse.setData(null);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+                return errorResponse(oneServiceResponse, fundResponse);
             } else {
 
                 oneServiceResponse.setData(fundResponse);
@@ -277,6 +281,14 @@ public class ProductExpServiceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
 
         }
+    }
+
+    ResponseEntity<TmbOneServiceResponse<FundResponse>> errorResponse(TmbOneServiceResponse<FundResponse> oneServiceResponse, FundResponse fundResponse) {
+        oneServiceResponse.setStatus(new TmbStatus(fundResponse.getErrorCode(),
+                fundResponse.getErrorMsg(),
+                ProductsExpServiceConstant.SERVICE_NAME, fundResponse.getErrorDesc()));
+        oneServiceResponse.setData(null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 
     /**

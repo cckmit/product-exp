@@ -18,15 +18,33 @@ public class ConversionUtilTest {
     }
 
     @Test
+    public void testStringToDoubleEmpty() {
+        Double result = ConversionUtil.stringToDouble("");
+        Assertions.assertEquals(0.0d, result);
+    }
+
+    @Test
     public void testBigDecimalToDouble() {
         Double result = ConversionUtil.bigDecimalToDouble(new BigDecimal(1000000.00));
         Assertions.assertEquals(1000000.00, result);
     }
 
     @Test
+    public void testBigDecimalToDoubleEmpty() {
+        Double result = ConversionUtil.bigDecimalToDouble((null));
+        Assertions.assertNotEquals(1000000.00, result);
+    }
+
+    @Test
     public void testDoubleToString() {
         String result = ConversionUtil.doubleToString(Double.valueOf(100));
         Assert.assertEquals("100.0", result);
+    }
+
+    @Test
+    public void testDoubleToStringEmpty() {
+        String result = ConversionUtil.doubleToString(null);
+        Assert.assertNotEquals("100.0", result);
     }
 }
 
