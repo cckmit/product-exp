@@ -91,6 +91,9 @@ public class ProductsExpServiceTest {
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
+
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(),any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
