@@ -73,7 +73,7 @@ public class ProductsExpService {
     private final KafkaProducerService kafkaProducerService;
     private final String topicName;
     private final CustomerExpServiceClient customerExpServiceClient;
-    private ObjectMapper mapper = new ObjectMapper();
+
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
@@ -161,7 +161,7 @@ public class ProductsExpService {
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
             if (!StringUtils.isEmpty(portData)) {
-                 mapper = new ObjectMapper();
+                ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = mapper.readValue(portData, JsonNode.class);
                 JsonNode dataNode = node.get("data");
                 JsonNode portList = dataNode.get("mutual_fund_accounts");
