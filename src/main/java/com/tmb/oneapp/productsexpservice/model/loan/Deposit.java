@@ -44,7 +44,7 @@ public class Deposit {
     @ApiModelProperty(notes = "model_type", required = true, example = "CA")
     @JsonProperty("model_type")
     private String modelType;
-    @ApiModelProperty(notes = "order_no", required = true, example = "")
+    @ApiModelProperty(notes = "order_no", example = "")
     @JsonProperty("order_no")
     private String orderNo;
 }

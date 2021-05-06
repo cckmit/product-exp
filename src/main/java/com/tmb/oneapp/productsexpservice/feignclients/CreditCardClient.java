@@ -93,8 +93,8 @@ public interface CreditCardClient {
             @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody InstallmentRateRequest requestBodyParameter);
 
-    @PostMapping(value = "/apis/creditcard/card-money-transfer")
+    @PostMapping(value = "/apis/creditcard/installment/card-money-transfer")
      ResponseEntity<TmbOneServiceResponse<DepositResponse>> cardMoneyTransfer(
-            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @RequestBody DepositRequest requestBodyParameter);
 }
