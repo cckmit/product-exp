@@ -50,26 +50,6 @@ public class LoanStatementControllerTest {
         loanStatementController = new LoanStatementController(accountRequestClient);
     }
 
-    @Test
-    public void testGetLoanAccountDetail() {
-        String correlationId = "c83936c284cb398fA46CF16F399C";
-        TmbOneServiceResponse<LoanStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        TmbStatus status = new TmbStatus();
-        status.setDescription("working");
-        status.setCode("0");
-        status.setMessage("Successful");
-        status.setService("loan-statement-get");
-        oneServiceResponse.setStatus(status);
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> response = new ResponseEntity<>(oneServiceResponse, HttpStatus.OK);
-        when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(response);
-
-        LoanStatementRequest requestBody = new LoanStatementRequest();
-        requestBody.setAccountId("00015719933001");
-        requestBody.setEndDate("2021-03-25");
-        requestBody.setStartDate("2020-03-01");
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanStatement(correlationId, requestBody);
-        assertEquals(200, result.getStatusCodeValue());
-    }
 
     @Test
     public void testGetLoanAccountDetailTest() throws TMBCommonException {
@@ -111,7 +91,7 @@ public class LoanStatementControllerTest {
         when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(tmbOneServiceResponseEntity);
         ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanStatement(correlationId, requestBody);
 
-        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(400, result.getStatusCodeValue());
 
     }
 
