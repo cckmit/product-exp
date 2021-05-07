@@ -705,7 +705,7 @@ public class ProductExpServiceTest {
             ObjectMapper mapper = new ObjectMapper();
             fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustomerProfileResponseData.class);
 
-            when(productExpAsynService.fetchCustomerProfile(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsynService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
         } catch (Exception ex) {
             ex.printStackTrace();
         }

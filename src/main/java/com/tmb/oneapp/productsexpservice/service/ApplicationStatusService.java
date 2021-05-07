@@ -159,7 +159,7 @@ public class ApplicationStatusService {
     private CustomerProfileResponseData getCustomerCrmId(String crmId) {
         logger.info("Calling GET /apis/customers/{crmId}");
         ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> customersCrmIdResponse =
-                customerServiceClient.getCustomerProfile(new HashMap<>(), crmId);
+                customerServiceClient.getCustomerProfile(crmId);
         logger.info("GET /apis/customers/{crmId} response : {}", customersCrmIdResponse);
 
         return Objects.requireNonNull(customersCrmIdResponse.getBody()).getData();

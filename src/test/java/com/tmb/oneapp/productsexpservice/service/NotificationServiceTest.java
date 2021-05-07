@@ -81,7 +81,7 @@ public class NotificationServiceTest {
         when(creditCardClient.getCreditCardDetails(any(), any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile(any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<>();
@@ -122,7 +122,7 @@ public class NotificationServiceTest {
         TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<>();
         sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
         when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
                 "0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
@@ -158,7 +158,7 @@ public class NotificationServiceTest {
         cardDetail.setProductId("VTOPBR");
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -199,7 +199,7 @@ public class NotificationServiceTest {
         cardDetail.setProductId("VTOPBR");
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -263,7 +263,7 @@ public class NotificationServiceTest {
         cardDetail.setCardCreditLimit(cardCreditLimit);
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -325,7 +325,7 @@ public class NotificationServiceTest {
         cardDetail.setCardCreditLimit(cardCreditLimit);
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -397,7 +397,7 @@ public class NotificationServiceTest {
 
         when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(any(), any()))
@@ -437,7 +437,7 @@ public class NotificationServiceTest {
     private ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getTmbOneServiceResponseResponseEntity() {
         TmbOneServiceResponse<CustomerProfileResponseData> resp = getCustomerProfileResponseDataTmbOneServiceResponse();
         ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = new ResponseEntity(resp, HttpStatus.OK);
-        when(customerServiceClient.getCustomerProfile(any(), any())).thenReturn(response);
+        when(customerServiceClient.getCustomerProfile( any())).thenReturn(response);
         return response;
     }
 

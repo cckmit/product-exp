@@ -586,8 +586,7 @@ public class ProductsExpService {
     public boolean isCustIDExpired(FfsRequestBody ffsRequestBody) {
         CompletableFuture<CustomerProfileResponseData> responseResponseEntity = null;
         try {
-            Map<String, String> requestHeadersParameter = new HashMap<>();
-            responseResponseEntity = productExpAsynService.fetchCustomerProfile(requestHeadersParameter, ffsRequestBody.getCrmId());
+            responseResponseEntity = productExpAsynService.fetchCustomerProfile(ffsRequestBody.getCrmId());
             CompletableFuture.allOf(responseResponseEntity);
             CustomerProfileResponseData responseData = responseResponseEntity.get();
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);

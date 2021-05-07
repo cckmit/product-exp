@@ -53,7 +53,7 @@ class ApplicationStatusServiceTest {
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -163,7 +163,7 @@ class ApplicationStatusServiceTest {
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile( anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -265,7 +265,7 @@ class ApplicationStatusServiceTest {
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -339,7 +339,7 @@ class ApplicationStatusServiceTest {
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -391,7 +391,7 @@ class ApplicationStatusServiceTest {
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 

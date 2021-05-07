@@ -80,8 +80,7 @@ public interface CustomerServiceClient {
      *                                customers-service
      */
     @GetMapping(value = "/apis/customers/{crmId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getCustomerProfile(
-            @RequestHeader Map<String, String> requestHeadersParameter, @RequestHeader(name = "crmId") String crmId);
+    ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getCustomerProfile( @RequestHeader(name = "crmId") String crmId);
 
 
     /**

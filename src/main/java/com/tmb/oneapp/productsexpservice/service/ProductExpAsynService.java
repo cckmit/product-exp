@@ -229,10 +229,10 @@ public class ProductExpAsynService {
      */
     @LogAround
     @Async
-    public CompletableFuture<CustomerProfileResponseData> fetchCustomerProfile(Map<String, String> invHeaderReqParameter, String crmID) throws TMBCommonException {
+    public CompletableFuture<CustomerProfileResponseData> fetchCustomerProfile( String crmID) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> responseResponseEntity = customerServiceClient.
-                    getCustomerProfile(invHeaderReqParameter, crmID);
+                    getCustomerProfile(crmID);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
