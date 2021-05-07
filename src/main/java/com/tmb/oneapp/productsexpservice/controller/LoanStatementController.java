@@ -75,7 +75,7 @@ public class LoanStatementController {
 
                     LoanStatementResponse loanDetails = loanResponse.getBody().getData();
                     List<Statement> statements = loanDetails.getResponse().getStatements();
-                    statements.sort((Statement s1, Statement s2) -> s1.getTransactionDate().compareTo(s2.getTransactionDate()));
+                    statements.sort((Statement s1, Statement s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
                     loanDetails.getResponse().setStatements(statements);
                     serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
