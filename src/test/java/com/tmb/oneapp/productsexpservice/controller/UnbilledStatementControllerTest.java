@@ -7,6 +7,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +23,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
@@ -138,7 +142,34 @@ public class UnbilledStatementControllerTest {
 
     @Test
     public void testHandlingFailedResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
+        HttpHeaders responseHeaders = getHttpHeaders();
+        when(creditCardClient.getUnBilledStatement(any(), any())
+        ).thenThrow(new
+                IllegalStateException("Error occurred"));
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController
+                .handlingFailedResponse(oneServiceResponse, responseHeaders);
+
+        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        return responseHeaders;
+    }
+
+    private TmbOneServiceResponse<BilledStatementResponse> getTmbOneServiceResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        BilledStatementResponse setCreditLimitResp = getStatementResponse();
+        CardStatement cardStatement = new CardStatement();
+        cardStatement.setPromotionFlag("Y");
+        setCreditLimitResp.setCardStatement(cardStatement);
+        oneServiceResponse.setData(setCreditLimitResp);
+        return oneServiceResponse;
+    }
+
+    private BilledStatementResponse getStatementResponse() {
         BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(1);
@@ -148,17 +179,20 @@ public class UnbilledStatementControllerTest {
         setCreditLimitResp.setMoreRecords("100");
         setCreditLimitResp.setSearchKeys("N");
         CardStatement cardStatement = new CardStatement();
-        cardStatement.setPromotionFlag("Y");
+        List<StatementTransaction> statementTransactions = new ArrayList<>();
+        StatementTransaction transaction = new StatementTransaction();
+        transaction.setTransactionCode(0);
+        transaction.setTransactionDate("10-10-2020");
+        transaction.setTransactionAmounts(BigDecimal.valueOf(1000.00));
+        transaction.setTransactionKey("test");
+        transaction.setTransactionType("test");
+        transaction.setMccCode("test");
+        transaction.setTransactionCurrency("test");
+        transaction.setTransactionDescription("success");
+        transaction.setPostedDate("test");
+        cardStatement.setStatementTransactions(statementTransactions);
         setCreditLimitResp.setCardStatement(cardStatement);
-        oneServiceResponse.setData(setCreditLimitResp);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
-        when(creditCardClient.getUnBilledStatement(any(), any())).thenThrow(new
-                IllegalStateException("Error occurred"));
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController
-                .handlingFailedResponse(oneServiceResponse, responseHeaders);
-
-        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+        return setCreditLimitResp;
     }
 
     @Test
@@ -187,6 +221,46 @@ public class UnbilledStatementControllerTest {
 
     }
 
+    @Test
+    public void testGetUnBilledStatementResp()  {
+        String correlationId = "c83936c284cb398fA46CF16F399C";
+        BilledStatementResponse resp = getStatementResponse();
+        ResponseEntity<BilledStatementResponse> response = new ResponseEntity<>(resp,HttpStatus.OK);
+        when(creditCardClient.getUnBilledStatement(anyString(), any())).thenReturn(response);
+
+        GetUnbilledStatementQuery requestBody = new GetUnbilledStatementQuery("accountId", "moreRecords", "searchKeys");
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.getUnBilledStatement(correlationId, requestBody);
+        Assert.assertNotEquals(null, result);
+    }
+
+    @Test
+    public void testGetTmbOneServiceResponseResponse()  {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
+        HttpHeaders responseHeaders = getHttpHeaders();
+        BilledStatementResponse resp = getStatementResponse();
+
+        ResponseEntity<BilledStatementResponse> billedStatementResponse = new ResponseEntity<>(resp,HttpStatus.OK);
+        when(creditCardClient.getUnBilledStatement(anyString(), any())).thenReturn(billedStatementResponse);
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.getTmbOneServiceResponseResponse(oneServiceResponse, responseHeaders, billedStatementResponse);
+        Assert.assertNotEquals(null, result);
+    }
+
+    @Test
+    public void testHandlingFailedData()  {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse =getTmbOneServiceResponse();
+        HttpHeaders responseHeaders =getHttpHeaders();
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.handlingFailedResponse(oneServiceResponse, responseHeaders);
+        Assert.assertNotEquals(null, result);
+    }
+    @Test
+    public void testHandlingResponseData()  {
+        BilledStatementResponse resp = getStatementResponse();
+        ResponseEntity<BilledStatementResponse> response = new ResponseEntity<>(resp,HttpStatus.OK);
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
+        HttpHeaders responseHeaders = getHttpHeaders();
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.handlingResponseData(response, oneServiceResponse, responseHeaders);
+        Assert.assertNotEquals(null, result);
+    }
 
 }
 
