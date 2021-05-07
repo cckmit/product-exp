@@ -114,8 +114,8 @@ public class LoanDetailsController {
         HomeLoanFullInfoResponse loanDetails = loanResponse.getBody().getData();
         String productId = loanResponse.getBody().getData().getAccount().getProductId();
         Rates rates = loanResponse.getBody().getData().getAccount().getRates();
-        String currentInterestRate = rates.getCurrentInterestRate();
-        String originalInterestRate = rates.getOriginalInterestRate();
+        Double currentInterestRate = ConversionUtil.stringToDouble(rates.getCurrentInterestRate());
+        Double originalInterestRate = ConversionUtil.stringToDouble(rates.getOriginalInterestRate());
         String monthlyPaymentAmount = loanDetails.getAccount().getPayment().getMonthlyPaymentAmount();
         Double monthlyPayment = ConversionUtil.stringToDouble(monthlyPaymentAmount);
         DecimalFormat df = new DecimalFormat("#,###,##0.00");
@@ -123,8 +123,11 @@ public class LoanDetailsController {
 
         String formattedPayment = df.format(monthlyPayment);
         payment.setMonthlyPaymentAmount(formattedPayment);
-        String currentInterestRateInPercent = currentInterestRate.concat(" %");
-        String originalInterestRateInPercent = originalInterestRate.concat(" %");
+        DecimalFormat threeDecimalPlaces = new DecimalFormat("#.000");
+        String currentInterest = threeDecimalPlaces.format(currentInterestRate);
+        String originalInterest = threeDecimalPlaces.format(originalInterestRate);
+        String currentInterestRateInPercent = currentInterest.concat(" %");
+        String originalInterestRateInPercent = originalInterest.concat(" %");
         rates.setCurrentInterestRate(currentInterestRateInPercent);
         rates.setOriginalInterestRate(originalInterestRateInPercent);
         ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
