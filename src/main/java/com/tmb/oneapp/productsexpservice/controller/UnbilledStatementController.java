@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,6 +156,9 @@ public class UnbilledStatementController {
         responseBody.setMoreRecords(moreRecords);
         responseBody.setSearchKeys(searchKeys);
         responseBody.setTotalRecords(totalRecords);
+        List<StatementTransaction> statementTransactions = responseBody.getCardStatement().getStatementTransactions();
+        statementTransactions.sort((StatementTransaction s1, StatementTransaction s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
+        responseBody.getCardStatement().setStatementTransactions(statementTransactions);
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
         oneServiceResponse.setData(responseBody);
