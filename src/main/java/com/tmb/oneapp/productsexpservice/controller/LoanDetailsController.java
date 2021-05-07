@@ -123,7 +123,7 @@ public class LoanDetailsController {
 
         String formattedPayment = df.format(monthlyPayment);
         payment.setMonthlyPaymentAmount(formattedPayment);
-        DecimalFormat threeDecimalPlaces = new DecimalFormat("#.000");
+        DecimalFormat threeDecimalPlaces = new DecimalFormat("#.00");
         String currentInterest = threeDecimalPlaces.format(currentInterestRate);
         String originalInterest = threeDecimalPlaces.format(originalInterestRate);
         String currentInterestRateInPercent = currentInterest.concat(" %");

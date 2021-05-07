@@ -55,8 +55,11 @@ public class LoanStatementControllerTest {
         when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(null);
 
         LoanStatementRequest requestBody = getLoanStatementRequest();
+
         TmbOneServiceResponse<LoanStatementResponse> resp = getLoanStatementResponseTmbOneServiceResponse();
+
         ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> response = new ResponseEntity<>(resp, HttpStatus.OK);
+
         when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(response);
 
         ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanStatement("correlationId", requestBody);
