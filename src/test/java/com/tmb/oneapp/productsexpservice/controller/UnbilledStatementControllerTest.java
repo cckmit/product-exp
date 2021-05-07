@@ -222,10 +222,10 @@ public class UnbilledStatementControllerTest {
     }
 
     @Test
-    public void testGetUnBilledStatementResp()  {
+    public void testGetUnBilledStatementResp() {
         String correlationId = "c83936c284cb398fA46CF16F399C";
         BilledStatementResponse resp = getStatementResponse();
-        ResponseEntity<BilledStatementResponse> response = new ResponseEntity<>(resp,HttpStatus.OK);
+        ResponseEntity<BilledStatementResponse> response = new ResponseEntity<>(resp, HttpStatus.OK);
         when(creditCardClient.getUnBilledStatement(anyString(), any())).thenReturn(response);
 
         GetUnbilledStatementQuery requestBody = new GetUnbilledStatementQuery("accountId", "moreRecords", "searchKeys");
@@ -234,28 +234,29 @@ public class UnbilledStatementControllerTest {
     }
 
     @Test
-    public void testGetTmbOneServiceResponseResponse()  {
+    public void testGetTmbOneServiceResponseResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
         HttpHeaders responseHeaders = getHttpHeaders();
         BilledStatementResponse resp = getStatementResponse();
 
-        ResponseEntity<BilledStatementResponse> billedStatementResponse = new ResponseEntity<>(resp,HttpStatus.OK);
+        ResponseEntity<BilledStatementResponse> billedStatementResponse = new ResponseEntity<>(resp, HttpStatus.OK);
         when(creditCardClient.getUnBilledStatement(anyString(), any())).thenReturn(billedStatementResponse);
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.getTmbOneServiceResponseResponse(oneServiceResponse, responseHeaders, billedStatementResponse);
         Assert.assertNotEquals(null, result);
     }
 
     @Test
-    public void testHandlingFailedData()  {
-        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse =getTmbOneServiceResponse();
-        HttpHeaders responseHeaders =getHttpHeaders();
+    public void testHandlingFailedData() {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
+        HttpHeaders responseHeaders = getHttpHeaders();
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.handlingFailedResponse(oneServiceResponse, responseHeaders);
         Assert.assertNotEquals(null, result);
     }
+
     @Test
-    public void testHandlingResponseData()  {
+    public void testHandlingResponseData() {
         BilledStatementResponse resp = getStatementResponse();
-        ResponseEntity<BilledStatementResponse> response = new ResponseEntity<>(resp,HttpStatus.OK);
+        ResponseEntity<BilledStatementResponse> response = new ResponseEntity<>(resp, HttpStatus.OK);
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
         HttpHeaders responseHeaders = getHttpHeaders();
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = unbilledStatementController.handlingResponseData(response, oneServiceResponse, responseHeaders);

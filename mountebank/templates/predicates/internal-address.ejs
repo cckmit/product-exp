@@ -1,0 +1,62 @@
+{
+	"predicates": [{
+			"equals": {
+				"method": "POST",
+				"path": "/apis/products/common-service/internal/address"
+			}
+		},
+		{
+			"equals": {
+				"body": {
+
+					"field": "postcode",
+					"search": "10800"
+
+				}
+
+			}
+		}
+	],
+	"responses": [
+
+		{
+			"is": {
+				"statusCode": 0,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": {
+
+					"status": {
+						"code": "0000",
+						"message": "success",
+						"service": "common",
+						"description": "Address Information"
+					},
+					"data": {
+						"provinceNameTh": "กรุงเทพมหานคร",
+						"provinceNameEn": "Bangkok",
+						"provinceCode": "C10000",
+						"districtList": [{
+							"provinceCode": null,
+							"districtNameTh": "บางซื่อ",
+							"districtNameEn": "Bang Sue",
+							"subDistrictList": [{
+									"subDistrictNameTh": "บางซื่อ",
+									"subDistrictNameEn": "Bang Sue",
+									"postcode": "10800"
+								},
+								{
+									"subDistrictNameTh": "วงศ์สว่าง",
+									"subDistrictNameEn": "Wong Sawang",
+									"postcode": "10800"
+								}
+							]
+						}]
+					}
+
+				}
+			}
+		}
+	]
+}
