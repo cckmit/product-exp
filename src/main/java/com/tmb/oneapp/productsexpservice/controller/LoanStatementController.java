@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -78,7 +75,7 @@ public class LoanStatementController {
 
                     LoanStatementResponse loanDetails = loanResponse.getBody().getData();
                     List<Statement> statements = loanDetails.getResponse().getStatements();
-                    statements.sort((Statement s1, Statement s2)->s1.getTransactionDate().compareTo(s2.getTransactionDate()));
+                    statements.sort((Statement s1, Statement s2) -> s1.getTransactionDate().compareTo(s2.getTransactionDate()));
                     loanDetails.getResponse().setStatements(statements);
                     serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                             ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
