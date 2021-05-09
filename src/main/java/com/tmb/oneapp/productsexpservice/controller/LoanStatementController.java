@@ -75,13 +75,7 @@ public class LoanStatementController {
 
                     LoanStatementResponse loanDetails = loanResponse.getBody().getData();
                     List<Statement> statements = loanDetails.getResponse().getStatements();
-                    statements.sort((Statement s1, Statement s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
-                    loanDetails.getResponse().setStatements(statements);
-                    serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                            ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-
-                    serviceResponse.setData(loanDetails);
-                    return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
+                    return getTmbOneServiceResponse(responseHeaders, serviceResponse, loanDetails, statements);
                 } else {
                     return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
 
@@ -94,6 +88,16 @@ public class LoanStatementController {
             return failedErrorResponse(responseHeaders, serviceResponse, e);
         }
 
+    }
+
+    ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getTmbOneServiceResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse, LoanStatementResponse loanDetails, List<Statement> statements) {
+        statements.sort((Statement s1, Statement s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
+        loanDetails.getResponse().setStatements(statements);
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+
+        serviceResponse.setData(loanDetails);
+        return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
     }
 
     ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> failedErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse, Exception e) {

@@ -121,7 +121,6 @@ public class BilledStatementController {
         BilledStatementResponse response = billedStatementRes.getBody();
 
 
-
         String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
                 : ProductsExpServiceConstant.EMPTY;
         String searchKeys = response.getCardStatement() != null
@@ -137,6 +136,10 @@ public class BilledStatementController {
         response.setMoreRecords(moreRecords);
         response.setSearchKeys(searchKeys);
         response.setTotalRecords(totalRecords);
+        return getTmbOneServiceResponse(oneServiceResponse, responseHeaders, response);
+    }
+
+    ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getTmbOneServiceResponse(TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse, HttpHeaders responseHeaders, BilledStatementResponse response) {
         List<StatementTransaction> statementTransactions = response.getCardStatement().getStatementTransactions();
         statementTransactions.sort((StatementTransaction s1, StatementTransaction s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
         response.getCardStatement().setStatementTransactions(statementTransactions);

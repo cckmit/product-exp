@@ -171,8 +171,16 @@ public class LoanStatementControllerTest {
     void getEntity() {
         getLoanStatementRequest();
         when(accountRequestClient.getLoanAccountStatement(any(), any())).thenThrow(FeignException.class);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth("test");
+        HttpHeaders headers = getHttpHeaders();
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getTmbOneServiceResponse();
+        Exception exception = new Exception("FeignClientException");
+        StackTraceElement[] stack = {};
+        exception.setStackTrace(stack);
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> entity = loanStatementController.failedErrorResponse(headers, serviceResponse, exception);
+        assertEquals(400, entity.getStatusCodeValue());
+    }
+
+    private TmbOneServiceResponse<LoanStatementResponse> getTmbOneServiceResponse() {
         TmbOneServiceResponse<LoanStatementResponse> serviceResponse = new TmbOneServiceResponse<>();
         LoanStatementResponse data = new LoanStatementResponse();
         Status status = new Status();
@@ -180,10 +188,20 @@ public class LoanStatementControllerTest {
         status.setContractDate("test");
         data.setStatus(status);
         serviceResponse.setData(data);
-        Exception exception = new Exception("FeignClientException");
-        StackTraceElement[] stack = {};
-        exception.setStackTrace(stack);
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> entity = loanStatementController.failedErrorResponse(headers, serviceResponse, exception);
-        assertEquals(400, entity.getStatusCodeValue());
+        return serviceResponse;
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("test");
+        return headers;
+    }
+
+    @Test
+    public void testGetTmbOneServiceResponseResponseEntity() {
+        HttpHeaders responseHeaders = getHttpHeaders();
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getTmbOneServiceResponse();
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
+        Assert.assertNotEquals(null, result);
     }
 }
