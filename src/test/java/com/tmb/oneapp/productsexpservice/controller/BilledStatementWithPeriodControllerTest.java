@@ -192,5 +192,21 @@ public class BilledStatementWithPeriodControllerTest {
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> exceptionResponse = billedStatementWithPeriodController.getExceptionResponse(response, responseHeaders, getException());
         assertNotEquals(null,exceptionResponse);
     }
+
+    @Test
+    void getBilledStatementWithPeriodDetailsElseTest() {
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        String accountId = "0000000050078680472000929";
+
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(0);
+        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929", "1", "Y", "");
+        BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
+        billedStatementResponse.setStatus(silverlakeStatus);
+        Mockito.when(creditCardClient.getBilledStatementWithPeriod(correlationId, accountId, billedStatementQuery)).thenReturn(null);
+
+        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId, billedStatementQuery);
+        assertNull(billedStatement);
+    }
 }
 
