@@ -565,8 +565,8 @@ public class NotificationService {
      * @param sendEmailResponse
      * @param notificationRequest
      */
-    private void processResultLog(TmbOneServiceResponse<NotificationResponse> sendEmailResponse,
-                                  NotificationRequest notificationRequest) {
+    void processResultLog(TmbOneServiceResponse<NotificationResponse> sendEmailResponse,
+                          NotificationRequest notificationRequest) {
         if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
             logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
         } else {
@@ -632,13 +632,17 @@ public class NotificationService {
                         profileResponseData.getThaFname() + " " + profileResponseData.getThaLname());
                 notifyCommon.setAccountId(accountId);
                 notifyCommon.setCrmId(crmId);
-                SoGoodWrapper soGoodWrapperInfo = generateSoGoodWraperModel(installment, successItems,
-                        requestBodyParameter);
-                sendNotifyApplySoGood(notifyCommon, profileResponseData.getEmailAddress(),
-                        profileResponseData.getPhoneNoFull(), soGoodWrapperInfo, totalAmt);
+                soGoodWrapper(requestBodyParameter, successItems, installment, totalAmt, profileResponseData, notifyCommon);
             }
 
         }
+    }
+
+    void soGoodWrapper(CardInstallmentQuery requestBodyParameter, List<CardInstallmentResponse> successItems, InstallmentPlan installment, BigDecimal totalAmt, CustomerProfileResponseData profileResponseData, NotifyCommon notifyCommon) {
+        SoGoodWrapper soGoodWrapperInfo = generateSoGoodWraperModel(installment, successItems,
+                requestBodyParameter);
+        sendNotifyApplySoGood(notifyCommon, profileResponseData.getEmailAddress(),
+                profileResponseData.getPhoneNoFull(), soGoodWrapperInfo, totalAmt);
     }
 
 

@@ -24,9 +24,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
@@ -181,14 +183,27 @@ public class LoanStatementControllerTest {
     }
 
     private TmbOneServiceResponse<LoanStatementResponse> getTmbOneServiceResponse() {
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getResponse();
+        return serviceResponse;
+    }
+
+    private TmbOneServiceResponse<LoanStatementResponse> getResponse() {
         TmbOneServiceResponse<LoanStatementResponse> serviceResponse = new TmbOneServiceResponse<>();
+        LoanStatementResponse data = getLoanStatementResponse();
+        serviceResponse.setData(data);
+        return serviceResponse;
+    }
+
+    private LoanStatementResponse getLoanStatementResponse() {
         LoanStatementResponse data = new LoanStatementResponse();
         Status status = new Status();
         status.setAccountStatus("Test");
         status.setContractDate("test");
         data.setStatus(status);
-        serviceResponse.setData(data);
-        return serviceResponse;
+        AccountResponse response = new AccountResponse();
+        response.setStatements(getStatements());
+        data.setResponse(response);
+        return data;
     }
 
     private HttpHeaders getHttpHeaders() {
@@ -203,5 +218,24 @@ public class LoanStatementControllerTest {
         TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getTmbOneServiceResponse();
         ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
         Assert.assertNotEquals(null, result);
+    }
+
+    @Test
+    void testGetTmbOneServiceResponse() {
+        HttpHeaders responseHeaders = getHttpHeaders();
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getTmbOneServiceResponse();
+        List<Statement> statements = getStatements();
+
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> tmbOneServiceResponse = loanStatementController.getTmbOneServiceResponse(responseHeaders, serviceResponse, getLoanStatementResponse(), statements);
+        assertNotNull(tmbOneServiceResponse);
+    }
+
+    private List<Statement> getStatements() {
+        List<Statement> statements = new ArrayList<>();
+        Statement statement = new Statement();
+        statement.setFeeAmount("1234");
+        statement.setInterestRate("1234");
+        statements.add(statement);
+        return statements;
     }
 }

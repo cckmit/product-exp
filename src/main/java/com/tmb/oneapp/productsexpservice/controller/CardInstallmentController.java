@@ -15,7 +15,6 @@ import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQu
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -116,10 +115,8 @@ public class CardInstallmentController {
                     if (data != null) {
                         notificationService.doNotifyApplySoGood(correlationId, accountId, crmId, data,
                                 requestBodyParameter);
-                        if (ifSuccessCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter,
-                                oneServiceResponse, cardInstallmentResp, data)) {
+                        if (successCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter, oneServiceResponse, cardInstallmentResp, data))
                             return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
-                        }
 
                     } else {
                         return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
@@ -141,6 +138,12 @@ public class CardInstallmentController {
         }
 
         return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+
+    }
+
+    boolean successCaseMatch(String correlationId, CardInstallmentQuery requestBodyParameter, Map<String, String> requestHeadersParameter, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp, List<CardInstallmentResponse> data) {
+        return ifSuccessCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter,
+                oneServiceResponse, cardInstallmentResp, data);
 
     }
 

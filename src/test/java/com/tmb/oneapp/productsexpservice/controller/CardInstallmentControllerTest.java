@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatem
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
-
 import feign.FeignException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -27,10 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -58,18 +54,22 @@ public class CardInstallmentControllerTest {
     @Test
     public void testCampaignTransactionResponseNull() throws Exception {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-        CardInstallmentQuery requestBodyParameter = new CardInstallmentQuery();
-        requestBodyParameter.setAccountId("0000000050078670143000945");
-        CardInstallment card = new CardInstallment();
-        card.setAmounts("5555.77");
-        card.setModelType("IP");
-        card.setTransactionKey("T0000020700000002");
-        card.setPromotionModelNo("IPP001");
+        CardInstallmentQuery requestBodyParameter = getCardInstallmentQuery();
+        TmbOneServiceResponse<List<CardInstallmentResponse>> response = getListTmbOneServiceResponse();
 
-        List<CardInstallment> cardInstallment = new ArrayList();
-        cardInstallment.add(card);
+        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
+        String activityDate = Long.toString(System.currentTimeMillis());
+        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityId, activityDate);
+        creditCardEvent.setActivityDate("01-09-1990");
+        when(creditCardClient.confirmCardInstallment(anyString(), any()))
+                .thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
-        requestBodyParameter.setCardInstallment(cardInstallment);
+        ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> responseEntity = cardInstallmentController
+                .confirmCardInstallment(correlationId, requestBodyParameter, headerRequestParameter());
+        Assert.assertEquals("0", response.getStatus().getCode());
+    }
+
+    private TmbOneServiceResponse<List<CardInstallmentResponse>> getListTmbOneServiceResponse() {
         TmbOneServiceResponse<List<CardInstallmentResponse>> response = new TmbOneServiceResponse<>();
         CardStatement cardStatement = new CardStatement();
         cardStatement.setDueDate("");
@@ -89,17 +89,23 @@ public class CardInstallmentControllerTest {
         tmbStatus.setCode("0");
 
         response.setStatus(tmbStatus);
+        return response;
+    }
 
-        String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
-        String activityDate = Long.toString(System.currentTimeMillis());
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityId, activityDate);
-        creditCardEvent.setActivityDate("01-09-1990");
-        when(creditCardClient.confirmCardInstallment(anyString(), any()))
-                .thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
+    private CardInstallmentQuery getCardInstallmentQuery() {
+        CardInstallmentQuery requestBodyParameter = new CardInstallmentQuery();
+        requestBodyParameter.setAccountId("0000000050078670143000945");
+        CardInstallment card = new CardInstallment();
+        card.setAmounts("5555.77");
+        card.setModelType("IP");
+        card.setTransactionKey("T0000020700000002");
+        card.setPromotionModelNo("IPP001");
 
-        ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> responseEntity = cardInstallmentController
-                .confirmCardInstallment(correlationId, requestBodyParameter, headerRequestParameter());
-        Assert.assertEquals("0", response.getStatus().getCode());
+        List<CardInstallment> cardInstallment = new ArrayList();
+        cardInstallment.add(card);
+
+        requestBodyParameter.setCardInstallment(cardInstallment);
+        return requestBodyParameter;
     }
 
     @Test
@@ -297,5 +303,26 @@ public class CardInstallmentControllerTest {
         assertNotNull(response);
     }
 
+    @Test
+    public void testIfSuccessCaseMatch() {
+        CardInstallmentQuery requestBodyParameter = getCardInstallmentQuery();
+        HashMap<String, String> requestHeadersParameter = new HashMap<>() {{
+            put("accept", "application/json");
+        }};
+        TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse = getListTmbOneServiceResponse();
 
+        CardInstallmentResponse data = new CardInstallmentResponse();
+        CardStatementReponse statement = new CardStatementReponse();
+        statement.setStatementTransactions(list);
+        ErrorStatus errorStatus = new ErrorStatus();
+        errorStatus.setErrorCode("1234");
+        List<ErrorStatus> errorStatusList = new ArrayList<>();
+        errorStatusList.add(errorStatus);
+        StatusResponse status = new StatusResponse();
+        status.setStatusCode("0");
+        status.setErrorStatus(errorStatusList);
+        data.setStatus(status);
+        boolean result = cardInstallmentController.ifSuccessCaseMatch("correlationId", requestBodyParameter, requestHeadersParameter, oneServiceResponse, oneServiceResponse, Arrays.asList(data));
+        Assert.assertEquals(false, result);
+    }
 }

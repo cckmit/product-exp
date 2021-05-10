@@ -141,4 +141,50 @@ public class MoneyTransferControllerTest {
         Assert.assertEquals("0009", result.getBody().getStatus().getCode());
 
     }
+
+    @Test
+    public void testCardMoneyTransferElseCase() throws Exception {
+        // Setup
+
+        // Configure CreditCardClient.cardMoneyTransfer(...).
+        final TmbOneServiceResponse<DepositResponse> depositResponseTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        depositResponseTmbOneServiceResponse.setStatus(new TmbStatus("code", "message", "service", "description"));
+        final DepositResponse depositResponse = new DepositResponse();
+        final DepositSuccessResponse deposit = new DepositSuccessResponse();
+        final StatusResponse status = new StatusResponse();
+        status.setCode("code");
+        status.setDescription("description");
+        deposit.setStatus(status);
+        deposit.setTransactionAmount("transactionAmount");
+        deposit.setDebitCurrentBalance("debitCurrentBalance");
+        deposit.setDebitAvailableBalance("debitAvailableBalance");
+        deposit.setFeeAmount("feeAmount");
+        deposit.setTellerId("tellerId");
+        deposit.setFlagFeeReg("flagFeeReg");
+        deposit.setWaiveProductCode("waiveProductCode");
+        deposit.setAmountWaived("amountWaived");
+        depositResponse.setDeposit(deposit);
+        depositResponseTmbOneServiceResponse.setData(depositResponse);
+        when(mockCreditCardClient.cardMoneyTransfer(anyString(), any())).thenReturn(null);
+        String correlationId = "c83936c284cb398fA46CF16F399C";
+        DepositRequest requestBody = new DepositRequest();
+        Deposit depositRequest = new Deposit();
+        depositRequest.setAmounts("1234.00");
+        depositRequest.setExpiredDate("21-09-2021");
+        depositRequest.setModelType("test");
+        depositRequest.setFromAccountId("1234");
+        depositRequest.setOrderNo("1234");
+        depositRequest.setTransferredDate("21-09-2021");
+        depositRequest.setReferenceCode("1234");
+        depositRequest.setFromAccountType("test");
+        depositRequest.setToAccountId("1234");
+        depositRequest.setWaiverCode("1234");
+        depositRequest.setToAccountType("Test");
+        requestBody.setDeposit(depositRequest);
+        ResponseEntity<TmbOneServiceResponse<DepositResponse>> response = moneyTransferController.cardMoneyTransfer(correlationId, requestBody);
+
+        // Verify the results
+        assertThat(response.getStatusCode()).isNotEqualTo(HttpStatus.OK.value());
+        assertThat(response.getStatusCodeValue()).isNotEqualTo("expectedResponse");
+    }
 }

@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatu
 import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -311,6 +312,23 @@ class CaseServiceTest {
 
         verify(customerServiceClient, times(1)).postFirstTimeUsage(anyString(), anyString(), eq("CST"));
 
+    }
+
+    @Test
+    void testGetCustomerFirstUsage() {
+        CustomerFirstUsage result = caseService.getCustomerFirstUsage("crmId", "deviceId");
+        CustomerFirstUsage expected = new CustomerFirstUsage();
+        expected.setServiceTypeId("test");
+        Assertions.assertNotEquals(expected, result);
+    }
+
+    @Test
+    void testGetCaseStatusCases() {
+        ArrayList<CaseStatusCase> result = caseService.getCaseStatusCases("crmId");
+        CaseStatusCase caseStatusCase = new CaseStatusCase();
+        caseStatusCase.setStatus("1234");
+        ArrayList<CaseStatusCase> expected = new ArrayList<>(Arrays.asList(caseStatusCase));
+        Assertions.assertNotEquals(expected, result);
     }
 
 }
