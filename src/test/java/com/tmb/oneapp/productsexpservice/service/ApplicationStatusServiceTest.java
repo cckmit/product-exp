@@ -15,6 +15,7 @@ import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRs
 import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -490,6 +491,17 @@ class ApplicationStatusServiceTest {
     void getStatusTest() {
         assertEquals(2, applicationStatusService.getStatus(new ArrayList<>()));
 
+    }
+
+    @Test
+    void testDataNotFound() {
+        CustomerFirstUsage result = applicationStatusService.dataNotFound("crmId", "deviceId");
+        CustomerFirstUsage expected = new CustomerFirstUsage();
+        expected.setServiceTypeId("123");
+        expected.setCrmId("123");
+        expected.setServiceTypeId("test");
+        expected.setTimestamp("test");
+        Assertions.assertNotEquals(expected, result);
     }
 
 }

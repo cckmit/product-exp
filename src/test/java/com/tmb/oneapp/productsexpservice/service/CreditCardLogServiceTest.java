@@ -493,5 +493,19 @@ public class CreditCardLogServiceTest {
         logService.cardResponse(installment, creditCardEvent, getCardInstallmentResponse());
         assertNotNull(installment);
     }
+
+    @Test
+    void testSetFailEvent() {
+        CardInstallmentResponse cardInstallmentResponse = getCardInstallmentResponse();
+        creditCardEvent.setFailReason("fail");
+        List<ErrorStatus> errorStatus = new ArrayList<>();
+        ErrorStatus status = new ErrorStatus();
+        status.setErrorCode("0001");
+        status.setDescription("fail");
+        errorStatus.add(status);
+        cardInstallmentResponse.getStatus().setErrorStatus(errorStatus);
+        logService.setFailEvent(creditCardEvent, cardInstallmentResponse);
+        assertNotNull(cardInstallmentResponse);
+    }
 }
 

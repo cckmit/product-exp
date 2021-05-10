@@ -226,11 +226,15 @@ public class CreditCardLogService {
         if (cardResp.getStatus().getErrorStatus() != null && !cardResp.getStatus().getErrorStatus().isEmpty()
                 && transactionKey.equalsIgnoreCase(installment.getTransactionKey())) {
 
-            creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-            creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-            creditCardEvent.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-            creditCardEvent.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+            setFailEvent(creditCardEvent, cardResp);
         }
+    }
+
+    void setFailEvent(CreditCardEvent creditCardEvent, CardInstallmentResponse cardResp) {
+        creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
+        creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+        creditCardEvent.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+        creditCardEvent.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
     }
 
     /**

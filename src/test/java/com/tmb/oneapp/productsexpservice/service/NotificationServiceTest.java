@@ -58,6 +58,7 @@ public class NotificationServiceTest {
                 creditCardClient, commonServiceClient, templateService);
     }
 
+
     @Test
     void sendNotificationByEmailTriggerManual() {
 
@@ -682,6 +683,5 @@ public class NotificationServiceTest {
         notificationService.productCodeData(productConfig, productCodeData);
         assertNotNull(productConfig);
     }
-
 
 }

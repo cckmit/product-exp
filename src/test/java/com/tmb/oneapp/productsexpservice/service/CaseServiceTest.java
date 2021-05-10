@@ -322,4 +322,13 @@ class CaseServiceTest {
         Assertions.assertNotEquals(expected, result);
     }
 
+    @Test
+    void testGetCaseStatusCases() {
+        ArrayList<CaseStatusCase> result = caseService.getCaseStatusCases("crmId");
+        CaseStatusCase caseStatusCase = new CaseStatusCase();
+        caseStatusCase.setStatus("1234");
+        ArrayList<CaseStatusCase> expected = new ArrayList<>(Arrays.asList(caseStatusCase));
+        Assertions.assertNotEquals(expected, result);
+    }
+
 }

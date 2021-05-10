@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -427,6 +429,41 @@ public class ProductExpAsynServiceTest {
         when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
         CompletableFuture<List<FundClassListInfo>> listCompletableFuture = productExpAsynService.getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
         assertNotEquals(100, listCompletableFuture.getNumberOfDependents());
+    }
+
+    @Test
+    public void testGetFundClassListInfos() throws Exception {
+        Map<String, String> invHeaderReqParameter = new HashMap<>();
+        invHeaderReqParameter.put("test", "test");
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+        String responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+        TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        tmbOneServiceResponse.setData(responseCustomerExp);
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setService("products-exp-async-service");
+        tmbOneServiceResponse.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<String>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
+        when(cacheServiceClient.getCacheByKey(any(), any())).thenReturn(response);
+        List<FundClassListInfo> fundClassLists = new ArrayList<>();
+        FundClassListInfo fundClass = new FundClassListInfo();
+        fundClass.setFundClassCode("1234");
+        fundClass.setAllotType("test");
+        fundClassLists.add(fundClass);
+        TmbOneServiceResponse<FundListBody> investmentResponse = new TmbOneServiceResponse<>();
+        investmentResponse.setStatus(tmbStatus);
+        FundListBody data = new FundListBody();
+        data.setFundClassList(fundClassLists);
+        investmentResponse.setData(data);
+        ResponseEntity<TmbOneServiceResponse<FundListBody>> resp = new ResponseEntity<>(investmentResponse, HttpStatus.OK);
+        when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
+        ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
+        when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
+        productExpAsynService.getFundClassListInfos(mapper, cacheResponse);
+
+
+        assertNotNull(response);
     }
 
 }

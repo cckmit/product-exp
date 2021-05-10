@@ -339,8 +339,7 @@ public class ApplicationStatusService {
             TmbOneServiceResponse response = UtilMap.mapTmbOneServiceResponse(e.responseBody());
 
             if (response != null && response.getStatus() != null && DATA_NOT_FOUND_ERROR.getCode().equals(response.getStatus().getCode())) {
-                logger.info("Data not found in database while calling GET /apis/customers/firstTimeUsage. crmId: {}, deviceId {}", crmId, deviceId);
-                return null;
+                return dataNotFound(crmId, deviceId);
             } else {
                 logger.error("Unexpected error occured while calling GET /apis/customers/firstTimeUsage: {}", e);
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -353,6 +352,11 @@ public class ApplicationStatusService {
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
+    }
+
+    CustomerFirstUsage dataNotFound(String crmId, String deviceId) {
+        logger.info("Data not found in database while calling GET /apis/customers/firstTimeUsage. crmId: {}, deviceId {}", crmId, deviceId);
+        return null;
     }
 
     /**
