@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRs
 import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -20,10 +21,7 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -206,5 +204,23 @@ class AsyncApplicationStatusServiceTest {
                 .getRSLData("correlationId", "nationalId", "mobileNo");
 
         assertNull(response);
+    }
+
+    @Test
+    void testLoanDataNotFound() {
+        ArrayList<LoanDetails> result = asyncApplicationStatusService.loanDataNotFound();
+        LoanDetails loanDetails = new LoanDetails();
+        loanDetails.setAppNo("test");
+        ArrayList<LoanDetails> expected = new ArrayList<>(Arrays.asList(loanDetails));
+        Assertions.assertNotEquals(expected, result);
+    }
+
+    @Test
+    void testGetLendingRslDataNotFound() {
+        ArrayList<LendingRslStatusResponse> result = asyncApplicationStatusService.getLendingRslDataNotFound("correlationId", "nationalId", "mobileNo");
+        LendingRslStatusResponse lendingRslStatusResponse = new LendingRslStatusResponse();
+        lendingRslStatusResponse.setStatus("200");
+        ArrayList<LendingRslStatusResponse> expected = new ArrayList<>(Arrays.asList(lendingRslStatusResponse));
+        Assertions.assertNotEquals(expected, result);
     }
 }

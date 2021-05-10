@@ -1,7 +1,9 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -21,10 +23,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -152,5 +154,19 @@ public class SetPinControllerTest {
         return reqData;
 
     }
+
+    @Test
+    void testGetTmbServiceResponse() throws UnsupportedEncodingException, JsonProcessingException {
+
+
+        String req = "{\"status\":{\"code\":\"0009\",\"message\":\"DATA NOT FOUND\",\"service\":\"customers-service\",\"description\":null},\"data\":null}";
+
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(req.getBytes(StandardCharsets.UTF_8));
+        Optional<ByteBuffer> optionalByteBuffer = java.util.Optional.of(byteBuffer);
+        TmbServiceResponse result = setPinController.getTmbServiceResponse(optionalByteBuffer);
+        Assertions.assertNotEquals(null, result);
+    }
+
 
 }

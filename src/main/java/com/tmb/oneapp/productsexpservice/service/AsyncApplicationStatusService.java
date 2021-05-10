@@ -102,8 +102,7 @@ public class AsyncApplicationStatusService {
             }
 
             if (respBody != null && respBody.contains(HIRE_PURCHASE_DATA_NOT_FOUND)) {
-                logger.info("Data not found while calling GET /apis/hpservice/loan-status/application-list");
-                return new ArrayList<>();
+                return loanDataNotFound();
             } else {
                 logger.error("Unexpected error occurred while calling GET /apis/hpservice/loan-status/application-list: {}", e);
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -112,6 +111,11 @@ public class AsyncApplicationStatusService {
             }
         }
 
+    }
+
+    ArrayList<LoanDetails> loanDataNotFound() {
+        logger.info("Data not found while calling GET /apis/hpservice/loan-status/application-list");
+        return new ArrayList<>();
     }
 
     /**
@@ -233,9 +237,7 @@ public class AsyncApplicationStatusService {
             TmbOneServiceResponse response = UtilMap.mapTmbOneServiceResponse(e.responseBody()); // NO SONAR
 
             if (response != null && response.getStatus() != null && DATA_NOT_FOUND_ERROR.getCode().equals(response.getStatus().getCode())) {
-                logger.info("Data not found while calling GET /apis/lending-service/rsl/status. crmId: {}, nationalId {}, mobileNo: {}",
-                        correlationId, nationalId, mobileNo);
-                return new ArrayList<>();
+                return getLendingRslDataNotFound(correlationId, nationalId, mobileNo);
             } else {
                 logger.error("Unexpected error occured while calling GET /apis/lending-service/rsl/status: {}", e);
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -244,6 +246,12 @@ public class AsyncApplicationStatusService {
             }
         }
 
+    }
+
+    ArrayList<LendingRslStatusResponse> getLendingRslDataNotFound(String correlationId, String nationalId, String mobileNo) {
+        logger.info("Data not found while calling GET /apis/lending-service/rsl/status. crmId: {}, nationalId {}, mobileNo: {}",
+                correlationId, nationalId, mobileNo);
+        return new ArrayList<>();
     }
 
 

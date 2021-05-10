@@ -155,11 +155,15 @@ public class SetPinController {
             throws UnsupportedEncodingException, JsonProcessingException {
         Optional<ByteBuffer> response = ex.responseBody();
         if (response.isPresent()) {
-            ByteBuffer responseBuffer = response.get();
-            String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
-            logger.info("responseObj : {}", responseObj);
-            return (TmbServiceResponse) TMBUtils.convertStringToJavaObj(responseObj, TmbServiceResponse.class);
+            return getTmbServiceResponse(response);
         }
         return null;
+    }
+
+    TmbServiceResponse getTmbServiceResponse(Optional<ByteBuffer> response) throws UnsupportedEncodingException, JsonProcessingException {
+        ByteBuffer responseBuffer = response.get();
+        String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
+        logger.info("responseObj : {}", responseObj);
+        return (TmbServiceResponse) TMBUtils.convertStringToJavaObj(responseObj, TmbServiceResponse.class);
     }
 }

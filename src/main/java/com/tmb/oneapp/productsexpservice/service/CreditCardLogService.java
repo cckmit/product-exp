@@ -171,11 +171,15 @@ public class CreditCardLogService {
         List<CardInstallment> cardInstallment = requestBody.getCardInstallment();
 
         for (CardInstallment installment : cardInstallment) {
-            CreditCardEvent creditCardEvent = getCreditCardEvent(correlationId, reqHeader, requestBody, data,
-                    installment);
-            logActivity(creditCardEvent);
+            getCardEvent(correlationId, reqHeader, requestBody, data, installment);
         }
 
+    }
+
+    void getCardEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentQuery requestBody, List<CardInstallmentResponse> data, CardInstallment installment) {
+        CreditCardEvent creditCardEvent = getCreditCardEvent(correlationId, reqHeader, requestBody, data,
+                installment);
+        logActivity(creditCardEvent);
     }
 
     /**
@@ -210,19 +214,23 @@ public class CreditCardLogService {
         creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
 
         for (CardInstallmentResponse cardResp : data) {
-            String transactionKey = cardResp.getCreditCard().getCardInstallment().getTransactionKey();
-
-            if (cardResp.getStatus().getErrorStatus() != null && !cardResp.getStatus().getErrorStatus().isEmpty()
-                    && transactionKey.equalsIgnoreCase(installment.getTransactionKey())) {
-
-                creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-                creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-                creditCardEvent.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-                creditCardEvent.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
-            }
+            cardResponse(installment, creditCardEvent, cardResp);
 
         }
         return creditCardEvent;
+    }
+
+    void cardResponse(CardInstallment installment, CreditCardEvent creditCardEvent, CardInstallmentResponse cardResp) {
+        String transactionKey = cardResp.getCreditCard().getCardInstallment().getTransactionKey();
+
+        if (cardResp.getStatus().getErrorStatus() != null && !cardResp.getStatus().getErrorStatus().isEmpty()
+                && transactionKey.equalsIgnoreCase(installment.getTransactionKey())) {
+
+            creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
+            creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+            creditCardEvent.setFailReason(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+            creditCardEvent.setReasonForRequest(cardResp.getStatus().getErrorStatus().get(0).getDescription());
+        }
     }
 
     /**

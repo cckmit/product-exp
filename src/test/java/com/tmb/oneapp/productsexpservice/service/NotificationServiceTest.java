@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class NotificationServiceTest {
 
-    @Mock
+    @Spy
     NotificationServiceClient notificationServiceClient;
     @Mock
     CustomerServiceClient customerServiceClient;
@@ -61,8 +62,7 @@ public class NotificationServiceTest {
     void sendNotificationByEmailTriggerManual() {
 
         TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
-        customerProfile.setEmailAddress("witsanu.t@tcs.com");
+        CustomerProfileResponseData customerProfile = getCustomerProfileResponseData();
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
@@ -99,11 +99,16 @@ public class NotificationServiceTest {
         Assert.assertTrue(true);
     }
 
+    private CustomerProfileResponseData getCustomerProfileResponseData() {
+        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+        customerProfile.setEmailAddress("witsanu.t@tcs.com");
+        return customerProfile;
+    }
+
     @Test
     void activeCardGetCustomerProfile() {
         TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
-        customerProfile.setEmailAddress("witsanu.t@tcs.com");
+        CustomerProfileResponseData customerProfile = getCustomerProfileResponseData();
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
@@ -530,6 +535,11 @@ public class NotificationServiceTest {
     }
 
     private CardInstallmentResponse getCardInstallmentResponse() {
+        CardInstallmentResponse response = getInstallmentResponse();
+        return response;
+    }
+
+    private CardInstallmentResponse getInstallmentResponse() {
         CardInstallmentResponse response = new CardInstallmentResponse();
         StatusResponse status = new StatusResponse();
         status.setStatusCode("0");
@@ -584,10 +594,7 @@ public class NotificationServiceTest {
 
     @Test
     void sendNotifyApplySoGood() {
-        NotifyCommon notifyCommon = new NotifyCommon();
-        notifyCommon.setCrmId("1234");
-        notifyCommon.setAccountId("1234");
-        notifyCommon.setProductNameEN("test");
+        NotifyCommon notifyCommon = getNotifyCommon();
         String email = "test@test.com";
         String phoneNo = "9899776640";
         SoGoodWrapper soGoodWrapper = new SoGoodWrapper();
@@ -612,6 +619,14 @@ public class NotificationServiceTest {
         when(notificationServiceClient.sendMessage(any(), any())).thenReturn(response);
         notificationService.sendNotifyApplySoGood(notifyCommon, email, phoneNo, soGoodWrapper, totalAmt);
         assertNotNull(response);
+    }
+
+    private NotifyCommon getNotifyCommon() {
+        NotifyCommon notifyCommon = new NotifyCommon();
+        notifyCommon.setCrmId("1234");
+        notifyCommon.setAccountId("1234");
+        notifyCommon.setProductNameEN("test");
+        return notifyCommon;
     }
 
     @Test
@@ -667,4 +682,6 @@ public class NotificationServiceTest {
         notificationService.productCodeData(productConfig, productCodeData);
         assertNotNull(productConfig);
     }
+
+
 }

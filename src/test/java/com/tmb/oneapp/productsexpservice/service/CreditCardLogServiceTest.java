@@ -7,7 +7,6 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
 import com.tmb.oneapp.productsexpservice.model.loan.Account;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
-import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -223,14 +222,22 @@ public class CreditCardLogServiceTest {
         }
         query.setCardInstallment(cardInstallment);
         List<CardInstallmentResponse> installment = new ArrayList<>();
+        CardInstallmentResponse response = getCardInstallmentResponse();
+        installment.add(response);
+        logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, query, installment);
+        assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
+    }
+
+    private CardInstallmentResponse getCardInstallmentResponse() {
         CardInstallmentResponse response = new CardInstallmentResponse();
         StatusResponse status = new StatusResponse();
         status.setStatusCode("0");
         status.setErrorStatus(null);
+        CreditCardModel creditCard = getCreditCardModel();
+
+        response.setCreditCard(creditCard);
         response.setStatus(status);
-        installment.add(response);
-        logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, query, installment);
-        assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
+        return response;
     }
 
 
@@ -410,6 +417,42 @@ public class CreditCardLogServiceTest {
         creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
         creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        CardInstallmentQuery requestBody = getCardInstallmentQuery();
+        List<CardInstallmentResponse> data = new ArrayList<>();
+        for (CardInstallmentResponse response : data) {
+            CreditCardModel creditCard = getCreditCardModel();
+            response.setCreditCard(creditCard);
+        }
+        CardInstallment installment = getCardInstallment();
+        CreditCardEvent result = logService.getCreditCardEvent(correlationId, hashMap, requestBody, data, installment);
+        Assert.assertNotEquals(creditCardEvent, result);
+    }
+
+    private CreditCardModel getCreditCardModel() {
+        CreditCardModel creditCard = new CreditCardModel();
+        creditCard.setAccountId("0000000050078670143000945");
+        CardInstallmentModel card = new CardInstallmentModel();
+        card.setTransactionKey("1234");
+        card.setTransactionDescription("Test");
+        card.setTransactionKey("1234");
+        card.setAmounts(ConversionUtil.stringToDouble("1234.00"));
+        creditCard.setCardInstallment(card);
+        return creditCard;
+    }
+
+    private CardInstallment getCardInstallment() {
+        CardInstallment installment = new CardInstallment();
+        installment.setTransactionKey("1234");
+        installment.setAmounts("1234.00");
+        installment.setInterest("1");
+        installment.setModelType("test");
+        installment.setInterest(ConversionUtil.doubleToString(10.00));
+        installment.setPromotionModelNo("test");
+        installment.setMonthlyInstallments(ConversionUtil.doubleToString(10.00));
+        return installment;
+    }
+
+    private CardInstallmentQuery getCardInstallmentQuery() {
         CardInstallmentQuery requestBody = new CardInstallmentQuery();
         requestBody.setAccountId("0000000050078670143000945");
         List<CardInstallment> cardInstallment = new ArrayList<>();
@@ -423,28 +466,32 @@ public class CreditCardLogServiceTest {
             cardInstallment.add(installment);
         }
         requestBody.setCardInstallment(cardInstallment);
-        List<CardInstallmentResponse> data = new ArrayList<>();
-        for (CardInstallmentResponse response : data) {
-            CreditCardModel creditCard = new CreditCardModel();
-            creditCard.setAccountId("0000000050078670143000945");
-            CardInstallmentModel card = new CardInstallmentModel();
-            card.setTransactionKey("1234");
-            card.setTransactionDescription("Test");
-            card.setTransactionKey("1234");
-            card.setAmounts(ConversionUtil.stringToDouble("1234.00"));
-            creditCard.setCardInstallment(card);
-            response.setCreditCard(creditCard);
-        }
-        CardInstallment installment = new CardInstallment();
-        installment.setTransactionKey("1234");
-        installment.setAmounts("1234.00");
-        installment.setInterest("1");
-        installment.setModelType("test");
-        installment.setInterest(ConversionUtil.doubleToString(10.00));
-        installment.setPromotionModelNo("test");
-        installment.setMonthlyInstallments(ConversionUtil.doubleToString(10.00));
-        CreditCardEvent result = logService.getCreditCardEvent(correlationId, hashMap, requestBody, data, installment);
-        Assert.assertNotEquals(creditCardEvent, result);
+        return requestBody;
+    }
+
+    @Test
+    void testGetCardEvent() {
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+
+        HashMap<String, String> reqHeader = new HashMap<>() {{
+            put("accept", "application/json");
+        }};
+        CardInstallmentQuery requestBody = getCardInstallmentQuery();
+        CardInstallmentResponse cardInstallmentResponse = getCardInstallmentResponse();
+        cardInstallmentResponse.getCreditCard().getCardInstallment().setTransactionKey("1234");
+        cardInstallmentResponse.getCreditCard().getCardInstallment().setOrderNo("1234");
+        cardInstallmentResponse.getCreditCard().getCardInstallment().setAmounts(1234.00);
+        cardInstallmentResponse.getCreditCard().getCardInstallment().setTransactionDescription("Success");
+        CardInstallment installment = getCardInstallment();
+        logService.getCardEvent(correlationId, reqHeader, requestBody, Arrays.asList(cardInstallmentResponse), installment);
+        assertNotNull(installment);
+    }
+
+    @Test
+    void testCardResponse() {
+        CardInstallment installment = getCardInstallment();
+        logService.cardResponse(installment, creditCardEvent, getCardInstallmentResponse());
+        assertNotNull(installment);
     }
 }
 

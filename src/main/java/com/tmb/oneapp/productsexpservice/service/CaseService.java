@@ -140,8 +140,7 @@ public class CaseService {
             TmbOneServiceResponse response = mapTmbOneServiceResponse(e.responseBody());
 
             if (response != null && response.getStatus() != null && DATA_NOT_FOUND_ERROR.getCode().equals(response.getStatus().getCode())) {
-                logger.info("Data not found in database. crmId: {}, deviceId {}", crmId, deviceId);
-                return null;
+                return getCustomerFirstUsage(crmId, deviceId);
             } else {
                 logger.error("Unexpected error occured : {}", e);
                 logActivityCST(new CustomerServiceActivity(correlationId,
@@ -168,6 +167,11 @@ public class CaseService {
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
+    }
+
+    CustomerFirstUsage getCustomerFirstUsage(String crmId, String deviceId) {
+        logger.info("Data not found in database. crmId: {}, deviceId {}", crmId, deviceId);
+        return null;
     }
 
     /**

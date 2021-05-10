@@ -111,14 +111,19 @@ public class BilledStatementWithPeriodControllerTest {
     @Test
     public void testHandlingFailedResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        HttpHeaders responseHeaders = getHttpHeaders();
         when(creditCardClient.getBilledStatementWithPeriod(any(), any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController
                 .handlingFailedResponse(oneServiceResponse, responseHeaders);
 
         Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        return responseHeaders;
     }
 
     private TmbOneServiceResponse<BilledStatementResponse> getTmbOneServiceResponse() {
@@ -168,11 +173,24 @@ public class BilledStatementWithPeriodControllerTest {
     @Test
     void generalError() {
         TmbOneServiceResponse<BilledStatementResponse> response = getTmbOneServiceResponse();
+        Exception exception = getException();
+        billedStatementWithPeriodController.generalError(response, exception);
+        assertNotNull(exception);
+    }
+
+    private Exception getException() {
         Exception exception = new Exception();
         StackTraceElement[] stackTrace = {};
         exception.setStackTrace(stackTrace);
-        billedStatementWithPeriodController.generalError(response, exception);
-        assertNotNull(exception);
+        return exception;
+    }
+
+    @Test
+    void getExceptionResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> response=getTmbOneServiceResponse();;
+        HttpHeaders responseHeaders=getHttpHeaders();
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> exceptionResponse = billedStatementWithPeriodController.getExceptionResponse(response, responseHeaders, getException());
+        assertNotEquals(null,exceptionResponse);
     }
 }
 
