@@ -115,7 +115,7 @@ public class CardInstallmentController {
                     if (data != null) {
                         notificationService.doNotifyApplySoGood(correlationId, accountId, crmId, data,
                                 requestBodyParameter);
-                        if (successCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter, responseHeaders, oneServiceResponse, cardInstallmentResp, data))
+                        if (successCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter, oneServiceResponse, cardInstallmentResp, data))
                             return populateErrorResponse(responseHeaders, oneServiceResponse, cardInstallmentResp);
 
                     } else {
@@ -141,12 +141,10 @@ public class CardInstallmentController {
 
     }
 
-    boolean successCaseMatch(String correlationId, CardInstallmentQuery requestBodyParameter, Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp, List<CardInstallmentResponse> data) {
-        if (ifSuccessCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter,
-                oneServiceResponse, cardInstallmentResp, data)) {
-            return true;
-        }
-        return false;
+    boolean successCaseMatch(String correlationId, CardInstallmentQuery requestBodyParameter, Map<String, String> requestHeadersParameter, TmbOneServiceResponse<List<CardInstallmentResponse>> oneServiceResponse, TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp, List<CardInstallmentResponse> data) {
+        return ifSuccessCaseMatch(correlationId, requestBodyParameter, requestHeadersParameter,
+                oneServiceResponse, cardInstallmentResp, data);
+
     }
 
 
