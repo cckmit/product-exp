@@ -79,7 +79,7 @@ public interface CustomerServiceClient {
      * @param crmId                   getCustDetails method consume crmId from
      *                                customers-service
      */
-    @GetMapping(value = "/apis/customers/{crmId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/apis/customers", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getCustomerProfile( @RequestHeader(name = "crmId") String crmId);
 
 

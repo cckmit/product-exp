@@ -19,25 +19,26 @@ import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileIn
 import io.swagger.annotations.Api;
 
 @RestController
-@Api(tags = "Lending service")
-public class LendingController {
+@Api(tags = "Lend Customer information service")
+public class CustomerServiceController {
 
-	private static final TMBLogger<LendingController> logger = new TMBLogger<>(LendingController.class);
+	private static final TMBLogger<CustomerServiceController> logger = new TMBLogger<>(CustomerServiceController.class);
 
 	private CustomerServiceClient customerServiceClient;
 
 	@Autowired
-	public LendingController(CustomerServiceClient customerServiceClient) {
+	public CustomerServiceController(CustomerServiceClient customerServiceClient) {
 		this.customerServiceClient = customerServiceClient;
 	}
 
 	@LogAround
-	@PostMapping(value = "/loan/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/customerservice/get", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<TmbOneServiceResponse<CustIndividualProfileInfo>> getIndividualProfileInfo(
 			@RequestHeader Map<String, String> requestHeadersParameter) {
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
+		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
 		customerServiceClient.getCustomerProfile(crmId);
-		return null;
+		return ResponseEntity.ok().body(customerIndividualProfileInfo);
 	}
 
 }
