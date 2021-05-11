@@ -178,7 +178,7 @@ public class NotificationService {
     public void doNotifySuccessForSetPin(String xCorrelationId, String accountId, String crmId) {
         logger.info("xCorrelationId:{} request customer name in th and en to customer-service", xCorrelationId);
         ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
-                .getCustomerProfile(new HashMap<String, String>(), crmId);
+                .getCustomerProfile(crmId);
         if (validCustomerResponse(response)) {
             CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
@@ -250,7 +250,7 @@ public class NotificationService {
                                                    SetCreditLimitReq requestBodyParameter) {
         logger.info("xCorrelationId:{} request customer name in th and en for change usage limit", xCorrelationId);
         ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
-                .getCustomerProfile(new HashMap<String, String>(), crmId);
+                .getCustomerProfile(crmId);
 
         if (validCustomerResponse(response)) {
             CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
@@ -451,7 +451,7 @@ public class NotificationService {
     public void doNotifySuccessForBlockCard(String correlationId, String accountId, String crmId) {
         logger.info("xCorrelationId:{} request customer name in th and en for block card", correlationId);
         ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = customerClient
-                .getCustomerProfile(new HashMap<String, String>(), crmId);
+                .getCustomerProfile(crmId);
         if (validCustomerResponse(response)) {
             CustomerProfileResponseData customerProfileInfo = response.getBody().getData();
 
