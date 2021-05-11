@@ -9,6 +9,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CommonTime;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -588,11 +589,11 @@ public class ProductsExpService {
      */
     @LogAround
     public boolean isCustIDExpired(FfsRequestBody ffsRequestBody) {
-        CompletableFuture<CustomerProfileResponseData> responseResponseEntity = null;
+        CompletableFuture<CustGeneralProfileResponse> responseResponseEntity = null;
         try {
             responseResponseEntity = productExpAsynService.fetchCustomerProfile(ffsRequestBody.getCrmId());
             CompletableFuture.allOf(responseResponseEntity);
-            CustomerProfileResponseData responseData = responseResponseEntity.get();
+            CustGeneralProfileResponse responseData = responseResponseEntity.get();
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
             return UtilMap.isCustIDExpired(responseData);
         } catch (Exception e) {

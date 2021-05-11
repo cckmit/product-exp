@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -286,7 +286,7 @@ public class UtilMap {
      * @param customerProfileResponseData
      * @return
      */
-    public static boolean isCustIDExpired(CustomerProfileResponseData customerProfileResponseData) {
+    public static boolean isCustIDExpired(CustGeneralProfileResponse customerProfileResponseData) {
         try {
             if (!StringUtils.isEmpty(customerProfileResponseData) && customerProfileResponseData.getIdExpireDate() != null) {
                 Calendar cal = Calendar.getInstance();

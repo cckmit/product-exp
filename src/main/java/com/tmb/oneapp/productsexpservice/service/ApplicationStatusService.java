@@ -2,7 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ApplicationStatusEnum;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
@@ -69,7 +69,7 @@ public class ApplicationStatusService {
             String language = requestHeaders.get(ACCEPT_LANGUAGE);
 
             //GET /apis/customers/{crmId} CUSTOMER-SERVICE
-            CustomerProfileResponseData customerProfileResponseData = getCustomerCrmId(crmId);
+            CustGeneralProfileResponse customerProfileResponseData = getCustomerCrmId(crmId);
             String nationalId = customerProfileResponseData.getIdNo();
             String mobileNo = customerProfileResponseData.getPhoneNoFull();
 
@@ -156,9 +156,9 @@ public class ApplicationStatusService {
      * @param crmId customer Id
      * @return CustomerProfileResponseData customer data
      */
-    private CustomerProfileResponseData getCustomerCrmId(String crmId) {
+    private CustGeneralProfileResponse getCustomerCrmId(String crmId) {
         logger.info("Calling GET /apis/customers/{crmId}");
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> customersCrmIdResponse =
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> customersCrmIdResponse =
                 customerServiceClient.getCustomerProfile(crmId);
         logger.info("GET /apis/customers/{crmId} response : {}", customersCrmIdResponse);
 

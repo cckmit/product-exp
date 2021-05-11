@@ -273,11 +273,11 @@ public class ProductExpAsynServiceTest {
     @Test
     public void fetchCustomerProfile() throws Exception {
         try {
-            CustomerProfileResponseData fundHolidayBody = null;
-            TmbOneServiceResponse<CustomerProfileResponseData> serviceResponseStmt = new TmbOneServiceResponse<>();
+        	CustGeneralProfileResponse fundHolidayBody = null;
+            TmbOneServiceResponse<CustGeneralProfileResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             ObjectMapper mapper = new ObjectMapper();
-            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustomerProfileResponseData.class);
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustGeneralProfileResponse.class);
 
             serviceResponseStmt.setData(fundHolidayBody);
             serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -288,7 +288,7 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        CompletableFuture<CustomerProfileResponseData> response = productExpAsynService.fetchCustomerProfile( anyString());
+        CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile( anyString());
         Assert.assertNotNull(response);
     }
 
@@ -297,7 +297,7 @@ public class ProductExpAsynServiceTest {
     public void fetchCustomerProfileWithException() throws Exception {
         try {
             when(customerServiceClient.getCustomerProfile( anyString())).thenThrow(MockitoException.class);
-            CompletableFuture<CustomerProfileResponseData> response = productExpAsynService.fetchCustomerProfile( anyString());
+            CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile( anyString());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();

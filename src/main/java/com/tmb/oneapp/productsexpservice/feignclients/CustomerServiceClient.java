@@ -1,6 +1,6 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
-import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
@@ -80,7 +80,7 @@ public interface CustomerServiceClient {
      *                                customers-service
      */
     @GetMapping(value = "/apis/customers", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getCustomerProfile( @RequestHeader(name = "crmId") String crmId);
+    ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getCustomerProfile( @RequestHeader(name = "crmId") String crmId);
 
 
     /**

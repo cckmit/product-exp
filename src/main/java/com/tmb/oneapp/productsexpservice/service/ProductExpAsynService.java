@@ -8,7 +8,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -229,9 +229,9 @@ public class ProductExpAsynService {
      */
     @LogAround
     @Async
-    public CompletableFuture<CustomerProfileResponseData> fetchCustomerProfile( String crmID) throws TMBCommonException {
+    public CompletableFuture<CustGeneralProfileResponse> fetchCustomerProfile( String crmID) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> responseResponseEntity = customerServiceClient.
+            ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseResponseEntity = customerServiceClient.
                     getCustomerProfile(crmID);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
