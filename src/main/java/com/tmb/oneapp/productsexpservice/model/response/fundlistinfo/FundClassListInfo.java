@@ -58,6 +58,8 @@ public class FundClassListInfo {
     private String boughtFlag;
     private String navAsOfDate;
     private String nav;
+    private String fundTypeGroup;
+    private String customTag;
 }
 
 

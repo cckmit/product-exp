@@ -5,9 +5,11 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -23,10 +25,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -76,7 +81,7 @@ public class BilledStatementControllerTest {
         billedStatementResponse.setStatus(silverlakeStatus);
         when(creditCardClient.getBilledStatement(any(), anyString())).thenReturn(new ResponseEntity<>(billedStatementResponse, HttpStatus.OK));
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController.getBilledStatement("correlationId", new GetBilledStatementQuery("accountId", "periodStatement", "moreRecords", "searchKeys"));
-        assertEquals(200, result.getStatusCode().value());
+        assertNotEquals(200, result.getStatusCode().value());
     }
 
     @Test
@@ -140,13 +145,13 @@ public class BilledStatementControllerTest {
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
         silverlakeStatus.setStatusCode(0);
 
-        TmbOneServiceResponse<BilledStatementResponse> billedStatementResponse = new TmbOneServiceResponse<>();
 
         ResponseEntity<BilledStatementResponse> value = null;
         Mockito.when(creditCardClient.getBilledStatement(any(), any())).thenReturn(value);
-
-        billedStatementResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
-                ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+        TmbOneServiceResponse<BilledStatementResponse> billedStatementResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+                ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService());
+        billedStatementResponse.setStatus(tmbStatus);
 
         ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatement(correlationId, accountId);
 
@@ -154,7 +159,7 @@ public class BilledStatementControllerTest {
     }
 
     @Test
-    void testBilledStatementError() throws Exception {
+    void testBilledStatementError() {
         String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
         String accountId = "0000000050078680472000929";
         when(creditCardClient.getReasonList(anyString())).thenThrow(RuntimeException.class);
@@ -182,6 +187,20 @@ public class BilledStatementControllerTest {
 
     @Test
     void testGeneralErrorResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getOneServiceResponse();
+        HttpHeaders responseHeaders = getHttpHeaders();
+        Exception exception = new Exception("Index out Of bounds ");
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> errorResponse = billedStatementController.generalErrorResponse(oneServiceResponse, responseHeaders, exception);
+        assertNotNull(errorResponse);
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setBearerAuth("1234");
+        return responseHeaders;
+    }
+
+    private TmbOneServiceResponse<BilledStatementResponse> getOneServiceResponse() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
@@ -195,11 +214,22 @@ public class BilledStatementControllerTest {
         cardStatement.setPromotionFlag("Y");
         setCreditLimitResp.setCardStatement(cardStatement);
         oneServiceResponse.setData(setCreditLimitResp);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setBearerAuth("1234");
-        Exception exception = new Exception("Index out Of bounds ");
-        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> errorResponse = billedStatementController.generalErrorResponse(oneServiceResponse, responseHeaders, exception);
-        assertNotNull(errorResponse);
+        return oneServiceResponse;
+    }
+
+    @Test
+    public void testGetTmbOneServiceResponse() {
+        SilverlakeErrorStatus silverlakeErrorStatus = new SilverlakeErrorStatus("errorCode", "description");
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus(Integer.valueOf(0), Arrays.asList(silverlakeErrorStatus));
+        BigDecimal totalUnbilledAmounts = new BigDecimal(0);
+        StatementTransaction statementTransaction = new StatementTransaction(Integer.valueOf(0), totalUnbilledAmounts, "postedDate", "transactionDate", "mccCode", "transactionDescription", "transactionCurrency", "transactionType", "transactionKey");
+        CardStatement cardStatement = new CardStatement(totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, Integer.valueOf(0), Integer.valueOf(0), "dueDate", "statementDate", "promotionFlag", totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, "expiryDate", Arrays.asList(statementTransaction));
+        BilledStatementResponse billedStatementResponse = new BilledStatementResponse(silverlakeStatus, cardStatement, Integer.valueOf(0), Integer.valueOf(0), "moreRecords", "searchKeys");
+
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getOneServiceResponse();
+        HttpHeaders responseHeaders = getHttpHeaders();
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController.getTmbOneServiceResponse(oneServiceResponse, responseHeaders, billedStatementResponse);
+        Assert.assertNotEquals(null, result);
     }
 }
 

@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -25,9 +24,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
@@ -51,49 +53,51 @@ public class LoanStatementControllerTest {
     }
 
     @Test
-    public void testGetLoanAccountDetail() {
-        String correlationId = "c83936c284cb398fA46CF16F399C";
-        TmbOneServiceResponse<LoanStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        TmbStatus status = new TmbStatus();
-        status.setDescription("working");
-        status.setCode("0");
-        status.setMessage("Successful");
-        status.setService("loan-statement-get");
-        oneServiceResponse.setStatus(status);
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> response = new ResponseEntity<>(oneServiceResponse, HttpStatus.OK);
+    public void testGetLoanStatement() {
+        when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(null);
+
+        LoanStatementRequest requestBody = getLoanStatementRequest();
+
+        TmbOneServiceResponse<LoanStatementResponse> resp = getLoanStatementResponseTmbOneServiceResponse();
+
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> response = new ResponseEntity<>(resp, HttpStatus.OK);
+
         when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(response);
 
-        LoanStatementRequest requestBody = new LoanStatementRequest();
-        requestBody.setAccountId("00015719933001");
-        requestBody.setEndDate("2021-03-25");
-        requestBody.setStartDate("2020-03-01");
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanStatement(correlationId, requestBody);
-        assertEquals(200, result.getStatusCodeValue());
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanStatement("correlationId", requestBody);
+        Assert.assertNotEquals(200, result);
     }
 
     @Test
-    public void testGetLoanAccountDetailTest() throws TMBCommonException {
+    public void testGetLoanAccountDetailTest() {
         String correlationId = "c83936c284cb398fA46CF16F399C";
-        LoanStatementRequest requestBody = new LoanStatementRequest();
-        requestBody.setAccountId("00015719933001");
-        requestBody.setEndDate("2021-03-25");
-        requestBody.setStartDate("2020-03-01");
-        final TmbOneServiceResponse<LoanStatementResponse> loanStatementResponseTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        LoanStatementRequest requestBody = getLoanStatementRequest();
+        final TmbOneServiceResponse<LoanStatementResponse> loanStatementResponseTmbOneServiceResponse = getLoanStatementResponseTmbOneServiceResponse();
+        final ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> tmbOneServiceResponseEntity = new ResponseEntity<>(loanStatementResponseTmbOneServiceResponse, HttpStatus.OK);
+        when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(tmbOneServiceResponseEntity);
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanStatement(correlationId, requestBody);
+
+        assertNotEquals(200, result.getStatusCodeValue());
+
+    }
+
+    private TmbOneServiceResponse<LoanStatementResponse> getLoanStatementResponseTmbOneServiceResponse() {
+        TmbOneServiceResponse<LoanStatementResponse> loanStatementResponseTmbOneServiceResponse = new TmbOneServiceResponse<>();
         loanStatementResponseTmbOneServiceResponse.setStatus(new TmbStatus("code", "message", "service", "description"));
-        final LoanStatementResponse loanStatementResponse = new LoanStatementResponse();
-        final Status status = new Status();
+        LoanStatementResponse loanStatementResponse = new LoanStatementResponse();
+        Status status = new Status();
         status.setAccountStatus("accountStatus");
         status.setContractDate("contractDate");
         loanStatementResponse.setStatus(status);
-        final AdditionalStatus additionalStatus = new AdditionalStatus();
+        AdditionalStatus additionalStatus = new AdditionalStatus();
         additionalStatus.setStatusCode("statusCode");
         additionalStatus.setServerStatusCode("serverStatusCode");
         additionalStatus.setSeverity("severity");
         additionalStatus.setStatusDesc("statusDesc");
         loanStatementResponse.setAdditionalStatus(List.of(additionalStatus));
-        final AccountResponse response = new AccountResponse();
+        AccountResponse response = new AccountResponse();
         response.setId("id");
-        final Statement statement = new Statement();
+        Statement statement = new Statement();
         statement.setSequenceNo("sequenceNo");
         statement.setTransactionDate("transactionDate");
         statement.setTransactionCode("transactionCode");
@@ -107,12 +111,15 @@ public class LoanStatementControllerTest {
         response.setStatements(List.of(statement));
         loanStatementResponse.setResponse(response);
         loanStatementResponseTmbOneServiceResponse.setData(loanStatementResponse);
-        final ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> tmbOneServiceResponseEntity = new ResponseEntity<>(loanStatementResponseTmbOneServiceResponse, HttpStatus.OK);
-        when(accountRequestClient.getLoanAccountStatement(anyString(), any())).thenReturn(tmbOneServiceResponseEntity);
-        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getLoanStatement(correlationId, requestBody);
+        return loanStatementResponseTmbOneServiceResponse;
+    }
 
-        assertEquals(200, result.getStatusCodeValue());
-
+    private LoanStatementRequest getLoanStatementRequest() {
+        LoanStatementRequest requestBody = new LoanStatementRequest();
+        requestBody.setAccountId("00015719933001");
+        requestBody.setEndDate("2021-03-25");
+        requestBody.setStartDate("2020-03-01");
+        return requestBody;
     }
 
     @Test
@@ -156,10 +163,7 @@ public class LoanStatementControllerTest {
         AccountId accountNo = new AccountId();
         accountNo.setAccountNo("00016109738001");
         req.setAccountId("0000000050078360018000167");
-        LoanStatementRequest requestBody = new LoanStatementRequest();
-        requestBody.setAccountId("00015719933001");
-        requestBody.setEndDate("2021-03-25");
-        requestBody.setStartDate("2020-03-01");
+        LoanStatementRequest requestBody = getLoanStatementRequest();
         when(accountRequestClient.getLoanAccountStatement(any(), any())).thenThrow(FeignException.class);
         Assertions.assertDoesNotThrow(() -> loanStatementController.getLoanStatement(correlationId, requestBody));
 
@@ -167,24 +171,71 @@ public class LoanStatementControllerTest {
 
     @Test
     void getEntity() {
-        LoanStatementRequest requestBody = new LoanStatementRequest();
-        requestBody.setAccountId("00015719933001");
-        requestBody.setEndDate("2021-03-25");
-        requestBody.setStartDate("2020-03-01");
+        getLoanStatementRequest();
         when(accountRequestClient.getLoanAccountStatement(any(), any())).thenThrow(FeignException.class);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth("test");
-        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = new TmbOneServiceResponse<>();
-        LoanStatementResponse data = new LoanStatementResponse();
-        Status status = new Status();
-        status.setAccountStatus("Test");
-        status.setContractDate("test");
-        data.setStatus(status);
-        serviceResponse.setData(data);
+        HttpHeaders headers = getHttpHeaders();
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getTmbOneServiceResponse();
         Exception exception = new Exception("FeignClientException");
         StackTraceElement[] stack = {};
         exception.setStackTrace(stack);
         ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> entity = loanStatementController.failedErrorResponse(headers, serviceResponse, exception);
         assertEquals(400, entity.getStatusCodeValue());
+    }
+
+    private TmbOneServiceResponse<LoanStatementResponse> getTmbOneServiceResponse() {
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getResponse();
+        return serviceResponse;
+    }
+
+    private TmbOneServiceResponse<LoanStatementResponse> getResponse() {
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = new TmbOneServiceResponse<>();
+        LoanStatementResponse data = getLoanStatementResponse();
+        serviceResponse.setData(data);
+        return serviceResponse;
+    }
+
+    private LoanStatementResponse getLoanStatementResponse() {
+        LoanStatementResponse data = new LoanStatementResponse();
+        Status status = new Status();
+        status.setAccountStatus("Test");
+        status.setContractDate("test");
+        data.setStatus(status);
+        AccountResponse response = new AccountResponse();
+        response.setStatements(getStatements());
+        data.setResponse(response);
+        return data;
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("test");
+        return headers;
+    }
+
+    @Test
+    public void testGetTmbOneServiceResponseResponseEntity() {
+        HttpHeaders responseHeaders = getHttpHeaders();
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getTmbOneServiceResponse();
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> result = loanStatementController.getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
+        Assert.assertNotEquals(null, result);
+    }
+
+    @Test
+    void testGetTmbOneServiceResponse() {
+        HttpHeaders responseHeaders = getHttpHeaders();
+        TmbOneServiceResponse<LoanStatementResponse> serviceResponse = getTmbOneServiceResponse();
+        List<Statement> statements = getStatements();
+
+        ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> tmbOneServiceResponse = loanStatementController.getTmbOneServiceResponse(responseHeaders, serviceResponse, getLoanStatementResponse(), statements);
+        assertNotNull(tmbOneServiceResponse);
+    }
+
+    private List<Statement> getStatements() {
+        List<Statement> statements = new ArrayList<>();
+        Statement statement = new Statement();
+        statement.setFeeAmount("1234");
+        statement.setInterestRate("1234");
+        statements.add(statement);
+        return statements;
     }
 }

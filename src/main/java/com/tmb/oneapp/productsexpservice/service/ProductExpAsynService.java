@@ -289,11 +289,17 @@ public class ProductExpAsynService {
             String fundClassStr = mapper.writeValueAsString(fundClassLists);
             cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
         } else {
-            String fundStr = responseCache.getBody().getData();
-            TypeFactory typeFactory = mapper.getTypeFactory();
-            fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
+            fundClassLists = getFundClassListInfos(mapper, responseCache);
         }
         return CompletableFuture.completedFuture(fundClassLists);
+    }
+
+    List<FundClassListInfo> getFundClassListInfos(ObjectMapper mapper, ResponseEntity<TmbOneServiceResponse<String>> responseCache) throws JsonProcessingException {
+        List<FundClassListInfo> fundClassLists;
+        String fundStr = responseCache.getBody().getData();
+        TypeFactory typeFactory = mapper.getTypeFactory();
+        fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
+        return fundClassLists;
     }
 
 
@@ -347,5 +353,6 @@ public class ProductExpAsynService {
                     null);
         }
     }
+
 
 }

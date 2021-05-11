@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 @RestController
@@ -117,6 +120,7 @@ public class BilledStatementController {
 
         BilledStatementResponse response = billedStatementRes.getBody();
 
+
         String moreRecords = response.getCardStatement() != null ? response.getMoreRecords()
                 : ProductsExpServiceConstant.EMPTY;
         String searchKeys = response.getCardStatement() != null
@@ -132,6 +136,13 @@ public class BilledStatementController {
         response.setMoreRecords(moreRecords);
         response.setSearchKeys(searchKeys);
         response.setTotalRecords(totalRecords);
+        return getTmbOneServiceResponse(oneServiceResponse, responseHeaders, response);
+    }
+
+    ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getTmbOneServiceResponse(TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse, HttpHeaders responseHeaders, BilledStatementResponse response) {
+        List<StatementTransaction> statementTransactions = response.getCardStatement().getStatementTransactions();
+        statementTransactions.sort((StatementTransaction s1, StatementTransaction s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
+        response.getCardStatement().setStatementTransactions(statementTransactions);
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
         oneServiceResponse.setData(response);

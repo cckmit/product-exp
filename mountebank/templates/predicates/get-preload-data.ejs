@@ -1,0 +1,470 @@
+{
+   "predicates":[
+      {
+         "equals":{
+            "method":"POST",
+            "path":"/apis/products/lending/get-preload-data"
+         }
+      },
+      {
+         "equals":{
+            "headers":{
+               "mountbank":"true"
+            }
+         }
+      }
+   ],
+   "responses":[
+      {
+         "is":{
+            "statusCode":200,
+            "headers":{
+               "Content-Type":"application/json"
+            },
+            "body":{
+               "status":{
+                  "code":"0000",
+                  "message":"success",
+                  "service":"products-exp-service",
+                  "description":"success"
+               },
+               "data":{
+                  "loan_status_tracking":{
+                     "applications":[
+                        {
+                           "app_ref_no":"026CC64000269",
+                           "app_status":"ATVRF",
+                           "app_status_desc":"At Verifier",
+                           "app_type":"CC",
+                           "applicants":[
+                              {
+                                 "applicant_type":"P",
+                                 "first_name_en":"FLEXILOAN NA TEETEEBEE",
+                                 "first_name_th":"วันแอพสาม",
+                                 "products":[
+                                    {
+                                       "approve_credit_limit":0.0,
+                                       "bank_account_number":null,
+                                       "card_name":"F. ONEAPPTHREE",
+                                       "disburse_bank_code":null,
+                                       "disburse_bank_full_en":null,
+                                       "disburse_bank_full_th":null,
+                                       "disburse_bank_short":null,
+                                       "dsr":0.0,
+                                       "dti":0.0,
+                                       "payment_method":"0",
+                                       "payment_method_desc_en":"By Cash/MC",
+                                       "payment_method_desc_th":"เงินสด/เช็ค",
+                                       "pricings":null,
+                                       "product_code":"VM",
+                                       "product_desc_en":"ttb so smart credit card",
+                                       "product_desc_th":"บัตรเครดิต ทีทีบี โซ สมาร์ท",
+                                       "sub_product_code":null,
+                                       "sub_product_desc_en":null,
+                                       "sub_product_desc_th":null,
+                                       "tenure":0.0,
+                                       "_equals_calc":null,
+                                       "_hash_code_calc":false
+                                    }
+                                 ],
+                                 "seq":1,
+                                 "sur_name_en":"ONEAPPTHREE",
+                                 "sur_name_th":"วันแอพสาม",
+                                 "title_en":"MR",
+                                 "title_th":"???",
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              }
+                           ],
+                           "application_date":"2021-04-30T20:25:18.000Z",
+                           "balance_trans_date":null,
+                           "ca_id":2021043004186354,
+                           "current_node":"3",
+                           "instant_applied_step_flag":"1",
+                           "instant_flag":"Y",
+                           "is_approved":"N",
+                           "is_incomplete_doc_updated":"N",
+                           "is_rejected":null,
+                           "is_submitted":"N",
+                           "last_update_date":1619789118000,
+                           "nature_of_request":"03",
+                           "nature_of_request_desc_en":"Apply - Income Reference",
+                           "nature_of_request_desc_th":"สมัครบัตรเครดิต - เกณฑ์รายได้",
+                           "road_map":[
+                              {
+                                 "default_desc_en":"ttb has received your application.",
+                                 "default_desc_th":"ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว",
+                                 "default_percent_complete":null,
+                                 "group_number":1,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              },
+                              {
+                                 "default_desc_en":"Verifing Information and document in progress.",
+                                 "default_desc_th":"อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร",
+                                 "default_percent_complete":null,
+                                 "group_number":2,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              },
+                              {
+                                 "default_desc_en":"Approval process in progress.",
+                                 "default_desc_th":"อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ",
+                                 "default_percent_complete":null,
+                                 "group_number":3,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              },
+                              {
+                                 "default_desc_en":"Your application has been approval.",
+                                 "default_desc_th":"ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว",
+                                 "default_percent_complete":null,
+                                 "group_number":4,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              }
+                           ],
+                           "task_id":2021043033091081,
+                           "_equals_calc":null,
+                           "_hash_code_calc":false
+                        },
+                        {
+                           "app_ref_no":"026PL64000184",
+                           "app_status":"ATVRF",
+                           "app_status_desc":"At Verifier",
+                           "app_type":"PL",
+                           "applicants":[
+                              {
+                                 "applicant_type":"M",
+                                 "first_name_en":"FLEXILOAN NA TEETEEBEE",
+                                 "first_name_th":"วันแอพสาม",
+                                 "products":[
+                                    {
+                                       "approve_credit_limit":0.0,
+                                       "bank_account_number":"",
+                                       "card_name":null,
+                                       "disburse_bank_code":"",
+                                       "disburse_bank_full_en":null,
+                                       "disburse_bank_full_th":null,
+                                       "disburse_bank_short":null,
+                                       "dsr":0.0,
+                                       "dti":0.0,
+                                       "payment_method":"0",
+                                       "payment_method_desc_en":"By Cash/MC",
+                                       "payment_method_desc_th":"เงินสด/เช็ค",
+                                       "pricings":[
+                                          {
+                                             "calculated_rate":0.25,
+                                             "installment":630.0,
+                                             "interest_rate":0.0,
+                                             "month_from":1.0,
+                                             "month_to":12.0,
+                                             "percent_sign":"",
+                                             "rate_type":"",
+                                             "rate_varaince":0.25,
+                                             "tier":1.0,
+                                             "year_from":1.0,
+                                             "year_to":99.0,
+                                             "_equals_calc":null,
+                                             "_hash_code_calc":false
+                                          },
+                                          {
+                                             "calculated_rate":0.12,
+                                             "installment":0.0,
+                                             "interest_rate":0.0,
+                                             "month_from":1.0,
+                                             "month_to":12.0,
+                                             "percent_sign":"",
+                                             "rate_type":"",
+                                             "rate_varaince":0.12,
+                                             "tier":1.0,
+                                             "year_from":1.0,
+                                             "year_to":1.0,
+                                             "_equals_calc":null,
+                                             "_hash_code_calc":false
+                                          },
+                                          {
+                                             "calculated_rate":0.2,
+                                             "installment":0.0,
+                                             "interest_rate":0.0,
+                                             "month_from":1.0,
+                                             "month_to":12.0,
+                                             "percent_sign":"",
+                                             "rate_type":"",
+                                             "rate_varaince":0.2,
+                                             "tier":2.0,
+                                             "year_from":2.0,
+                                             "year_to":99.0,
+                                             "_equals_calc":null,
+                                             "_hash_code_calc":false
+                                          }
+                                       ],
+                                       "product_code":"RC",
+                                       "product_desc_en":"ttb flash card",
+                                       "product_desc_th":"บ้ตรกดเงินสด ทีทีบี แฟลซ",
+                                       "sub_product_code":"RC01",
+                                       "sub_product_desc_en":"ttb flash card",
+                                       "sub_product_desc_th":"บ้ตรกดเงินสด ทีทีบี แฟลซ",
+                                       "tenure":0.0,
+                                       "_equals_calc":null,
+                                       "_hash_code_calc":false
+                                    }
+                                 ],
+                                 "seq":1,
+                                 "sur_name_en":"ONEAPPTHREE",
+                                 "sur_name_th":"วันแอพสาม",
+                                 "title_en":"MR",
+                                 "title_th":"???",
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              }
+                           ],
+                           "application_date":"2021-05-06T16:43:52.000Z",
+                           "balance_trans_date":null,
+                           "ca_id":2021050604186388,
+                           "current_node":"3",
+                           "instant_applied_step_flag":"1",
+                           "instant_flag":"Y",
+                           "is_approved":"N",
+                           "is_incomplete_doc_updated":"N",
+                           "is_rejected":null,
+                           "is_submitted":"N",
+                           "last_update_date":1620294233000,
+                           "nature_of_request":"03",
+                           "nature_of_request_desc_en":"Apply - Income Reference",
+                           "nature_of_request_desc_th":"สมัครบัตรเครดิต - เกณฑ์รายได้",
+                           "road_map":[
+                              {
+                                 "default_desc_en":"ttb has received your application.",
+                                 "default_desc_th":"ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว",
+                                 "default_percent_complete":null,
+                                 "group_number":1,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              },
+                              {
+                                 "default_desc_en":"Verifing Information and document in progress.",
+                                 "default_desc_th":"อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร",
+                                 "default_percent_complete":null,
+                                 "group_number":2,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              },
+                              {
+                                 "default_desc_en":"Approval process in progress.",
+                                 "default_desc_th":"อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ",
+                                 "default_percent_complete":null,
+                                 "group_number":3,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              },
+                              {
+                                 "default_desc_en":"Your application has been approval.",
+                                 "default_desc_th":"ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว",
+                                 "default_percent_complete":null,
+                                 "group_number":4,
+                                 "_equals_calc":null,
+                                 "_hash_code_calc":false
+                              }
+                           ],
+                           "task_id":2021050633091301,
+                           "_equals_calc":null,
+                           "_hash_code_calc":false
+                        }
+                     ]
+                  },
+                  "eligible_products":[
+                     {
+                        "product_category":"credit_card",
+                        "product_code":null,
+                        "product_type":"MS",
+                        "product_name_en":"TMB So Chill",
+                        "product_name_th":"TMB So Chill",
+                        "interest_rate":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"credit_card",
+                        "product_code":null,
+                        "product_type":"VB",
+                        "product_name_en":"ttb reserve signature credit card",
+                        "product_name_th":"บัตรเครดิต ทีทีบี รีเซิร์ฟ ซิกเนเจอร์",
+                        "interest_rate":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"credit_card",
+                        "product_code":null,
+                        "product_type":"VI",
+                        "product_name_en":"ttb reserve infinite credit card",
+                        "product_name_th":"บัตรเครดิต ทีทีบี รีเซิร์ฟ อินฟินิท",
+                        "interest_rate":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"credit_card",
+                        "product_code":null,
+                        "product_type":"VJ",
+                        "product_name_en":"ttb absolute credit card",
+                        "product_name_th":"บัตรเครดิต ทีทีบี แอปโซลูท",
+                        "interest_rate":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"credit_card",
+                        "product_code":null,
+                        "product_type":"VM",
+                        "product_name_en":"ttb so smart credit card",
+                        "product_name_th":"บัตรเครดิต ทีทีบี โซ สมาร์ท",
+                        "interest_rate":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"credit_card",
+                        "product_code":null,
+                        "product_type":"VP",
+                        "product_name_en":"ttb so fast credit card",
+                        "product_name_th":"บัตรเครดิต ทีทีบี โซ ฟาสต์",
+                        "interest_rate":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"credit_card",
+                        "product_code":null,
+                        "product_type":"VT",
+                        "product_name_en":"ttb royal top brass credit card",
+                        "product_name_th":"บัตรเครดิต ทีทีบี รอยัล ท็อป บราส",
+                        "interest_rate":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"loan",
+                        "product_code":"C2G01",
+                        "product_type":null,
+                        "product_name_en":"ttb cash2go personal loan",
+                        "product_name_th":"สินเชื่อบุคคล ทีทีบี แคชทูโก",
+                        "interest_rate":0.28,
+                        "payment_criteria_options":null,
+                        "loan_req_max":2500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"loan",
+                        "product_code":"RC01",
+                        "product_type":null,
+                        "product_name_en":"ttb flash card",
+                        "product_name_th":"บัตรกดเงินสด ทีทีบี แฟลช",
+                        "interest_rate":0.27,
+                        "payment_criteria_options":null,
+                        "loan_req_max":1500000,
+                        "loan_req_min":500000
+                     },
+                     {
+                        "product_category":"loan",
+                        "product_code":"C2G02",
+                        "product_type":null,
+                        "product_name_en":"ttb cash2go personal loan (renew)",
+                        "product_name_th":"สินเชื่อบุคคล ทีทีบี แคชทูโก (renew)",
+                        "interest_rate":0.28,
+                        "payment_criteria_options":null,
+                        "loan_req_max":2500000,
+                        "loan_req_min":500000
+                     }
+                  ]
+               }
+            }
+         }
+      }
+   ]
+}

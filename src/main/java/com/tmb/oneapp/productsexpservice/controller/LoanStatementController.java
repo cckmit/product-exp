@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanStatementResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.Statement;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.List;
 
 @RestController
 @Api(tags = "Fetch Home loan account statement")
@@ -72,11 +74,8 @@ public class LoanStatementController {
                 if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
                     LoanStatementResponse loanDetails = loanResponse.getBody().getData();
-
-                    serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                            ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                    serviceResponse.setData(loanDetails);
-                    return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
+                    List<Statement> statements = loanDetails.getResponse().getStatements();
+                    return getTmbOneServiceResponse(responseHeaders, serviceResponse, loanDetails, statements);
                 } else {
                     return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
 
@@ -89,6 +88,16 @@ public class LoanStatementController {
             return failedErrorResponse(responseHeaders, serviceResponse, e);
         }
 
+    }
+
+    ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> getTmbOneServiceResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse, LoanStatementResponse loanDetails, List<Statement> statements) {
+        statements.sort((Statement s1, Statement s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
+        loanDetails.getResponse().setStatements(statements);
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+
+        serviceResponse.setData(loanDetails);
+        return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
     }
 
     ResponseEntity<TmbOneServiceResponse<LoanStatementResponse>> failedErrorResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<LoanStatementResponse> serviceResponse, Exception e) {

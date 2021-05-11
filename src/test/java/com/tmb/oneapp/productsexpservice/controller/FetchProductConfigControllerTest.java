@@ -1,13 +1,19 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import feign.AsyncJoinException;
+import feign.FeignException;
 import feign.FeignException.FeignClientException;
 import feign.Request;
 import feign.Request.HttpMethod;
 import feign.RequestTemplate;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -128,4 +134,34 @@ public class FetchProductConfigControllerTest {
         });
     }
 
+    @Test
+    void testGetTmbServiceResponse() throws JsonProcessingException {
+
+
+        FeignException exception = getFeignException();
+        TmbServiceResponse<Object> result = fetchProductConfigController.exceptionHandling(exception);
+        Assertions.assertNotEquals(null, result);
+    }
+
+    private FeignException getFeignException() {
+        Request.Body b = null;
+        Map<String, Collection<String>> headers = new HashMap<>();
+        RequestTemplate requestTemplate = new RequestTemplate();
+        Request request = Request.create(HttpMethod.GET,
+                "https://oneapp-dev1.tau2904.com/apis/customer/ekyc/scan",
+                headers,
+                b,
+                requestTemplate);
+
+        Throwable cause = new RuntimeException();
+        FeignException exception = new AsyncJoinException(200, "success", request, cause);
+        return exception;
+    }
+
+    @Test
+    public void testGetTmbCommonException() throws Exception {
+        FeignException exception = getFeignException();
+        TMBCommonException result = fetchProductConfigController.getTmbCommonException(exception);
+        Assert.assertEquals(null, result);
+    }
 }

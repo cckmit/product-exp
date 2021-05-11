@@ -71,10 +71,14 @@ public class BilledStatementWithPeriodController {
             }
 
         } catch (Exception exception) {
-            generalError(response, exception);
-
-            return ResponseEntity.badRequest().headers(responseHeaders).body(response);
+            return getExceptionResponse(response, responseHeaders, exception);
         }
+        return ResponseEntity.badRequest().headers(responseHeaders).body(response);
+    }
+
+    ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getExceptionResponse(TmbOneServiceResponse<BilledStatementResponse> response, HttpHeaders responseHeaders, Exception exception) {
+        generalError(response, exception);
+
         return ResponseEntity.badRequest().headers(responseHeaders).body(response);
     }
 

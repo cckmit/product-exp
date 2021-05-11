@@ -109,16 +109,21 @@ public class BilledStatementWithPeriodControllerTest {
     }
 
     @Test
-    public void testHandlingFailedResponse() {
+    public void testHandlingFailedResponseException() {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = getTmbOneServiceResponse();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        HttpHeaders responseHeaders = getHttpHeaders();
         when(creditCardClient.getBilledStatementWithPeriod(any(), any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController
                 .handlingFailedResponse(oneServiceResponse, responseHeaders);
 
         Assert.assertEquals("0001", result.getBody().getStatus().getCode());
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        return responseHeaders;
     }
 
     private TmbOneServiceResponse<BilledStatementResponse> getTmbOneServiceResponse() {
@@ -168,11 +173,70 @@ public class BilledStatementWithPeriodControllerTest {
     @Test
     void generalError() {
         TmbOneServiceResponse<BilledStatementResponse> response = getTmbOneServiceResponse();
+        Exception exception = getException();
+        billedStatementWithPeriodController.generalError(response, exception);
+        assertNotNull(exception);
+    }
+
+    private Exception getException() {
         Exception exception = new Exception();
         StackTraceElement[] stackTrace = {};
         exception.setStackTrace(stackTrace);
-        billedStatementWithPeriodController.generalError(response, exception);
-        assertNotNull(exception);
+        return exception;
+    }
+
+    @Test
+    void getExceptionResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> response = getTmbOneServiceResponse();
+        ;
+        HttpHeaders responseHeaders = getHttpHeaders();
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> exceptionResponse = billedStatementWithPeriodController.getExceptionResponse(response, responseHeaders, getException());
+        assertNotEquals(null, exceptionResponse);
+    }
+
+    @Test
+    void getBilledStatementWithPeriodDetailsElseTest() {
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        String accountId = "0000000050078680472000929";
+
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(0);
+        GetBilledStatementQuery billedStatementQuery = new GetBilledStatementQuery("0000000050078680472000929", "1", "Y", "");
+        BilledStatementResponse billedStatementResponse = new BilledStatementResponse();
+        billedStatementResponse.setStatus(silverlakeStatus);
+        Mockito.when(creditCardClient.getBilledStatementWithPeriod(correlationId, accountId, billedStatementQuery)).thenReturn(null);
+
+        ResponseEntity<BilledStatementResponse> billedStatement = creditCardClient.getBilledStatementWithPeriod(correlationId, accountId, billedStatementQuery);
+        assertNull(billedStatement);
+    }
+
+    void billedStatementResponse(TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse) {
+        BilledStatementResponse setCreditLimitResp = new BilledStatementResponse();
+        SilverlakeStatus silverlakeStatus = new SilverlakeStatus();
+        silverlakeStatus.setStatusCode(1);
+        setCreditLimitResp.setStatus(silverlakeStatus);
+        setCreditLimitResp.setTotalRecords(10);
+        setCreditLimitResp.setMaxRecords(100);
+        setCreditLimitResp.setMoreRecords("100");
+        setCreditLimitResp.setSearchKeys("N");
+        CardStatement cardStatement = new CardStatement();
+        cardStatement.setPromotionFlag("Y");
+        setCreditLimitResp.setCardStatement(cardStatement);
+        oneServiceResponse.setData(setCreditLimitResp);
+    }
+
+    @Test
+    public void testHandlingFailedResponse() {
+        TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        billedStatementResponse(oneServiceResponse);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        when(creditCardClient.getUnBilledStatement(any(), any())).thenThrow(new
+                IllegalStateException("Error occurred"));
+        ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementWithPeriodController
+                .handlingFailedResponse(oneServiceResponse, responseHeaders);
+
+        Assert.assertEquals("0001", result.getBody().getStatus().getCode());
     }
 }
 

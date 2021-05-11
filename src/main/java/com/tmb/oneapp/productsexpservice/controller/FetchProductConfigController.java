@@ -151,7 +151,7 @@ public class FetchProductConfigController {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> TmbServiceResponse<T> exceptionHandling(final FeignException ex)
+    <T> TmbServiceResponse<T> exceptionHandling(final FeignException ex)
             throws JsonProcessingException {
         TmbServiceResponse<T> data = new TmbServiceResponse<>();
         Optional<ByteBuffer> response = ex.responseBody();
@@ -174,6 +174,15 @@ public class FetchProductConfigController {
      */
     private TMBCommonException handleFeignException(FeignException e) throws JsonProcessingException {
         logger.error("Exception in {} :{}", e.getClass().getName(), e.toString());
+        TMBCommonException body = getTmbCommonException(e);
+        if (body != null) return body;
+
+        return new TMBCommonException(ResponseCode.ETE_SERVICE_ERROR.getCode(),
+                ResponseCode.ETE_SERVICE_ERROR.getMessage(), ResponseCode.ETE_SERVICE_ERROR.getService(),
+                HttpStatus.BAD_REQUEST, null);
+    }
+
+    TMBCommonException getTmbCommonException(FeignException e) throws JsonProcessingException {
         if (e instanceof FeignException.BadRequest) {
             TmbServiceResponse<String> body = exceptionHandling(e);
             return new TMBCommonException(
@@ -181,10 +190,7 @@ public class FetchProductConfigController {
                     body.getStatus().getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
-
-        return new TMBCommonException(ResponseCode.ETE_SERVICE_ERROR.getCode(),
-                ResponseCode.ETE_SERVICE_ERROR.getMessage(), ResponseCode.ETE_SERVICE_ERROR.getService(),
-                HttpStatus.BAD_REQUEST, null);
+        return null;
     }
 
     /**
