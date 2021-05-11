@@ -227,6 +227,10 @@ public class ProductsExpService {
                     .getSummarySmartPortUnrealizedProfitPercent());
             List<FundClass> smartPort = fundClassData.stream().filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
                     .collect(Collectors.toList());
+            List<FundClass> ptPort = fundClassData.stream().filter(port -> !ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
+                    .collect(Collectors.toList());
+            result.setSmartPortList(smartPort);
+            result.setPtPortList(ptPort);
 
             if (summaryByPort != null && summaryByPort.getData() != null && summaryByPort.getData().getBody() != null &&
                     !summaryByPort.getData().getBody().getPortfolioList().isEmpty()) {

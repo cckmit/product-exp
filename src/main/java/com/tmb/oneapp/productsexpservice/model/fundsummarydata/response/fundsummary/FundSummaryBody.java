@@ -28,5 +28,7 @@ public class FundSummaryBody extends FundClassList{
     private Boolean isPtes;
     private Boolean isPt;
     private Boolean isSmartPort;
+    private List<FundClass> smartPortList;
+    private List<FundClass> ptPortList;
 
 }
