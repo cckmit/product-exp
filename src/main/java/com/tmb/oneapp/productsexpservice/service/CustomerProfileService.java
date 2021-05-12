@@ -54,9 +54,6 @@ public class CustomerProfileService {
 					.searchAddressByField(reqSearch);
 			List<Province> provinceInfos = addressInfoRes.getBody().getData();
 
-			String addressInfo = generateAddressInfo(individualProfile);
-
-			individualProfile.setAdddressInfo(addressInfo);
 			CustAddressProfileInfo custAddressProfile = fillUpParamAddressInfo(provinceInfos, generalProfile);
 			individualProfile.setAddress(custAddressProfile);
 			individualProfile.setAdddressInfo(formatedAddressInline(custAddressProfile));
@@ -73,7 +70,7 @@ public class CustomerProfileService {
 	}
 
 	private String formatedAddressInline(CustAddressProfileInfo custAddressProfile) {
-		StringBuffer streetInLine = new StringBuffer();
+		StringBuilder streetInLine = new StringBuilder();
 		if (StringUtils.isNotBlank(custAddressProfile.getHouseNo())) {
 			streetInLine.append(custAddressProfile.getHouseNo() + StringUtils.SPACE);
 		}
@@ -135,36 +132,31 @@ public class CustomerProfileService {
 			profileInfo.setProvinceNameEn(provinceInfo.getProvinceNameEn());
 			profileInfo.setProvinceNameTh(provinceInfo.getProvinceNameTh());
 
-			if (Objects.nonNull(provinceInfo) && CollectionUtils.isNotEmpty(provinceInfo.getDistrictList())) {
-				for (District district : provinceInfo.getDistrictList()) {
-					if (StringUtils.isNotEmpty(generalProfile.getSubDistrictNameTh())
-							&& generalProfile.getSubDistrictNameTh().equals(district.getDistrictNameTh())) {
-						districtInfo = district;
-						profileInfo.setDistrictNameEn(districtInfo.getDistrictNameEn());
-						profileInfo.setDistrictNameTh(districtInfo.getDistrictNameTh());
-					}
+		}
+
+		if (Objects.nonNull(provinceInfo)) {
+			for (District district : provinceInfo.getDistrictList()) {
+				if (StringUtils.isNotEmpty(generalProfile.getSubDistrictNameTh())
+						&& generalProfile.getSubDistrictNameTh().equals(district.getDistrictNameTh())) {
+					districtInfo = district;
+					profileInfo.setDistrictNameEn(districtInfo.getDistrictNameEn());
+					profileInfo.setDistrictNameTh(districtInfo.getDistrictNameTh());
 				}
 			}
+		}
 
-			if (Objects.nonNull(districtInfo) && CollectionUtils.isNotEmpty(districtInfo.getSubDistrictList())) {
-				for (SubDistrict subDistrict : districtInfo.getSubDistrictList()) {
-					if (StringUtils.isNotEmpty(generalProfile.getSubDistrictNameTh())
-							&& generalProfile.getSubDistrictNameTh().equals(subDistrict.getSubDistrictNameTh())) {
-						subDistrictInfo = subDistrict;
-						profileInfo.setSubDistrictNameEn(subDistrictInfo.getSubDistrictNameEn());
-						profileInfo.setSubDistrictNameTh(subDistrictInfo.getSubDistrictNameTh());
-					}
+		if (Objects.nonNull(districtInfo)) {
+			for (SubDistrict subDistrict : districtInfo.getSubDistrictList()) {
+				if (StringUtils.isNotEmpty(generalProfile.getSubDistrictNameTh())
+						&& generalProfile.getSubDistrictNameTh().equals(subDistrict.getSubDistrictNameTh())) {
+					subDistrictInfo = subDistrict;
+					profileInfo.setSubDistrictNameEn(subDistrictInfo.getSubDistrictNameEn());
+					profileInfo.setSubDistrictNameTh(subDistrictInfo.getSubDistrictNameTh());
 				}
 			}
-
 		}
 
 		return profileInfo;
-	}
-
-	private String generateAddressInfo(CustIndividualProfileInfo individualProfile) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

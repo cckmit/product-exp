@@ -10,7 +10,6 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustGeneralProfileResponse;
-import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
