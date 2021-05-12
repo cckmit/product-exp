@@ -701,11 +701,11 @@ public class ProductExpServiceTest {
         fundAccountRequest.setOrderType("1");
 
         try {
-            CustomerProfileResponseData fundHolidayBody = null;
+        	CustGeneralProfileResponse fundHolidayBody = null;
             ObjectMapper mapper = new ObjectMapper();
-            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustomerProfileResponseData.class);
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustGeneralProfileResponse.class);
 
-            when(productExpAsynService.fetchCustomerProfile(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsynService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
         } catch (Exception ex) {
             ex.printStackTrace();
         }

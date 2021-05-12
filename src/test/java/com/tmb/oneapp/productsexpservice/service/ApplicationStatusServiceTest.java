@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -45,16 +45,16 @@ class ApplicationStatusServiceTest {
     void getApplicationStatus_en() throws TMBCommonException {
 
         //GET /apis/customers/{crmId}
-        TmbOneServiceResponse<CustomerProfileResponseData> mockGetCaseStatusResponse
+        TmbOneServiceResponse<CustGeneralProfileResponse> mockGetCaseStatusResponse
                 = new TmbOneServiceResponse<>();
         mockGetCaseStatusResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-        CustomerProfileResponseData customerProfileResponseData = new CustomerProfileResponseData();
+        CustGeneralProfileResponse customerProfileResponseData = new CustGeneralProfileResponse();
         customerProfileResponseData.setIdNo("nationalId");
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -155,16 +155,16 @@ class ApplicationStatusServiceTest {
     void getApplicationStatus_hpException_rslNoData() throws TMBCommonException {
 
         //GET /apis/customers/{crmId}
-        TmbOneServiceResponse<CustomerProfileResponseData> mockGetCaseStatusResponse
+        TmbOneServiceResponse<CustGeneralProfileResponse> mockGetCaseStatusResponse
                 = new TmbOneServiceResponse<>();
         mockGetCaseStatusResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-        CustomerProfileResponseData customerProfileResponseData = new CustomerProfileResponseData();
+        CustGeneralProfileResponse customerProfileResponseData = new CustGeneralProfileResponse();
         customerProfileResponseData.setIdNo("nationalId");
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile( anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -257,16 +257,16 @@ class ApplicationStatusServiceTest {
     void getApplicationStatus_dataNotFound() throws TMBCommonException {
 
         //GET /apis/customers/{crmId}
-        TmbOneServiceResponse<CustomerProfileResponseData> mockGetCaseStatusResponse
+        TmbOneServiceResponse<CustGeneralProfileResponse> mockGetCaseStatusResponse
                 = new TmbOneServiceResponse<>();
         mockGetCaseStatusResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-        CustomerProfileResponseData customerProfileResponseData = new CustomerProfileResponseData();
+        CustGeneralProfileResponse customerProfileResponseData = new CustGeneralProfileResponse();
         customerProfileResponseData.setIdNo("nationalId");
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -331,16 +331,16 @@ class ApplicationStatusServiceTest {
     void getApplicationStatus_tmbException() throws TMBCommonException {
 
         //GET /apis/customers/{crmId}
-        TmbOneServiceResponse<CustomerProfileResponseData> mockGetCaseStatusResponse
+        TmbOneServiceResponse<CustGeneralProfileResponse> mockGetCaseStatusResponse
                 = new TmbOneServiceResponse<>();
         mockGetCaseStatusResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-        CustomerProfileResponseData customerProfileResponseData = new CustomerProfileResponseData();
+        CustGeneralProfileResponse customerProfileResponseData = new CustGeneralProfileResponse();
         customerProfileResponseData.setIdNo("nationalId");
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
@@ -383,16 +383,16 @@ class ApplicationStatusServiceTest {
     void getApplicationStatus_generalException() throws TMBCommonException {
 
         //GET /apis/customers/{crmId}
-        TmbOneServiceResponse<CustomerProfileResponseData> mockGetCaseStatusResponse
+        TmbOneServiceResponse<CustGeneralProfileResponse> mockGetCaseStatusResponse
                 = new TmbOneServiceResponse<>();
         mockGetCaseStatusResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-        CustomerProfileResponseData customerProfileResponseData = new CustomerProfileResponseData();
+        CustGeneralProfileResponse customerProfileResponseData = new CustGeneralProfileResponse();
         customerProfileResponseData.setIdNo("nationalId");
         customerProfileResponseData.setPhoneNoFull("mobileNo");
         mockGetCaseStatusResponse.setData(customerProfileResponseData);
 
-        when(customerServiceClient.getCustomerProfile(anyMap(), anyString()))
+        when(customerServiceClient.getCustomerProfile(anyString()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK)
                         .body(mockGetCaseStatusResponse));
 
