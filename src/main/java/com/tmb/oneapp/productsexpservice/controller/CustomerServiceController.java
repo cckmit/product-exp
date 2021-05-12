@@ -2,7 +2,9 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,16 +47,22 @@ public class CustomerServiceController {
 	}
 
 	@LogAround
-	@PostMapping(value = "/customerservice/get", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/fetch-customer-info", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer info details")
 	public ResponseEntity<TmbOneServiceResponse<CustIndividualProfileInfo>> getIndividualProfileInfo(
 			@RequestHeader Map<String, String> requestHeadersParameter) {
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
 		CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
-		customerIndividualProfileInfo.setData(individualProfileInfo);
-		customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(),
-				ResponseCode.SUCESS.getMessage(), ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		if (Objects.isNull(individualProfileInfo)) {
+			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(),
+					ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+		} else {
+			customerIndividualProfileInfo.setData(individualProfileInfo);
+			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(),
+					ResponseCode.SUCESS.getMessage(), ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		}
+
 		return ResponseEntity.ok().body(customerIndividualProfileInfo);
 	}
 
@@ -69,7 +77,20 @@ public class CustomerServiceController {
 		AddressCommonSearchReq searchReq = new AddressCommonSearchReq();
 		searchReq.setField("postcode");
 		searchReq.setSearch(postCode);
-		return commonServiceClient.searchAddressByField(searchReq);
+		ResponseEntity<TmbOneServiceResponse<List<Province>>> provinces = commonServiceClient
+				.searchAddressByField(searchReq);
+		TmbOneServiceResponse<List<Province>> response = new TmbOneServiceResponse();
+		if (Objects.nonNull(provinces.getBody()) && CollectionUtils.isNotEmpty(provinces.getBody().getData())) {
+			response.setData(provinces.getBody().getData());
+			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		} else {
+			response.setData(null);
+			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+		}
+
+		return ResponseEntity.ok().body(response);
 	}
 
 }

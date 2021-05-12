@@ -14,6 +14,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.address.SubDistrict;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
@@ -45,6 +46,11 @@ public class CustomerProfileService {
 		CustIndividualProfileInfo individualProfile = new CustIndividualProfileInfo();
 		TmbOneServiceResponse<CustGeneralProfileResponse> custGeneralProfileRes = customerServiceClient
 				.getCustomerProfile(crmId).getBody();
+
+		if (!ResponseCode.SUCESS.getCode().equals(custGeneralProfileRes.getStatus().getCode())) {
+			return null;
+		}
+
 		CustGeneralProfileResponse generalProfile = custGeneralProfileRes.getData();
 		if (Objects.nonNull(generalProfile)) {
 			AddressCommonSearchReq reqSearch = new AddressCommonSearchReq();
