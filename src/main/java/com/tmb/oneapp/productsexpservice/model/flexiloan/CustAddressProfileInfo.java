@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustAddressProfileInfo {
 
 	@ApiModelProperty(notes = "houseNo", example = "156")
@@ -48,8 +48,8 @@ public class CustAddressProfileInfo {
 	@ApiModelProperty(notes = "districtNameTh")
 	@JsonProperty("districtNameTh")
 	private String districtNameTh;
-	@ApiModelProperty(notes = "subDistrictNameTh")
-	@JsonProperty("subDistrictNameTh")
+	@ApiModelProperty(notes = "districtNameEn")
+	@JsonProperty("districtNameEn")
 	private String districtNameEn;
 	@ApiModelProperty(notes = "subDistrictNameTh")
 	@JsonProperty("subDistrictNameTh")

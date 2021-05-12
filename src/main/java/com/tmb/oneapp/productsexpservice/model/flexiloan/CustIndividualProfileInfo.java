@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustIndividualProfileInfo {
 
 	@ApiModelProperty(notes = "customerFullTH")
@@ -40,5 +40,6 @@ public class CustIndividualProfileInfo {
 	@JsonProperty("adddressInfo")
 	private String adddressInfo;
 	@JsonProperty("address")
+	@ApiModelProperty(notes = "adddressDetail")
 	private CustAddressProfileInfo address;
 }

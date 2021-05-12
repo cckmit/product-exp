@@ -42,12 +42,11 @@ public class CustomerProfileService {
 	}
 
 	public CustIndividualProfileInfo getIndividualProfile(String crmId) {
-		CustIndividualProfileInfo individualProfile = null;
+		CustIndividualProfileInfo individualProfile = new CustIndividualProfileInfo();
 		TmbOneServiceResponse<CustGeneralProfileResponse> custGeneralProfileRes = customerServiceClient
 				.getCustomerProfile(crmId).getBody();
 		CustGeneralProfileResponse generalProfile = custGeneralProfileRes.getData();
 		if (Objects.nonNull(generalProfile)) {
-			individualProfile = new CustIndividualProfileInfo();
 			AddressCommonSearchReq reqSearch = new AddressCommonSearchReq();
 			reqSearch.setField("postcode");
 			reqSearch.setSearch(generalProfile.getZipcode());

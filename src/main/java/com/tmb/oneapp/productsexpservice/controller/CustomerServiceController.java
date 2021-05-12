@@ -41,15 +41,13 @@ public class CustomerServiceController {
 	@ApiOperation(value = "Get customer info details")
 	public ResponseEntity<TmbOneServiceResponse<CustIndividualProfileInfo>> getIndividualProfileInfo(
 			@RequestHeader Map<String, String> requestHeadersParameter) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
 		CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
 		customerIndividualProfileInfo.setData(individualProfileInfo);
 		customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-		return ResponseEntity.ok().headers(responseHeaders).body(customerIndividualProfileInfo);
+				return ResponseEntity.ok().body(customerIndividualProfileInfo);
 	}
 
 }
