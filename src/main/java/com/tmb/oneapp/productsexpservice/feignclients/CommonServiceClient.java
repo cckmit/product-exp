@@ -7,10 +7,12 @@ import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.address.ProvinceInfo;
+import com.tmb.common.model.address.Province;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
@@ -31,7 +33,8 @@ public interface CommonServiceClient {
 	@GetMapping(value = "/apis/common/product/application/roadmap")
 	ResponseEntity<TmbOneServiceResponse<List<NodeDetails>>> getProductApplicationRoadMap();
 
-	@GetMapping(value = "/apis/common/internal/address")
-	ResponseEntity<TmbOneServiceResponse<List<ProvinceInfo>>> searchAddressByField(AddressCommonSearchReq reqSearch);
+	@PostMapping(value = "/apis/common/internal/address")
+	ResponseEntity<TmbOneServiceResponse<List<Province>>> searchAddressByField(
+			@RequestBody(required = false) AddressCommonSearchReq reqSearch);
 
 }

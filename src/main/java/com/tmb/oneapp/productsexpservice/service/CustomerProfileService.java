@@ -3,13 +3,17 @@ package com.tmb.oneapp.productsexpservice.service;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.address.ProvinceInfo;
+import com.tmb.common.model.address.District;
+import com.tmb.common.model.address.Province;
+import com.tmb.common.model.address.SubDistrict;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
@@ -38,24 +42,25 @@ public class CustomerProfileService {
 	}
 
 	public CustIndividualProfileInfo getIndividualProfile(String crmId) {
-		CustIndividualProfileInfo profileInfo = new CustIndividualProfileInfo();
+		CustIndividualProfileInfo individualProfile = null;
 		TmbOneServiceResponse<CustGeneralProfileResponse> custGeneralProfileRes = customerServiceClient
 				.getCustomerProfile(crmId).getBody();
 		CustGeneralProfileResponse generalProfile = custGeneralProfileRes.getData();
 		if (Objects.nonNull(generalProfile)) {
-			CustIndividualProfileInfo individualProfile = new CustIndividualProfileInfo();
+			individualProfile = new CustIndividualProfileInfo();
 			AddressCommonSearchReq reqSearch = new AddressCommonSearchReq();
 			reqSearch.setField("postcode");
 			reqSearch.setSearch(generalProfile.getZipcode());
-			ResponseEntity<TmbOneServiceResponse<List<ProvinceInfo>>> addressInfoRes = commonServiceClient
+			ResponseEntity<TmbOneServiceResponse<List<Province>>> addressInfoRes = commonServiceClient
 					.searchAddressByField(reqSearch);
-			List<ProvinceInfo> provinceInfos = addressInfoRes.getBody().getData();
+			List<Province> provinceInfos = addressInfoRes.getBody().getData();
 
 			String addressInfo = generateAddressInfo(individualProfile);
 
 			individualProfile.setAdddressInfo(addressInfo);
 			CustAddressProfileInfo custAddressProfile = fillUpParamAddressInfo(provinceInfos, generalProfile);
 			individualProfile.setAddress(custAddressProfile);
+			individualProfile.setAdddressInfo(formatedAddressInline(custAddressProfile));
 			individualProfile.setBirthdate(generalProfile.getIdBirthDate());
 			individualProfile.setCitizenId(generalProfile.getCitizenId());
 			individualProfile.setCustomerFullEN(generalProfile.getEngFname() + " " + generalProfile.getEngLname());
@@ -64,15 +69,97 @@ public class CustomerProfileService {
 			individualProfile.setMobileNo(generalProfile.getPhoneNoFull());
 			individualProfile.setNationality(generalProfile.getNationality());
 
-//			individualProfile.setRemark(crmId);
-
 		}
-		return profileInfo;
+		return individualProfile;
 	}
 
-	private CustAddressProfileInfo fillUpParamAddressInfo(List<ProvinceInfo> provinceInfos,
+	private String formatedAddressInline(CustAddressProfileInfo custAddressProfile) {
+		StringBuffer streetInLine = new StringBuffer();
+		if (StringUtils.isNotBlank(custAddressProfile.getHouseNo())) {
+			streetInLine.append(custAddressProfile.getHouseNo() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getRoomNo())) {
+			streetInLine.append(custAddressProfile.getRoomNo() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getFloorNo())) {
+			streetInLine.append(custAddressProfile.getFloorNo() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getVillageOrbuilding())) {
+			streetInLine.append(custAddressProfile.getVillageOrbuilding() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getSoi())) {
+			streetInLine.append(custAddressProfile.getSoi() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getStreet())) {
+			streetInLine.append(custAddressProfile.getStreet() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getMoo())) {
+			streetInLine.append(custAddressProfile.getMoo() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getSubDistrictNameTh())) {
+			streetInLine.append(custAddressProfile.getSubDistrictNameTh() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getDistrictNameTh())) {
+			streetInLine.append(custAddressProfile.getDistrictNameTh() + StringUtils.SPACE);
+		}
+		if (StringUtils.isNotBlank(custAddressProfile.getProvinceNameTh())) {
+			streetInLine.append(custAddressProfile.getProvinceNameTh() + StringUtils.SPACE);
+		}
+		streetInLine.append(custAddressProfile.getZipcode());
+
+		return streetInLine.toString();
+	}
+
+	private CustAddressProfileInfo fillUpParamAddressInfo(List<Province> provinceInfos,
 			CustGeneralProfileResponse generalProfile) {
 		CustAddressProfileInfo profileInfo = new CustAddressProfileInfo();
+
+		profileInfo.setFloorNo(generalProfile.getFloorNo());
+		profileInfo.setHouseNo(generalProfile.getHouseNo());
+		profileInfo.setMoo(generalProfile.getMoo());
+		profileInfo.setPostcode(generalProfile.getZipcode());
+		profileInfo.setRoomNo(generalProfile.getRoomNo());
+		profileInfo.setSoi(generalProfile.getSoi());
+		profileInfo.setStreet(generalProfile.getStreet());
+		profileInfo.setVillageOrbuilding(generalProfile.getVillageOrbuilding());
+		profileInfo.setZipcode(generalProfile.getZipcode());
+		profileInfo.setProvinceNameTh(generalProfile.getProvinceNameTh());
+		profileInfo.setDistrictNameTh(generalProfile.getDistrictNameTh());
+		profileInfo.setSubDistrictNameTh(generalProfile.getSubDistrictNameTh());
+
+		District districtInfo = null;
+		SubDistrict subDistrictInfo = null;
+		Province provinceInfo = null;
+		if (CollectionUtils.isNotEmpty(provinceInfos)) {
+			provinceInfo = provinceInfos.get(0);
+			profileInfo.setProvinceCode(provinceInfo.getProvinceCode());
+			profileInfo.setProvinceNameEn(provinceInfo.getProvinceNameEn());
+			profileInfo.setProvinceNameTh(provinceInfo.getProvinceNameTh());
+
+			if (Objects.nonNull(provinceInfo) && CollectionUtils.isNotEmpty(provinceInfo.getDistrictList())) {
+				for (District district : provinceInfo.getDistrictList()) {
+					if (StringUtils.isNotEmpty(generalProfile.getSubDistrictNameTh())
+							&& generalProfile.getSubDistrictNameTh().equals(district.getDistrictNameTh())) {
+						districtInfo = district;
+						profileInfo.setDistrictNameEn(districtInfo.getDistrictNameEn());
+						profileInfo.setDistrictNameTh(districtInfo.getDistrictNameTh());
+					}
+				}
+			}
+
+			if (Objects.nonNull(districtInfo) && CollectionUtils.isNotEmpty(districtInfo.getSubDistrictList())) {
+				for (SubDistrict subDistrict : districtInfo.getSubDistrictList()) {
+					if (StringUtils.isNotEmpty(generalProfile.getSubDistrictNameTh())
+							&& generalProfile.getSubDistrictNameTh().equals(subDistrict.getSubDistrictNameTh())) {
+						subDistrictInfo = subDistrict;
+						profileInfo.setSubDistrictNameEn(subDistrictInfo.getSubDistrictNameEn());
+						profileInfo.setSubDistrictNameTh(subDistrictInfo.getSubDistrictNameTh());
+					}
+				}
+			}
+
+		}
+
 		return profileInfo;
 	}
 
