@@ -11,7 +11,11 @@ import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
+import com.tmb.common.model.address.SubDistrict;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
@@ -43,9 +47,21 @@ public class CustomerProfileServiceTest {
 		CustGeneralProfileResponse profile = new CustGeneralProfileResponse();
 		profile.setCitizenId("111115");
 		customerModuleResponse.setData(profile);
+		customerModuleResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		TmbOneServiceResponse<List<Province>> provincesRes = new TmbOneServiceResponse();
 		List<Province> mockProvice = new ArrayList<Province>();
+		Province testProvince = new Province();
+		mockProvice.add(testProvince);
+		
+		List<District> districts = new ArrayList<District>();
+		District testDistrict = new District();
+		List<SubDistrict> subDistricts = new ArrayList<SubDistrict>();
+		testDistrict.setSubDistrictList(subDistricts);
+		testProvince.setDistrictList(districts);
 		provincesRes.setData(mockProvice);
+		provincesRes.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(provincesRes));
 		CustIndividualProfileInfo responseProfile = customerProfileService.getIndividualProfile("1111");
