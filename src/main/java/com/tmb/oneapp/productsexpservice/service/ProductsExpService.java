@@ -302,7 +302,7 @@ public class ProductsExpService {
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
             ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
-            if (ffsRsAndValidation(correlationId, ffsRequestBody, ffsRsAndValidation)) return null;
+         //   if (ffsRsAndValidation(correlationId, ffsRequestBody, ffsRsAndValidation)) return null;
         } else {
             errorData(ffsRsAndValidation, fundResponse);
         }
@@ -316,6 +316,7 @@ public class ProductsExpService {
         ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
     }
 
+    // TOdo move to top before validate
     /**
      * @param correlationId
      * @param ffsRequestBody
