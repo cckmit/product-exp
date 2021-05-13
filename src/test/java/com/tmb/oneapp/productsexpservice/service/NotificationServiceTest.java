@@ -1,6 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -62,8 +62,8 @@ public class NotificationServiceTest {
     @Test
     void sendNotificationByEmailTriggerManual() {
 
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData customerProfile = getCustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<>();
+        CustGeneralProfileResponse customerProfile = getCustomerProfileResponseData();
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
@@ -82,7 +82,7 @@ public class NotificationServiceTest {
         when(creditCardClient.getCreditCardDetails(any(), any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile(any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<>();
@@ -100,16 +100,16 @@ public class NotificationServiceTest {
         Assert.assertTrue(true);
     }
 
-    private CustomerProfileResponseData getCustomerProfileResponseData() {
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+    private CustGeneralProfileResponse getCustomerProfileResponseData() {
+    	CustGeneralProfileResponse customerProfile = new CustGeneralProfileResponse();
         customerProfile.setEmailAddress("witsanu.t@tcs.com");
         return customerProfile;
     }
 
     @Test
     void activeCardGetCustomerProfile() {
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData customerProfile = getCustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<>();
+        CustGeneralProfileResponse customerProfile = getCustomerProfileResponseData();
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
 
@@ -128,7 +128,7 @@ public class NotificationServiceTest {
         TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<>();
         sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
         when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
                 "0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
@@ -146,8 +146,8 @@ public class NotificationServiceTest {
 
     @Test
     void activeSetPinNotification() {
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<>();
+        CustGeneralProfileResponse customerProfile = new CustGeneralProfileResponse();
         customerProfile.setEmailAddress("witsanu@gmail.com");
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
@@ -164,7 +164,7 @@ public class NotificationServiceTest {
         cardDetail.setProductId("VTOPBR");
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -186,8 +186,8 @@ public class NotificationServiceTest {
 
     @Test
     void activeBlockCardNotification() {
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<>();
+        CustGeneralProfileResponse customerProfile = new CustGeneralProfileResponse();
         customerProfile.setEmailAddress("witsanu@gmail.com");
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
@@ -205,7 +205,7 @@ public class NotificationServiceTest {
         cardDetail.setProductId("VTOPBR");
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -241,8 +241,8 @@ public class NotificationServiceTest {
         req.setReasonDescEn("กรณีฉุกเฉินเมื่ออยู่ต่างประเทศ");
         req.setRequestReason("200");
 
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<>();
+        CustGeneralProfileResponse customerProfile = new CustGeneralProfileResponse();
         customerProfile.setEmailAddress("witsanu@gmail.com");
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
@@ -269,7 +269,7 @@ public class NotificationServiceTest {
         cardDetail.setCardCreditLimit(cardCreditLimit);
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -303,8 +303,8 @@ public class NotificationServiceTest {
         req.setReasonDescEn("กรณีฉุกเฉินเมื่ออยู่ต่างประเทศ");
         req.setRequestReason("200");
 
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
+        CustGeneralProfileResponse customerProfile = new CustGeneralProfileResponse();
         customerProfile.setEmailAddress("witsanu@gmail.com");
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
@@ -331,7 +331,7 @@ public class NotificationServiceTest {
         cardDetail.setCardCreditLimit(cardCreditLimit);
         cardResponse.setCreditCard(cardDetail);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
@@ -354,12 +354,12 @@ public class NotificationServiceTest {
     @Test
     public void validCustomerResponseTest() {
 
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
+        CustGeneralProfileResponse customerProfile = new CustGeneralProfileResponse();
         customerProfile.setEmailAddress("witsanu@gmail.com");
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> ab = ResponseEntity.ok(profileResponse);
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> ab = ResponseEntity.ok(profileResponse);
         notificationService.validCustomerResponse(ab);
         Assert.assertTrue(true);
     }
@@ -379,8 +379,8 @@ public class NotificationServiceTest {
         data.setGuid("1234");
         data.setSuccess(true);
         response.setData(data);
-        TmbOneServiceResponse<CustomerProfileResponseData> profileResponse = new TmbOneServiceResponse<CustomerProfileResponseData>();
-        CustomerProfileResponseData customerProfile = new CustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
+        CustGeneralProfileResponse customerProfile = new CustGeneralProfileResponse();
         customerProfile.setEmailAddress("witsanu@gmail.com");
         profileResponse.setData(customerProfile);
         profileResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "customer-service"));
@@ -403,7 +403,7 @@ public class NotificationServiceTest {
 
         when(notificationServiceClient.sendMessage(anyString(), any())).thenReturn(response);
 
-        when(customerServiceClient.getCustomerProfile(any(), any()))
+        when(customerServiceClient.getCustomerProfile( any()))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
         when(creditCardClient.getCreditCardDetails(any(), any()))
@@ -421,36 +421,36 @@ public class NotificationServiceTest {
 
     @Test
     public void testSendCardActiveEmail() {
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = getTmbOneServiceResponseResponseEntity();
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = getTmbOneServiceResponseResponseEntity();
         notificationService.sendCardActiveEmail("xCorrelationId", "accountId", "crmId");
         assertNotNull(response);
     }
 
     @Test
     public void testValidCustomerResponse() {
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = getTmbOneServiceResponseResponseEntity();
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = getTmbOneServiceResponseResponseEntity();
         boolean result = notificationService.validCustomerResponse(response);
         Assert.assertEquals(false, result);
     }
 
     @Test
     public void testDoNotifySuccessForSetPin() {
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = getTmbOneServiceResponseResponseEntity();
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = getTmbOneServiceResponseResponseEntity();
         notificationService.doNotifySuccessForSetPin("xCorrelationId", "accountId", "crmId");
         assertNotNull(response);
     }
 
-    private ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> getTmbOneServiceResponseResponseEntity() {
-        TmbOneServiceResponse<CustomerProfileResponseData> resp = getCustomerProfileResponseDataTmbOneServiceResponse();
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = new ResponseEntity(resp, HttpStatus.OK);
-        when(customerServiceClient.getCustomerProfile(any(), any())).thenReturn(response);
+    private ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getTmbOneServiceResponseResponseEntity() {
+        TmbOneServiceResponse<CustGeneralProfileResponse> resp = getCustomerProfileResponseDataTmbOneServiceResponse();
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = new ResponseEntity(resp, HttpStatus.OK);
+        when(customerServiceClient.getCustomerProfile( any())).thenReturn(response);
         return response;
     }
 
     @Test
     public void testDoNotifySuccessForChangeUsageLimit() {
         SetCreditLimitReq requestBody = getSetCreditLimitReq();
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = getTmbOneServiceResponseResponseEntity();
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = getTmbOneServiceResponseResponseEntity();
         notificationService.doNotifySuccessForChangeUsageLimit("xCorrelationId", "accountId", "crmId", requestBody);
         assertNotNull(requestBody);
     }
@@ -458,16 +458,16 @@ public class NotificationServiceTest {
     @Test
     public void testDoNotifySuccessForTemporaryLimit() {
         SetCreditLimitReq requestBody = getSetCreditLimitReq();
-        ResponseEntity<TmbOneServiceResponse<CustomerProfileResponseData>> response = getTmbOneServiceResponseResponseEntity();
+        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = getTmbOneServiceResponseResponseEntity();
         notificationService.doNotifySuccessForTemporaryLimit("correlationId", "accountId", "crmId", requestBody);
         assertNotNull(requestBody);
     }
 
-    private TmbOneServiceResponse<CustomerProfileResponseData> getCustomerProfileResponseDataTmbOneServiceResponse() {
+    private TmbOneServiceResponse<CustGeneralProfileResponse> getCustomerProfileResponseDataTmbOneServiceResponse() {
         Map<String, String> header = new HashMap<>();
         header.put("test", "test");
-        TmbOneServiceResponse<CustomerProfileResponseData> resp = new TmbOneServiceResponse<>();
-        CustomerProfileResponseData data = new CustomerProfileResponseData();
+        TmbOneServiceResponse<CustGeneralProfileResponse> resp = new TmbOneServiceResponse<>();
+        CustGeneralProfileResponse data = new CustGeneralProfileResponse();
         data.setEmailAddress("test@test.com");
         resp.setData(data);
         TmbStatus tmbStatus = new TmbStatus();

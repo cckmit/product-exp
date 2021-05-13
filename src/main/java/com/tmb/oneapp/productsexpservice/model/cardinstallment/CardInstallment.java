@@ -41,4 +41,5 @@ public class CardInstallment {
 	@ApiModelProperty(notes = "postDate", example = "2021-04-21")
 	@JsonProperty("posted_date")
 	private String postDate;
+				
 }

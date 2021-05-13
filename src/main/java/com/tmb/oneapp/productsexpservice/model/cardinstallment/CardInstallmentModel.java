@@ -2,6 +2,8 @@ package com.tmb.oneapp.productsexpservice.model.cardinstallment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -18,4 +20,8 @@ public class CardInstallmentModel {
 	private String transactionDescription;
 	@JsonProperty("transaction_key")
 	private String transactionKey;
+	@JsonProperty("transection_date")
+	private String transectionDate;
+	@JsonProperty("post_date")
+	private String postDate;
 }
