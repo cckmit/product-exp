@@ -53,14 +53,22 @@ public class CustomerServiceController {
 			@RequestHeader Map<String, String> requestHeadersParameter) {
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
-		CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
-		if (Objects.isNull(individualProfileInfo)) {
+		try {
+			CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
+			if (Objects.isNull(individualProfileInfo)) {
+				customerIndividualProfileInfo.setData(null);// empty
+				customerIndividualProfileInfo
+						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			} else {
+				customerIndividualProfileInfo.setData(individualProfileInfo);
+				customerIndividualProfileInfo
+						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			}
+		} catch (Exception e) {
 			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(),
 					ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-		} else {
-			customerIndividualProfileInfo.setData(individualProfileInfo);
-			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(),
-					ResponseCode.SUCESS.getMessage(), ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		}
 
 		return ResponseEntity.ok().body(customerIndividualProfileInfo);
@@ -77,16 +85,22 @@ public class CustomerServiceController {
 		AddressCommonSearchReq searchReq = new AddressCommonSearchReq();
 		searchReq.setField("postcode");
 		searchReq.setSearch(postCode);
-		ResponseEntity<TmbOneServiceResponse<List<Province>>> provinces = commonServiceClient
-				.searchAddressByField(searchReq);
 		TmbOneServiceResponse<List<Province>> response = new TmbOneServiceResponse();
-		if (Objects.nonNull(provinces.getBody()) && CollectionUtils.isNotEmpty(provinces.getBody().getData())) {
-			response.setData(provinces.getBody().getData());
-			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-		} else {
-			response.setData(null);
-			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+		try {
+			ResponseEntity<TmbOneServiceResponse<List<Province>>> provinces = commonServiceClient
+					.searchAddressByField(searchReq);
+
+			if (Objects.nonNull(provinces.getBody()) && CollectionUtils.isNotEmpty(provinces.getBody().getData())) {
+				response.setData(provinces.getBody().getData());
+				response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+						ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			} else {
+				response.setData(null);
+				response.setStatus((new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+						ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc())));
+			}
+		} catch (Exception e) {
+			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 		}
 
