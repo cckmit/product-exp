@@ -1,9 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerDisburstAccount;
-import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerFeature;
-import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerInstallment;
-import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerResponse;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
+import com.tmb.oneapp.productsexpservice.model.response.loan.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +17,12 @@ public class LoanCustomerService {
         LoanCustomerResponse response = mockResponse();
         return response;
     }
+
+    public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) {
+        LoanCustomerSubmissionResponse response = mockCustomerResponse(request);
+        return response;
+    }
+
 
     private LoanCustomerResponse mockResponse() {
         LoanCustomerResponse response = new LoanCustomerResponse();
@@ -55,11 +59,13 @@ public class LoanCustomerService {
         LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
         disburstAccount.setAccountNo("123-4-56789-2");
         disburstAccount.setAccountName("บัญชี ออลล์ ฟรี");
+        disburstAccount.setBankName("ทีทีบี");
         disburstAccounts.add(disburstAccount);
 
         LoanCustomerDisburstAccount disburstAccount2 = new LoanCustomerDisburstAccount();
         disburstAccount2.setAccountNo("123-4-56789-0");
         disburstAccount2.setAccountName("บัญชี โนฟิกช์");
+        disburstAccount2.setBankName("ทีทีบี");
         disburstAccounts.add(disburstAccount2);
 
         response.setInstallments(installments);
@@ -67,6 +73,19 @@ public class LoanCustomerService {
         response.setDisburstAccounts(disburstAccounts);
 
 
+        return response;
+    }
+
+    private LoanCustomerSubmissionResponse mockCustomerResponse(LoanCustomerSubmissionRequest loanCustomerSubmissionRequest) {
+        LoanCustomerSubmissionResponse response = new LoanCustomerSubmissionResponse();
+        response.setLimitAmount(new BigDecimal(300000));
+        response.setRequestAmount(loanCustomerSubmissionRequest.getRequestAmount());
+        LoanCustomerDisburstAccount disburstAccount2 = new LoanCustomerDisburstAccount();
+        disburstAccount2.setAccountNo("123-4-56789-0");
+        disburstAccount2.setAccountName("บัญชี โนฟิกช์");
+        disburstAccount2.setBankName("ทีทีบี");
+        response.setDisburstAccount(disburstAccount2);
+        response.setInstallment("60");
         return response;
     }
 

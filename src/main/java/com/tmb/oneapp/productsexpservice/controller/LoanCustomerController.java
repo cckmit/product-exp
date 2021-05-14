@@ -7,7 +7,9 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerResponse;
+import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.service.LoanCustomerService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +51,33 @@ public class LoanCustomerController {
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         }catch (Exception e) {
             logger.error("Error while getConfig: {}", e);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+
+    }
+
+    @LogAround
+    @ApiOperation("Get customer profile")
+    @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestBody LoanCustomerSubmissionRequest request) {
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        TmbOneServiceResponse<LoanCustomerSubmissionResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        LoanCustomerSubmissionResponse loanCustomerSubmissionResponse = loanCustomerService.saveCustomerSubmission(request);
+
+        try {
+            oneTmbOneServiceResponse.setData(loanCustomerSubmissionResponse);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        }catch (Exception e) {
+            logger.error("Error while submission customer profile : {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);

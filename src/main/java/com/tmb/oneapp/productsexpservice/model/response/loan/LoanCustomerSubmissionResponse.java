@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanCustomerDisburstAccount {
+public class LoanCustomerSubmissionResponse {
 
-    private String accountNo;
-    private String accountName;
-    private String bankName;
-
+    private BigDecimal limitAmount;
+    private BigDecimal requestAmount;
+    private String installment;
+    private LoanCustomerDisburstAccount disburstAccount;
 }
