@@ -8,10 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanCustomerPricing {
+public class LoanCustomerInstallment {
     private Long id;
-    private Long tier;
-    private String monthFrom;
-    private String monthTo;
-    private Double rate;
+    private String installment;
 }

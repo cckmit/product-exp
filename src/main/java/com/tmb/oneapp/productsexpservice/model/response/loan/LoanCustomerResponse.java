@@ -12,7 +12,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanCustomerResponse {
 
-    private List<LoanCustomerFeature> feature;
-    private List<LoanCustomerPricing> pricings;
+    private List<LoanCustomerFeature> features;
+    private List<LoanCustomerInstallment> installments;
     private List<LoanCustomerDisburstAccount> disburstAccounts;
 }
