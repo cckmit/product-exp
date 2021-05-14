@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,10 +27,14 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
+import com.tmb.oneapp.productsexpservice.model.request.WorkingInfoReq;
+import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
+import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
 import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(tags = "Lend Customer information service")
@@ -50,7 +56,7 @@ public class CustomerServiceController {
 	@PostMapping(value = "/fetch-customer-info", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer info details")
 	public ResponseEntity<TmbOneServiceResponse<CustIndividualProfileInfo>> getIndividualProfileInfo(
-			@RequestHeader Map<String, String> requestHeadersParameter) {
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeadersParameter) {
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
 		CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
@@ -90,6 +96,35 @@ public class CustomerServiceController {
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 		}
 
+		return ResponseEntity.ok().body(response);
+	}
+
+	@LogAround
+	@PostMapping(value = "/fetch-working-info", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Get customer working information details")
+	public ResponseEntity<TmbOneServiceResponse<WorkingInfoResponse>> getWorkingInformation(WorkingInfoReq workingReq,
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders) {
+		TmbOneServiceResponse<WorkingInfoResponse> response = new TmbOneServiceResponse();
+		return ResponseEntity.ok().body(response);
+	}
+
+	@LogAround
+	@GetMapping(value = "/fetch-working-status/{occupationEntryCode}/{bustypeEntryCode}")
+	@ApiOperation(value = "Get dependency working information details links")
+	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkingDependency(
+			@PathVariable String occupationEntryCode, @PathVariable String bustypeEntryCode,
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders) {
+		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
+		return ResponseEntity.ok().body(response);
+	}
+
+	@LogAround
+	@GetMapping(value = "/fetch-working-income/{occupationEntryCode}/{incomeEntryCode}")
+	@ApiOperation(value = "Get dependency income information details links")
+	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getCountryIncomeSourceDependency(
+			@PathVariable String occupationEntryCode, @PathVariable String incomeEntryCode,
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders) {
+		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		return ResponseEntity.ok().body(response);
 	}
 
