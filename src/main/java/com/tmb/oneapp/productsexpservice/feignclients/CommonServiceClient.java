@@ -5,7 +5,7 @@ import java.util.List;
 import com.tmb.common.model.CommonData;
 import com.tmb.oneapp.productsexpservice.model.response.ConfigData;
 import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
-import org.apache.kafka.common.config.Config;
+import com.tmb.oneapp.productsexpservice.model.response.OneAppConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +33,7 @@ public interface CommonServiceClient {
     ResponseEntity<TmbOneServiceResponse<List<NodeDetails>>> getProductApplicationRoadMap();
 
     @GetMapping(value = "/apis/common/fetch/config")
-    ResponseEntity<TmbOneServiceResponse<List<ConfigData>>> getAllConfig(
+    ResponseEntity<TmbOneServiceResponse<OneAppConfig>> getAllConfig(
             @RequestParam("channel") String channel
     );
 
