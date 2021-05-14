@@ -23,5 +23,7 @@ public class ActivityLogs extends BaseEvent {
     private String fundCode;
     @JsonProperty("unit_holder")
     private String unitHolderNo;
+    @JsonProperty("fund_class_name_th_hub")
+    private String fundClassNameThHub;
 
 }
