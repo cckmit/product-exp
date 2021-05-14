@@ -55,8 +55,9 @@ public class CustomerServiceController {
 		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
 		CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
 		if (Objects.isNull(individualProfileInfo)) {
-			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(),
-					ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+			customerIndividualProfileInfo.setData(null);// empty
+			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(),
+					ResponseCode.SUCESS.getMessage(), ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		} else {
 			customerIndividualProfileInfo.setData(individualProfileInfo);
 			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(),
