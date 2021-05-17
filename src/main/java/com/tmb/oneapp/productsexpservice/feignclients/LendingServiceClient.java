@@ -1,10 +1,13 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
@@ -28,5 +31,15 @@ public interface LendingServiceClient {
             @RequestHeader(HEADER_CITIZEN_ID) String citizenId,
             @RequestHeader(HEADER_MOBILE_NO) String mobileNo);
 
+    /**
+     * Get Flexi Loan products
+     *
+     * @param correlationId
+     * @param request
+     * @return
+     */
+    @PostMapping(value = "/apis/lending-service/loan/products")
+    ResponseEntity<TmbOneServiceResponse<Object>> getLoanProducts(
+            @RequestHeader(X_CORRELATION_ID) String correlationId, @RequestBody ProductRequest request);
 
 }
