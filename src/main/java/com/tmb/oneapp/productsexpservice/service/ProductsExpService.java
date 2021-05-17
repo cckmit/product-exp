@@ -662,6 +662,7 @@ public class ProductsExpService {
         activityData.setVerifyFlag(alternativeRq.getProcessFlag());
         activityData.setReason(failReason);
         activityData.setFundCode(alternativeRq.getFundCode());
+        activityData.setFundClass(alternativeRq.getFundClassNameThHub());
         if (!StringUtils.isEmpty(alternativeRq.getUnitHolderNo())) {
             activityData.setUnitHolderNo(alternativeRq.getUnitHolderNo());
         } else {

@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.request.alternative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,5 @@ public class AlternativeRq {
     @NotNull
     private String orderType;
     private String processFlag;
-
-    private String fundclassNameThHub;
+    private String fundClassNameThHub;
 }
