@@ -3,8 +3,6 @@ package com.tmb.oneapp.productsexpservice.model.request.alternative;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -19,6 +17,5 @@ public class AlternativeRq {
     @NotNull
     private String orderType;
     private String processFlag;
-
-    private String fundclassNameThHub;
+    private String fundClassNameThHub;
 }

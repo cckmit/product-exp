@@ -488,6 +488,7 @@ public class UtilMap {
         alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
         alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
         alternativeRq.setOrderType(ffsRequestBody.getOrderType());
+        alternativeRq.setFundClassNameThHub(ffsRequestBody.getFundClassNameThHub());
         return alternativeRq;
     }
 
