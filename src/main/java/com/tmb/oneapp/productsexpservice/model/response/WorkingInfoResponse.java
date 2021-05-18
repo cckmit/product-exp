@@ -1,7 +1,5 @@
 package com.tmb.oneapp.productsexpservice.model.response;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
@@ -23,16 +21,16 @@ public class WorkingInfoResponse {
 	@JsonProperty("workingPhoneNoExt")
 	private String workingPhoneNoExt;
 	@JsonProperty("workstatus")
-	private List<DependDefaultEntry> workstatus;
+	private DependDefaultEntry workstatus;
 	@JsonProperty("occupation")
-	private List<DependDefaultEntry> occupation;
+	private DependDefaultEntry occupation;
 	@JsonProperty("businessType")
-	private List<DependDefaultEntry> businessType;
+	private DependDefaultEntry businessType;
 	@JsonProperty("subBusinessType")
-	private List<DependDefaultEntry> subBusinessType;
+	private DependDefaultEntry subBusinessType;
 	@JsonProperty("sourceIncomes")
-	private List<DependDefaultEntry> sourceIncomes;
+	private DependDefaultEntry sourceIncomes;
 	@JsonProperty("countryIncomes")
-	private List<DependDefaultEntry> countryIncomes;
+	private DependDefaultEntry countryIncomes;
 
 }

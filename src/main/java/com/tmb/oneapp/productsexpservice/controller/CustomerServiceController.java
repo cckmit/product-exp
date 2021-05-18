@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import com.tmb.common.model.address.Province;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
 import com.tmb.oneapp.productsexpservice.model.request.WorkingInfoReq;
@@ -44,20 +46,28 @@ public class CustomerServiceController {
 
 	private CustomerProfileService customerProfileService;
 	private CommonServiceClient commonServiceClient;
+	private LendingServiceClient lendingServiceClient;
 
 	@Autowired
 	public CustomerServiceController(CustomerProfileService customerProfileService,
-			CommonServiceClient commonServiceClient) {
+			CommonServiceClient commonServiceClient, LendingServiceClient lendingServiceClient) {
 		this.customerProfileService = customerProfileService;
 		this.commonServiceClient = commonServiceClient;
+		this.lendingServiceClient = lendingServiceClient;
 	}
 
+	/**
+	 * Service for get individual information
+	 * 
+	 * @param requestHeadersParameter
+	 * @return
+	 */
 	@LogAround
 	@PostMapping(value = "/fetch-customer-info", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer info details")
 	public ResponseEntity<TmbOneServiceResponse<CustIndividualProfileInfo>> getIndividualProfileInfo(
-			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeadersParameter) {
-		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
+			@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid @RequestHeader Map<String, String> headers) {
+		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
 		CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
 		if (Objects.isNull(individualProfileInfo)) {
@@ -72,10 +82,16 @@ public class CustomerServiceController {
 		return ResponseEntity.ok().body(customerIndividualProfileInfo);
 	}
 
+	/**
+	 * Service for get zipcode
+	 * 
+	 * @param postCode
+	 * @return
+	 */
 	@LogAround
 	@GetMapping(value = "/zipcode")
 	@ApiOperation(value = "Get Address info details by post code")
-	public ResponseEntity<TmbOneServiceResponse<List<Province>>> getMasterAddessInfo(
+	public ResponseEntity<TmbOneServiceResponse<List<Province>>> getZipcodeInfo(
 			@RequestParam(value = "code") String postCode) {
 		if (StringUtils.isEmpty(postCode)) {
 			return ResponseEntity.ok().build();
@@ -99,31 +115,60 @@ public class CustomerServiceController {
 		return ResponseEntity.ok().body(response);
 	}
 
+	/**
+	 * Service for get working information
+	 * 
+	 * @param workingReq
+	 * @param requestHeaders
+	 * @return
+	 */
 	@LogAround
 	@PostMapping(value = "/fetch-working-info", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer working information details")
 	public ResponseEntity<TmbOneServiceResponse<WorkingInfoResponse>> getWorkingInformation(WorkingInfoReq workingReq,
-			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders) {
+			@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid @RequestHeader Map<String, String> headers) {
+		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+        String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
+        
 		TmbOneServiceResponse<WorkingInfoResponse> response = new TmbOneServiceResponse();
+		
+		customerProfileService.getWorkingInformation(crmId, correlationId);
+		
 		return ResponseEntity.ok().body(response);
 	}
 
+	/**
+	 * Service for dependency criteria for working status
+	 * 
+	 * @param occupationEntryCode
+	 * @param bustypeEntryCode
+	 * @param requestHeaders
+	 * @return
+	 */
 	@LogAround
 	@GetMapping(value = "/fetch-working-status/{occupationEntryCode}/{bustypeEntryCode}")
 	@ApiOperation(value = "Get dependency working information details links")
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkingDependency(
 			@PathVariable String occupationEntryCode, @PathVariable String bustypeEntryCode,
-			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders) {
+			@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid  @RequestHeader Map<String, String> requestHeaders) {
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		return ResponseEntity.ok().body(response);
 	}
 
+	/**
+	 * Service for dependency criteria for income information
+	 * 
+	 * @param occupationEntryCode
+	 * @param incomeEntryCode
+	 * @param requestHeaders
+	 * @return
+	 */
 	@LogAround
 	@GetMapping(value = "/fetch-working-income/{occupationEntryCode}/{incomeEntryCode}")
 	@ApiOperation(value = "Get dependency income information details links")
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getCountryIncomeSourceDependency(
 			@PathVariable String occupationEntryCode, @PathVariable String incomeEntryCode,
-			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders) {
+			@ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid  @RequestHeader Map<String, String> requestHeaders) {
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		return ResponseEntity.ok().body(response);
 	}
