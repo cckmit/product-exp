@@ -232,11 +232,11 @@ public class CustomerProfileService {
 			response.setBusinessType(workProfileResponse.getBusinessType());
 			response.setCountryIncomes(workProfileResponse.getCountryIncomes());
 			response.setEmploymentName(profileResponse.getWorkEmploymentName());
-			response.setWorkingPhoneNo(profileResponse.getWorkPhoneNo());
 			response.setOccupation(workProfileResponse.getOccupation());
 			response.setSourceIncomes(workProfileResponse.getSourceIncomes());
 			response.setSubBusinessType(workProfileResponse.getSubBusinessType());
 			response.setWorkingAddress(workingAddress);
+			response.setWorkingPhoneNo(profileResponse.getWorkPhoneNo());
 			response.setWorkingPhoneNoExt(profileResponse.getWorkPhoneNoExt());
 			response.setWorkstatus(workProfileResponse.getWorkstatus());
 		}
