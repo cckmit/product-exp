@@ -3,12 +3,15 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -90,11 +93,13 @@ public interface LendingServiceClient {
 	 * @return
 	 */
 	@GetMapping(value = "/apis/lending-service/criteria/country")
+
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getCountryList(
 			@RequestHeader(X_CORRELATION_ID) String correlationId);
-	
+
 	/**
 	 * Call RSL Criteria for working information
+	 * 
 	 * @param correlationId
 	 * @param occupationCode
 	 * @param businessTypeCode
@@ -107,5 +112,16 @@ public interface LendingServiceClient {
 			@RequestParam(value = "occupationcode") String occupationCode,
 			@RequestParam(value = "businesstypecode") String businessTypeCode,
 			@RequestParam(value = "countryofincome") String countryOfIncome);
+
+	/**
+	 * Get Flexi Loan products
+	 *
+	 * @param correlationId
+	 * @param request
+	 * @return
+	 */
+	@PostMapping(value = "/apis/lending-service/loan/products")
+	ResponseEntity<TmbOneServiceResponse<Object>> getLoanProducts(@RequestHeader(X_CORRELATION_ID) String correlationId,
+			@RequestBody ProductRequest request);
 
 }

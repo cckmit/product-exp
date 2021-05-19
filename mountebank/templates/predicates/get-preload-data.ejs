@@ -29,6 +29,130 @@
                   "description":"success"
                },
                "data":{
+                  "deposit_account_lists":[
+                     {
+                        "product_code":"0200",
+                        "product_nickname":null,
+                        "product_name_th":"บัญชีเบสิก",
+                        "product_name_en":"Basic Account",
+                        "account_number":"0412759862",
+                        "account_status":"DORMANT",
+                        "account_type":"SDA",
+                        "account_name":"NAME TEST",
+                        "branch_code":"0041",
+                        "relationship_code":"PRIIND",
+                        "allow_from_for_bill_pay_top_up_epayment":"1",
+                        "allow_transfer_from_account":"1",
+                        "allow_set_quick_balance":"1",
+                        "allow_pay_loan_direct_debit":"1",
+                        "allow_receive_loan_fund":"1",
+                        "waive_fee_for_billpay":"0",
+                        "waive_fee_for_prompt_pay":"0",
+                        "available_balance":"493023.30",
+                        "product_icon_url":"/product/logo/icon_02.png",
+                        "product_config_sort_order":"10002",
+                        "shortcuts":[
+                           {
+                              "name":"account_summary_transfer",
+                              "phrase":"button_account_summary_transfer",
+                              "icon_name":"/product/shortcut/deposit/account_summary_transfer.png"
+                           },
+                           {
+                              "name":"paybill",
+                              "phrase":"button_paybill",
+                              "icon_name":"/product/shortcut/deposit/paybill.png"
+                           },
+                           {
+                              "name":"topup",
+                              "phrase":"button_topup",
+                              "icon_name":"/product/shortcut/deposit/topup.png"
+                           },
+                           {
+                              "name":"withdraw",
+                              "phrase":"button_withdraw",
+                              "icon_name":"/product/shortcut/deposit/withdraw.png"
+                           }
+                        ]
+                     },
+                     {
+                        "product_code":"0221",
+                        "product_nickname":null,
+                        "product_name_th":"บัญชีโนฟิกซ์",
+                        "product_name_en":"No Fixed Account",
+                        "account_number":"0412775892",
+                        "account_status":"ACTIVE",
+                        "account_type":"SDA",
+                        "account_name":"NAME TEST",
+                        "branch_code":"0041",
+                        "relationship_code":"PRIIND",
+                        "allow_from_for_bill_pay_top_up_epayment":"0",
+                        "allow_transfer_from_account":"1",
+                        "allow_set_quick_balance":"1",
+                        "allow_pay_loan_direct_debit":"0",
+                        "allow_receive_loan_fund":"1",
+                        "waive_fee_for_billpay":"0",
+                        "waive_fee_for_prompt_pay":"0",
+                        "available_balance":"305752.93",
+                        "product_icon_url":"/product/logo/icon_03.png",
+                        "product_config_sort_order":"10023",
+                        "shortcuts":[
+                           {
+                              "name":"account_summary_transfer",
+                              "phrase":"button_account_summary_transfer",
+                              "icon_name":"/product/shortcut/deposit/account_summary_transfer.png"
+                           },
+                           {
+                              "name":"withdraw",
+                              "phrase":"button_withdraw",
+                              "icon_name":"/product/shortcut/deposit/withdraw.png"
+                           }
+                        ]
+                     },
+                     {
+                        "product_code":"0200",
+                        "product_nickname":null,
+                        "product_name_th":"บัญชีเบสิก",
+                        "product_name_en":"Basic Account",
+                        "account_number":"0462543695",
+                        "account_status":"ACTIVE",
+                        "account_type":"SDA",
+                        "account_name":"NAME TEST",
+                        "branch_code":"0046",
+                        "relationship_code":"PRIIND",
+                        "allow_from_for_bill_pay_top_up_epayment":"1",
+                        "allow_transfer_from_account":"1",
+                        "allow_set_quick_balance":"1",
+                        "allow_pay_loan_direct_debit":"1",
+                        "allow_receive_loan_fund":"1",
+                        "waive_fee_for_billpay":"0",
+                        "waive_fee_for_prompt_pay":"0",
+                        "available_balance":"702777.93",
+                        "product_icon_url":"/product/logo/icon_02.png",
+                        "product_config_sort_order":"10002",
+                        "shortcuts":[
+                           {
+                              "name":"account_summary_transfer",
+                              "phrase":"button_account_summary_transfer",
+                              "icon_name":"/product/shortcut/deposit/account_summary_transfer.png"
+                           },
+                           {
+                              "name":"paybill",
+                              "phrase":"button_paybill",
+                              "icon_name":"/product/shortcut/deposit/paybill.png"
+                           },
+                           {
+                              "name":"topup",
+                              "phrase":"button_topup",
+                              "icon_name":"/product/shortcut/deposit/topup.png"
+                           },
+                           {
+                              "name":"withdraw",
+                              "phrase":"button_withdraw",
+                              "icon_name":"/product/shortcut/deposit/withdraw.png"
+                           }
+                        ]
+                     }
+                  ],
                   "loan_status_tracking":{
                      "applications":[
                         {
@@ -446,7 +570,18 @@
                         "product_name_en":"ttb flash card",
                         "product_name_th":"บัตรกดเงินสด ทีทีบี แฟลช",
                         "interest_rate":0.27,
-                        "payment_criteria_options":null,
+                        "payment_criteria_options":[
+                           {
+                              "option_id":"63072",
+                              "option_name_th":"หักบัญชีเต็มจำนวน",
+                              "option_name_en":"Full payment 100%"
+                           },
+                           {
+                              "option_id":"63070",
+                              "option_name_th":"หักบัญชีขั้นต่ำ (5%)",
+                              "option_name_en":"Minimum Payment 5%"
+                           }
+                        ],
                         "loan_req_max":1500000,
                         "loan_req_min":500000
                      },
@@ -459,7 +594,8 @@
                         "interest_rate":0.28,
                         "payment_criteria_options":null,
                         "loan_req_max":2500000,
-                        "loan_req_min":500000
+                        "loan_req_min":500000,
+                        "os_limit":249299.71
                      }
                   ]
                }
