@@ -64,6 +64,16 @@ public interface LendingServiceClient {
 			@RequestHeader(X_CORRELATION_ID) String correlationId);
 
 	/**
+	 * Call RSL Criteria for get business type information
+	 * 
+	 * @param correlationId
+	 * @return
+	 */
+	@GetMapping(value = "/apis/lending-service/criteria/businesstype/{entrycode}")
+	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getBusinessSubTypeInfo(
+			@RequestHeader(X_CORRELATION_ID) String correlationId);
+
+	/**
 	 * Call RSL Criteria for get source of income
 	 * 
 	 * @param correlationId
@@ -82,7 +92,15 @@ public interface LendingServiceClient {
 	@GetMapping(value = "/apis/lending-service/criteria/country")
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getCountryList(
 			@RequestHeader(X_CORRELATION_ID) String correlationId);
-
+	
+	/**
+	 * Call RSL Criteria for working information
+	 * @param correlationId
+	 * @param occupationCode
+	 * @param businessTypeCode
+	 * @param countryOfIncome
+	 * @return
+	 */
 	@GetMapping(value = "/apis/lending-service/fetch-working-info")
 	ResponseEntity<TmbOneServiceResponse<WorkProfileInfoResponse>> getWorkInformationWithProfile(
 			@RequestHeader(X_CORRELATION_ID) String correlationId,

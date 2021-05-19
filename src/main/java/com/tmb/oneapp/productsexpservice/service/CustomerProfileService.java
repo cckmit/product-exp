@@ -222,10 +222,10 @@ public class CustomerProfileService {
 				.searchAddressByField(reqSearch);
 		List<Province> provinceInfos = addressInfoRes.getBody().getData();
 		CustAddressProfileInfo workingAddress = fillUpParamWorkAddressInfo(provinceInfos, profileResponse);
-
+		String requestBusinessType = profileResponse.getBusinessTypeCode().substring(0, 1);
 		ResponseEntity<TmbOneServiceResponse<WorkProfileInfoResponse>> workingProfile = lendingServiceClient
 				.getWorkInformationWithProfile(correlationId, profileResponse.getOccupationCode(),
-						profileResponse.getBusinessTypeCode(), profileResponse.getNationality());
+						requestBusinessType, profileResponse.getNationality());
 
 		WorkProfileInfoResponse workProfileResponse = workingProfile.getBody().getData();
 		if (Objects.nonNull(workProfileResponse)) {
