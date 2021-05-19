@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -224,21 +223,16 @@ public class CustomerProfileService {
 		CustAddressProfileInfo workingAddress = fillUpParamWorkAddressInfo(provinceInfos, profileResponse);
 		String requestBusinessType = profileResponse.getBusinessTypeCode().substring(0, 1);
 		ResponseEntity<TmbOneServiceResponse<WorkProfileInfoResponse>> workingProfile = lendingServiceClient
-				.getWorkInformationWithProfile(correlationId, profileResponse.getOccupationCode(),
-						requestBusinessType, profileResponse.getNationality());
+				.getWorkInformationWithProfile(correlationId, profileResponse.getOccupationCode(), requestBusinessType,
+						profileResponse.getNationality());
 
 		WorkProfileInfoResponse workProfileResponse = workingProfile.getBody().getData();
 		if (Objects.nonNull(workProfileResponse)) {
-			response.setBusinessType(workProfileResponse.getBusinessType());
-			response.setCountryIncomes(workProfileResponse.getCountryIncomes());
+			response.setProfilesDependency(workProfileResponse);
 			response.setEmploymentName(profileResponse.getWorkEmploymentName());
-			response.setOccupation(workProfileResponse.getOccupation());
-			response.setSourceIncomes(workProfileResponse.getSourceIncomes());
-			response.setSubBusinessType(workProfileResponse.getSubBusinessType());
 			response.setWorkingAddress(workingAddress);
 			response.setWorkingPhoneNo(profileResponse.getWorkPhoneNo());
 			response.setWorkingPhoneNoExt(profileResponse.getWorkPhoneNoExt());
-			response.setWorkstatus(workProfileResponse.getWorkstatus());
 		}
 
 		return response;

@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.model.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
+import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
 
 import lombok.Data;
 import lombok.ToString;
@@ -20,17 +21,7 @@ public class WorkingInfoResponse {
 	private String workingPhoneNo;
 	@JsonProperty("workingPhoneNoExt")
 	private String workingPhoneNoExt;
-	@JsonProperty("workstatus")
-	private DependDefaultEntry workstatus;
-	@JsonProperty("occupation")
-	private DependDefaultEntry occupation;
-	@JsonProperty("businessType")
-	private DependDefaultEntry businessType;
-	@JsonProperty("subBusinessType")
-	private DependDefaultEntry subBusinessType;
-	@JsonProperty("sourceIncomes")
-	private DependDefaultEntry sourceIncomes;
-	@JsonProperty("countryIncomes")
-	private DependDefaultEntry countryIncomes;
+	@JsonProperty("profileDependency")
+	private WorkProfileInfoResponse profilesDependency;
 
 }
