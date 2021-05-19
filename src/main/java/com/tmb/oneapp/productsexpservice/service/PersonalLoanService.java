@@ -1,14 +1,17 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.AllowCashDayOne;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
-import com.tmb.oneapp.productsexpservice.model.response.OneAppConfig;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -17,22 +20,20 @@ public class PersonalLoanService {
     private static final TMBLogger<PersonalLoanService> logger = new TMBLogger(PersonalLoanService.class);
     private final CommonServiceClient commonServiceClient;
 
-    public LoanPreloadResponse checkPreload(LoanPreloadRequest loanPreloadRequest) {
+    public LoanPreloadResponse checkPreload(String correlationId,LoanPreloadRequest loanPreloadRequest) {
 
         LoanPreloadResponse loanPreloadResponse = new LoanPreloadResponse();
-
-        TmbOneServiceResponse<OneAppConfig> configs = getAllConfig(loanPreloadRequest.getChannel());
-
-        loanPreloadResponse.setFlagePreload(checkPreloadConfig(configs));
+        TmbOneServiceResponse<List<CommonData>> configs = getAllConfig(correlationId,"lending_module");
+        loanPreloadResponse.setFlagePreload(checkPreloadConfig(configs, loanPreloadRequest));
 
         return loanPreloadResponse;
     }
 
-    public TmbOneServiceResponse<OneAppConfig> getAllConfig(String channel) {
-        TmbOneServiceResponse<OneAppConfig> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+    public TmbOneServiceResponse<List<CommonData>> getAllConfig(String correlationId,String channel) {
+        TmbOneServiceResponse<List<CommonData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ResponseEntity<TmbOneServiceResponse<OneAppConfig>> nodeTextResponse = commonServiceClient.getAllConfig(channel);
+            ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(correlationId,channel);
             oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
 
         } catch (Exception e) {
@@ -43,9 +44,11 @@ public class PersonalLoanService {
         return oneTmbOneServiceResponse;
     }
 
-    public Boolean checkPreloadConfig(TmbOneServiceResponse<OneAppConfig> configs) {
+    public Boolean checkPreloadConfig(TmbOneServiceResponse<List<CommonData>> commonDataList, LoanPreloadRequest loanPreloadRequest) {
 
-        // check config
-        return true;
+        List<AllowCashDayOne> allowCashDayOnes = commonDataList.getData().get(0).getAllowCashDayOnes();
+
+        return allowCashDayOnes.get(0).getAllowCashDayOne().contains(loanPreloadRequest.getProductCode());
+
     }
 }

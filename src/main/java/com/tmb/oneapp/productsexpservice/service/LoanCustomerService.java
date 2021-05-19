@@ -32,18 +32,42 @@ public class LoanCustomerService {
         LoanCustomerFeature feature = new LoanCustomerFeature();
         feature.setId(1L);
         feature.setFeatureType("SB");
-        feature.setAmount(new BigDecimal(200000));
+        feature.setAmountMin(new BigDecimal(200000));
+        feature.setAmountMax(new BigDecimal(200000));
         features.add(feature);
 
         LoanCustomerFeature feature2 = new LoanCustomerFeature();
         feature2.setId(2L);
         feature2.setFeatureType("CT");
-        feature2.setAmount(new BigDecimal(300000));
+        feature2.setAmountMin(new BigDecimal(300000));
+        feature2.setAmountMax(new BigDecimal(500000));
         features.add(feature2);
+
 
         LoanCustomerInstallment installment = new LoanCustomerInstallment();
         installment.setId(1L);
         installment.setInstallment("60");
+
+        Pricing pricing = new Pricing();
+        pricing.setMonthFrom("1");
+        pricing.setMonthTo("3");
+        pricing.setRateVaraince(0.25);
+
+        Pricing pricing2 = new Pricing();
+        pricing2.setMonthFrom("4");
+        pricing2.setMonthTo("5");
+        pricing2.setRateVaraince(0.12);
+
+
+        Pricing pricing3 = new Pricing();
+        pricing3.setMonthFrom("4");
+        pricing3.setMonthTo("5");
+        pricing3.setRateVaraince(0.12);
+
+        List<Pricing> pricings = new ArrayList<>();
+        pricings.add(pricing);
+        pricings.add(pricing2);
+        pricings.add(pricing3);
 
         LoanCustomerInstallment installment2 = new LoanCustomerInstallment();
         installment2.setId(2L);
@@ -71,6 +95,7 @@ public class LoanCustomerService {
         response.setInstallments(installments);
         response.setFeatures(features);
         response.setDisburstAccounts(disburstAccounts);
+        response.setPricings(pricings);
 
 
         return response;

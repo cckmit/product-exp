@@ -13,5 +13,6 @@ import java.math.BigDecimal;
 public class LoanCustomerFeature {
     private Long id;
     private String featureType;
-    private BigDecimal amount;
+    private BigDecimal amountMin;
+    private BigDecimal amountMax;
 }

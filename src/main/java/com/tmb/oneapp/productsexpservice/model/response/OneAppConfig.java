@@ -42,4 +42,7 @@ public class OneAppConfig {
 
     @JsonProperty("setting_config")
     private SettingConfig settingConfig;
+
+//    @JsonProperty("lending_module")
+//    private AllowCashDayOne allowCashDayOne;
 }

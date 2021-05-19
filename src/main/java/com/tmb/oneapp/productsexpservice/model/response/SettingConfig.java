@@ -16,4 +16,5 @@ import java.util.List;
 public class SettingConfig {
 //    private List<Section> sections;
 //    private List<Setting> settings;
+    private List<AllowCashDayOne> allowCashDayOnes;
 }

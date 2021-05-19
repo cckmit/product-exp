@@ -36,13 +36,14 @@ public class PersonalLoanController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-Correlation-ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
     })
-    public ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> checkPreload(@Valid LoanPreloadRequest loanPreloadRequest) {
+    public ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> checkPreload( @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                        @Valid LoanPreloadRequest loanPreloadRequest) {
         TmbOneServiceResponse<LoanPreloadResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
 
-            oneTmbOneServiceResponse.setData(personalLoanService.checkPreload(loanPreloadRequest));
+            oneTmbOneServiceResponse.setData(personalLoanService.checkPreload(correlationId,loanPreloadRequest));
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));

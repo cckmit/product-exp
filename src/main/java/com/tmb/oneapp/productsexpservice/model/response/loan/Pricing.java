@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanCustomerInstallment {
-    private Long id;
-    private String installment;
+public class Pricing {
+    private String monthFrom;
+    private String monthTo;
+    private Double rateVaraince;
 }

@@ -15,4 +15,5 @@ public class LoanCustomerResponse {
     private List<LoanCustomerFeature> features;
     private List<LoanCustomerInstallment> installments;
     private List<LoanCustomerDisburstAccount> disburstAccounts;
+    private List<Pricing> pricings;
 }

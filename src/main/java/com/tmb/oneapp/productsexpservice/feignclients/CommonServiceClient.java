@@ -6,6 +6,8 @@ import com.tmb.common.model.CommonData;
 import com.tmb.oneapp.productsexpservice.model.response.ConfigData;
 import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import com.tmb.oneapp.productsexpservice.model.response.OneAppConfig;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.validation.Valid;
 
 @FeignClient(name = "${feign.common.service.name}", url = "${feign.common.service.url}")
 public interface CommonServiceClient {
@@ -37,5 +41,11 @@ public interface CommonServiceClient {
             @RequestParam("channel") String channel
     );
 
+    @GetMapping(value = "/apis/common/internal/common/config")
+    @ApiOperation("Get Common Config by Module")
+    ResponseEntity<TmbOneServiceResponse<List<CommonData>>> getCommonConfig(
+            @RequestHeader("X-Correlation-ID") String correlationId,
+            @RequestParam("search") String search
+    );
 
 }
