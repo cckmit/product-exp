@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
-import com.tmb.oneapp.productsexpservice.model.request.WorkingInfoReq;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
 import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
@@ -138,7 +136,7 @@ public class CustomerServiceController {
 	@LogAround
 	@PostMapping(value = "/fetch-working-info", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer working information details")
-	public ResponseEntity<TmbOneServiceResponse<WorkingInfoResponse>> getWorkingInformation(WorkingInfoReq workingReq,
+	public ResponseEntity<TmbOneServiceResponse<WorkingInfoResponse>> getWorkingInformation(
 			@RequestHeader Map<String, String> headers) {
 		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
