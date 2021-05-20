@@ -50,8 +50,36 @@ public class LoanCustomerService {
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) {
-        LoanCustomerSubmissionResponse response = mockCustomerResponse(request);
+        Facility facility = getFacility(request.getCaID());
+        saveFacility(request, facility);
+        LoanCustomerSubmissionResponse response = parseSaveFacilityResponse(request, facility);
         return response;
+    }
+
+    private void saveFacility(LoanCustomerSubmissionRequest request, Facility facility) {
+        facility.setFeatureType(request.getFeatureType());
+        if (request.getFeatureType().equals(FEATURE_TYPE_C)) {
+            facility.getFeature().setRequestAmount(request.getRequestAmount());
+        }
+
+        facility.setDisburstAccountName(request.getDisburstAccountName());
+        facility.setDisburstAccountNo(request.getDisburstAccountNo());
+        facility.setDisburstBankName(request.getBankName());
+    }
+
+    private LoanCustomerSubmissionResponse parseSaveFacilityResponse(LoanCustomerSubmissionRequest request, Facility facility) {
+        LoanCustomerSubmissionResponse response = new LoanCustomerSubmissionResponse();
+        response.setInstallment(request.getInstallment());
+        response.setRequestAmount(request.getRequestAmount());
+        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
+        disburstAccount.setAccountNo(request.getDisburstAccountNo());
+        disburstAccount.setAccountName(request.getDisburstAccountName());
+        disburstAccount.setBankName(request.getBankName());
+        response.setDisburstAccount(disburstAccount);
+        response.setLimitAmount(facility.getLimitApplied());
+
+        return response;
+
     }
 
     private LoanCustomerSubmissionResponse mockCustomerResponse(LoanCustomerSubmissionRequest loanCustomerSubmissionRequest) {
