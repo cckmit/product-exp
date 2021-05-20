@@ -58,11 +58,15 @@ public class LoanCustomerService {
         pricing2.setMonthTo("5");
         pricing2.setRateVaraince(0.12);
 
-
         Pricing pricing3 = new Pricing();
         pricing3.setMonthFrom("4");
         pricing3.setMonthTo("5");
         pricing3.setRateVaraince(0.12);
+
+        AnnualInterest annualInterest = new AnnualInterest();
+        annualInterest.setVat(0.07);
+        annualInterest.setCharge(0.1);
+        annualInterest.setInterest(0.16);
 
         List<Pricing> pricings = new ArrayList<>();
         pricings.add(pricing);
@@ -96,6 +100,7 @@ public class LoanCustomerService {
         response.setFeatures(features);
         response.setDisburstAccounts(disburstAccounts);
         response.setPricings(pricings);
+        response.setAnnualInterest(annualInterest);
 
 
         return response;

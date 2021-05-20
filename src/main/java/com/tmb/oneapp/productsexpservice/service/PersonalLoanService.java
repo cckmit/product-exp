@@ -23,17 +23,17 @@ public class PersonalLoanService {
     public LoanPreloadResponse checkPreload(String correlationId,LoanPreloadRequest loanPreloadRequest) {
 
         LoanPreloadResponse loanPreloadResponse = new LoanPreloadResponse();
-        TmbOneServiceResponse<List<CommonData>> configs = getAllConfig(correlationId,"lending_module");
+        TmbOneServiceResponse<List<CommonData>> configs = getAllConfig(correlationId,loanPreloadRequest.getSearch());
         loanPreloadResponse.setFlagePreload(checkPreloadConfig(configs, loanPreloadRequest));
 
         return loanPreloadResponse;
     }
 
-    public TmbOneServiceResponse<List<CommonData>> getAllConfig(String correlationId,String channel) {
+    public TmbOneServiceResponse<List<CommonData>> getAllConfig(String correlationId,String search) {
         TmbOneServiceResponse<List<CommonData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(correlationId,channel);
+            ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(correlationId,search);
             oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
 
         } catch (Exception e) {

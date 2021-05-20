@@ -15,5 +15,5 @@ public class LoanPreloadRequest {
     @NotEmpty
     private String productCode;
     @NotEmpty
-    private String channel;
+    private String search;
 }
