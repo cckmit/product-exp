@@ -78,7 +78,7 @@ dependencies {
 	compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'com.tmb.common:tmb_common_utility:0.0.73'
+	implementation 'com.tmb.common:tmb_common_utility:0.0.111'
 	implementation 'org.springframework.kafka:spring-kafka'
 	testCompile("junit:junit:4.12")
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -88,6 +88,11 @@ dependencies {
 	implementation group: 'redis.clients', name: 'jedis', version: '3.5.1'
 	implementation group: 'org.thymeleaf', name: 'thymeleaf-spring5', version: '3.0.11.RELEASE'
 	implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+	implementation group: 'org.apache.axis', name: 'axis', version: '1.4'
+	implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
+	implementation group: 'commons-discovery', name: 'commons-discovery', version: '0.5'
+	implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
+	implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
 	testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
 }
 
