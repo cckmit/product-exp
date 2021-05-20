@@ -670,7 +670,7 @@ public class NotificationService {
 			}
 			info.setFirstPayment(df.format(monthlyTrans.getFirstPayment()));
 			info.setName(item.getCreditCard().getCardInstallment().getTransactionDescription());
-			info.setPrinciple(df.format(monthlyTrans.getPrinciple2Digit()));
+			info.setPrinciple(df.format(new BigDecimal(amount)));
 			info.setTotalAmt(df.format(monthlyTrans.getTotalAmt()));
 			info.setTotalInterest(df.format(monthlyTrans.getTotalInterest()));
 			itemInfos.add(info);

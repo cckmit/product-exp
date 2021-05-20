@@ -108,16 +108,10 @@ public class CustomerServiceController {
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<Province>>> provinces = commonServiceClient
 					.searchAddressByField(searchReq);
-
 			if (Objects.nonNull(provinces.getBody()) && CollectionUtils.isNotEmpty(provinces.getBody().getData())) {
 				response.setData(provinces.getBody().getData());
-				response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-						ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-			} else {
-				response.setData(null);
-				response.setStatus((new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-						ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc())));
 			}
+			response.setStatus(provinces.getBody().getStatus());
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
