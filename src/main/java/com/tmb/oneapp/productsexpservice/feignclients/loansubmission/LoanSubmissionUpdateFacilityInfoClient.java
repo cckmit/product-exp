@@ -5,6 +5,7 @@ import com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.request.RequestFacility;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility;
+import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetFacilityInfoServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateFacilityServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateFacilitySoapBindingStub;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,6 @@ import java.rmi.RemoteException;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class LoanSubmissionUpdateFacilityInfoClient {
 
     @Value("${loan-submission-update-facility-info.url}")
@@ -26,6 +26,11 @@ public class LoanSubmissionUpdateFacilityInfoClient {
 
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
+
+    private void setLocator(LoanSubmissionUpdateFacilityServiceLocator locator) {
+        this.locator = locator;
+    }
+
 
     public ResponseFacility updateFacilityInfo(Facility facility) throws RemoteException, ServiceException {
         locator.setLoanSubmissionUpdateFacilityEndpointAddress(updateFacilityInfoUrl);

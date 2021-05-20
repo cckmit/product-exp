@@ -5,15 +5,11 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanCustomerFeature {
-    private BigDecimal id;
-    private String featureType;
-    private BigDecimal amountMin;
-    private BigDecimal amountMax;
-    private BigDecimal limitAmount;
+public class AnnualInterest {
+    private Double charge;
+    private Double vat;
+    private Double interest;
 }

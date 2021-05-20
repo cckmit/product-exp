@@ -2,8 +2,12 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionUpdateFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
 import com.tmb.oneapp.productsexpservice.model.response.loan.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,101 +24,33 @@ public class LoanCustomerService {
 
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
     private final LoanSubmissionUpdateFacilityInfoClient updateFacilityInfoClient;
-    private static final String FEATURE_TYPE_SB = "SB";
-    private static final String FEATURE_TYPE_CT = "CT";
+    private static final String FEATURE_TYPE_S = "S";
+    private static final String FEATURE_TYPE_C = "C";
+    private static final Double VAT = 0.07;
+    private static final Double CHARGE = 0.1;
+    private static final Double INTEREST = 0.16;
+    private static final BigDecimal PRICING_MONTH_FROM = new BigDecimal(1);
+    private static final BigDecimal PRICING_MONTH_TO = new BigDecimal(3);
+    private static final BigDecimal RATE_VARAINCE = new BigDecimal(1.73);
+    private static final BigDecimal PRICING_MONTH_FROM_4 = new BigDecimal(4);
+    private static final BigDecimal PRICING_MONTH_TO_5 = new BigDecimal(5);
+    private static final BigDecimal RATE_VARAINCE_1 = new BigDecimal(12.00);
+    private static final BigDecimal PRICING_MONTH_FROM_6 = new BigDecimal(6);
+    private static final BigDecimal PRICING_MONTH_TO_12 = new BigDecimal(12);
+    private static final BigDecimal RATE_VARAINCE_2 = new BigDecimal(23.00);
+    private static final BigDecimal LIMIT_AMOUNT = new BigDecimal(500000);
+    private static final BigDecimal AMOUNT_MIN = new BigDecimal(20000);
+
 
     public LoanCustomerResponse getCustomerProfile(LoanCustomerRequest request) {
         Facility facility = getFacility(request.getCaID());
-        List<LoanCustomerFeature> features = getLoanCustomerFeatures(facility, request.getCaID());
-        LoanCustomerResponse response = new LoanCustomerResponse();
-        response.setFeatures(features);
+        LoanCustomerResponse response = parseLoanCustomerResponse(facility, request.getCaID());
 
-
-        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
-        response = mockResponse();
         return response;
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) {
         LoanCustomerSubmissionResponse response = mockCustomerResponse(request);
-        return response;
-    }
-
-
-    private LoanCustomerResponse mockResponse() {
-        LoanCustomerResponse response = new LoanCustomerResponse();
-
-        List<LoanCustomerFeature> features = new ArrayList<>();
-
-        LoanCustomerFeature feature = new LoanCustomerFeature();
-        feature.setId(new BigDecimal(1));
-        feature.setFeatureType("SB");
-        feature.setAmountMin(new BigDecimal(200000));
-        feature.setAmountMax(new BigDecimal(200000));
-        features.add(feature);
-
-        LoanCustomerFeature feature2 = new LoanCustomerFeature();
-        feature2.setId(new BigDecimal(2));
-        feature2.setFeatureType("CT");
-        feature2.setAmountMin(new BigDecimal(300000));
-        feature2.setAmountMax(new BigDecimal(500000));
-        features.add(feature2);
-
-
-        LoanCustomerInstallment installment = new LoanCustomerInstallment();
-        installment.setId(1L);
-        installment.setInstallment("60");
-
-        LoanCustomerPricing pricing = new LoanCustomerPricing();
-        pricing.setMonthFrom("1");
-        pricing.setMonthTo("3");
-        pricing.setRateVaraince(0.25);
-
-        LoanCustomerPricing pricing2 = new LoanCustomerPricing();
-        pricing2.setMonthFrom("4");
-        pricing2.setMonthTo("5");
-        pricing2.setRateVaraince(0.12);
-
-
-        LoanCustomerPricing pricing3 = new LoanCustomerPricing();
-        pricing3.setMonthFrom("4");
-        pricing3.setMonthTo("5");
-        pricing3.setRateVaraince(0.12);
-
-        List<LoanCustomerPricing> pricings = new ArrayList<>();
-        pricings.add(pricing);
-        pricings.add(pricing2);
-        pricings.add(pricing3);
-
-        LoanCustomerInstallment installment2 = new LoanCustomerInstallment();
-        installment2.setId(2L);
-        installment2.setInstallment("30");
-
-        List<LoanCustomerInstallment> installments= new ArrayList<>();
-        installments.add(installment);
-        installments.add(installment2);
-
-
-        List<LoanCustomerDisburstAccount> disburstAccounts = new ArrayList<>();
-
-        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
-        disburstAccount.setAccountNo("123-4-56789-2");
-        disburstAccount.setAccountName("บัญชี ออลล์ ฟรี");
-        disburstAccount.setBankName("ทีทีบี");
-        disburstAccounts.add(disburstAccount);
-
-        LoanCustomerDisburstAccount disburstAccount2 = new LoanCustomerDisburstAccount();
-        disburstAccount2.setAccountNo("123-4-56789-0");
-        disburstAccount2.setAccountName("บัญชี โนฟิกช์");
-        disburstAccount2.setBankName("ทีทีบี");
-        disburstAccounts.add(disburstAccount2);
-
-        response.setInstallments(installments);
-        response.setFeatures(features);
-        response.setDisburstAccounts(disburstAccounts);
-        response.setPricings(pricings);
-
-
         return response;
     }
 
@@ -136,7 +72,7 @@ public class LoanCustomerService {
         try {
             ResponseFacility getFacilityResp = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
             facility = getFacilityResp.getBody().getFacilities()[0];
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("searchFacilityInfoByCaID got exception:{}", e);
         }
         return facility;
@@ -146,42 +82,138 @@ public class LoanCustomerService {
     private void updateFacility(Facility facility) {
         try {
             com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility updateFacilityResp = updateFacilityInfoClient.updateFacilityInfo(facility);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("updateFacilityInfo got exception:{}", e);
         }
     }
 
-    private List<LoanCustomerFeature> getLoanCustomerFeatures(Facility facility, Long caID) {
+    private List<LoanCustomerFeature> getLoanCustomerFeatures(Facility facilityS, Facility facilityC) {
         List<LoanCustomerFeature> facilityFeatures = new ArrayList<>();
 
-        Facility facilitySB = getFacilityFeature(facility, caID, FEATURE_TYPE_SB);
-        LoanCustomerFeature facilityFeatureSB = parseLoanCustomerFeature(facilitySB);
-
-        Facility facilityCT = getFacilityFeature(facility, caID, FEATURE_TYPE_CT);
-        LoanCustomerFeature facilityFeatureCT = parseLoanCustomerFeature(facilityCT);
-
-        facilityFeatures.add(facilityFeatureSB);
-        facilityFeatures.add(facilityFeatureCT);
+        facilityFeatures.add(parseLoanCustomerFeature(facilityS));
+        facilityFeatures.add(parseLoanCustomerFeature(facilityC));
 
         return facilityFeatures;
+    }
+
+    private List<LoanCustomerPricing> getLoanCustomerPricings(Facility facility) {
+        List<LoanCustomerPricing> pricings = new ArrayList<>();
+        if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
+
+            LoanCustomerPricing pricing = new LoanCustomerPricing();
+
+            pricing.setMonthFrom(PRICING_MONTH_FROM);
+            pricing.setMonthTo(PRICING_MONTH_TO);
+            pricing.setRateVaraince(RATE_VARAINCE);
+
+            LoanCustomerPricing pricing1 = new LoanCustomerPricing();
+            pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
+            pricing1.setMonthTo(PRICING_MONTH_TO_5);
+            pricing1.setRateVaraince(RATE_VARAINCE_1);
+
+            LoanCustomerPricing pricing2 = new LoanCustomerPricing();
+            pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
+            pricing2.setMonthTo(PRICING_MONTH_TO_12);
+            pricing2.setRateVaraince(RATE_VARAINCE_2);
+            pricings.add(pricing);
+            pricings.add(pricing1);
+            pricings.add(pricing2);
+        }
+
+        return pricings;
+    }
+
+    private List<LoanCustomerInstallment> getLoanCustomerInstallment(Facility facility) {
+        List<LoanCustomerInstallment> installments = new ArrayList<>();
+
+        if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
+            Pricing[] pricingList = facility.getPricings();
+            BigDecimal id = new BigDecimal(1);
+            for (Pricing p : pricingList) {
+                LoanCustomerInstallment installment = new LoanCustomerInstallment();
+                installment.setInstallment(p.getMonthTo().subtract(p.getMonthFrom()).add(new BigDecimal(1)));
+                installment.setId(id);
+                installments.add(installment);
+                id = id.add(new BigDecimal(1));
+            }
+        }
+
+        return installments;
+    }
+
+    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(Facility facility) {
+
+        List<LoanCustomerDisburstAccount> disburstAccounts = new ArrayList<>();
+
+        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
+        disburstAccount.setAccountNo("123-4-56789-2");
+        disburstAccount.setAccountName("บัญชี ออลล์ ฟรี");
+        disburstAccount.setBankName("ทีทีบี");
+        disburstAccounts.add(disburstAccount);
+
+        LoanCustomerDisburstAccount disburstAccount2 = new LoanCustomerDisburstAccount();
+        disburstAccount2.setAccountNo("123-4-56789-0");
+        disburstAccount2.setAccountName("บัญชี โนฟิกช์");
+        disburstAccount2.setBankName("ทีทีบี");
+        disburstAccounts.add(disburstAccount2);
+
+        return disburstAccounts;
+    }
+
+
+    private AnnualInterest getAnnualInterest() {
+        AnnualInterest annualInterest = new AnnualInterest();
+
+        annualInterest.setInterest(INTEREST);
+        annualInterest.setVat(VAT);
+        annualInterest.setCharge(CHARGE);
+        return annualInterest;
+    }
+
+    private LoanCustomerResponse parseLoanCustomerResponse(Facility facility, Long caID) {
+        LoanCustomerResponse response = new LoanCustomerResponse();
+
+        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(facility);
+        response.setDisburstAccounts(disburstAccounts);
+
+        Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
+
+        AnnualInterest annualInterest = getAnnualInterest();
+        response.setAnnualInterest(annualInterest);
+
+        Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
+
+        List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityC);
+        response.setPricings(pricings);
+
+        List<LoanCustomerInstallment> installments = getLoanCustomerInstallment(facilityC);
+        response.setInstallments(installments);
+
+        List<LoanCustomerFeature> features = getLoanCustomerFeatures(facilityS, facilityC);
+        response.setFeatures(features);
+
+        return response;
     }
 
     private Facility getFacilityFeature(Facility facility, Long caID, String featureType) {
         facility.setFeatureType(featureType);
         updateFacility(facility);
+        if (!featureType.equals(facility.getFeatureType())) {
+            logger.error("invalid feature type");
+        }
         return getFacility(caID);
     }
 
     private LoanCustomerFeature parseLoanCustomerFeature(Facility facility) {
-        LoanCustomerFeature  facilityFeature = new LoanCustomerFeature();
+        LoanCustomerFeature facilityFeature = new LoanCustomerFeature();
         facilityFeature.setId(facility.getId());
         facilityFeature.setFeatureType(facility.getFeatureType());
-        facilityFeature.setAmountMin(facility.getFeature().getRequestAmount());
-        facilityFeature.setAmountMax(facility.getAmountFinance());
+        // mock data
+        facilityFeature.setAmountMin(AMOUNT_MIN);
+        facilityFeature.setAmountMax(facility.getLimitApplied());
+        facilityFeature.setLimitAmount(LIMIT_AMOUNT);
         return facilityFeature;
     }
-
-
 
 
 }

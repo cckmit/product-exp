@@ -8,13 +8,11 @@ import com.tmb.common.model.legacy.rsl.ws.loan.submission.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class LoanSubmissionGetFacilityInfoClient {
     @Value("${loan-submission-get-facility-info.url}")
     private String getFacilityInfoUrl;
@@ -23,6 +21,9 @@ public class LoanSubmissionGetFacilityInfoClient {
 
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
+    private void setLocator( LoanSubmissionGetFacilityInfoServiceLocator locator) {
+        this.locator = locator;
+    }
 
     public ResponseFacility searchFacilityInfoByCaID(Long caID) throws RemoteException, ServiceException {
         locator.setLoanSubmissionGetFacilityInfoEndpointAddress(getFacilityInfoUrl);
