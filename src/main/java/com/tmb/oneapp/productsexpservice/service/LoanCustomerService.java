@@ -93,8 +93,7 @@ public class LoanCustomerService {
     private Facility getFacility(Long caID) throws ServiceException, RemoteException {
         try {
             ResponseFacility getFacilityResp = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
-            Facility facility = getFacilityResp.getBody().getFacilities()[0];
-            return facility;
+            return getFacilityResp.getBody().getFacilities()[0];
         } catch (Exception e) {
             logger.error("searchFacilityInfoByCaID got exception:{}", e);
             throw e;
