@@ -16,9 +16,18 @@ public class LoanCustomerSubmissionRequest {
     @NotNull
     private BigDecimal requestAmount;
     @NotEmpty
-    private String installmentType;
+    private String installment;
     @NotEmpty
     private String disburstAccountNo;
+
+    @NotEmpty
+    private String disburstAccountName;
+
+    @NotEmpty
+    private String bankName;
+
+    @NotNull
+    private Long caID;
 
 
 }
