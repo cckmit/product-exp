@@ -12,5 +12,5 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanCustomerInstallment {
     private BigDecimal id;
-    private BigDecimal installment;
+    private String installment;
 }

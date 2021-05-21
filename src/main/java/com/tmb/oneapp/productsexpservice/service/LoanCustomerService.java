@@ -1,9 +1,11 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
-import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
+import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionUpdateFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
@@ -12,9 +14,12 @@ import com.tmb.oneapp.productsexpservice.model.response.loan.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -24,6 +29,8 @@ public class LoanCustomerService {
 
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
     private final LoanSubmissionUpdateFacilityInfoClient updateFacilityInfoClient;
+    private final LoanSubmissionGetDropdownListClient getDropdownListClient;
+    private static final String DROPDOWN_TENURE = "TENURE";
     private static final String FEATURE_TYPE_S = "S";
     private static final String FEATURE_TYPE_C = "C";
     private static final Double VAT = 0.07;
@@ -42,7 +49,7 @@ public class LoanCustomerService {
     private static final BigDecimal AMOUNT_MIN = new BigDecimal(20000);
 
 
-    public LoanCustomerResponse getCustomerProfile(LoanCustomerRequest request) {
+    public LoanCustomerResponse getCustomerProfile(LoanCustomerRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
         LoanCustomerResponse response = parseLoanCustomerResponse(facility, request.getCaID());
 
@@ -151,18 +158,15 @@ public class LoanCustomerService {
         return pricings;
     }
 
-    private List<LoanCustomerInstallment> getLoanCustomerInstallment(Facility facility) {
+    private List<LoanCustomerInstallment> getLoanCustomerInstallment(Facility facility, String categoryCode) throws ServiceException, RemoteException {
         List<LoanCustomerInstallment> installments = new ArrayList<>();
-
         if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
-            Pricing[] pricingList = facility.getPricings();
-            BigDecimal id = new BigDecimal(1);
-            for (Pricing p : pricingList) {
+            CommonCodeEntry[] entries = getDropdownList(DROPDOWN_TENURE);
+            for (CommonCodeEntry e : entries) {
                 LoanCustomerInstallment installment = new LoanCustomerInstallment();
-                installment.setInstallment(p.getMonthTo().subtract(p.getMonthFrom()).add(new BigDecimal(1)));
-                installment.setId(id);
+                installment.setInstallment(e.getEntryCode());
+                installment.setId(e.getEntryID());
                 installments.add(installment);
-                id = id.add(new BigDecimal(1));
             }
         }
 
@@ -198,7 +202,7 @@ public class LoanCustomerService {
         return annualInterest;
     }
 
-    private LoanCustomerResponse parseLoanCustomerResponse(Facility facility, Long caID) {
+    private LoanCustomerResponse parseLoanCustomerResponse(Facility facility, Long caID) throws ServiceException, RemoteException {
         LoanCustomerResponse response = new LoanCustomerResponse();
 
         List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(facility);
@@ -214,7 +218,7 @@ public class LoanCustomerService {
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityC);
         response.setPricings(pricings);
 
-        List<LoanCustomerInstallment> installments = getLoanCustomerInstallment(facilityC);
+        List<LoanCustomerInstallment> installments = getLoanCustomerInstallment(facilityC, DROPDOWN_TENURE);
         response.setInstallments(installments);
 
         List<LoanCustomerFeature> features = getLoanCustomerFeatures(facilityS, facilityC);
@@ -236,11 +240,15 @@ public class LoanCustomerService {
         LoanCustomerFeature facilityFeature = new LoanCustomerFeature();
         facilityFeature.setId(facility.getId());
         facilityFeature.setFeatureType(facility.getFeatureType());
-        // mock data
         facilityFeature.setAmountMin(AMOUNT_MIN);
         facilityFeature.setAmountMax(facility.getLimitApplied());
         facilityFeature.setLimitAmount(LIMIT_AMOUNT);
         return facilityFeature;
+    }
+
+    private CommonCodeEntry[] getDropdownList(String categoryCode) throws ServiceException, RemoteException {
+        ResponseDropdown getDropdownListResp = getDropdownListClient.getDropdownList(categoryCode);
+        return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
 
