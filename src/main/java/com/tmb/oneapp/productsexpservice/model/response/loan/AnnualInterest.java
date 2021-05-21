@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AnnualInterest {
-    private Double vat;
     private Double charge;
+    private Double vat;
     private Double interest;
 }

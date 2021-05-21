@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.xml.rpc.ServiceException;
+import java.rmi.RemoteException;
 import java.time.Instant;
 
 @RestController
@@ -33,12 +35,12 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanStatement(@Valid LoanCustomerRequest request) {
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanStatement(@Valid LoanCustomerRequest request) throws ServiceException, RemoteException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile();
+        LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(request);
 
 
         try {

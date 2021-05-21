@@ -11,8 +11,9 @@ import java.math.BigDecimal;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanCustomerFeature {
-    private Long id;
+    private BigDecimal id;
     private String featureType;
     private BigDecimal amountMin;
     private BigDecimal amountMax;
+    private BigDecimal limitAmount;
 }
