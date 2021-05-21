@@ -217,17 +217,15 @@ public class LoanCustomerService {
         return response;
     }
 
-    private Facility getFacilityFeature(Facility facility, Long caID, String featureType) throws ServiceException, RemoteException {
-        if (!featureType.equals(facility.getFeatureType())) {
-            logger.error("invalid feature type");
-        }
+    private Facility getFacilityFeature(Facility f, Long caID, String featureType) throws ServiceException, RemoteException {
+        Facility facility = f;
         facility.getFeature().setDisbAcctName("0");
         facility.getFeature().setDisbAcctNo("0");
         facility.getFeature().setDisbBankCode("0");
         facility.getFeature().setRequestAmount(BigDecimal.ZERO);
         facility.getFeature().setTenure(1L);
-        updateFacility(facility);
         facility.setFeatureType(featureType);
+        updateFacility(facility);
         return getFacility(caID);
     }
 
