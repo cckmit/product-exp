@@ -11,23 +11,18 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class LoanCustomerSubmissionRequest {
+    @NotNull
+    private Long caID;
     @NotEmpty
     private String featureType;
     @NotNull
     private BigDecimal requestAmount;
     @NotEmpty
-    private String installment;
+    private Long tenure;
     @NotEmpty
     private String disburstAccountNo;
-
     @NotEmpty
     private String disburstAccountName;
-
     @NotEmpty
     private String bankName;
-
-    @NotNull
-    private Long caID;
-
-
 }

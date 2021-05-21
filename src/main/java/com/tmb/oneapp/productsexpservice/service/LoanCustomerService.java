@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
 import com.tmb.oneapp.productsexpservice.model.response.loan.*;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -19,7 +20,6 @@ import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -36,38 +36,37 @@ public class LoanCustomerService {
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
     private static final Double INTEREST = 0.16;
-    private static final BigDecimal PRICING_MONTH_FROM = new BigDecimal(1);
-    private static final BigDecimal PRICING_MONTH_TO = new BigDecimal(3);
-    private static final BigDecimal RATE_VARAINCE = new BigDecimal(1.73);
-    private static final BigDecimal PRICING_MONTH_FROM_4 = new BigDecimal(4);
-    private static final BigDecimal PRICING_MONTH_TO_5 = new BigDecimal(5);
-    private static final BigDecimal RATE_VARAINCE_1 = new BigDecimal(12.00);
-    private static final BigDecimal PRICING_MONTH_FROM_6 = new BigDecimal(6);
-    private static final BigDecimal PRICING_MONTH_TO_12 = new BigDecimal(12);
-    private static final BigDecimal RATE_VARAINCE_2 = new BigDecimal(23.00);
-    private static final BigDecimal LIMIT_AMOUNT = new BigDecimal(500000);
-    private static final BigDecimal AMOUNT_MIN = new BigDecimal(20000);
+    private static final BigDecimal PRICING_MONTH_FROM = BigDecimal.valueOf(1);
+    private static final BigDecimal PRICING_MONTH_TO = BigDecimal.valueOf(3);
+    private static final BigDecimal RATE_VARIANCE = BigDecimal.valueOf(1.73);
+    private static final BigDecimal PRICING_MONTH_FROM_4 = BigDecimal.valueOf(4);
+    private static final BigDecimal PRICING_MONTH_TO_5 = BigDecimal.valueOf(5);
+    private static final BigDecimal RATE_VARIANCE_1 = BigDecimal.valueOf(12.00);
+    private static final BigDecimal PRICING_MONTH_FROM_6 = BigDecimal.valueOf(6);
+    private static final BigDecimal PRICING_MONTH_TO_12 = BigDecimal.valueOf(12);
+    private static final BigDecimal RATE_VARIANCE_2 = BigDecimal.valueOf(23.00);
+    private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
+    private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(20000);
 
 
     public LoanCustomerResponse getCustomerProfile(LoanCustomerRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
-        LoanCustomerResponse response = parseLoanCustomerResponse(facility, request.getCaID());
-
-        return response;
+        return parseLoanCustomerResponse(facility, request.getCaID());
     }
 
-    public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) {
+    public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
         saveFacility(request, facility);
-        LoanCustomerSubmissionResponse response = parseSaveFacilityResponse(request, facility);
-        return response;
+        return parseSaveFacilityResponse(request, facility);
+
     }
 
-    private void saveFacility(LoanCustomerSubmissionRequest request, Facility facility) {
+    private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) {
         facility.setFeatureType(request.getFeatureType());
         if (request.getFeatureType().equals(FEATURE_TYPE_C)) {
             facility.getFeature().setRequestAmount(request.getRequestAmount());
         }
+        facility.getFeature().setTenure(request.getTenure());
 
         facility.setDisburstAccountName(request.getDisburstAccountName());
         facility.setDisburstAccountNo(request.getDisburstAccountNo());
@@ -76,7 +75,7 @@ public class LoanCustomerService {
 
     private LoanCustomerSubmissionResponse parseSaveFacilityResponse(LoanCustomerSubmissionRequest request, Facility facility) {
         LoanCustomerSubmissionResponse response = new LoanCustomerSubmissionResponse();
-        response.setInstallment(request.getInstallment());
+        response.setTenure(request.getTenure());
         response.setRequestAmount(request.getRequestAmount());
         LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
         disburstAccount.setAccountNo(request.getDisburstAccountNo());
@@ -89,34 +88,20 @@ public class LoanCustomerService {
 
     }
 
-    private LoanCustomerSubmissionResponse mockCustomerResponse(LoanCustomerSubmissionRequest loanCustomerSubmissionRequest) {
-        LoanCustomerSubmissionResponse response = new LoanCustomerSubmissionResponse();
-        response.setLimitAmount(new BigDecimal(300000));
-        response.setRequestAmount(loanCustomerSubmissionRequest.getRequestAmount());
-        LoanCustomerDisburstAccount disburstAccount2 = new LoanCustomerDisburstAccount();
-        disburstAccount2.setAccountNo("123-4-56789-0");
-        disburstAccount2.setAccountName("บัญชี โนฟิกช์");
-        disburstAccount2.setBankName("ทีทีบี");
-        response.setDisburstAccount(disburstAccount2);
-        response.setInstallment("60");
-        return response;
-    }
-
-    private Facility getFacility(Long caID) {
-        Facility facility = null;
+    private Facility getFacility(Long caID) throws ServiceException, RemoteException {
         try {
             ResponseFacility getFacilityResp = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
-            facility = getFacilityResp.getBody().getFacilities()[0];
+            return getFacilityResp.getBody().getFacilities()[0];
         } catch (Exception e) {
             logger.error("searchFacilityInfoByCaID got exception:{}", e);
+            throw e;
         }
-        return facility;
 
     }
 
-    private void updateFacility(Facility facility) {
+    private void updateFacility(@NonNull Facility facility) {
         try {
-            com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility updateFacilityResp = updateFacilityInfoClient.updateFacilityInfo(facility);
+            updateFacilityInfoClient.updateFacilityInfo(facility);
         } catch (Exception e) {
             logger.error("updateFacilityInfo got exception:{}", e);
         }
@@ -139,17 +124,17 @@ public class LoanCustomerService {
 
             pricing.setMonthFrom(PRICING_MONTH_FROM);
             pricing.setMonthTo(PRICING_MONTH_TO);
-            pricing.setRateVaraince(RATE_VARAINCE);
+            pricing.setRateVaraince(RATE_VARIANCE);
 
             LoanCustomerPricing pricing1 = new LoanCustomerPricing();
             pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
             pricing1.setMonthTo(PRICING_MONTH_TO_5);
-            pricing1.setRateVaraince(RATE_VARAINCE_1);
+            pricing1.setRateVaraince(RATE_VARIANCE_1);
 
             LoanCustomerPricing pricing2 = new LoanCustomerPricing();
             pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
             pricing2.setMonthTo(PRICING_MONTH_TO_12);
-            pricing2.setRateVaraince(RATE_VARAINCE_2);
+            pricing2.setRateVaraince(RATE_VARIANCE_2);
             pricings.add(pricing);
             pricings.add(pricing1);
             pricings.add(pricing2);
@@ -224,15 +209,20 @@ public class LoanCustomerService {
         List<LoanCustomerFeature> features = getLoanCustomerFeatures(facilityS, facilityC);
         response.setFeatures(features);
 
+        updateFacility(facility);
+
         return response;
     }
 
-    private Facility getFacilityFeature(Facility facility, Long caID, String featureType) {
+    private Facility getFacilityFeature(Facility f, Long caID, String featureType) throws ServiceException, RemoteException {
+        Facility facility = f;
+        facility.getFeature().setDisbAcctName("0");
+        facility.getFeature().setDisbAcctNo("0");
+        facility.getFeature().setDisbBankCode("0");
+        facility.getFeature().setRequestAmount(BigDecimal.ZERO);
+        facility.getFeature().setTenure(1L);
         facility.setFeatureType(featureType);
         updateFacility(facility);
-        if (!featureType.equals(facility.getFeatureType())) {
-            logger.error("invalid feature type");
-        }
         return getFacility(caID);
     }
 
