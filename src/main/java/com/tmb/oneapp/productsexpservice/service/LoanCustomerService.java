@@ -51,16 +51,14 @@ public class LoanCustomerService {
 
     public LoanCustomerResponse getCustomerProfile(LoanCustomerRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
-        LoanCustomerResponse response = parseLoanCustomerResponse(facility, request.getCaID());
-
-        return response;
+        return parseLoanCustomerResponse(facility, request.getCaID());
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
         saveFacility(request, facility);
-        LoanCustomerSubmissionResponse response = parseSaveFacilityResponse(request, facility);
-        return response;
+        return parseSaveFacilityResponse(request, facility);
+
     }
 
     private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) {
@@ -103,7 +101,7 @@ public class LoanCustomerService {
 
     private void updateFacility(@NonNull Facility facility) {
         try {
-            com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility updateFacilityResp = updateFacilityInfoClient.updateFacilityInfo(facility);
+            updateFacilityInfoClient.updateFacilityInfo(facility);
         } catch (Exception e) {
             logger.error("updateFacilityInfo got exception:{}", e);
         }
