@@ -27,10 +27,10 @@ public class InstallmentService {
                 .divide(ONE_HUNDRED, CALCULATE_DIGIT, RoundingMode.HALF_UP);
         BigDecimal monthlyPrinciple = principle.divide(new BigDecimal(tenor), CALCULATE_DIGIT, RoundingMode.HALF_UP);
         BigDecimal monthlyPrinciple2Digit = principle.divide(new BigDecimal(tenor), DISPLAY_DIGIT,
-                RoundingMode.HALF_UP);
+                RoundingMode.DOWN);
         BigDecimal monthlyInterest = totalInterest.divide(new BigDecimal(tenor), CALCULATE_DIGIT, RoundingMode.HALF_UP);
         BigDecimal monthlyInterest2Digit = totalInterest.divide(new BigDecimal(tenor), DISPLAY_DIGIT,
-                RoundingMode.HALF_UP);
+                RoundingMode.DOWN);
 
         BigDecimal firstPayment = monthlyPrinciple2Digit
                 .add(monthlyPrinciple.subtract(monthlyPrinciple2Digit).multiply(new BigDecimal(tenor)))
