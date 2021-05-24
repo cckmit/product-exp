@@ -57,7 +57,6 @@ public class CustomerServiceControllerTest {
 		TmbOneServiceResponse<List<Province>> provinces = new TmbOneServiceResponse();
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(provinces));
 		
-		
 		customerServiceController.getIndividualProfileInfo(new HashedMap<String, String>());
 		customerServiceController.getCountryDependency(new HashedMap<String, String>());
 		customerServiceController.getCountryIncomeSourceDependency("TH", new HashedMap<String, String>());
