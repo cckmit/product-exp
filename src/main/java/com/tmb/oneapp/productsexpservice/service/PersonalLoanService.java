@@ -7,18 +7,23 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
-import lombok.AllArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 public class PersonalLoanService {
 
     private static final TMBLogger<PersonalLoanService> logger = new TMBLogger(PersonalLoanService.class);
     private final CommonServiceClient commonServiceClient;
+    
+    @Autowired 
+    public PersonalLoanService(CommonServiceClient commonServiceClient) {
+    	this.commonServiceClient = commonServiceClient;
+    }
 
     public LoanPreloadResponse checkPreload(String correlationId,LoanPreloadRequest loanPreloadRequest) {
 

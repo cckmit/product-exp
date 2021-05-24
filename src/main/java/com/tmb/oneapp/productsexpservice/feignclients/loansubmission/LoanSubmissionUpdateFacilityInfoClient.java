@@ -5,10 +5,8 @@ import com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.request.RequestFacility;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility;
-import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetFacilityInfoServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateFacilityServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateFacilitySoapBindingStub;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +25,7 @@ public class LoanSubmissionUpdateFacilityInfoClient {
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
 
-    private void setLocator(LoanSubmissionUpdateFacilityServiceLocator locator) {
+    public void setLocator(LoanSubmissionUpdateFacilityServiceLocator locator) {
         this.locator = locator;
     }
 

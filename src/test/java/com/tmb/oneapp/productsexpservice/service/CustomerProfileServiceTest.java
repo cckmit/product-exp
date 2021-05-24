@@ -21,6 +21,9 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
+import com.tmb.oneapp.productsexpservice.model.response.DependDefaultEntry;
+import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
+import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -51,6 +54,35 @@ public class CustomerProfileServiceTest {
 		TmbOneServiceResponse<CustGeneralProfileResponse> customerModuleResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
 		CustGeneralProfileResponse profile = new CustGeneralProfileResponse();
 		profile.setCitizenId("111115");
+		profile.setBiometricFlag("A");
+		profile.setBusinessTypeCode("KA090000");
+		profile.setCurrentAddrdistrictNameTh("AB");
+		profile.setCurrentAddrFloorNo("ACDD");
+		profile.setCurrentAddrHouseNo("156");
+		profile.setCurrentAddrMoo("CCDS");
+		profile.setCurrentAddrNameTh("CCSD");
+		profile.setCurrentAddrprovinceCode("CC900");
+		profile.setCurrentAddrProvinceNameTh("ACDDD");
+		profile.setCurrentAddrRoomNo("ASDVD");
+		profile.setCurrentAddrSoi("DSCDSD");
+		profile.setCurrentAddrStreet("SKID");
+		profile.setCurrentAddrSubDistrictNameTh("MLLOOO");
+		profile.setCurrentAddrVillageOrbuilding("OIKUIJ");
+		profile.setCurrentAddrZipcode("10800");
+		profile.setCustomerStatus("ACTIVE");
+		profile.setDeviceNickname("MMY");
+		profile.setEmailAddress("A@B.com");
+		profile.setEmailType("AC");
+		profile.setEmailVerifyFlag("Y");
+		profile.setEngFname("AAAABB");
+		profile.setEngLname("KKKKK");
+		profile.setIdBirthDate("1985-01-26");
+		profile.setIdNo("998882711");
+		profile.setMaskAcctIdFlag("CCCD");
+		profile.setNationality("TH");
+		profile.setOccupationCode("306");
+		profile.setPhoneNoFull("078992102");
+		profile.setProfileImage("LOKS");
 		customerModuleResponse.setData(profile);
 		customerModuleResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
@@ -75,20 +107,82 @@ public class CustomerProfileServiceTest {
 
 	@Test
 	public void testCustomerWorkingProfileInfo() {
-		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient, lendingServiceClient);
+		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient,
+				lendingServiceClient);
 		TmbOneServiceResponse<CustGeneralProfileResponse> customerModuleResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
 		CustGeneralProfileResponse profile = new CustGeneralProfileResponse();
 		profile.setCitizenId("111115");
+		profile.setCitizenId("111115");
+		profile.setBiometricFlag("A");
+		profile.setBusinessTypeCode("KA090000");
+		profile.setCurrentAddrdistrictNameTh("AB");
+		profile.setCurrentAddrFloorNo("ACDD");
+		profile.setCurrentAddrHouseNo("156");
+		profile.setCurrentAddrMoo("CCDS");
+		profile.setCurrentAddrNameTh("CCSD");
+		profile.setCurrentAddrprovinceCode("CC900");
+		profile.setCurrentAddrProvinceNameTh("ACDDD");
+		profile.setCurrentAddrRoomNo("ASDVD");
+		profile.setCurrentAddrSoi("DSCDSD");
+		profile.setCurrentAddrStreet("SKID");
+		profile.setCurrentAddrSubDistrictNameTh("MLLOOO");
+		profile.setCurrentAddrVillageOrbuilding("OIKUIJ");
+		profile.setCurrentAddrZipcode("10800");
+		profile.setCustomerStatus("ACTIVE");
+		profile.setDeviceNickname("MMY");
+		profile.setEmailAddress("A@B.com");
+		profile.setEmailType("AC");
+		profile.setEmailVerifyFlag("Y");
+		profile.setEngFname("AAAABB");
+		profile.setEngLname("KKKKK");
+		profile.setIdBirthDate("1985-01-26");
+		profile.setIdNo("998882711");
+		profile.setMaskAcctIdFlag("CCCD");
+		profile.setNationality("TH");
+		profile.setOccupationCode("306");
+		profile.setPhoneNoFull("078992102");
+		profile.setProfileImage("LOKS");
+		profile.setWorkAddrdistrictNameTh("A");
+		profile.setWorkAddrSubDistrictNameTh("B");
+		profile.setWorkAddrProvinceNameTh("C");
 		customerModuleResponse.setData(profile);
 		customerModuleResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-		AddressCommonSearchReq commonSearchReq = new AddressCommonSearchReq();
 		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
 		TmbOneServiceResponse<List<Province>> listProvinces = new TmbOneServiceResponse<List<Province>>();
+		List<Province> provinces = new ArrayList<Province>();
+		Province aProvinces = new Province();
+		aProvinces.setProvinceNameTh(profile.getWorkAddrProvinceNameTh());
+		List<District> districtList = new ArrayList<District>();
+		List<SubDistrict> subDistricts = new ArrayList<SubDistrict>();
+		SubDistrict subDistrict = new SubDistrict();
+		subDistrict.setSubDistrictNameTh(profile.getWorkAddrSubDistrictNameTh());
+		subDistricts.add(subDistrict);
+		District aDistrict = new District();
+		aDistrict.setDistrictNameTh(profile.getWorkAddrdistrictNameTh());
+		aDistrict.setSubDistrictList(subDistricts);
+		districtList.add(aDistrict);
+		aProvinces.setDistrictList(districtList);
+		provinces.add(aProvinces);
+		listProvinces.setData(provinces);
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(listProvinces));
-		CustIndividualProfileInfo responseProfile = customerProfileService.getIndividualProfile("1111");
-		Assert.assertEquals(profile.getCitizenId(), responseProfile.getCitizenId());
+		TmbOneServiceResponse<WorkProfileInfoResponse> workProfileRes = new TmbOneServiceResponse<WorkProfileInfoResponse>();
+		WorkProfileInfoResponse profileInfo = new WorkProfileInfoResponse();
+		DependDefaultEntry entry = new DependDefaultEntry();
+		
+		profileInfo.setBusinessType(entry);
+		profileInfo.setCountryIncomes(entry);
+		profileInfo.setOccupation(entry);
+		profileInfo.setSourceIncomes(entry);
+		profileInfo.setSubBusinessType(entry);
+		profileInfo.setWorkstatus(entry);
+		
+		workProfileRes.setData(profileInfo);
+		when(lendingServiceClient.getWorkInformationWithProfile(any(), any(), any(), any()))
+				.thenReturn(ResponseEntity.ok(workProfileRes));
+		WorkingInfoResponse responseWorkingProfile = customerProfileService.getWorkingInformation("111", "dxsd");
+		
+		Assert.assertTrue(true);
 	}
-
 
 }
