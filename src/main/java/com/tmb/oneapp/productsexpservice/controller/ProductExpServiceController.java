@@ -150,7 +150,7 @@ public class ProductExpServiceController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         FundPaymentDetailRs fundPaymentDetailRs = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRq);
-        if (!StringUtils.isEmpty(fundPaymentDetailRs)) {
+        if (fundPaymentDetailRs!=null) {
             oneServiceResponse.setData(fundPaymentDetailRs);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,

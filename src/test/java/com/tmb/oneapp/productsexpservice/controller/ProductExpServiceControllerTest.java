@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class ProductExpServiceControllerTest {
@@ -499,6 +501,14 @@ public class ProductExpServiceControllerTest {
         oneServiceResponse.setData(data);
         ResponseEntity<TmbOneServiceResponse<FundResponse>> errorResponse = productExpServiceController.errorResponse(oneServiceResponse, data);
         assertEquals(400, errorResponse.getStatusCodeValue());
+    }
+
+    @Test
+    void testGetFundPrePaymentDetail() {
+        when(productsExpService.getFundPrePaymentDetail(anyString(), any())).thenReturn(null);
+
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> result = productExpServiceController.getFundPrePaymentDetail("correlationId", new FundPaymentDetailRq());
+        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatusCode().value());
     }
 }
 
