@@ -35,8 +35,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ProductExpServiceCloseTest {
 
@@ -47,10 +46,12 @@ public class ProductExpServiceCloseTest {
     CommonServiceClient commonServiceClient;
     ProductExpAsynService productExpAsynService;
     CustomerExpServiceClient customerExpServiceClient;
+    ObjectMapper mapper;
 
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
     private final String topicName = "activity";
+
 
     @BeforeEach
     public void setUp() {
@@ -60,6 +61,7 @@ public class ProductExpServiceCloseTest {
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsynService = mock(ProductExpAsynService.class);
+        mapper = mock(ObjectMapper.class);
         productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient,
                 productExpAsynService, topicName, customerExpServiceClient);
 
@@ -338,6 +340,40 @@ public class ProductExpServiceCloseTest {
 
         productsExpService.logactivity(activityLogs);
         Assert.assertNotNull(activityLogs);
+
+    }
+
+
+       @Test
+    void testCreateLogWithException() throws Exception {
+           FfsRequestBody ffsRequestBody = new FfsRequestBody();
+           ffsRequestBody.setProcessFlag("N");
+           ffsRequestBody.setLanguage("en");
+           ffsRequestBody.setFundCode("TMONEY");
+           ffsRequestBody.setCrmId("001100000000000000000012025950");
+           ffsRequestBody.setUnitHolderNo("PT000000000000587870");
+
+           AlternativeRq alternativeRq = new AlternativeRq();
+           alternativeRq.setCrmId(ffsRequestBody.getCrmId());
+           alternativeRq.setFundCode(ffsRequestBody.getFundCode());
+           alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
+           alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
+           alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+
+           ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
+                   ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
+                   ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
+           doNothing().when(kafkaProducerService).sendMessageAsync(anyString(), any());
+           when(mapper.writeValueAsString(anyString())).thenThrow(MockitoException.class);
+
+           productsExpService.logactivity(activityLogs);
+           Assert.assertNotNull(activityLogs);
+    }
+
+
+
+    @Test
+    public void testActivitylogError(){
 
     }
 

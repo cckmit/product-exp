@@ -302,7 +302,7 @@ public class ProductsExpService {
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
             ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
-            if (ffsRsAndValidation(correlationId, ffsRequestBody, ffsRsAndValidation)) return null;
+
         } else {
             errorData(ffsRsAndValidation, fundResponse);
         }
@@ -316,34 +316,7 @@ public class ProductsExpService {
         ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
     }
 
-    /**
-     * @param correlationId
-     * @param ffsRequestBody
-     * @param ffsRsAndValidation
-     * @return
-     */
-    boolean ffsRsAndValidation(String correlationId, FfsRequestBody ffsRequestBody, FfsRsAndValidation ffsRsAndValidation) {
-        if (!ffsRsAndValidation.isError()) {
-            ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
-            try {
-                Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-                responseEntity = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, ffsRequestBody);
-                logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-                if (!StringUtils.isEmpty(responseEntity) && responseEntity.getStatusCode() == HttpStatus.OK) {
-                    ffsData(ffsRsAndValidation, responseEntity);
-                } else {
-                    ffsRsAndValidation.setError(true);
-                    ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
-                    ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
-                    ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
-                }
-            } catch (Exception e) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
         FfsData ffsData = new FfsData();

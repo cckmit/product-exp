@@ -150,7 +150,7 @@ public class ProductExpServiceController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         FundPaymentDetailRs fundPaymentDetailRs = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRq);
-        if (!StringUtils.isEmpty(fundPaymentDetailRs)) {
+        if (fundPaymentDetailRs!=null) {
             oneServiceResponse.setData(fundPaymentDetailRs);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -182,7 +182,7 @@ public class ProductExpServiceController {
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")
     @LogAround
-    @PostMapping(value = "/alternative/fundFactSheet", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/alternative/validation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<FfsResponse>> getFundFFSAndValidation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
@@ -282,6 +282,8 @@ public class ProductExpServiceController {
 
         }
     }
+
+
 
     ResponseEntity<TmbOneServiceResponse<FundResponse>> errorResponse(TmbOneServiceResponse<FundResponse> oneServiceResponse, FundResponse fundResponse) {
         oneServiceResponse.setStatus(new TmbStatus(fundResponse.getErrorCode(),
