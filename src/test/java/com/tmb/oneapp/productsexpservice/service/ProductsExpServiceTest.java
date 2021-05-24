@@ -118,6 +118,7 @@ public class ProductsExpServiceTest {
         Assert.assertEquals(0,result.getSmartPortList().size());
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getPtPortList().size());
+
     }
 
     @Test
@@ -179,6 +180,7 @@ public class ProductsExpServiceTest {
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE,result.getIsPtes());
         Assert.assertEquals(2,result.getSmartPortList().size());
+        Assert.assertEquals(Boolean.TRUE,result.getIsPt());
 
     }
 
