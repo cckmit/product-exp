@@ -15,36 +15,37 @@ import java.util.UUID;
 
 @Service
 public class LoanSubmissionGetDropdownListClient {
-    @Value("${loan-submission-get-dropdown-list.url}")
-    private String getDropdownListUrl;
+	@Value("${loan-submission-get-dropdown-list.url}")
+	private String getDropdownListUrl;
 
-    LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
+	LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
 
-    private static final String CHANNEL = "MIB";
-    private static final String MODULE = "3";
-    private void setLocator( LoanSubmissionGetDropdownListServiceLocator locator) {
-        this.locator = locator;
-    }
+	private static final String CHANNEL = "MIB";
+	private static final String MODULE = "3";
 
-    public ResponseDropdown getDropdownList(String categoryCode) throws RemoteException, ServiceException {
-        locator.setLoanSubmissionGetDropdownListEndpointAddress(getDropdownListUrl);
+	public void setLocator(LoanSubmissionGetDropdownListServiceLocator locator) {
+		this.locator = locator;
+	}
 
-        LoanSubmissionGetDropdownListSoapBindingStub stub = (LoanSubmissionGetDropdownListSoapBindingStub) locator.getLoanSubmissionGetDropdownList();
+	public ResponseDropdown getDropdownList(String categoryCode) throws RemoteException, ServiceException {
+		locator.setLoanSubmissionGetDropdownListEndpointAddress(getDropdownListUrl);
 
-        RequestDropdown req = new RequestDropdown();
+		LoanSubmissionGetDropdownListSoapBindingStub stub = (LoanSubmissionGetDropdownListSoapBindingStub) locator
+				.getLoanSubmissionGetDropdownList();
 
-        Header header = new Header();
-        header.setChannel(CHANNEL);
-        header.setModule(MODULE);
-        header.setRequestID(UUID.randomUUID().toString());
-        req.setHeader(header);
+		RequestDropdown req = new RequestDropdown();
 
-        Body body = new Body();
-        body.setCategoryCode(categoryCode);
-        req.setBody(body);
+		Header header = new Header();
+		header.setChannel(CHANNEL);
+		header.setModule(MODULE);
+		header.setRequestID(UUID.randomUUID().toString());
+		req.setHeader(header);
 
-        return stub.getDropDownListByCode(req);
-    }
+		Body body = new Body();
+		body.setCategoryCode(categoryCode);
+		req.setBody(body);
 
+		return stub.getDropDownListByCode(req);
+	}
 
 }
