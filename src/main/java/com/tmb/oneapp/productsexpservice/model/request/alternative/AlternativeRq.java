@@ -17,4 +17,5 @@ public class AlternativeRq {
     @NotNull
     private String orderType;
     private String processFlag;
+    private String fundClassNameThHub;
 }

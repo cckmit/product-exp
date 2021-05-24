@@ -18,7 +18,9 @@ import com.tmb.common.model.address.SubDistrict;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
+import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -34,11 +36,14 @@ public class CustomerProfileServiceTest {
 	CommonServiceClient commonServiceClient;
 	@Mock
 	CustomerServiceClient customerServiceClient;
+	@Mock
+	LendingServiceClient lendingServiceClient;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient);
+		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient,
+				lendingServiceClient);
 	}
 
 	@Test
@@ -53,7 +58,7 @@ public class CustomerProfileServiceTest {
 		List<Province> mockProvice = new ArrayList<Province>();
 		Province testProvince = new Province();
 		mockProvice.add(testProvince);
-		
+
 		List<District> districts = new ArrayList<District>();
 		District testDistrict = new District();
 		List<SubDistrict> subDistricts = new ArrayList<SubDistrict>();
@@ -67,5 +72,23 @@ public class CustomerProfileServiceTest {
 		CustIndividualProfileInfo responseProfile = customerProfileService.getIndividualProfile("1111");
 		Assert.assertEquals(profile.getCitizenId(), responseProfile.getCitizenId());
 	}
+
+	@Test
+	public void testCustomerWorkingProfileInfo() {
+		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient, lendingServiceClient);
+		TmbOneServiceResponse<CustGeneralProfileResponse> customerModuleResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
+		CustGeneralProfileResponse profile = new CustGeneralProfileResponse();
+		profile.setCitizenId("111115");
+		customerModuleResponse.setData(profile);
+		customerModuleResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		AddressCommonSearchReq commonSearchReq = new AddressCommonSearchReq();
+		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
+		TmbOneServiceResponse<List<Province>> listProvinces = new TmbOneServiceResponse<List<Province>>();
+		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(listProvinces));
+		CustIndividualProfileInfo responseProfile = customerProfileService.getIndividualProfile("1111");
+		Assert.assertEquals(profile.getCitizenId(), responseProfile.getCitizenId());
+	}
+
 
 }
