@@ -118,6 +118,7 @@ public class ProductsExpServiceTest {
         Assert.assertEquals(0,result.getSmartPortList().size());
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getPtPortList().size());
+
     }
 
     @Test
@@ -179,6 +180,7 @@ public class ProductsExpServiceTest {
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE,result.getIsPtes());
         Assert.assertEquals(2,result.getSmartPortList().size());
+        Assert.assertEquals(Boolean.TRUE,result.getIsPt());
 
     }
 
@@ -226,24 +228,6 @@ public class ProductsExpServiceTest {
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertNull(expectedResponse.getBody().getSummaryByPort());
-    }
-
-    @Test
-    void testFfsRsAndValidation() {
-        FfsRequestBody requestBodyParameter = new FfsRequestBody();
-        requestBodyParameter.setCrmId("1234");
-        requestBodyParameter.setLanguage("English");
-        requestBodyParameter.setUnitHolderNo("1234");
-        requestBodyParameter.setFundCode("1234");
-        requestBodyParameter.setFundHouseCode("1234");
-        requestBodyParameter.setOrderType("1234");
-        requestBodyParameter.setProcessFlag("Y");
-        FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
-        FfsData ffsData = new FfsData();
-        ffsData.setFactSheetData("test");
-        ffsRsAndValidation.setBody(ffsData);
-        boolean rsAndValidation = productsExpService.ffsRsAndValidation("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", requestBodyParameter, ffsRsAndValidation);
-        assertFalse(rsAndValidation);
     }
 
     @Test
