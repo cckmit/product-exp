@@ -10,5 +10,5 @@ import java.util.List;
 public class LoanCustomerPricing {
     private BigDecimal monthFrom;
     private BigDecimal monthTo;
-    private BigDecimal rateVaraince;
+    private BigDecimal rateVariance;
 }

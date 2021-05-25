@@ -124,17 +124,17 @@ public class LoanCustomerService {
 
             pricing.setMonthFrom(PRICING_MONTH_FROM);
             pricing.setMonthTo(PRICING_MONTH_TO);
-            pricing.setRateVaraince(RATE_VARIANCE);
+            pricing.setRateVariance(RATE_VARIANCE);
 
             LoanCustomerPricing pricing1 = new LoanCustomerPricing();
             pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
             pricing1.setMonthTo(PRICING_MONTH_TO_5);
-            pricing1.setRateVaraince(RATE_VARIANCE_1);
+            pricing1.setRateVariance(RATE_VARIANCE_1);
 
             LoanCustomerPricing pricing2 = new LoanCustomerPricing();
             pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
             pricing2.setMonthTo(PRICING_MONTH_TO_12);
-            pricing2.setRateVaraince(RATE_VARIANCE_2);
+            pricing2.setRateVariance(RATE_VARIANCE_2);
             pricings.add(pricing);
             pricings.add(pricing1);
             pricings.add(pricing2);
@@ -196,6 +196,7 @@ public class LoanCustomerService {
         Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
 
         AnnualInterest annualInterest = getAnnualInterest();
+
         response.setAnnualInterest(annualInterest);
 
         Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
