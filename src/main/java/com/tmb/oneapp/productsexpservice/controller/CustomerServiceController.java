@@ -49,6 +49,7 @@ public class CustomerServiceController {
 	private CustomerProfileService customerProfileService;
 	private CommonServiceClient commonServiceClient;
 	private LendingServiceClient lendingServiceClient;
+	
 
 	@Autowired
 	public CustomerServiceController(CustomerProfileService customerProfileService,
@@ -90,7 +91,7 @@ public class CustomerServiceController {
 		} catch (Exception e) {
 			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(),
 					ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(customerIndividualProfileInfo);
@@ -128,7 +129,7 @@ public class CustomerServiceController {
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);
@@ -161,7 +162,7 @@ public class CustomerServiceController {
 			response.setData(null);
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);
@@ -197,7 +198,7 @@ public class CustomerServiceController {
 			response.setData(null);
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);
@@ -233,7 +234,7 @@ public class CustomerServiceController {
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);
@@ -268,7 +269,7 @@ public class CustomerServiceController {
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);
@@ -303,7 +304,7 @@ public class CustomerServiceController {
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);
@@ -338,7 +339,7 @@ public class CustomerServiceController {
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);
@@ -373,7 +374,7 @@ public class CustomerServiceController {
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 		}
 
 		return ResponseEntity.ok().body(response);

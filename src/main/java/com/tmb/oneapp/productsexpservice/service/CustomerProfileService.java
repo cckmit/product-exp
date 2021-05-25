@@ -1,7 +1,10 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Objects;
+
+import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,10 +17,13 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.address.SubDistrict;
+import com.tmb.common.model.legacy.rsl.ob.individual.InstantIndividual;
+import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
@@ -41,11 +47,14 @@ public class CustomerProfileService {
 
 	private CommonServiceClient commonServiceClient;
 
+	private LoanInstantGetCustomerInfoClient instanceCustomerInfoClient;
+
 	public CustomerProfileService(CommonServiceClient commonServiceClient, CustomerServiceClient customerServiceClient,
-			LendingServiceClient lendingServiceClient) {
+			LendingServiceClient lendingServiceClient, LoanInstantGetCustomerInfoClient instanceCustomerInfoClient) {
 		this.customerServiceClient = customerServiceClient;
 		this.commonServiceClient = commonServiceClient;
 		this.lendingServiceClient = lendingServiceClient;
+		this.instanceCustomerInfoClient = instanceCustomerInfoClient;
 	}
 
 	/**
@@ -78,10 +87,15 @@ public class CustomerProfileService {
 			individualProfile.setBirthdate(generalProfile.getIdBirthDate());
 			individualProfile.setCitizenId(generalProfile.getCitizenId());
 			individualProfile.setCustomerFullEN(generalProfile.getEngFname() + " " + generalProfile.getEngLname());
-			individualProfile.setCustomerFullTh(generalProfile.getThaFname() + " " + generalProfile.getThaFname());
+			individualProfile.setCustomerFullTh(generalProfile.getThaFname() + " " + generalProfile.getThaLname());
 			individualProfile.setExpireDate(generalProfile.getIdExpireDate());
 			individualProfile.setMobileNo(generalProfile.getPhoneNoFull());
 			individualProfile.setNationality(generalProfile.getNationality());
+			individualProfile.setFirstNameTh(generalProfile.getThaFname());
+			individualProfile.setLastNameTh(generalProfile.getThaLname());
+
+			individualProfile.setIdType(generalProfile.getIdType());
+			individualProfile.setIdNo(generalProfile.getIdNo());
 
 		}
 		return individualProfile;
@@ -204,8 +218,11 @@ public class CustomerProfileService {
 	 * @param countryOfIncome
 	 * @param occupationCode
 	 * @return
+	 * @throws ServiceException
+	 * @throws RemoteException
 	 */
-	public WorkingInfoResponse getWorkingInformation(String crmId, String correlationId) {
+	public WorkingInfoResponse getWorkingInformation(String crmId, String correlationId)
+			throws RemoteException, ServiceException {
 		WorkingInfoResponse response = new WorkingInfoResponse();
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
 				.getCustomerProfile(crmId);
@@ -234,6 +251,13 @@ public class CustomerProfileService {
 			response.setWorkingPhoneNo(profileResponse.getWorkPhoneNo());
 			response.setWorkingPhoneNoExt(profileResponse.getWorkPhoneNoExt());
 		}
+
+		String profile = crmId.substring(15, crmId.length());
+		ResponseInstantLoanGetCustInfo responeInfo = instanceCustomerInfoClient.getInstantCustomerInfo(profile);
+		InstantIndividual instandIndividual = responeInfo.getBody().getInstantIndividual()[0];
+		response.setProfessionalCode(instandIndividual.getProfessionalCode());
+		response.setIncomeDeclared(instandIndividual.getIncomeDeclared().toString());
+		response.setIncomeBaseSalary(instandIndividual.getIncomeBasicSalary().toString());
 
 		return response;
 	}

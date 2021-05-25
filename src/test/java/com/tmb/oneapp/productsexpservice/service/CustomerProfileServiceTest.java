@@ -19,6 +19,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
 import com.tmb.oneapp.productsexpservice.model.response.DependDefaultEntry;
@@ -28,8 +29,11 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoR
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.rpc.ServiceException;
 
 @RunWith(JUnit4.class)
 public class CustomerProfileServiceTest {
@@ -41,12 +45,14 @@ public class CustomerProfileServiceTest {
 	CustomerServiceClient customerServiceClient;
 	@Mock
 	LendingServiceClient lendingServiceClient;
+	@Mock
+	LoanInstantGetCustomerInfoClient instanceCustomerInfoClient;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient,
-				lendingServiceClient);
+				lendingServiceClient, instanceCustomerInfoClient);
 	}
 
 	@Test
@@ -108,7 +114,7 @@ public class CustomerProfileServiceTest {
 	@Test
 	public void testCustomerWorkingProfileInfo() {
 		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient,
-				lendingServiceClient);
+				lendingServiceClient, instanceCustomerInfoClient);
 		TmbOneServiceResponse<CustGeneralProfileResponse> customerModuleResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
 		CustGeneralProfileResponse profile = new CustGeneralProfileResponse();
 		profile.setCitizenId("111115");
@@ -169,19 +175,24 @@ public class CustomerProfileServiceTest {
 		TmbOneServiceResponse<WorkProfileInfoResponse> workProfileRes = new TmbOneServiceResponse<WorkProfileInfoResponse>();
 		WorkProfileInfoResponse profileInfo = new WorkProfileInfoResponse();
 		DependDefaultEntry entry = new DependDefaultEntry();
-		
+
 		profileInfo.setBusinessType(entry);
 		profileInfo.setCountryIncomes(entry);
 		profileInfo.setOccupation(entry);
 		profileInfo.setSourceIncomes(entry);
 		profileInfo.setSubBusinessType(entry);
 		profileInfo.setWorkstatus(entry);
-		
+
 		workProfileRes.setData(profileInfo);
 		when(lendingServiceClient.getWorkInformationWithProfile(any(), any(), any(), any()))
 				.thenReturn(ResponseEntity.ok(workProfileRes));
-		WorkingInfoResponse responseWorkingProfile = customerProfileService.getWorkingInformation("111", "dxsd");
-		
+		try {
+			WorkingInfoResponse responseWorkingProfile = customerProfileService.getWorkingInformation("111", "dxsd");
+		} catch (RemoteException | ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		Assert.assertTrue(true);
 	}
 
