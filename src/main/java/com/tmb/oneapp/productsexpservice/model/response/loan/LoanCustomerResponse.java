@@ -13,7 +13,7 @@ import java.util.List;
 public class LoanCustomerResponse {
 
     private List<LoanCustomerFeature> features;
-    private List<LoanCustomerInstallment> installments;
+    private List<LoanCustomerTenure> installments;
     private List<LoanCustomerDisburstAccount> disburstAccounts;
     private List<LoanCustomerPricing> pricings;
     private AnnualInterest annualInterest;

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanCustomerPricing {
-	private BigDecimal monthFrom;
-	private BigDecimal monthTo;
-	private BigDecimal rateVaraince;
+    private BigDecimal monthFrom;
+    private BigDecimal monthTo;
+    private BigDecimal rateVariance;
 }

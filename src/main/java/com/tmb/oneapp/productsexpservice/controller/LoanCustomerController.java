@@ -11,7 +11,8 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissi
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.service.LoanCustomerService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,15 +36,15 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanStatement(@Valid LoanCustomerRequest request) throws ServiceException, RemoteException {
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                              @Valid LoanCustomerRequest request) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(request);
-
 
         try {
+            LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request);
             oneTmbOneServiceResponse.setData(loanCustomerResponse);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -51,7 +52,7 @@ public class LoanCustomerController {
 
             responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error while getConfig: {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
@@ -63,14 +64,15 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestBody LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                                     @Valid @RequestBody LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerSubmissionResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        LoanCustomerSubmissionResponse loanCustomerSubmissionResponse = loanCustomerService.saveCustomerSubmission(request);
 
         try {
+            LoanCustomerSubmissionResponse loanCustomerSubmissionResponse = loanCustomerService.saveCustomerSubmission(request);
             oneTmbOneServiceResponse.setData(loanCustomerSubmissionResponse);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -78,7 +80,7 @@ public class LoanCustomerController {
 
             responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error while submission customer profile : {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));

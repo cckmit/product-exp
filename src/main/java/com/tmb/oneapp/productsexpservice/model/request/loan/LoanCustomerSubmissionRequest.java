@@ -23,6 +23,4 @@ public class LoanCustomerSubmissionRequest {
     private String disburstAccountNo;
     @NotEmpty
     private String disburstAccountName;
-    @NotEmpty
-    private String bankName;
 }
