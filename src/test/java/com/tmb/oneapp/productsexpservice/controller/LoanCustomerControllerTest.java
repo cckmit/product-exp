@@ -1,7 +1,5 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
@@ -41,7 +39,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testGetLoanCustomerProfileSuccess() throws ServiceException, RemoteException, JsonProcessingException {
+    public void testGetLoanCustomerProfileSuccess() throws ServiceException, RemoteException {
         LoanCustomerRequest request = new LoanCustomerRequest();
         request.setCaID(1L);
         String correlationId = "xxx";
@@ -52,7 +50,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testGetLoanCustomerProfileFail() throws ServiceException, RemoteException, JsonProcessingException {
+    public void testGetLoanCustomerProfileFail() throws ServiceException, RemoteException {
         LoanCustomerRequest request = new LoanCustomerRequest();
         request.setCaID(1L);
         String correlationId = "xxx";
@@ -62,7 +60,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testSaveCustomerProfileSuccess() throws ServiceException, RemoteException, JsonProcessingException {
+    public void testSaveCustomerProfileSuccess() throws ServiceException, RemoteException {
         LoanCustomerSubmissionRequest request = new LoanCustomerSubmissionRequest();
         request.setCaID(1L);
         request.setFeatureType("S");
@@ -78,7 +76,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testSaveCustomerProfileFail() throws ServiceException, RemoteException, JsonProcessingException {
+    public void testSaveCustomerProfileFail() throws ServiceException, RemoteException {
         LoanCustomerSubmissionRequest request = new LoanCustomerSubmissionRequest();
         request.setCaID(1L);
         request.setFeatureType("S");
