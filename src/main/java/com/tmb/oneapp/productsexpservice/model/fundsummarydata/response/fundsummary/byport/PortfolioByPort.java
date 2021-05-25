@@ -9,4 +9,5 @@ public class PortfolioByPort {
    private String portfolioNumber;
    private String portPercent ;
    private List<FundByPort> fundList;
+   private String nickName;
 }
