@@ -17,5 +17,6 @@ public class Fund {
     private String marketValue;
     private BigDecimal unrealizedProfitPercent;
     private BigDecimal accruedFee;
+    private String nickName;
 
 }
