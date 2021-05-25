@@ -40,4 +40,26 @@ public class CustIndividualProfileInfo {
 	@JsonProperty("address")
 	@ApiModelProperty(notes = "adddressDetail")
 	private CustAddressProfileInfo address;
+	
+	@ApiModelProperty(notes = "idType")
+	@JsonProperty("idType")
+	private String idType;
+	@ApiModelProperty(notes = "idNo")
+	@JsonProperty("idNo")
+	private String idNo;
+	@ApiModelProperty(notes = "rmNoId")
+	@JsonProperty("rmNoId")
+	private String rmNoId;
+	@ApiModelProperty(notes = "firstNameTh")
+	@JsonProperty("firstNameTh")
+	private String firstNameTh;
+	@ApiModelProperty(notes = "middleNameTh")
+	@JsonProperty("middleNameTh")
+	private String middleNameTh;
+	@ApiModelProperty(notes = "lastNameTh")
+	@JsonProperty("lastNameTh")
+	private String lastNameTh;
+	
+	
+	
 }
