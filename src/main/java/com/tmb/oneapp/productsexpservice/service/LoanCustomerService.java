@@ -57,7 +57,7 @@ public class LoanCustomerService {
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request) throws ServiceException, RemoteException, JsonProcessingException {
         Facility facility = getFacility(request.getCaID());
-        return parseLoanCustomerResponse(correlationId, facility, request.getCaID());
+        return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), request.getCrmId());
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
@@ -146,7 +146,7 @@ public class LoanCustomerService {
         return pricings;
     }
 
-    private List<LoanCustomerTenure> getLoanCustomerTenure(Facility facility, String categoryCode) throws ServiceException, RemoteException {
+    private List<LoanCustomerTenure> getLoanCustomerTenure(Facility facility) throws ServiceException, RemoteException {
         List<LoanCustomerTenure> installments = new ArrayList<>();
         if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
             CommonCodeEntry[] entries = getDropdownList(DROPDOWN_TENURE);
@@ -161,14 +161,14 @@ public class LoanCustomerService {
         return installments;
     }
 
-    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(String correlationId, Long caID) throws JsonProcessingException {
+    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId) {
 
         List<LoanCustomerDisburstAccount> disburstAccounts = new ArrayList<>();
 
         TmbOneServiceResponse<AccountSaving> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ResponseEntity<TmbOneServiceResponse<AccountSaving>> accountSavingResponse = customerExpServiceClient.getCustomerAccountSaving(correlationId, "001100000000000000000001184383");
+            ResponseEntity<TmbOneServiceResponse<AccountSaving>> accountSavingResponse = customerExpServiceClient.getCustomerAccountSaving(correlationId, crmId);
             oneTmbOneServiceResponse.setData(accountSavingResponse.getBody().getData());
 
         } catch (Exception e) {
@@ -195,10 +195,10 @@ public class LoanCustomerService {
         return annualInterest;
     }
 
-    private LoanCustomerResponse parseLoanCustomerResponse(String correlationId, Facility facility, Long caID) throws ServiceException, RemoteException, JsonProcessingException {
+    private LoanCustomerResponse parseLoanCustomerResponse(String correlationId, Facility facility, Long caID, String crmId) throws ServiceException, RemoteException {
         LoanCustomerResponse response = new LoanCustomerResponse();
 
-        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, caID);
+        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
         response.setDisburstAccounts(disburstAccounts);
 
         Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
@@ -211,7 +211,7 @@ public class LoanCustomerService {
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityC);
         response.setPricings(pricings);
 
-        List<LoanCustomerTenure> installments = getLoanCustomerTenure(facilityC, DROPDOWN_TENURE);
+        List<LoanCustomerTenure> installments = getLoanCustomerTenure(facilityC);
         response.setInstallments(installments);
 
         List<LoanCustomerFeature> features = getLoanCustomerFeatures(facilityS, facilityC);
