@@ -36,16 +36,15 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanStatement(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
-                                                                                        @Valid LoanCustomerRequest request) throws ServiceException, RemoteException, JsonProcessingException {
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                              @Valid LoanCustomerRequest request) throws ServiceException, RemoteException, JsonProcessingException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request);
-
 
         try {
+            LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request);
             oneTmbOneServiceResponse.setData(loanCustomerResponse);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -71,9 +70,9 @@ public class LoanCustomerController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerSubmissionResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        LoanCustomerSubmissionResponse loanCustomerSubmissionResponse = loanCustomerService.saveCustomerSubmission(request);
 
         try {
+            LoanCustomerSubmissionResponse loanCustomerSubmissionResponse = loanCustomerService.saveCustomerSubmission(request);
             oneTmbOneServiceResponse.setData(loanCustomerSubmissionResponse);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
