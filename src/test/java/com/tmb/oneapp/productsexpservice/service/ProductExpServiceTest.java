@@ -701,11 +701,11 @@ public class ProductExpServiceTest {
         fundAccountRequest.setOrderType("1");
 
         try {
-            CustomerProfileResponseData fundHolidayBody = null;
+        	CustGeneralProfileResponse fundHolidayBody = null;
             ObjectMapper mapper = new ObjectMapper();
-            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustomerProfileResponseData.class);
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustGeneralProfileResponse.class);
 
-            when(productExpAsynService.fetchCustomerProfile(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsynService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -716,6 +716,58 @@ public class ProductExpServiceTest {
 
     @Test
     public void getFundFFSAndValidation() throws Exception {
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setFundCode("SCBTMF");
+        ffsRequestBody.setFundHouseCode("SCBAM");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+        ffsRequestBody.setProcessFlag("Y");
+        ffsRequestBody.setOrderType("1");
+
+
+        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
+        String responseCustomerExp = null;
+        List<CommonData> commonDataList = new ArrayList<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+
+            responseEntity.setData(fundRuleBody);
+            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+
+            CommonTime commonTime = new CommonTime();
+            commonTime.setStart("06:00");
+            commonTime.setEnd("23:00");
+            CommonData commonData = new CommonData();
+            commonData.setNoneServiceHour(commonTime);
+            commonDataList.add(commonData);
+
+
+            responseCommon.setData(commonDataList);
+            responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+
+            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
+            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
+        Assert.assertNotNull(serviceRes);
+    }
+
+    @Test
+    public void getFundFFSAndValidationWithError() throws Exception {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();
         ffsRequestBody.setFundCode("SCBTMF");
         ffsRequestBody.setFundHouseCode("SCBAM");

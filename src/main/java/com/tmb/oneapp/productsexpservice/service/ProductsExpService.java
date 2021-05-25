@@ -9,7 +9,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.CustomerProfileResponseData;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -302,7 +302,7 @@ public class ProductsExpService {
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
             ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
-            if (ffsRsAndValidation(correlationId, ffsRequestBody, ffsRsAndValidation)) return null;
+
         } else {
             errorData(ffsRsAndValidation, fundResponse);
         }
@@ -316,34 +316,7 @@ public class ProductsExpService {
         ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
     }
 
-    /**
-     * @param correlationId
-     * @param ffsRequestBody
-     * @param ffsRsAndValidation
-     * @return
-     */
-    boolean ffsRsAndValidation(String correlationId, FfsRequestBody ffsRequestBody, FfsRsAndValidation ffsRsAndValidation) {
-        if (!ffsRsAndValidation.isError()) {
-            ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = null;
-            try {
-                Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-                responseEntity = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, ffsRequestBody);
-                logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-                if (!StringUtils.isEmpty(responseEntity) && responseEntity.getStatusCode() == HttpStatus.OK) {
-                    ffsData(ffsRsAndValidation, responseEntity);
-                } else {
-                    ffsRsAndValidation.setError(true);
-                    ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
-                    ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
-                    ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
-                }
-            } catch (Exception e) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
         FfsData ffsData = new FfsData();
@@ -588,12 +561,11 @@ public class ProductsExpService {
      */
     @LogAround
     public boolean isCustIDExpired(FfsRequestBody ffsRequestBody) {
-        CompletableFuture<CustomerProfileResponseData> responseResponseEntity = null;
+        CompletableFuture<CustGeneralProfileResponse> responseResponseEntity = null;
         try {
-            Map<String, String> requestHeadersParameter = new HashMap<>();
-            responseResponseEntity = productExpAsynService.fetchCustomerProfile(requestHeadersParameter, ffsRequestBody.getCrmId());
+            responseResponseEntity = productExpAsynService.fetchCustomerProfile(ffsRequestBody.getCrmId());
             CompletableFuture.allOf(responseResponseEntity);
-            CustomerProfileResponseData responseData = responseResponseEntity.get();
+            CustGeneralProfileResponse responseData = responseResponseEntity.get();
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
             return UtilMap.isCustIDExpired(responseData);
         } catch (Exception e) {
@@ -663,6 +635,7 @@ public class ProductsExpService {
         activityData.setVerifyFlag(alternativeRq.getProcessFlag());
         activityData.setReason(failReason);
         activityData.setFundCode(alternativeRq.getFundCode());
+        activityData.setFundClass(alternativeRq.getFundClassNameThHub());
         if (!StringUtils.isEmpty(alternativeRq.getUnitHolderNo())) {
             activityData.setUnitHolderNo(alternativeRq.getUnitHolderNo());
         } else {

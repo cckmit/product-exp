@@ -143,7 +143,7 @@ public class LoanCustomerService {
         return pricings;
     }
 
-    private List<LoanCustomerInstallment> getLoanCustomerInstallment(Facility facility, String categoryCode) throws ServiceException, RemoteException {
+    private List<LoanCustomerInstallment> getLoanCustomerInstallment(Facility facility) throws ServiceException, RemoteException {
         List<LoanCustomerInstallment> installments = new ArrayList<>();
         if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
             CommonCodeEntry[] entries = getDropdownList(DROPDOWN_TENURE);
@@ -158,20 +158,20 @@ public class LoanCustomerService {
         return installments;
     }
 
-    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(Facility facility) {
+    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount() {
 
         List<LoanCustomerDisburstAccount> disburstAccounts = new ArrayList<>();
 
         LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
         disburstAccount.setAccountNo("123-4-56789-2");
-        disburstAccount.setAccountName("บัญชี ออลล์ ฟรี");
-        disburstAccount.setBankName("ทีทีบี");
+        disburstAccount.setAccountName("à¸šà¸±à¸�à¸Šà¸µ à¸­à¸­à¸¥à¸¥à¹Œ à¸Ÿà¸£à¸µ");
+        disburstAccount.setBankName("à¸—à¸µà¸—à¸µà¸šà¸µ");
         disburstAccounts.add(disburstAccount);
 
         LoanCustomerDisburstAccount disburstAccount2 = new LoanCustomerDisburstAccount();
         disburstAccount2.setAccountNo("123-4-56789-0");
-        disburstAccount2.setAccountName("บัญชี โนฟิกช์");
-        disburstAccount2.setBankName("ทีทีบี");
+        disburstAccount2.setAccountName("à¸šà¸±à¸�à¸Šà¸µ à¹‚à¸™à¸Ÿà¸´à¸�à¸Šà¹Œ");
+        disburstAccount2.setBankName("à¸—à¸µà¸—à¸µà¸šà¸µ");
         disburstAccounts.add(disburstAccount2);
 
         return disburstAccounts;
@@ -190,7 +190,7 @@ public class LoanCustomerService {
     private LoanCustomerResponse parseLoanCustomerResponse(Facility facility, Long caID) throws ServiceException, RemoteException {
         LoanCustomerResponse response = new LoanCustomerResponse();
 
-        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(facility);
+        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount();
         response.setDisburstAccounts(disburstAccounts);
 
         Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
@@ -204,7 +204,7 @@ public class LoanCustomerService {
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityC);
         response.setPricings(pricings);
 
-        List<LoanCustomerInstallment> installments = getLoanCustomerInstallment(facilityC, DROPDOWN_TENURE);
+        List<LoanCustomerInstallment> installments = getLoanCustomerInstallment(facilityC);
         response.setInstallments(installments);
 
         List<LoanCustomerFeature> features = getLoanCustomerFeatures(facilityS, facilityC);

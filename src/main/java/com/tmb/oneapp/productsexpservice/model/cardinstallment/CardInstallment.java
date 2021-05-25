@@ -36,9 +36,10 @@ public class CardInstallment {
 	@JsonProperty("transaction_description")
 	private String transactionDescription;
 	@ApiModelProperty(notes = "transectionDate", example = "2021-04-21")
-	@JsonProperty("transection_date")
+	@JsonProperty("transaction_date")
 	private String transectionDate;
 	@ApiModelProperty(notes = "postDate", example = "2021-04-21")
-	@JsonProperty("post_date")
+	@JsonProperty("posted_date")
 	private String postDate;
+				
 }

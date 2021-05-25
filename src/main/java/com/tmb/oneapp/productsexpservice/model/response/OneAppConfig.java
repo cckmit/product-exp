@@ -28,7 +28,7 @@ public class OneAppConfig {
     private HashMap<String, String> details;
 
     @ApiModelProperty(notes = "It contains Key value pairs of images url used in One app", required = true)
-    private HashMap<String, String> image_urls;
+    private HashMap<String, String> imageUrls;
 
     @ApiModelProperty(notes = "It contains menu details", required = true)
     private List<MenuConfig> menu;
@@ -42,7 +42,4 @@ public class OneAppConfig {
 
     @JsonProperty("setting_config")
     private SettingConfig settingConfig;
-
-//    @JsonProperty("lending_module")
-//    private AllowCashDayOne allowCashDayOne;
 }

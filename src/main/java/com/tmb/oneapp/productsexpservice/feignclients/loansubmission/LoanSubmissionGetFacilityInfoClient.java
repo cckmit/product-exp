@@ -14,35 +14,37 @@ import java.util.UUID;
 
 @Service
 public class LoanSubmissionGetFacilityInfoClient {
-    @Value("${loan-submission-get-facility-info.url}")
-    private String getFacilityInfoUrl;
+	@Value("${loan-submission-get-facility-info.url}")
+	private String getFacilityInfoUrl;
 
-    LoanSubmissionGetFacilityInfoServiceLocator locator = new LoanSubmissionGetFacilityInfoServiceLocator();
+	LoanSubmissionGetFacilityInfoServiceLocator locator = new LoanSubmissionGetFacilityInfoServiceLocator();
 
-    private static final String CHANNEL = "MIB";
-    private static final String MODULE = "3";
-    private void setLocator( LoanSubmissionGetFacilityInfoServiceLocator locator) {
-        this.locator = locator;
-    }
+	private static final String CHANNEL = "MIB";
+	private static final String MODULE = "3";
 
-    public ResponseFacility searchFacilityInfoByCaID(Long caID) throws RemoteException, ServiceException {
-        locator.setLoanSubmissionGetFacilityInfoEndpointAddress(getFacilityInfoUrl);
+	public void setLocator(LoanSubmissionGetFacilityInfoServiceLocator locator) {
+		this.locator = locator;
+	}
 
-        LoanSubmissionGetFacilityInfoSoapBindingStub stub = (LoanSubmissionGetFacilityInfoSoapBindingStub) locator.getLoanSubmissionGetFacilityInfo();
+	public ResponseFacility searchFacilityInfoByCaID(Long caID) throws RemoteException, ServiceException {
+		locator.setLoanSubmissionGetFacilityInfoEndpointAddress(getFacilityInfoUrl);
 
-        RequestFacility req = new RequestFacility();
+		LoanSubmissionGetFacilityInfoSoapBindingStub stub = (LoanSubmissionGetFacilityInfoSoapBindingStub) locator
+				.getLoanSubmissionGetFacilityInfo();
 
-        Header header = new Header();
-        header.setChannel(CHANNEL);
-        header.setModule(MODULE);
-        header.setRequestID(UUID.randomUUID().toString());
-        req.setHeader(header);
+		RequestFacility req = new RequestFacility();
 
-        Body body = new Body();
-        body.setCaID(caID);
-        req.setBody(body);
+		Header header = new Header();
+		header.setChannel(CHANNEL);
+		header.setModule(MODULE);
+		header.setRequestID(UUID.randomUUID().toString());
+		req.setHeader(header);
 
-        return stub.searchFacilityInfoByCaID(req);
-    }
+		Body body = new Body();
+		body.setCaID(caID);
+		req.setBody(body);
+
+		return stub.searchFacilityInfoByCaID(req);
+	}
 
 }

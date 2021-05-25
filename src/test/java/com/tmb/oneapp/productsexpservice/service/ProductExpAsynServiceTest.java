@@ -273,22 +273,22 @@ public class ProductExpAsynServiceTest {
     @Test
     public void fetchCustomerProfile() throws Exception {
         try {
-            CustomerProfileResponseData fundHolidayBody = null;
-            TmbOneServiceResponse<CustomerProfileResponseData> serviceResponseStmt = new TmbOneServiceResponse<>();
+        	CustGeneralProfileResponse fundHolidayBody = null;
+            TmbOneServiceResponse<CustGeneralProfileResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             ObjectMapper mapper = new ObjectMapper();
-            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustomerProfileResponseData.class);
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustGeneralProfileResponse.class);
 
             serviceResponseStmt.setData(fundHolidayBody);
             serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(customerServiceClient.getCustomerProfile(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+            when(customerServiceClient.getCustomerProfile(anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        CompletableFuture<CustomerProfileResponseData> response = productExpAsynService.fetchCustomerProfile(any(), anyString());
+        CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile( anyString());
         Assert.assertNotNull(response);
     }
 
@@ -296,8 +296,8 @@ public class ProductExpAsynServiceTest {
     @Test
     public void fetchCustomerProfileWithException() throws Exception {
         try {
-            when(customerServiceClient.getCustomerProfile(any(), anyString())).thenThrow(MockitoException.class);
-            CompletableFuture<CustomerProfileResponseData> response = productExpAsynService.fetchCustomerProfile(any(), anyString());
+            when(customerServiceClient.getCustomerProfile( anyString())).thenThrow(MockitoException.class);
+            CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile( anyString());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
