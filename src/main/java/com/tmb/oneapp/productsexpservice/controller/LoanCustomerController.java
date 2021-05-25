@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -35,12 +36,13 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanStatement(@Valid LoanCustomerRequest request) throws ServiceException, RemoteException {
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanStatement(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                        @Valid LoanCustomerRequest request) throws ServiceException, RemoteException, JsonProcessingException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(request);
+        LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request);
 
 
         try {
@@ -63,7 +65,8 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestBody LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                                     @Valid @RequestBody LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
