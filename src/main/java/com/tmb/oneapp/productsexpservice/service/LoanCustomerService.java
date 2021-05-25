@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
@@ -55,7 +54,7 @@ public class LoanCustomerService {
     private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(20000);
 
-    public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request) throws ServiceException, RemoteException, JsonProcessingException {
+    public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
         return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), request.getCrmId());
     }
