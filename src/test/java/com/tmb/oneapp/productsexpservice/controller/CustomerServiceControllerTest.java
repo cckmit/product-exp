@@ -13,15 +13,13 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.address.Province;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -56,7 +54,7 @@ public class CustomerServiceControllerTest {
 		when(lendingServiceClient.getWorkStatusInfo(any())).thenReturn(ResponseEntity.ok(body));
 		TmbOneServiceResponse<List<Province>> provinces = new TmbOneServiceResponse();
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(provinces));
-		
+
 		customerServiceController.getIndividualProfileInfo(new HashedMap<String, String>());
 		customerServiceController.getCountryDependency(new HashedMap<String, String>());
 		customerServiceController.getCountryIncomeSourceDependency("TH", new HashedMap<String, String>());
