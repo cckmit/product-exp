@@ -62,10 +62,10 @@ public class LoanCustomerController {
     }
 
     @LogAround
-    @ApiOperation("Get customer profile")
+    @ApiOperation("Submission customer profile")
     @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
-                                                                                                     @Valid @RequestBody LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
+                                                                                                     @Valid @RequestBody LoanCustomerSubmissionRequest request) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));

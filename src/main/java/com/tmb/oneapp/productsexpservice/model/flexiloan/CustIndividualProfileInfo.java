@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.model.flexiloan;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -9,7 +8,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustIndividualProfileInfo {
 
 	@ApiModelProperty(notes = "customerFullTH")
@@ -42,4 +40,26 @@ public class CustIndividualProfileInfo {
 	@JsonProperty("address")
 	@ApiModelProperty(notes = "adddressDetail")
 	private CustAddressProfileInfo address;
+	
+	@ApiModelProperty(notes = "idType")
+	@JsonProperty("idType")
+	private String idType;
+	@ApiModelProperty(notes = "idNo")
+	@JsonProperty("idNo")
+	private String idNo;
+	@ApiModelProperty(notes = "rmNoId")
+	@JsonProperty("rmNoId")
+	private String rmNoId;
+	@ApiModelProperty(notes = "firstNameTh")
+	@JsonProperty("firstNameTh")
+	private String firstNameTh;
+	@ApiModelProperty(notes = "middleNameTh")
+	@JsonProperty("middleNameTh")
+	private String middleNameTh;
+	@ApiModelProperty(notes = "lastNameTh")
+	@JsonProperty("lastNameTh")
+	private String lastNameTh;
+	
+	
+	
 }
