@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +28,8 @@ import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstant
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
+import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
+import com.tmb.oneapp.productsexpservice.model.response.DependDefaultEntry;
 import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
 
@@ -252,14 +255,82 @@ public class CustomerProfileService {
 			response.setWorkingPhoneNoExt(profileResponse.getWorkPhoneNoExt());
 		}
 
-		String profile = crmId.substring(15, crmId.length());
+		String profile = crmId.substring(16, crmId.length());
 		ResponseInstantLoanGetCustInfo responeInfo = instanceCustomerInfoClient.getInstantCustomerInfo(profile);
-		InstantIndividual instandIndividual = responeInfo.getBody().getInstantIndividual()[0];
+		InstantIndividual[] indi = responeInfo.getBody().getInstantIndividual();
+		InstantIndividual instandIndividual = indi[0];
 		response.setProfessionalCode(instandIndividual.getProfessionalCode());
+		if ("01".equals(instandIndividual.getEmploymentStatus())) {
+			response.setIncomeBaseSalary(instandIndividual.getIncomeBasicSalary().toString());
+		} else {
+			response.setIncomeBaseSalary(instandIndividual.getInTotalIncome().toString());
+		}
+
 		response.setIncomeDeclared(instandIndividual.getIncomeDeclared().toString());
-		response.setIncomeBaseSalary(instandIndividual.getIncomeBasicSalary().toString());
+
+		createdIncomeCriteriaDependency(response, response.getIncomeBaseSalary());
 
 		return response;
+	}
+
+	/**
+	 * Create income criteria dependency
+	 * 
+	 * @param response
+	 * @param incomeBaseSalary
+	 */
+	private void createdIncomeCriteriaDependency(WorkingInfoResponse response, String incomeBaseSalary) {
+		DependDefaultEntry defaultEntry = new DependDefaultEntry();
+		List<CodeEntry> entry = new ArrayList<CodeEntry>();
+		CodeEntry entryLevelOne = new CodeEntry();
+		entryLevelOne.setEntryName("15000-29999");
+		entryLevelOne.setEntryCode("30000");
+		entry.add(entryLevelOne);
+		CodeEntry entryLevelTwo = new CodeEntry();
+		entryLevelTwo.setEntryName("30000-49999");
+		entryLevelTwo.setEntryCode("50000");
+		entry.add(entryLevelTwo);
+
+		CodeEntry entryLevelThree = new CodeEntry();
+		entryLevelThree.setEntryName("50000-99999");
+		entryLevelThree.setEntryCode("100000");
+		entry.add(entryLevelThree);
+
+		CodeEntry entryLevelFour = new CodeEntry();
+		entryLevelFour.setEntryName("100000-199999");
+		entryLevelFour.setEntryCode("200000");
+		entry.add(entryLevelFour);
+		defaultEntry.setEntry(entry);
+
+		CodeEntry match = selectMatchDependency(defaultEntry, incomeBaseSalary);
+		defaultEntry.setName(match.getEntryName());
+		defaultEntry.setValue(match.getEntryCode());
+
+		defaultEntry.setEntry(entry);
+		response.setIncomeDependency(defaultEntry);
+
+	}
+
+	/**
+	 * Selection match dependency value
+	 * 
+	 * @param defaultEntry
+	 * @param incomeBaseSalary
+	 * @return
+	 */
+	private CodeEntry selectMatchDependency(DependDefaultEntry defaultEntry, String incomeBaseSalary) {
+		List<CodeEntry> codeEntry = defaultEntry.getEntry();
+		CodeEntry returnEntry = codeEntry.get(codeEntry.size()-1);
+		if(Integer.parseInt(incomeBaseSalary)<=15000) {
+			return codeEntry.get(0);
+		}
+		for (CodeEntry entry : codeEntry) {
+			int maxAmount = Integer.parseInt(entry.getEntryCode());
+			if(maxAmount>=Integer.parseInt(incomeBaseSalary)) {
+				returnEntry = entry;
+			}
+		}
+		return returnEntry;
 	}
 
 	/**

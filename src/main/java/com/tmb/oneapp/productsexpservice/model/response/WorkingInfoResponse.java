@@ -36,5 +36,8 @@ public class WorkingInfoResponse {
 	@ApiModelProperty(notes = "incomeBaseSalary")
 	@JsonProperty("incomeBaseSalary")
 	private String incomeBaseSalary;
+	@ApiModelProperty(notes = "incomeDependency")
+	@JsonProperty("incomeDependency")
+	private DependDefaultEntry incomeDependency;
 
 }

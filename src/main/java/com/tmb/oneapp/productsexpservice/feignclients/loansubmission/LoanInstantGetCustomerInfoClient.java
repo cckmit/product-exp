@@ -27,8 +27,15 @@ public class LoanInstantGetCustomerInfoClient {
 	public void setLocator(LoanSubmissionInstantLoanGetCustomerInfoServiceLocator locator) {
 		this.locator = locator;
 	}
-
-	public ResponseInstantLoanGetCustInfo getInstantCustomerInfo(String categoryCode)
+	
+	/**
+	 * Get instant customer information
+	 * @param rmNo
+	 * @return
+	 * @throws RemoteException
+	 * @throws ServiceException
+	 */
+	public ResponseInstantLoanGetCustInfo getInstantCustomerInfo(String rmNo)
 			throws RemoteException, ServiceException {
 		locator.setLoanSubmissionInstantLoanGetCustomerInfoEndpointAddress(instanctLoandCustomerInfoUrl);
 
@@ -40,6 +47,7 @@ public class LoanInstantGetCustomerInfoClient {
 		header.setModule(MODULE);
 		header.setRequestID(UUID.randomUUID().toString());
 		com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Body();
+		body.setRmNo(rmNo);
 		request.setBody(body);
 		request.setHeader(header);
 
