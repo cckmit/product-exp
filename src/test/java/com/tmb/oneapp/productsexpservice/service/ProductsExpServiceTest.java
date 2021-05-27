@@ -344,7 +344,7 @@ public class ProductsExpServiceTest {
                 .code("TMBCOF")
                 .build();
 
-        when(productExpAsynService.fetchFundInformation(any(), any())).thenThrow(RuntimeException.class);
+        when(productExpAsynService.fetchFundInformation(any(), any())).thenThrow(TMBCommonException.class);
 
         //When
         InformationDto actual = productsExpService.getFundInformation(correlationId, fundCodeRequestBody);

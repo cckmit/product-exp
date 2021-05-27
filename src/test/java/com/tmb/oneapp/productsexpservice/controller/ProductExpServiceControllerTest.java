@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -569,7 +570,7 @@ public class ProductExpServiceControllerTest {
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
                 .code("TMBCOF")
                 .build();
-        when(productsExpService.getFundInformation(correlationId, fundCodeRequestBody)).thenThrow(RuntimeException.class);
+        when(productsExpService.getFundInformation(correlationId, fundCodeRequestBody)).thenThrow(TMBCommonException.class);
 
         //When
         ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = productExpServiceController.getFundInformation(correlationId, fundCodeRequestBody);
