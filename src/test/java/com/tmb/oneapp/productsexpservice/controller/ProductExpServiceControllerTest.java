@@ -570,7 +570,7 @@ public class ProductExpServiceControllerTest {
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
                 .code("TMBCOF")
                 .build();
-        when(productsExpService.getFundInformation(correlationId, fundCodeRequestBody)).thenThrow(TMBCommonException.class);
+        when(productsExpService.getFundInformation(correlationId, fundCodeRequestBody)).thenThrow(RuntimeException.class);
 
         //When
         ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = productExpServiceController.getFundInformation(correlationId, fundCodeRequestBody);
