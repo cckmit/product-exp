@@ -17,7 +17,7 @@ public class LoanCustomerSubmissionRequest {
     private String featureType;
     @NotNull
     private BigDecimal requestAmount;
-    @NotEmpty
+    @NotNull
     private Long tenure;
     @NotEmpty
     private String disburstAccountNo;
