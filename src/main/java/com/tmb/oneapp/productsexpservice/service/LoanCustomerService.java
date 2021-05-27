@@ -1,18 +1,23 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionUpdateFacilityInfoClient;
+import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
+import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
 import com.tmb.oneapp.productsexpservice.model.response.loan.*;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -30,6 +35,7 @@ public class LoanCustomerService {
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
     private final LoanSubmissionUpdateFacilityInfoClient updateFacilityInfoClient;
     private final LoanSubmissionGetDropdownListClient getDropdownListClient;
+    private final CustomerExpServiceClient customerExpServiceClient;
     private static final String DROPDOWN_TENURE = "TENURE";
     private static final String FEATURE_TYPE_S = "S";
     private static final String FEATURE_TYPE_C = "C";
@@ -48,17 +54,15 @@ public class LoanCustomerService {
     private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(20000);
 
-
-    public LoanCustomerResponse getCustomerProfile(LoanCustomerRequest request) throws ServiceException, RemoteException {
+    public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
-        return parseLoanCustomerResponse(facility, request.getCaID());
+        return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), request.getCrmId());
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
         saveFacility(request, facility);
         return parseSaveFacilityResponse(request, facility);
-
     }
 
     private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) {
@@ -70,7 +74,6 @@ public class LoanCustomerService {
 
         facility.setDisburstAccountName(request.getDisburstAccountName());
         facility.setDisburstAccountNo(request.getDisburstAccountNo());
-        facility.setDisburstBankName(request.getBankName());
     }
 
     private LoanCustomerSubmissionResponse parseSaveFacilityResponse(LoanCustomerSubmissionRequest request, Facility facility) {
@@ -80,7 +83,6 @@ public class LoanCustomerService {
         LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
         disburstAccount.setAccountNo(request.getDisburstAccountNo());
         disburstAccount.setAccountName(request.getDisburstAccountName());
-        disburstAccount.setBankName(request.getBankName());
         response.setDisburstAccount(disburstAccount);
         response.setLimitAmount(facility.getLimitApplied());
 
@@ -124,17 +126,17 @@ public class LoanCustomerService {
 
             pricing.setMonthFrom(PRICING_MONTH_FROM);
             pricing.setMonthTo(PRICING_MONTH_TO);
-            pricing.setRateVaraince(RATE_VARIANCE);
+            pricing.setRateVariance(RATE_VARIANCE);
 
             LoanCustomerPricing pricing1 = new LoanCustomerPricing();
             pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
             pricing1.setMonthTo(PRICING_MONTH_TO_5);
-            pricing1.setRateVaraince(RATE_VARIANCE_1);
+            pricing1.setRateVariance(RATE_VARIANCE_1);
 
             LoanCustomerPricing pricing2 = new LoanCustomerPricing();
             pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
             pricing2.setMonthTo(PRICING_MONTH_TO_12);
-            pricing2.setRateVaraince(RATE_VARIANCE_2);
+            pricing2.setRateVariance(RATE_VARIANCE_2);
             pricings.add(pricing);
             pricings.add(pricing1);
             pricings.add(pricing2);
@@ -143,12 +145,12 @@ public class LoanCustomerService {
         return pricings;
     }
 
-    private List<LoanCustomerInstallment> getLoanCustomerInstallment(Facility facility) throws ServiceException, RemoteException {
-        List<LoanCustomerInstallment> installments = new ArrayList<>();
+    private List<LoanCustomerTenure> getLoanCustomerTenure(Facility facility) throws ServiceException, RemoteException {
+        List<LoanCustomerTenure> installments = new ArrayList<>();
         if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
             CommonCodeEntry[] entries = getDropdownList(DROPDOWN_TENURE);
             for (CommonCodeEntry e : entries) {
-                LoanCustomerInstallment installment = new LoanCustomerInstallment();
+                LoanCustomerTenure installment = new LoanCustomerTenure();
                 installment.setInstallment(e.getEntryCode());
                 installment.setId(e.getEntryID());
                 installments.add(installment);
@@ -158,21 +160,26 @@ public class LoanCustomerService {
         return installments;
     }
 
-    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount() {
+    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId) {
 
         List<LoanCustomerDisburstAccount> disburstAccounts = new ArrayList<>();
 
-        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
-        disburstAccount.setAccountNo("123-4-56789-2");
-        disburstAccount.setAccountName("à¸šà¸±à¸�à¸Šà¸µ à¸­à¸­à¸¥à¸¥à¹Œ à¸Ÿà¸£à¸µ");
-        disburstAccount.setBankName("à¸—à¸µà¸—à¸µà¸šà¸µ");
-        disburstAccounts.add(disburstAccount);
+        TmbOneServiceResponse<AccountSaving> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
-        LoanCustomerDisburstAccount disburstAccount2 = new LoanCustomerDisburstAccount();
-        disburstAccount2.setAccountNo("123-4-56789-0");
-        disburstAccount2.setAccountName("à¸šà¸±à¸�à¸Šà¸µ à¹‚à¸™à¸Ÿà¸´à¸�à¸Šà¹Œ");
-        disburstAccount2.setBankName("à¸—à¸µà¸—à¸µà¸šà¸µ");
-        disburstAccounts.add(disburstAccount2);
+        try {
+            ResponseEntity<TmbOneServiceResponse<AccountSaving>> accountSavingResponse = customerExpServiceClient.getCustomerAccountSaving(correlationId, crmId);
+            oneTmbOneServiceResponse.setData(accountSavingResponse.getBody().getData());
+
+        } catch (Exception e) {
+            logger.error("get account saving fail: ", e);
+        }
+
+        for (DepositAccount acc : oneTmbOneServiceResponse.getData().getDepositAccountLists()) {
+            LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
+            disburstAccount.setAccountNo(acc.getAccountNumber());
+            disburstAccount.setAccountName(acc.getProductNameTh());
+            disburstAccounts.add(disburstAccount);
+        }
 
         return disburstAccounts;
     }
@@ -187,10 +194,10 @@ public class LoanCustomerService {
         return annualInterest;
     }
 
-    private LoanCustomerResponse parseLoanCustomerResponse(Facility facility, Long caID) throws ServiceException, RemoteException {
+    private LoanCustomerResponse parseLoanCustomerResponse(String correlationId, Facility facility, Long caID, String crmId) throws ServiceException, RemoteException {
         LoanCustomerResponse response = new LoanCustomerResponse();
 
-        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount();
+        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
         response.setDisburstAccounts(disburstAccounts);
 
         Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
@@ -203,7 +210,7 @@ public class LoanCustomerService {
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityC);
         response.setPricings(pricings);
 
-        List<LoanCustomerInstallment> installments = getLoanCustomerInstallment(facilityC);
+        List<LoanCustomerTenure> installments = getLoanCustomerTenure(facilityC);
         response.setInstallments(installments);
 
         List<LoanCustomerFeature> features = getLoanCustomerFeatures(facilityS, facilityC);

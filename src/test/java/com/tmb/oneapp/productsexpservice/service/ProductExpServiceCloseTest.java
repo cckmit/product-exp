@@ -370,13 +370,6 @@ public class ProductExpServiceCloseTest {
            Assert.assertNotNull(activityLogs);
     }
 
-
-
-    @Test
-    public void testActivitylogError(){
-
-    }
-
     @Test
     public void testSaveActivityLogsNullUnit() throws Exception {
         FfsRequestBody ffsRequestBody = new FfsRequestBody();

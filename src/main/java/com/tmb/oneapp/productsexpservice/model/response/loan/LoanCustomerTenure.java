@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanCustomerInstallment {
+public class LoanCustomerTenure {
     private BigDecimal id;
     private String installment;
 }
