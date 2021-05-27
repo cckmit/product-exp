@@ -9,6 +9,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
@@ -42,6 +43,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -280,7 +282,7 @@ public class ProductExpAsynServiceTest {
     @Test
     public void fetchCustomerProfile() throws Exception {
         try {
-        	CustGeneralProfileResponse fundHolidayBody = null;
+            CustGeneralProfileResponse fundHolidayBody = null;
             TmbOneServiceResponse<CustGeneralProfileResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -295,7 +297,7 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile( anyString());
+        CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile(anyString());
         Assert.assertNotNull(response);
     }
 
@@ -303,8 +305,8 @@ public class ProductExpAsynServiceTest {
     @Test
     public void fetchCustomerProfileWithException() throws Exception {
         try {
-            when(customerServiceClient.getCustomerProfile( anyString())).thenThrow(MockitoException.class);
-            CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile( anyString());
+            when(customerServiceClient.getCustomerProfile(anyString())).thenThrow(MockitoException.class);
+            CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile(anyString());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -500,6 +502,27 @@ public class ProductExpAsynServiceTest {
     }
 
     @Test
+    void should_return_null_when_call_fetch_fund_information_given_throw_exception_from_api() {
+        //Given
+        when(investmentRequestClient.callInvestmentFundInformationService(any(), any())).thenThrow(RuntimeException.class);
+
+        //When
+        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
+            productExpAsynService.fetchFundInformation(any(), any());
+        });
+
+        //Then
+        TMBCommonException expected = new TMBCommonException(
+                ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(),
+                HttpStatus.OK,
+                null);
+
+        assertEquals(expected.getClass(), actual.getClass());
+    }
+
+    @Test
     void should_return_daily_nav_body_when_call_fetch_fund_daily_nav_given_header_and_fund_code_request_body() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
@@ -523,5 +546,26 @@ public class ProductExpAsynServiceTest {
         //Then
         CompletableFuture<DailyNavBody> expected = CompletableFuture.completedFuture(dailyNavResponse.getData());
         assertEquals(expected.get(), actual.get());
+    }
+
+    @Test
+    void should_return_null_when_call_fetch_fund_daily_nav_given_throw_exception_from_api() {
+        //Given
+        when(investmentRequestClient.callInvestmentFundDailyNavService(any(), any())).thenThrow(RuntimeException.class);
+
+        //When
+        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
+            productExpAsynService.fetchFundDailyNav(any(), any());
+        });
+
+        //Then
+        TMBCommonException expected = new TMBCommonException(
+                ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(),
+                HttpStatus.OK,
+                null);
+
+        assertEquals(expected.getClass(), actual.getClass());
     }
 }
