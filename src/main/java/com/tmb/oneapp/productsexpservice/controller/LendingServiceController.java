@@ -66,7 +66,6 @@ public class LendingServiceController {
                         response.getStatus().getMessage(),
                         response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
             }
-
         }
         throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                 ResponseCode.FAILED.getMessage(),
