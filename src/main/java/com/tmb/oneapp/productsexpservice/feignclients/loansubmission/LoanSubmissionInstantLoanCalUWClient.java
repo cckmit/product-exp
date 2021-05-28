@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.feignclients.loansubmission;
 
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Header;
+
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionInstantLoanCalUWServiceLocator;
