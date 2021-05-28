@@ -281,7 +281,7 @@ public class CustomerProfileService {
 	 */
 	private void createdIncomeCriteriaDependency(WorkingInfoResponse response, String incomeBaseSalary) {
 		DependDefaultEntry defaultEntry = new DependDefaultEntry();
-		List<CodeEntry> entry = new ArrayList<CodeEntry>();
+		List<CodeEntry> entry = new ArrayList();
 		CodeEntry entryLevelOne = new CodeEntry();
 		entryLevelOne.setEntryName("15000-29999");
 		entryLevelOne.setEntryCode("30000");

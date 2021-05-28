@@ -657,7 +657,7 @@ public class NotificationService {
 
 		List<SoGoodItemInfo> itemInfos = new ArrayList<>();
 		successItems.forEach(item -> {
-			Double amount = item.getCreditCard().getCardInstallment().getAmounts();
+			Double amount = Double.parseDouble(item.getCreditCard().getCardInstallment().getAmounts());
 			MonthlyTrans monthlyTrans = InstallmentService.calcualteMonthlyTransection(new BigDecimal(amount),
 					Integer.parseInt(installment.getPaymentTerm()), new BigDecimal(installment.getInterestRate()));
 			SoGoodItemInfo info = new SoGoodItemInfo();
@@ -696,7 +696,7 @@ public class NotificationService {
 	BigDecimal calculateTotalSoGoodAmt(List<CardInstallmentResponse> successItems) {
 		BigDecimal totalAmt = BigDecimal.ZERO;
 		for (CardInstallmentResponse installment : successItems) {
-			Double amount = installment.getCreditCard().getCardInstallment().getAmounts();
+			Double amount = Double.parseDouble(installment.getCreditCard().getCardInstallment().getAmounts());
 			totalAmt = totalAmt.add(new BigDecimal(amount));
 		}
 		return totalAmt;

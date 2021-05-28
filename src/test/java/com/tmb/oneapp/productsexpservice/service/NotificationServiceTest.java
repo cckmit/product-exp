@@ -559,11 +559,10 @@ public class NotificationServiceTest {
 
 
         CreditCardModel model = new CreditCardModel();
-        CardInstallmentModel card = new CardInstallmentModel();
-        card.setAmounts(1234.00);
+        CardInstallment card = new CardInstallment();
+        card.setAmounts("1234.00");
         card.setTransactionKey("1234");
         card.setTransactionDescription("success");
-        card.setOrderNo("1234");
         model.setCardInstallment(card);
         model.setAccountId("124");
         response.setStatus(status);
