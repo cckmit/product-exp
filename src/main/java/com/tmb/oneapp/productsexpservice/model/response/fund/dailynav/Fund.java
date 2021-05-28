@@ -14,8 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class Fund {
 
+    @JsonProperty(value = "fundCode")
     private String code;
 
+    @JsonProperty(value = "fundShortName")
     private String shortName;
 
     @JsonProperty(value = "dailyNavList")
