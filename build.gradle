@@ -137,7 +137,7 @@ sonarqube {
 		}
 	}
 	properties {
-		property 'sonar.coverage.exclusions', '**/config/*, **/constant/*, **/model/*,  **/model/**,**/ProductsExpServiceApplication.java,**/feignclients/**'
+		property 'sonar.coverage.exclusions', '**/config/*, **/constant/*, **/dto/**, **/model/**, **/ProductsExpServiceApplication.java, **/feignclients/**'
 	}
 	properties {
 		property 'sonar.exclusions', '**/config/*'

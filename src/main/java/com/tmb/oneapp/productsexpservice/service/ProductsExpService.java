@@ -12,6 +12,7 @@ import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
@@ -22,6 +23,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
@@ -32,6 +34,8 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
@@ -55,7 +59,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -155,8 +162,8 @@ public class ProductsExpService {
 
 
             Optional<List<PtesDetail>> ptesDetailList =
-                    Optional.ofNullable(ptestDetailResult).map(ResponseEntity ::getBody)
-                            .map(TmbOneServiceResponse ::getData);
+                    Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
+                            .map(TmbOneServiceResponse::getData);
 
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
@@ -179,7 +186,7 @@ public class ProductsExpService {
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
             summaryByPortResponse = investmentRequestClient
                     .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE +  "{}" , fundSummaryData);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummaryData);
             if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                 var body = fundSummaryData.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
@@ -315,7 +322,6 @@ public class ProductsExpService {
         ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
         ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
     }
-
 
 
     void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
@@ -608,6 +614,21 @@ public class ProductsExpService {
         }
     }
 
+    public InformationDto getFundInformation(String correlationId, FundCodeRequestBody fundCodeRequestBody) {
+        Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
+        try {
+            CompletableFuture<InformationBody> fetchFundInformation = productExpAsynService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);
+            CompletableFuture<DailyNavBody> fetchFundDailyNav = productExpAsynService.fetchFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
+            CompletableFuture.allOf(fetchFundInformation, fetchFundDailyNav);
+            return InformationDto.builder()
+                    .information(fetchFundInformation.get())
+                    .dailyNav(fetchFundDailyNav.get())
+                    .build();
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            return null;
+        }
+    }
 
     /**
      * Method constructActivityLogDataForBuyHoldingFund

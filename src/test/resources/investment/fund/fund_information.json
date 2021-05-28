@@ -1,0 +1,63 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "fund": {
+      "thaiClassName": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
+      "englishClassName": "FIF Equity",
+      "categoryName": "China Equity",
+      "masterName": "UBS (Lux) Eq China Opportunity",
+      "inceptionDate": "2014-10-13",
+      "shareClassNetAssets": "7766541447.61",
+      "distributionStatus": "Accumulated",
+      "switchingInFeePercent": "1.500000",
+      "actual": {
+        "frontLoad": "1.500000",
+        "deferLoad": "0.000000"
+      },
+      "netExpenseRatio": "1.744100",
+      "minimumInitial": "1",
+      "minimumSubsequent": "1",
+      "asset": {
+        "bondNet": "0.000000",
+        "cashNet": "19.117190",
+        "equityNet": "81.243920",
+        "otherNet": "-0.361100"
+      },
+      "eqSector": {
+        "basic": "0.000000",
+        "communication": "17.630130",
+        "cyclical": "14.352460",
+        "defensive": "27.691040",
+        "energy": "0.000000",
+        "financial": "22.989230",
+        "health": "6.419810",
+        "industrial": "1.943920",
+        "realestate": "6.678650",
+        "tech": "1.439120",
+        "utilities": "0.855630"
+      },
+      "multiInvestmentStrategy": "ลงทุนใน UBS (Lux) Equity Fund–China Opportunity (USD) ในหน่วยลงทุนชนิด Class I-A1-acc ซึ่งกองทุนหลักจะลงทุนสองในสามของมูลค่าทรัพย์สิน ในตราสารทุนประเทศจีน",
+      "exposureList": [
+        {
+          "country": "China",
+          "value": "93.811430"
+        },
+        {
+          "country": "Hong Kong",
+          "value": "6.188570"
+        }
+      ],
+      "holdingList": [
+        {
+          "name": "UBS (Lux) EF China Oppo(USD) 1-A1 USDacc",
+          "weight": "98.312870"
+        }
+      ]
+    }
+  }
+}

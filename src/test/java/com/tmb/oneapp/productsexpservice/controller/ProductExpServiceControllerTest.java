@@ -1,16 +1,21 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustomerProfileResponseData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
+import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
@@ -34,11 +39,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -509,6 +516,68 @@ public class ProductExpServiceControllerTest {
 
         ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> result = productExpServiceController.getFundPrePaymentDetail("correlationId", new FundPaymentDetailRq());
         Assert.assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatusCode().value());
+    }
+
+    @Test
+    void should_return_information_dto_when_call_get_fund_information_given_correlation_id_and_fund_code_request_body() throws IOException {
+        //Given
+        ObjectMapper mapper = new ObjectMapper();
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
+                .code("TMBCOF")
+                .build();
+
+        InformationResponse informationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/fund_information.json").toFile(),
+                InformationResponse.class);
+        DailyNavResponse dailyNavResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/fund_daily_nav.json").toFile(),
+                DailyNavResponse.class);
+
+        InformationDto informationDto = InformationDto.builder()
+                .information(informationResponse.getData())
+                .dailyNav(dailyNavResponse.getData())
+                .build();
+        when(productsExpService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(informationDto);
+
+        //When
+        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = productExpServiceController.getFundInformation(correlationId, fundCodeRequestBody);
+
+        //Then
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(informationDto, actual.getBody().getData());
+    }
+
+    @Test
+    void should_return_information_dto_null_when_call_get_fund_information_given_information_dto_empty_from_service() {
+        //Given
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
+                .code("TMBCOF")
+                .build();
+        when(productsExpService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(null);
+
+        //When
+        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = productExpServiceController.getFundInformation(correlationId, fundCodeRequestBody);
+
+        //Then
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
+        assertNull(actual.getBody().getData());
+    }
+
+    @Test
+    void should_return_information_dto_null_when_call_get_fund_information_given_throw_exception_from_service() {
+        //Given
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
+                .code("TMBCOF")
+                .build();
+        when(productsExpService.getFundInformation(correlationId, fundCodeRequestBody)).thenThrow(RuntimeException.class);
+
+        //When
+        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = productExpServiceController.getFundInformation(correlationId, fundCodeRequestBody);
+
+        //Then
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
+        assertNull(actual.getBody().getData());
     }
 }
 
