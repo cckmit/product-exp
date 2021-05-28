@@ -33,6 +33,7 @@ public class PersonalLoanController {
 
     private final PersonalLoanService personalLoanService;
     private final LoanSubmissionInstantLoanCalUWService loanCalUWService;
+
     private static final TMBLogger<ProductsVerifyCvvController> logger = new TMBLogger<>(ProductsVerifyCvvController.class);
 
     @GetMapping("/get_preload")
@@ -68,7 +69,7 @@ public class PersonalLoanController {
     @GetMapping(value = "/get-preload-brms", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get preload brms")
-    public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid @RequestParam InstantLoanCalUWRequest instantLoanCalUWRequest) {
+    public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
