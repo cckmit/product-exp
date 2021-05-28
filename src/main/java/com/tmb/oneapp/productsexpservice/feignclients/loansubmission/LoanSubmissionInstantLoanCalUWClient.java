@@ -16,6 +16,7 @@ import java.util.UUID;
 @Service
 public class LoanSubmissionInstantLoanCalUWClient {
     @Value("${loan-submission-instant-loan-cal-uw.url}")
+    private String calUWUrl;
     LoanSubmissionInstantLoanCalUWServiceLocator locator = new LoanSubmissionInstantLoanCalUWServiceLocator();
 
     private static final String CHANNEL = "MIB";
