@@ -431,11 +431,11 @@ public class CreditCardLogServiceTest {
     private CreditCardModel getCreditCardModel() {
         CreditCardModel creditCard = new CreditCardModel();
         creditCard.setAccountId("0000000050078670143000945");
-        CardInstallmentModel card = new CardInstallmentModel();
+        CardInstallment card = new CardInstallment();
         card.setTransactionKey("1234");
         card.setTransactionDescription("Test");
         card.setTransactionKey("1234");
-        card.setAmounts(ConversionUtil.stringToDouble("1234.00"));
+        card.setAmounts("1234.00");
         creditCard.setCardInstallment(card);
         return creditCard;
     }
@@ -479,8 +479,7 @@ public class CreditCardLogServiceTest {
         CardInstallmentQuery requestBody = getCardInstallmentQuery();
         CardInstallmentResponse cardInstallmentResponse = getCardInstallmentResponse();
         cardInstallmentResponse.getCreditCard().getCardInstallment().setTransactionKey("1234");
-        cardInstallmentResponse.getCreditCard().getCardInstallment().setOrderNo("1234");
-        cardInstallmentResponse.getCreditCard().getCardInstallment().setAmounts(1234.00);
+        cardInstallmentResponse.getCreditCard().getCardInstallment().setAmounts("1234.00");
         cardInstallmentResponse.getCreditCard().getCardInstallment().setTransactionDescription("Success");
         CardInstallment installment = getCardInstallment();
         logService.getCardEvent(correlationId, reqHeader, requestBody, Arrays.asList(cardInstallmentResponse), installment);
