@@ -142,12 +142,15 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund favorite service fund favorite response.
      *
-     * @param headers the headers
+     * @param headers  the headers
      * @return the fund favorite response
      */
     @PostMapping(value = "${investment.service.fund.listfavorite.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestBody String crmId);
+    public ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestHeader String crmId);
+
+
+
 
     /**
      * Call investment to get ptest port
