@@ -8,8 +8,8 @@
   "data": {
     "fundList": [
       {
-        "code": "TMBCOF",
-        "shortName": "TMBCOF",
+        "fundCode": "TMBCOF",
+        "fundShortName": "TMBCOF",
         "dailyNavList": [
           ["1413133200000", "9.9998"],
           ["1413219600000", "9.9974"],
