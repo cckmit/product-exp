@@ -1,10 +1,11 @@
 package com.tmb.oneapp.productsexpservice.feignclients.loansubmission;
 
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Header;
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.RequestInstantLoanGetCustInfo;
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
-import com.tmb.common.model.legacy.rsl.ws.loan.submission.*;
+import com.tmb.common.model.legacy.rsl.ws.individual.request.Body;
+import com.tmb.common.model.legacy.rsl.ws.individual.request.Header;
+import com.tmb.common.model.legacy.rsl.ws.individual.request.RequestIndividual;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetCustomerInfoServiceLocator;
+import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetCustomerInfoSoapBindingStub;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,37 +15,37 @@ import java.util.UUID;
 
 @Service
 public class LoanSubmissionGetCustomerInfoClient {
-	@Value("${loan-submission-get-customer-info.url}")
-	private String getCustomerInfoUrl;
+    @Value("${loan-submission-get-customer-info.url}")
+    private String getCustomerInfoUrl;
 
-	LoanSubmissionInstantLoanGetCustomerInfoServiceLocator locator = new LoanSubmissionInstantLoanGetCustomerInfoServiceLocator();
+    LoanSubmissionGetCustomerInfoServiceLocator locator = new LoanSubmissionGetCustomerInfoServiceLocator();
 
-	private static final String CHANNEL = "MIB";
-	private static final String MODULE = "3";
+    private static final String CHANNEL = "MIB";
+    private static final String MODULE = "3";
 
-	public void setLocator(LoanSubmissionInstantLoanGetCustomerInfoServiceLocator locator) {
-		this.locator = locator;
-	}
+    public void setLocator(LoanSubmissionGetCustomerInfoServiceLocator locator) {
+        this.locator = locator;
+    }
 
-	public ResponseInstantLoanGetCustInfo searchCustomerInfoByCaID(String caID) throws RemoteException, ServiceException {
-		locator.setLoanSubmissionInstantLoanGetCustomerInfoEndpointAddress(getCustomerInfoUrl);
+    public ResponseIndividual searchCustomerInfoByCaID(long caID) throws ServiceException, RemoteException, ServiceException {
+        locator.setLoanSubmissionGetCustomerInfoEndpointAddress(getCustomerInfoUrl);
 
-		LoanSubmissionInstantLoanGetCustomerInfoSoapBindingStub stub = (LoanSubmissionInstantLoanGetCustomerInfoSoapBindingStub) locator
-				.getLoanSubmissionInstantLoanGetCustomerInfo();
+        LoanSubmissionGetCustomerInfoSoapBindingStub stub = (LoanSubmissionGetCustomerInfoSoapBindingStub) locator.
+                getLoanSubmissionGetCustomerInfo();
 
-		RequestInstantLoanGetCustInfo req = new RequestInstantLoanGetCustInfo();
+        RequestIndividual req = new RequestIndividual();
 
-		Header header = new Header();
-		header.setChannel(CHANNEL);
-		header.setModule(MODULE);
-		header.setRequestID(UUID.randomUUID().toString());
-		req.setHeader(header);
+        Header header = new Header();
+        header.setChannel(CHANNEL);
+        header.setModule(MODULE);
+        header.setRequestID(UUID.randomUUID().toString());
+        req.setHeader(header);
 
-		Body body = new Body();
-		body.setRmNo(caID);
-		req.setBody(body);
+        Body body = new Body();
+        body.setCaID(caID);
+        req.setBody(body);
 
-		return stub.getInstantCustomerInfo(req);
-	}
+        return stub.searchCustomerInfoByCaID(req);
+    }
 
 }
