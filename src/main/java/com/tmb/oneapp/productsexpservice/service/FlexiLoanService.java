@@ -10,10 +10,12 @@ import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoR
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 
+@RestController
 @Service
 @AllArgsConstructor
 public class FlexiLoanService {
