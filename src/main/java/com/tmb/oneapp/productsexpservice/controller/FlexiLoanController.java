@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -26,6 +27,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @RequestMapping("/lending")
 @Api(tags = "Flexi Loan C2G")
+@RestController
 public class FlexiLoanController {
 
     private static final TMBLogger<CustomerProfileService> logger = new TMBLogger<>(CustomerProfileService.class);

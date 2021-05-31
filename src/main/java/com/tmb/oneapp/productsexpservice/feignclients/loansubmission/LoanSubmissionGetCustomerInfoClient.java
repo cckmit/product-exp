@@ -14,37 +14,37 @@ import java.util.UUID;
 
 @Service
 public class LoanSubmissionGetCustomerInfoClient {
-	@Value("${loan-submission-get-customer-info.url}")
-	private String getCustomerInfoUrl;
+    @Value("${loan-submission-get-customer-info.url}")
+    private String getCustomerInfoUrl;
 
-	LoanSubmissionInstantLoanGetCustomerInfoServiceLocator locator = new LoanSubmissionInstantLoanGetCustomerInfoServiceLocator();
+    LoanSubmissionInstantLoanGetCustomerInfoServiceLocator locator = new LoanSubmissionInstantLoanGetCustomerInfoServiceLocator();
 
-	private static final String CHANNEL = "MIB";
-	private static final String MODULE = "3";
+    private static final String CHANNEL = "MIB";
+    private static final String MODULE = "3";
 
-	public void setLocator(LoanSubmissionInstantLoanGetCustomerInfoServiceLocator locator) {
-		this.locator = locator;
-	}
+    public void setLocator(LoanSubmissionInstantLoanGetCustomerInfoServiceLocator locator) {
+        this.locator = locator;
+    }
 
-	public ResponseInstantLoanGetCustInfo searchCustomerInfoByCaID(String caID) throws RemoteException, ServiceException {
-		locator.setLoanSubmissionInstantLoanGetCustomerInfoEndpointAddress(getCustomerInfoUrl);
+    public ResponseInstantLoanGetCustInfo searchCustomerInfoByCaID(String caID) throws RemoteException, ServiceException {
+        locator.setLoanSubmissionInstantLoanGetCustomerInfoEndpointAddress(getCustomerInfoUrl);
 
-		LoanSubmissionInstantLoanGetCustomerInfoSoapBindingStub stub = (LoanSubmissionInstantLoanGetCustomerInfoSoapBindingStub) locator
-				.getLoanSubmissionInstantLoanGetCustomerInfo();
+        LoanSubmissionInstantLoanGetCustomerInfoSoapBindingStub stub = (LoanSubmissionInstantLoanGetCustomerInfoSoapBindingStub) locator
+                .getLoanSubmissionInstantLoanGetCustomerInfo();
 
-		RequestInstantLoanGetCustInfo req = new RequestInstantLoanGetCustInfo();
+        RequestInstantLoanGetCustInfo req = new RequestInstantLoanGetCustInfo();
 
-		Header header = new Header();
-		header.setChannel(CHANNEL);
-		header.setModule(MODULE);
-		header.setRequestID(UUID.randomUUID().toString());
-		req.setHeader(header);
+        Header header = new Header();
+        header.setChannel(CHANNEL);
+        header.setModule(MODULE);
+        header.setRequestID(UUID.randomUUID().toString());
+        req.setHeader(header);
 
-		Body body = new Body();
-		body.setRmNo(caID);
-		req.setBody(body);
+        Body body = new Body();
+        body.setRmNo(caID);
+        req.setBody(body);
 
-		return stub.getInstantCustomerInfo(req);
-	}
+        return stub.getInstantCustomerInfo(req);
+    }
 
 }
