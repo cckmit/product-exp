@@ -1,21 +1,5 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -30,10 +14,19 @@ import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
 import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @Api(tags = "Lend Customer information service")
@@ -66,23 +59,23 @@ public class CustomerServiceController {
 			@RequestHeader Map<String, String> headers) {
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<CustIndividualProfileInfo> customerIndividualProfileInfo = new TmbOneServiceResponse<>();
-		try {
-			CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
-			if (Objects.isNull(individualProfileInfo)) {
-				customerIndividualProfileInfo.setData(null);// empty
-				customerIndividualProfileInfo
-						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-			} else {
-				customerIndividualProfileInfo.setData(individualProfileInfo);
-				customerIndividualProfileInfo
-						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-			}
-		} catch (Exception e) {
-			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(),
-					ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-		}
+//		try {
+//			CustIndividualProfileInfo individualProfileInfo = customerProfileService.getIndividualProfile(crmId);
+//			if (Objects.isNull(individualProfileInfo)) {
+//				customerIndividualProfileInfo.setData(null);// empty
+//				customerIndividualProfileInfo
+//						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+//								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+//			} else {
+//				customerIndividualProfileInfo.setData(individualProfileInfo);
+//				customerIndividualProfileInfo
+//						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+//								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+//			}
+//		} catch (Exception e) {
+//			customerIndividualProfileInfo.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(),
+//					ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+//		}
 
 		return ResponseEntity.ok().body(customerIndividualProfileInfo);
 	}
@@ -135,16 +128,16 @@ public class CustomerServiceController {
 		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<WorkingInfoResponse> response = new TmbOneServiceResponse();
-		try {
-			WorkingInfoResponse workInformation = customerProfileService.getWorkingInformation(crmId, correlationId);
-			response.setData(workInformation);
-			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-		} catch (Exception e) {
-			response.setData(null);
-			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-		}
+//		try {
+//			WorkingInfoResponse workInformation = customerProfileService.getWorkingInformation(crmId, correlationId);
+//			response.setData(workInformation);
+//			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+//					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+//		} catch (Exception e) {
+//			response.setData(null);
+//			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+//					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+//		}
 
 		return ResponseEntity.ok().body(response);
 	}

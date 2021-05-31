@@ -2,7 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
-import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCreditcardInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
@@ -10,10 +10,12 @@ import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoR
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 
+@RestController
 @Service
 @AllArgsConstructor
 public class FlexiLoanService {
@@ -24,13 +26,13 @@ public class FlexiLoanService {
 
     public SubmissionInfoResponse getSubmissionInfo(String correlationId, SubmissionInfoRequest request) throws ServiceException, RemoteException {
         ResponseFacility facilityInfo = getFacilityInfoClient.searchFacilityInfoByCaID(request.getCaID());
-        ResponseIndividual customerInfo = getCustomerInfoClient.searchCustomerInfoByCaID(request.getCaID());
+        ResponseInstantLoanGetCustInfo customerInfo = getCustomerInfoClient.searchCustomerInfoByCaID(request.getCaID().toString());
         ResponseCreditcard creditcardInfo = getCreditcardInfoClient.searchCreditcardInfoByCaID(request.getCaID());
         return parseSubmissionInfoResponse(facilityInfo, customerInfo, creditcardInfo);
     }
 
     private SubmissionInfoResponse parseSubmissionInfoResponse(ResponseFacility facilityInfo,
-                                                               ResponseIndividual customerInfo,
+                                                               ResponseInstantLoanGetCustInfo customerInfo,
                                                                ResponseCreditcard creditcardInfo) {
         SubmissionInfoResponse response = new SubmissionInfoResponse();
         return response;

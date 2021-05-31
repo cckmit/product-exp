@@ -1,5 +1,12 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.address.Province;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
+import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
+import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
 import org.apache.commons.collections4.map.HashedMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,22 +16,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.address.Province;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
-import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
-import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
-
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.when;
-
 import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class CustomerServiceControllerTest {
@@ -48,7 +44,7 @@ public class CustomerServiceControllerTest {
 	public void testController() {
 		CustIndividualProfileInfo custIndividualProfile = new CustIndividualProfileInfo();
 		TmbOneServiceResponse<List<CodeEntry>> body = new TmbOneServiceResponse();
-		when(customerProfileService.getIndividualProfile(any())).thenReturn(custIndividualProfile);
+		//when(customerProfileService.getIndividualProfile(any())).thenReturn(custIndividualProfile);
 		when(lendingServiceClient.getCountryList(any())).thenReturn(ResponseEntity.ok(body));
 		when(lendingServiceClient.getSourceOfIncomeInfo("CC", "CC")).thenReturn(ResponseEntity.ok(body));
 		when(lendingServiceClient.getBusinessTypeInfo(any())).thenReturn(ResponseEntity.ok(body));

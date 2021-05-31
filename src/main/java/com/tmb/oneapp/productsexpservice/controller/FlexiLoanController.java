@@ -35,7 +35,7 @@ public class FlexiLoanController {
 
     @LogAround
     @ApiOperation("Flexi loan C2G submission info")
-    @GetMapping(value = "/submission/info", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/submissionInfo", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> getSubmissionInfo(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                            @Valid SubmissionInfoRequest request) {
         HttpHeaders responseHeaders = new HttpHeaders();
