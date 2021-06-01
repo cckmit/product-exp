@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
@@ -83,6 +84,11 @@ public class CustomerProfileService {
 			ResponseEntity<TmbOneServiceResponse<List<Province>>> addressInfoRes = commonServiceClient
 					.searchAddressByField(reqSearch);
 			List<Province> provinceInfos = addressInfoRes.getBody().getData();
+
+			ResponseEntity<TmbOneServiceResponse<LovMaster>> lovMasterRes = commonServiceClient
+					.getLookupMasterModule(generalProfile.getNationality());
+			
+			individualProfile.setNationalityLabel(lovMasterRes.getBody().getData().getLovDesc());
 
 			CustAddressProfileInfo custAddressProfile = fillUpParamCurrentAddressInfo(provinceInfos, generalProfile);
 			individualProfile.setAddress(custAddressProfile);
@@ -320,13 +326,13 @@ public class CustomerProfileService {
 	 */
 	private CodeEntry selectMatchDependency(DependDefaultEntry defaultEntry, String incomeBaseSalary) {
 		List<CodeEntry> codeEntry = defaultEntry.getEntry();
-		CodeEntry returnEntry = codeEntry.get(codeEntry.size()-1);
-		if(Integer.parseInt(incomeBaseSalary)<=15000) {
+		CodeEntry returnEntry = codeEntry.get(codeEntry.size() - 1);
+		if (Integer.parseInt(incomeBaseSalary) <= 15000) {
 			return codeEntry.get(0);
 		}
 		for (CodeEntry entry : codeEntry) {
 			int maxAmount = Integer.parseInt(entry.getEntryCode());
-			if(maxAmount>=Integer.parseInt(incomeBaseSalary)) {
+			if (maxAmount >= Integer.parseInt(incomeBaseSalary)) {
 				returnEntry = entry;
 			}
 		}
