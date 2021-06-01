@@ -25,9 +25,12 @@ public class CustIndividualProfileInfo {
 	@ApiModelProperty(notes = "expireDate", example = "2022-05-08")
 	@JsonProperty("expireDate")
 	private String expireDate;
-	@ApiModelProperty(notes = "nationality", example = "thai")
+	@ApiModelProperty(notes = "nationality", example = "TH")
 	@JsonProperty("nationality")
 	private String nationality;
+	@ApiModelProperty(notes = "nationalityLabel")
+	@JsonProperty("nationalityLabel")
+	private String nationalityLabel;
 	@ApiModelProperty(notes = "mobileNo", example = "0840708099")
 	@JsonProperty("mobileNo")
 	private String mobileNo;

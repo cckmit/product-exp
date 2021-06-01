@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -60,7 +59,6 @@ public class NotificationService {
 	private static final String HTML_DATE_FORMAT = "dd/MM/yyyy";
 	@Value("${notification-service.e-noti.default.template.time}")
 	private static final String HH_MM = "HH:mm";
-	private static final DecimalFormat df = new DecimalFormat("#,###.00");
 
 	private final NotificationServiceClient notificationClient;
 	private final CustomerServiceClient customerClient;
@@ -396,16 +394,30 @@ public class NotificationService {
 		}
 	}
 
+	/**
+	 * 
+	 * @param moneyString
+	 * @return
+	 */
 	private String formateForCurrency(String moneyString) {
 
 		try {
 			BigDecimal money = new BigDecimal(moneyString);
-			return df.format(money);
+			return String.format("%,.2f", money);
 		} catch (Exception e) {
 			logger.error("Invalid money input " + moneyString);
 		}
 
 		return null;
+	}
+
+	/**
+	 * 
+	 * @param money
+	 * @return
+	 */
+	private String formateForCurrency(BigDecimal money) {
+		return String.format("%,.2f", money);
 	}
 
 	/**
@@ -668,11 +680,12 @@ public class NotificationService {
 			if (optCardInstallment.isPresent()) {
 				cardInstallmentData(info, optCardInstallment);
 			}
-			info.setFirstPayment(df.format(monthlyTrans.getFirstPayment()));
+
+			info.setFirstPayment(formateForCurrency(monthlyTrans.getFirstPayment()));
 			info.setName(item.getCreditCard().getCardInstallment().getTransactionDescription());
-			info.setPrinciple(df.format(new BigDecimal(amount)));
-			info.setTotalAmt(df.format(monthlyTrans.getTotalAmt()));
-			info.setTotalInterest(df.format(monthlyTrans.getTotalInterest()));
+			info.setPrinciple(formateForCurrency(new BigDecimal(amount)));
+			info.setTotalAmt(formateForCurrency(monthlyTrans.getTotalAmt()));
+			info.setTotalInterest(formateForCurrency(monthlyTrans.getTotalInterest()));
 			itemInfos.add(info);
 		});
 		wrapperInfo.setItems(itemInfos);
@@ -753,7 +766,7 @@ public class NotificationService {
 		NotificationRecord record = new NotificationRecord();
 
 		String term = soGoodWrapper.getTenor();
-		String soGoodTotalFormatedAmt = df.format(totalAmt);
+		String soGoodTotalFormatedAmt = formateForCurrency(totalAmt);
 
 		Context ctx = new Context();
 		ctx.setVariable("items", soGoodWrapper.getItems());

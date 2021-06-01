@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.address.District;
@@ -23,7 +24,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
-import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
 import com.tmb.oneapp.productsexpservice.model.response.DependDefaultEntry;
 import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
@@ -108,9 +108,17 @@ public class CustomerProfileServiceTest {
 		provincesRes.setData(mockProvice);
 		provincesRes.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		
+		TmbOneServiceResponse<LovMaster> lovModule = new TmbOneServiceResponse<LovMaster>();
+		LovMaster lovMasterMock = new LovMaster();
+		lovModule.setData(lovMasterMock);
+		
+		
 		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(provincesRes));
-		CustIndividualProfileInfo responseProfile = customerProfileService.getIndividualProfile("1111");
+		when(commonServiceClient.getLookupMasterModule(any())).thenReturn(ResponseEntity.ok(lovModule));
+		
+		CustIndividualProfileInfo responseProfile = customerProfileService.getIndividualProfile("001100000000000000000018593707");
 		Assert.assertEquals(profile.getCitizenId(), responseProfile.getCitizenId());
 	}
 
