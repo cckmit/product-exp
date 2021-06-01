@@ -52,7 +52,7 @@ public class LoanCustomerService {
     private static final BigDecimal PRICING_MONTH_TO_12 = BigDecimal.valueOf(12);
     private static final BigDecimal RATE_VARIANCE_2 = BigDecimal.valueOf(23.00);
     private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
-    private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(20000);
+    private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
