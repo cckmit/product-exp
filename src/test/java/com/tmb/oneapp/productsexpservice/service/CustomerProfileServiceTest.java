@@ -174,22 +174,22 @@ public class CustomerProfileServiceTest {
 		aProvinces.setDistrictList(districtList);
 		provinces.add(aProvinces);
 		listProvinces.setData(provinces);
-		
+
 		ResponseInstantLoanGetCustInfo instanceLoanCusInfo = new ResponseInstantLoanGetCustInfo();
 		com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Body();
-		
+
 		List<InstantIndividual> instanceIndividuals = new ArrayList<InstantIndividual>();
-		
+
 		InstantIndividual indi = new InstantIndividual();
 		indi.setEmploymentStatus("01");
 		indi.setInTotalIncome(new BigDecimal(120000));
 		indi.setIncomeBasicSalary(new BigDecimal(80000));
 		indi.setIncomeDeclared(new BigDecimal(95000));
 		instanceIndividuals.add(indi);
-		
+
 		body.setInstantIndividual(instanceIndividuals.toArray(new InstantIndividual[instanceIndividuals.size()]));
 		instanceLoanCusInfo.setBody(body);
-		
+
 		when(instanceCustomerInfoClient.getInstantCustomerInfo(any())).thenReturn(instanceLoanCusInfo);
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(listProvinces));
 		TmbOneServiceResponse<WorkProfileInfoResponse> workProfileRes = new TmbOneServiceResponse<WorkProfileInfoResponse>();

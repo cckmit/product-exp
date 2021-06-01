@@ -49,11 +49,11 @@ public class CustomerServiceController {
 	private CustomerProfileService customerProfileService;
 	private CommonServiceClient commonServiceClient;
 	private LendingServiceClient lendingServiceClient;
-	
+
 
 	@Autowired
 	public CustomerServiceController(CustomerProfileService customerProfileService,
-			CommonServiceClient commonServiceClient, LendingServiceClient lendingServiceClient) {
+									 CommonServiceClient commonServiceClient, LendingServiceClient lendingServiceClient) {
 		this.customerProfileService = customerProfileService;
 		this.commonServiceClient = commonServiceClient;
 		this.lendingServiceClient = lendingServiceClient;
@@ -61,7 +61,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for get individual information
-	 * 
+	 *
 	 * @param requestHeadersParameter
 	 * @return
 	 */
@@ -99,7 +99,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for get zipcode
-	 * 
+	 *
 	 * @param postCode
 	 * @return
 	 */
@@ -137,7 +137,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for get working information
-	 * 
+	 *
 	 * @param workingReq
 	 * @param requestHeaders
 	 * @return
@@ -170,7 +170,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for dependency criteria for working status
-	 * 
+	 *
 	 * @param occupationEntryCode
 	 * @param bustypeEntryCode
 	 * @param requestHeaders
@@ -206,7 +206,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for dependency criteria for working dependency by occupation code
-	 * 
+	 *
 	 * @param occupationEntryCode
 	 * @param bustypeEntryCode
 	 * @param requestHeaders
@@ -242,7 +242,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for dependency criteria for businesstype info
-	 * 
+	 *
 	 * @param occupationEntryCode
 	 * @param bustypeEntryCode
 	 * @param requestHeaders
@@ -277,7 +277,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for dependency criteria for businesstype info
-	 * 
+	 *
 	 * @param occupationEntryCode
 	 * @param bustypeEntryCode
 	 * @param requestHeaders
@@ -312,7 +312,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for dependency criteria for income information
-	 * 
+	 *
 	 * @param occupationEntryCode
 	 * @param incomeEntryCode
 	 * @param requestHeaders
@@ -347,7 +347,7 @@ public class CustomerServiceController {
 
 	/**
 	 * Service for dependency criteria for income information
-	 * 
+	 *
 	 * @param occupationEntryCode
 	 * @param incomeEntryCode
 	 * @param requestHeaders

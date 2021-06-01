@@ -1,5 +1,11 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.model.AllowCashDayOne;
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,21 +15,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import com.tmb.common.model.AllowCashDayOne;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
-
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class PersonalLoanServiceTest {

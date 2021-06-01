@@ -36,7 +36,7 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoR
 
 /**
  * Customer Profile Service
- * 
+ *
  * @author Witsanu
  *
  */
@@ -54,7 +54,7 @@ public class CustomerProfileService {
 	private LoanInstantGetCustomerInfoClient instanceCustomerInfoClient;
 
 	public CustomerProfileService(CommonServiceClient commonServiceClient, CustomerServiceClient customerServiceClient,
-			LendingServiceClient lendingServiceClient, LoanInstantGetCustomerInfoClient instanceCustomerInfoClient) {
+								  LendingServiceClient lendingServiceClient, LoanInstantGetCustomerInfoClient instanceCustomerInfoClient) {
 		this.customerServiceClient = customerServiceClient;
 		this.commonServiceClient = commonServiceClient;
 		this.lendingServiceClient = lendingServiceClient;
@@ -63,7 +63,7 @@ public class CustomerProfileService {
 
 	/**
 	 * Get individual profile information
-	 * 
+	 *
 	 * @param crmId
 	 * @return
 	 */
@@ -112,7 +112,7 @@ public class CustomerProfileService {
 
 	/**
 	 * Create formate address in line formate
-	 * 
+	 *
 	 * @param custAddressProfile
 	 * @return
 	 */
@@ -155,13 +155,13 @@ public class CustomerProfileService {
 
 	/**
 	 * Fill param
-	 * 
+	 *
 	 * @param provinceInfos
 	 * @param generalProfile
 	 * @return
 	 */
 	private CustAddressProfileInfo fillUpParamCurrentAddressInfo(List<Province> provinceInfos,
-			CustGeneralProfileResponse generalProfile) {
+																 CustGeneralProfileResponse generalProfile) {
 		CustAddressProfileInfo profileInfo = new CustAddressProfileInfo();
 
 		profileInfo.setFloorNo(generalProfile.getCurrentAddrFloorNo());
@@ -221,7 +221,7 @@ public class CustomerProfileService {
 
 	/**
 	 * Look up working information
-	 * 
+	 *
 	 * @param crmId
 	 * @param businessTypeCode
 	 * @param countryOfIncome
@@ -281,7 +281,7 @@ public class CustomerProfileService {
 
 	/**
 	 * Create income criteria dependency
-	 * 
+	 *
 	 * @param response
 	 * @param incomeBaseSalary
 	 */
@@ -319,7 +319,7 @@ public class CustomerProfileService {
 
 	/**
 	 * Selection match dependency value
-	 * 
+	 *
 	 * @param defaultEntry
 	 * @param incomeBaseSalary
 	 * @return
@@ -341,13 +341,13 @@ public class CustomerProfileService {
 
 	/**
 	 * Look up working address
-	 * 
+	 *
 	 * @param provinceInfos
 	 * @param profileResponse
 	 * @return
 	 */
 	private CustAddressProfileInfo fillUpParamWorkAddressInfo(List<Province> provinceInfos,
-			CustGeneralProfileResponse profileResponse) {
+															  CustGeneralProfileResponse profileResponse) {
 		CustAddressProfileInfo custAddressProfile = new CustAddressProfileInfo();
 		custAddressProfile.setDistrictNameTh(profileResponse.getWorkAddrdistrictNameTh());
 		custAddressProfile.setFloorNo(profileResponse.getWorkAddrFloorNo());
