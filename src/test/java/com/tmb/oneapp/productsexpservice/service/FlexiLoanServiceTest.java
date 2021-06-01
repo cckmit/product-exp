@@ -4,7 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCreditcardInfoClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCreditCardInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
@@ -31,7 +31,7 @@ public class FlexiLoanServiceTest {
     @Mock
     private LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     @Mock
-    private LoanSubmissionGetCreditcardInfoClient getCreditcardInfoClient;
+    private LoanSubmissionGetCreditCardInfoClient getCreditcardInfoClient;
 
     FlexiLoanService flexiLoanService;
 
