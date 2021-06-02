@@ -25,7 +25,6 @@ public class InstantLoanCalUWResponse {
     private String disburstAccountNo;
     private BigDecimal creditLimit;
     private List<LoanCustomerPricing> pricings;
-
     private Calendar loanContractDate;
     private String firstPaymentDueDate;
 
