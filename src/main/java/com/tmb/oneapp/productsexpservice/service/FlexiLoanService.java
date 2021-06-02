@@ -45,7 +45,7 @@ public class FlexiLoanService {
 
         SubmissionCustomerInfo customer = new SubmissionCustomerInfo();
         customer.setName(customerInfo==null?null:String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName()));
-        customer.setCitizenId(customerInfo.getIdNo1());
+        customer.setCitizenId(customerInfo==null?null:customerInfo.getIdNo1());
 
         response.setPaymentMethod(facilityInfo==null?null:facilityInfo.getPaymentMethod());
 
@@ -56,11 +56,8 @@ public class FlexiLoanService {
                 LoanCustomerPricing customerPricing = new LoanCustomerPricing();
                 customerPricing.setMonthFrom(p.getMonthFrom());
                 customerPricing.setMonthTo(p.getMonthTo());
-                if(StringUtil.isNullOrEmpty(p.getRateType())) {
-                    customerPricing.setRateVariance(p.getRateVaraince().multiply(new BigDecimal(100)));
-                }else{
-                    customerPricing.setRateVariance(parseRateVariance(p.getPercentSign()));
-                }
+                customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+                customerPricing.setRate(parseRate(p));
 
                 pricingList.add(customerPricing);
             }
@@ -69,8 +66,8 @@ public class FlexiLoanService {
 
         SubmissionCreditCardInfo creditCard = new SubmissionCreditCardInfo();
         creditCard.setEStatement(customerInfo==null?null:customerInfo.getEmail());
-        creditCard.setFeatureType("S");
-        creditCard.setPaymentMethod(parsePaymentMethod(facilityInfo));
+        creditCard.setFeatureType(facilityInfo==null?null:facilityInfo.getFeatureType());
+        creditCard.setPaymentMethod(facilityInfo==null?null:facilityInfo.getPaymentMethod());
 
         SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
         receiving.setOsLimit(facilityInfo==null?null:facilityInfo.getOsLimit());
@@ -99,19 +96,13 @@ public class FlexiLoanService {
         return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards()[0];
     }
 
-    private String parsePaymentMethod(Facility facility) {
-        if(facility==null) {
-            return null;
+    private String parseRate(Pricing pricing) {
+        if(StringUtil.isNullOrEmpty(pricing.getRateType())) {
+            return String.format("%.2f", pricing.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+        }else{
+            return String.format("%s %s %.2f", pricing.getRateType(), pricing.getPercentSign(), pricing.getRateVaraince().multiply(BigDecimal.valueOf(100)));
         }
-        return "0".equals(facility.getPaymentMethod()) ? "Card":"DirectDebit";
-    }
 
-    private BigDecimal parseRateVariance(String percentSign) {
-        try {
-            return new BigDecimal(percentSign);
-        }catch (Exception e){
-            return null;
-        }
     }
 
 
