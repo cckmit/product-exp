@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.loan;
+package com.tmb.oneapp.productsexpservice.model.flexiloan;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

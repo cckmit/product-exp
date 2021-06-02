@@ -8,7 +8,7 @@ import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestIn
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionInstantLoanCalUWClient;
-import com.tmb.oneapp.productsexpservice.model.loan.InstantLoanCalUWResponse;
+import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
 import lombok.AllArgsConstructor;
@@ -70,7 +70,6 @@ public class LoanSubmissionInstantLoanCalUWService {
                     response.setPricings(pricingList);
                 }
             } else {
-                //TODO : call api
                 response.setLoanAmount(BigDecimal.valueOf(200000));
             }
 
