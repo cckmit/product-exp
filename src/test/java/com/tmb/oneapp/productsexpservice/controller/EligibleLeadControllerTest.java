@@ -8,7 +8,6 @@ import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentPromotion;
 import com.tmb.oneapp.productsexpservice.model.loan.Status;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +55,7 @@ public class EligibleLeadControllerTest {
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
         requestBody.setDisbursementDate("1234");
-        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanAccountDetail("correlationId", requestBody);
+        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail("correlationId", requestBody);
         assertEquals(200, result.getStatusCodeValue());
     }
 
@@ -88,7 +87,7 @@ public class EligibleLeadControllerTest {
 
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
-        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanAccountDetail("correlationId", requestBody);
+        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail("correlationId", requestBody);
         assertEquals(400, result.getStatusCodeValue());
 
     }
