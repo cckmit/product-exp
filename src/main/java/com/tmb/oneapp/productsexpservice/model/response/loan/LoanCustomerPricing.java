@@ -14,4 +14,5 @@ public class LoanCustomerPricing {
     private BigDecimal monthFrom;
     private BigDecimal monthTo;
     private BigDecimal rateVariance;
+    private String rate;
 }

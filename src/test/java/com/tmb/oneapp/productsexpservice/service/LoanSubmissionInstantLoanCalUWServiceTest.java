@@ -8,7 +8,7 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCreditcardInfoClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCreditCardInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionInstantLoanCalUWClient;
@@ -42,7 +42,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
     @Mock
     private LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     @Mock
-    private LoanSubmissionGetCreditcardInfoClient getCreditCardInfoClient;
+    private LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
 
     LoanSubmissionInstantLoanCalUWService loanCalUWService;
 
