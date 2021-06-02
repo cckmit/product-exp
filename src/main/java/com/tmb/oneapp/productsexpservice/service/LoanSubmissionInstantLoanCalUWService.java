@@ -89,6 +89,10 @@ public class LoanSubmissionInstantLoanCalUWService {
             response.setInterestRate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInterestRate());
             response.setDisburstAccountNo(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getDisburstAccountNo());
             response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
+
+            response.setFirstPaymentDueDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getFirstPaymentDueDate());
+            response.setLoanContractDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getLoanContractDate());
+            response.setInstallmentAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInstallmentAmount());
         }
 
         return response;

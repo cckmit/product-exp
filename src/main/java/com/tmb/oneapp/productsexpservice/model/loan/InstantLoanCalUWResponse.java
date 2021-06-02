@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 
 @Getter
@@ -17,10 +18,15 @@ public class InstantLoanCalUWResponse {
     private String product;
     private BigDecimal topUpAmount;
     private BigDecimal loanAmount;
+    private BigDecimal installmentAmount;
     private BigDecimal tenor;
     private BigDecimal interestRate;
     private String PayDate;
     private String disburstAccountNo;
     private BigDecimal creditLimit;
     private List<LoanCustomerPricing> pricings;
+
+    private Calendar loanContractDate;
+    private String firstPaymentDueDate;
+
 }

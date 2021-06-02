@@ -27,6 +27,7 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -107,6 +108,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         approvalMemoFacility.setOutstandingBalance(BigDecimal.TEN);
         approvalMemoFacility.setRateTypePercent(BigDecimal.TEN);
         approvalMemoFacility.setRateType("Y");
+        approvalMemoFacility.setLoanContractDate(Calendar.getInstance());
         approvalMemoFacilities[0] = approvalMemoFacility;
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body responseBody = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body();
