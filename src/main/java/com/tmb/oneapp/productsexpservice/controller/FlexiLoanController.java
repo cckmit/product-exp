@@ -34,16 +34,18 @@ public class FlexiLoanController {
     private final FlexiLoanService flexiLoanService;
 
     @LogAround
-    @ApiOperation("Flexi loan C2G submission info")
+    @ApiOperation("Flexi loan submission info")
     @GetMapping(value = "/submission/info", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> getSubmissionInfo(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                            @Valid SubmissionInfoRequest request) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        logger.info("Get flexi loan submission info for correlation id: {}", correlationId);
+
         TmbOneServiceResponse<SubmissionInfoResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            SubmissionInfoResponse response = flexiLoanService.getSubmissionInfo(correlationId, request);
+            SubmissionInfoResponse response = flexiLoanService.getSubmissionInfo(request);
             oneTmbOneServiceResponse.setData(response);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,

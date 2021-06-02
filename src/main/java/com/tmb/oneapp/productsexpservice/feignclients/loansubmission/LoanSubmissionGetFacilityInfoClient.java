@@ -5,7 +5,6 @@ import com.tmb.common.model.legacy.rsl.ws.facility.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.request.RequestFacility;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.*;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.xml.rpc.ServiceException;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Service
 public class LoanSubmissionGetFacilityInfoClient {
 	@Value("${loan-submission-get-facility-info.url}")
-	private String getFacilityInfoUrl;
+	private String facilityInfoUrl;
 
 	LoanSubmissionGetFacilityInfoServiceLocator locator = new LoanSubmissionGetFacilityInfoServiceLocator();
 
@@ -27,7 +26,7 @@ public class LoanSubmissionGetFacilityInfoClient {
 	}
 
 	public ResponseFacility searchFacilityInfoByCaID(Long caID) throws RemoteException, ServiceException {
-		locator.setLoanSubmissionGetFacilityInfoEndpointAddress(getFacilityInfoUrl);
+		locator.setLoanSubmissionGetFacilityInfoEndpointAddress(facilityInfoUrl);
 
 		LoanSubmissionGetFacilityInfoSoapBindingStub stub = (LoanSubmissionGetFacilityInfoSoapBindingStub) locator
 				.getLoanSubmissionGetFacilityInfo();

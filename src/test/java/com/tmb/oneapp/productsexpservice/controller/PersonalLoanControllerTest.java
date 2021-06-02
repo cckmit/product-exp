@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.loan.InstantLoanCalUWResponse;
+import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;

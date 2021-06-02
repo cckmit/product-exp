@@ -8,10 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class SubmissionInfoResponse {
-    private SubmissionCustomerInfo customerInfo;
-    private SubmissionPricingInfo pricingInfo;
-    private String paymentMethod;
-    private SubmissionCreditCardInfo creditCardInfo;
-    private SubmissionReceivingInfo receivingInfo;
+public class SubmissionCustomerInfo {
+    private String name;
+    private String citizenId;
 }
