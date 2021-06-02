@@ -53,7 +53,7 @@ public class FlexiLoanServiceTest {
         when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaID(1L);
-        flexiLoanService.getSubmissionInfo("xxx", request);
+        flexiLoanService.getSubmissionInfo(request);
         Assert.assertTrue(true);
     }
 
