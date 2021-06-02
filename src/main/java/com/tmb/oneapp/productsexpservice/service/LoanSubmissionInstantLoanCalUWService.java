@@ -6,8 +6,6 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCreditCardInfoClient;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionInstantLoanCalUWClient;
 import com.tmb.oneapp.productsexpservice.model.loan.InstantLoanCalUWResponse;
@@ -30,14 +28,10 @@ public class LoanSubmissionInstantLoanCalUWService {
 
     private final LoanSubmissionInstantLoanCalUWClient loanCalUWClient;
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
-    private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
-    private final LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
 
     static final String APPROVE = "APPROVE";
-    static final String REJECT = "REJECT";
     static final String FLASH = "RC01";
     static final String C2G = "UADA";
-    static final String CHILL = "VSOCHI";
 
     public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws ServiceException, RemoteException {
 
@@ -77,11 +71,7 @@ public class LoanSubmissionInstantLoanCalUWService {
                     response.setPricings(pricingList);
                 }
             } else {
-                //TODO : call api
                 response.setLoanAmount(BigDecimal.valueOf(200000));
-//                if (creditCardInfo.getBody().getCreditCards() != null) {
-//                    response.setLoanAmount(creditCardInfo.getBody().getCreditCards()[0].getRequestCreditLimit());
-//                }
             }
 
             response.setTenor(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getTenor());
@@ -89,6 +79,10 @@ public class LoanSubmissionInstantLoanCalUWService {
             response.setInterestRate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInterestRate());
             response.setDisburstAccountNo(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getDisburstAccountNo());
             response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
+
+            response.setFirstPaymentDueDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getFirstPaymentDueDate());
+            response.setLoanContractDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getLoanContractDate());
+            response.setInstallmentAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInstallmentAmount());
         }
 
         return response;
@@ -103,9 +97,6 @@ public class LoanSubmissionInstantLoanCalUWService {
             if (productCode.equals(FLASH)) {
                 facilityInfo = getFacilityInfoClient.searchFacilityInfoByCaID(request.getBody().getCaId().longValue());
             }
-
-//            ResponseInstantLoanGetCustInfo customerInfo = getCustomerInfoClient.searchCustomerInfoByCaID(request.getBody().getCaId().toString());
-//            ResponseCreditcard creditCardInfo = getCreditCardInfoClient.searchCreditcardInfoByCaID(request.getBody().getCaId().longValue());
 
             return parseResponse(facilityInfo, responseInstantLoanCalUW, productCode);
         } catch (Exception e) {

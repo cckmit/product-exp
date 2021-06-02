@@ -8,8 +8,6 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCreditCardInfoClient;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionInstantLoanCalUWClient;
 import com.tmb.oneapp.productsexpservice.model.loan.InstantLoanCalUWResponse;
@@ -27,6 +25,7 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,23 +37,19 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
     private LoanSubmissionInstantLoanCalUWClient loanCalUWClient;
     @Mock
     private LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
-    @Mock
-    private LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
-    @Mock
-    private LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
 
     LoanSubmissionInstantLoanCalUWService loanCalUWService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanCalUWService = new LoanSubmissionInstantLoanCalUWService(loanCalUWClient, getFacilityInfoClient, getCustomerInfoClient, getCreditCardInfoClient);
+        loanCalUWService = new LoanSubmissionInstantLoanCalUWService(loanCalUWClient, getFacilityInfoClient);
     }
 
     @Test
     public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
-        ResponseFacility respFacility =  mockFacility();
+        ResponseFacility respFacility = mockFacility();
 
         Body body = new Body();
         body.setTriggerFlag("Y");
@@ -64,7 +59,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(respFacility);
 
-        InstantLoanCalUWRequest calUWReq= new InstantLoanCalUWRequest();
+        InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("RC01");
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.TEN);
@@ -107,6 +102,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         approvalMemoFacility.setOutstandingBalance(BigDecimal.TEN);
         approvalMemoFacility.setRateTypePercent(BigDecimal.TEN);
         approvalMemoFacility.setRateType("Y");
+        approvalMemoFacility.setLoanContractDate(Calendar.getInstance());
         approvalMemoFacilities[0] = approvalMemoFacility;
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body responseBody = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body();
@@ -144,7 +140,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
 
     private Pricing[] mockPricing() {
         InstantLoanCalUWResponse instantLoanCalUWResponse = new InstantLoanCalUWResponse();
-        Pricing[] pricings =  new Pricing[1];
+        Pricing[] pricings = new Pricing[1];
         Pricing p = new Pricing();
         p.setMonthFrom(BigDecimal.ONE);
         p.setMonthTo(BigDecimal.ONE);
