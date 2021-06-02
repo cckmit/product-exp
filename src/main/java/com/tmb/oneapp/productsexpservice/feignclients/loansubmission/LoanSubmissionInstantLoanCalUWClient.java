@@ -23,10 +23,6 @@ public class LoanSubmissionInstantLoanCalUWClient {
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
 
-    private void setLocator(LoanSubmissionInstantLoanCalUWServiceLocator locator) {
-        this.locator = locator;
-    }
-
     public ResponseInstantLoanCalUW getCalculateUnderwriting(RequestInstantLoanCalUW req) throws RemoteException, ServiceException {
         locator.setLoanSubmissionInstantLoanCalUWEndpointAddress(loanCalUWUrl);
 
