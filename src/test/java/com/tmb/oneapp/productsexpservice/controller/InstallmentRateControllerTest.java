@@ -59,7 +59,7 @@ public class InstallmentRateControllerTest {
         requestBody.setCashChillChillFlag("Y");
         requestBody.setGetAllDetailFlag("N");
         requestBody.setCashTransferFlag("Y");
-        ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> result = installmentRateController.getLoanAccountDetail(correlationId, requestBody);
+        ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> result = installmentRateController.getInstallmentAccountDetail(correlationId, requestBody);
         Assert.assertNotEquals(400, result.getStatusCodeValue());
     }
 
@@ -148,7 +148,7 @@ public class InstallmentRateControllerTest {
 
         // Run the test
 
-        ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanAccountDetail = installmentRateController.getLoanAccountDetail(correlationId, requestBody);
+        ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanAccountDetail = installmentRateController.getInstallmentAccountDetail(correlationId, requestBody);
 
         // Verify the results
         Assert.assertEquals(400, loanAccountDetail.getStatusCodeValue());
