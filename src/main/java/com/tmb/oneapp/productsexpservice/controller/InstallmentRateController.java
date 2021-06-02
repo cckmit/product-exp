@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.loan.EnquiryInstallmentRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import io.swagger.annotations.Api;
@@ -41,60 +42,72 @@ public class InstallmentRateController {
      * @return
      */
     @LogAround
-    @PostMapping(value = "/installment/get-installment-rate", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/credit-card/get-installment-rate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> getLoanAccountDetail(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
-            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody InstallmentRateRequest requestBody) {
+            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EnquiryInstallmentRequest requestBody) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<InstallmentRateResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
-
         try {
-
-            String groupAccountId = requestBody.getGroupAccountId();
-            String disbursementDate = requestBody.getDisbursementDate();
-            String amount = requestBody.getAmount();
-            String billCycleCutDate = requestBody.getBillCycleCutDate();
-            String cashChillChillFlag = requestBody.getCashChillChillFlag();
-            String cashTransferFlag = requestBody.getCashTransferFlag();
-            String getAllDetailFlag = requestBody.getGetAllDetailFlag();
-            String promoSegment = requestBody.getPromoSegment();
-
-            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate) &&
-                    !Strings.isNullOrEmpty(amount) && !Strings.isNullOrEmpty(billCycleCutDate) &&
-                    !Strings.isNullOrEmpty(promoSegment) && !Strings.isNullOrEmpty(cashChillChillFlag) && !Strings.isNullOrEmpty(cashTransferFlag) && !Strings.isNullOrEmpty(getAllDetailFlag)) {
-                ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient.getInstallmentRate(correlationId, requestBody);
-                int statusCodeValue = loanResponse.getStatusCodeValue();
-                HttpStatus statusCode = loanResponse.getStatusCode();
-
-                if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
-
-                    InstallmentRateResponse loanDetails = loanResponse.getBody().getData();
-
-                    oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                            ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                    oneServiceResponse.setData(loanDetails);
-                    return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-                } else {
-                    return getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse);
-
-                }
-            } else {
-                return getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse);
-            }
+        	InstallmentRateRequest rateRequest = constructInstallmentRequest(requestBody);
+        	ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient.getInstallmentRate(correlationId, rateRequest);
+        	
+        	 
+//            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate) &&
+//                    !Strings.isNullOrEmpty(amount) && !Strings.isNullOrEmpty(billCycleCutDate) &&
+//                    !Strings.isNullOrEmpty(promoSegment) && !Strings.isNullOrEmpty(cashChillChillFlag) && !Strings.isNullOrEmpty(cashTransferFlag) && !Strings.isNullOrEmpty(getAllDetailFlag)) {
+//                ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient.getInstallmentRate(correlationId, rateRequest);
+//                int statusCodeValue = loanResponse.getStatusCodeValue();
+//                HttpStatus statusCode = loanResponse.getStatusCode();
+//
+//                if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
+//
+//                    InstallmentRateResponse loanDetails = loanResponse.getBody().getData();
+//
+//                    oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+//                            ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+//                    oneServiceResponse.setData(loanDetails);
+//                    return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+//                } else {
+//                    return getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse);
+//
+//                }
+//            } else {
+//                return getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse);
+//            }
 
         } catch (Exception e) {
             logger.error("Error while getting installment rate controller: {}", e);
             oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
         }
+        
+        return ResponseEntity.ok(oneServiceResponse);
 
     }
-
+    
     /**
+     * Constuct installment request
+     * @param requestBody
+     * @return
+     */
+    private InstallmentRateRequest constructInstallmentRequest(EnquiryInstallmentRequest requestBody) {
+    	InstallmentRateRequest rateReq = new InstallmentRateRequest();
+//    	String groupAccountId = requestBody.getGroupAccountId();
+        String disbursementDate = requestBody.getDisbursementDate();
+        String amount = requestBody.getAmount();
+        String billCycleCutDate = requestBody.getBillCycleCutDate();
+        String cashChillChillFlag = requestBody.getCashChillChillFlag();
+        String cashTransferFlag = requestBody.getCashTransferFlag();
+        String getAllDetailFlag = requestBody.getGetAllDetailFlag();
+        String promoSegment = requestBody.getPromoSegment();
+		return rateReq;
+	}
+
+	/**
      * @param responseHeaders
      * @param serviceResponse
      * @return

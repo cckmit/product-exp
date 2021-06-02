@@ -49,10 +49,10 @@ public class InstallmentRateControllerTest {
         ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> response = new ResponseEntity<>(serverResponse, HttpStatus.OK);
         when(creditCardClient.getInstallmentRate(anyString(), any())).thenReturn(response);
 
-        InstallmentRateRequest requestBody = new InstallmentRateRequest();
+        EnquiryInstallmentRequest requestBody = new EnquiryInstallmentRequest();
         requestBody.setAmount("1234.00");
         requestBody.setGetAllDetailFlag("Y");
-        requestBody.setGroupAccountId("0000000050080760015");
+        requestBody.setAccountId("0000000000000050080760015");
         requestBody.setDisbursementDate("2020-10-16");
         requestBody.setBillCycleCutDate("3");
         requestBody.setPromoSegment("CS7");
@@ -135,10 +135,10 @@ public class InstallmentRateControllerTest {
         final ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> tmbOneServiceResponseEntity1 = new ResponseEntity<>(installmentRateResponseTmbOneServiceResponse1, HttpStatus.OK);
         String correlationId = "c83936c284cb398fA46CF16F399C";
 
-        InstallmentRateRequest requestBody = new InstallmentRateRequest();
+        EnquiryInstallmentRequest requestBody = new EnquiryInstallmentRequest();
         requestBody.setAmount("1234.00");
         requestBody.setGetAllDetailFlag("Y");
-        requestBody.setGroupAccountId("0000000050080760015");
+        requestBody.setAccountId("0000000000000050080760015");
         requestBody.setDisbursementDate("2020-10-16");
         requestBody.setBillCycleCutDate("3");
         requestBody.setPromoSegment("CS7");
