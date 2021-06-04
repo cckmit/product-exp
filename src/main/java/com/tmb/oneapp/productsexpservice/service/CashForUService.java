@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.CashForYourResponse;
@@ -38,6 +39,10 @@ public class CashForUService {
 			responseModelInfo.setCashFeeRate("0");
 			responseModelInfo.setCashInterestRate("0");
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
+			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
+					requestBody.getAccountId());
+			CardBalances cardBalances = fetchCardResponse.getBody().getCreditCard().getCardBalances();
+			responseModelInfo.setMaximumTransferAmt(String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer()));
 		} else {
 			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody);
 		}
@@ -58,6 +63,7 @@ public class CashForUService {
 		responseModelInfo.setCashFeeRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeRate()));
 		responseModelInfo.setCashInterestRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate()));
 		responseModelInfo.setCashVatRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate()));
+		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
 	}
 
 }
