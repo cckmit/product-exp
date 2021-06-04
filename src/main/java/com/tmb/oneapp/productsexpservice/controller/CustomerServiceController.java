@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @RestController
-@Api(tags = "Lend Customer information service")
+@Api(tags = "Lead Customer information service")
 public class CustomerServiceController {
 
 	private static final TMBLogger<CustomerServiceController> logger = new TMBLogger<>(CustomerServiceController.class);

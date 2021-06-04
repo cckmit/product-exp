@@ -18,6 +18,9 @@ import com.tmb.oneapp.productsexpservice.model.loan.Rates;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +32,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
+
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
+
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.Iterator;
@@ -39,125 +45,133 @@ import java.util.Map;
 @RestController
 @Api(tags = "Credit Card-Cash For You")
 public class LoanDetailsController {
-    private static final TMBLogger<LoanDetailsController> log = new TMBLogger<>(LoanDetailsController.class);
-    private final AccountRequestClient accountRequestClient;
-    private final CommonServiceClient commonServiceClient;
-    private final CreditCardLogService creditCardLogService;
+	private static final TMBLogger<LoanDetailsController> log = new TMBLogger<>(LoanDetailsController.class);
+	private final AccountRequestClient accountRequestClient;
+	private final CommonServiceClient commonServiceClient;
+	private final CreditCardLogService creditCardLogService;
 
-    /**
-     * Constructor
-     *
-     * @param accountRequestClient
-     * @param commonServiceClient
-     * @param creditCardLogService
-     */
-    @Autowired
-    public LoanDetailsController(AccountRequestClient accountRequestClient, CommonServiceClient commonServiceClient,
-                                 CreditCardLogService creditCardLogService) {
-        this.accountRequestClient = accountRequestClient;
-        this.commonServiceClient = commonServiceClient;
-        this.creditCardLogService = creditCardLogService;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param accountRequestClient
+	 * @param commonServiceClient
+	 * @param creditCardLogService
+	 */
+	@Autowired
+	public LoanDetailsController(AccountRequestClient accountRequestClient, CommonServiceClient commonServiceClient,
+			CreditCardLogService creditCardLogService) {
+		this.accountRequestClient = accountRequestClient;
+		this.commonServiceClient = commonServiceClient;
+		this.creditCardLogService = creditCardLogService;
+	}
 
-    /**
-     * @param requestHeadersParameter
-     * @param requestBody
-     * @return
-     */
-    @LogAround
-    @PostMapping(value = "/loan/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getLoanAccountDetail(
-            @ApiParam(value = "X_CORRELATION_ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") @Valid @RequestHeader Map<String, String> requestHeadersParameter,
-            @ApiParam(value = "Account ID", defaultValue = "00016109738001", required = true) @RequestBody AccountId requestBody) {
+	/**
+	 * @param requestHeadersParameter
+	 * @param requestBody
+	 * @return
+	 */
+	@LogAround
+	@PostMapping(value = "/loan/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "get loan account detail")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+	public ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getLoanAccountDetail(
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeadersParameter,
+			@ApiParam(value = "Account ID", defaultValue = "00016109738001", required = true) @RequestBody AccountId requestBody) {
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+		TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
-        String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
-        String activityDate = Long.toString(System.currentTimeMillis());
-        String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN;
-        CreditCardEvent creditCardEvent = new CreditCardEvent(
-                requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate,
-                activityId);
+		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String activityDate = Long.toString(System.currentTimeMillis());
+		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN;
+		CreditCardEvent creditCardEvent = new CreditCardEvent(
+				requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate,
+				activityId);
 
-        try {
+		try {
 
-            String accountId = requestBody.getAccountNo();
-            if (!Strings.isNullOrEmpty(accountId)) {
-                ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse = accountRequestClient
-                        .getLoanAccountDetail(correlationId, requestBody);
-                int statusCodeValue = loanResponse.getStatusCodeValue();
-                HttpStatus statusCode = loanResponse.getStatusCode();
+			String accountId = requestBody.getAccountNo();
+			if (!Strings.isNullOrEmpty(accountId)) {
+				ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse = accountRequestClient
+						.getLoanAccountDetail(correlationId, requestBody);
+				int statusCodeValue = loanResponse.getStatusCodeValue();
+				HttpStatus statusCode = loanResponse.getStatusCode();
 
-                if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
+				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-                    return getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, correlationId, creditCardEvent, loanResponse);
-                } else {
-                    return getFailedResponse(responseHeaders, oneServiceResponse);
+					return getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders,
+							oneServiceResponse, correlationId, creditCardEvent, loanResponse);
+				} else {
+					return getFailedResponse(responseHeaders, oneServiceResponse);
 
-                }
-            } else {
-                return getFailedResponse(responseHeaders, oneServiceResponse);
-            }
+				}
+			} else {
+				return getFailedResponse(responseHeaders, oneServiceResponse);
+			}
 
-        } catch (Exception e) {
-            log.error("Error while getLoanAccountDetails: {}", e);
-            oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-        }
+		} catch (Exception e) {
+			log.error("Error while getLoanAccountDetails: {}", e);
+			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService()));
+			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+		}
 
-    }
+	}
 
-    ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getTmbOneServiceResponseResponseEntity(Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders, TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse, String correlationId, CreditCardEvent creditCardEvent, ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse) {
-        HomeLoanFullInfoResponse loanDetails = loanResponse.getBody().getData();
-        String productId = loanResponse.getBody().getData().getAccount().getProductId();
-        Rates rates = loanResponse.getBody().getData().getAccount().getRates();
-        Double currentInterestRate = ConversionUtil.stringToDouble(rates.getCurrentInterestRate());
-        Double originalInterestRate = ConversionUtil.stringToDouble(rates.getOriginalInterestRate());
-        String monthlyPaymentAmount = loanDetails.getAccount().getPayment().getMonthlyPaymentAmount();
-        Double monthlyPayment = ConversionUtil.stringToDouble(monthlyPaymentAmount);
-        DecimalFormat df = new DecimalFormat("#,###,##0.00");
-        Payment payment = loanDetails.getAccount().getPayment();
+	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getTmbOneServiceResponseResponseEntity(
+			Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders,
+			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse, String correlationId,
+			CreditCardEvent creditCardEvent,
+			ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse) {
+		HomeLoanFullInfoResponse loanDetails = loanResponse.getBody().getData();
+		String productId = loanResponse.getBody().getData().getAccount().getProductId();
+		Rates rates = loanResponse.getBody().getData().getAccount().getRates();
+		Double currentInterestRate = ConversionUtil.stringToDouble(rates.getCurrentInterestRate());
+		Double originalInterestRate = ConversionUtil.stringToDouble(rates.getOriginalInterestRate());
+		String monthlyPaymentAmount = loanDetails.getAccount().getPayment().getMonthlyPaymentAmount();
+		Double monthlyPayment = ConversionUtil.stringToDouble(monthlyPaymentAmount);
+		DecimalFormat df = new DecimalFormat("#,###,##0.00");
+		Payment payment = loanDetails.getAccount().getPayment();
 
-        String formattedPayment = df.format(monthlyPayment);
-        payment.setMonthlyPaymentAmount(formattedPayment);
-        DecimalFormat threeDecimalPlaces = new DecimalFormat("#.00");
-        String currentInterest = threeDecimalPlaces.format(currentInterestRate);
-        String originalInterest = threeDecimalPlaces.format(originalInterestRate);
-        String currentInterestRateInPercent = currentInterest.concat(" %");
-        String originalInterestRateInPercent = originalInterest.concat(" %");
-        rates.setCurrentInterestRate(currentInterestRateInPercent);
-        rates.setOriginalInterestRate(originalInterestRateInPercent);
-        ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
-                .getProductConfig(correlationId);
+		String formattedPayment = df.format(monthlyPayment);
+		payment.setMonthlyPaymentAmount(formattedPayment);
+		DecimalFormat threeDecimalPlaces = new DecimalFormat("#.00");
+		String currentInterest = threeDecimalPlaces.format(currentInterestRate);
+		String originalInterest = threeDecimalPlaces.format(originalInterestRate);
+		String currentInterestRateInPercent = currentInterest.concat(" %");
+		String originalInterestRateInPercent = originalInterest.concat(" %");
+		rates.setCurrentInterestRate(currentInterestRateInPercent);
+		rates.setOriginalInterestRate(originalInterestRateInPercent);
+		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
+				.getProductConfig(correlationId);
 
-        List<ProductConfig> list = fetchProductConfigList.getBody().getData();
-        Iterator<ProductConfig> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            ProductConfig productConfig = iterator.next();
-            if (productConfig.getProductCode().equalsIgnoreCase(productId)) {
-                loanDetails.setProductConfig(productConfig);
-            }
-        }
+		List<ProductConfig> list = fetchProductConfigList.getBody().getData();
+		Iterator<ProductConfig> iterator = list.iterator();
+		while (iterator.hasNext()) {
+			ProductConfig productConfig = iterator.next();
+			if (productConfig.getProductCode().equalsIgnoreCase(productId)) {
+				loanDetails.setProductConfig(productConfig);
+			}
+		}
 
-        /* Activity log */
-        creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent,
-                requestHeadersParameter, loanDetails);
-        creditCardLogService.logActivity(creditCardEvent);
-        oneServiceResponse
-                .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                        ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-        oneServiceResponse.setData(loanDetails);
-        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-    }
+		/* Activity log */
+		creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,
+				loanDetails);
+		creditCardLogService.logActivity(creditCardEvent);
+		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		oneServiceResponse.setData(loanDetails);
+		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+	}
 
-    ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getFailedResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse) {
-        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(),
-                ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-        return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-    }
+	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getFailedResponse(HttpHeaders responseHeaders,
+			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse) {
+		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+				ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+				ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+		return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+	}
 }
