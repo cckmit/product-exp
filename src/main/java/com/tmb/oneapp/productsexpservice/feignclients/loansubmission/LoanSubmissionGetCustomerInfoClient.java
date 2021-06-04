@@ -26,7 +26,7 @@ public class LoanSubmissionGetCustomerInfoClient {
         this.locator = locator;
     }
 
-    public ResponseIndividual searchCustomerInfoByCaID(long caID) throws ServiceException, RemoteException, ServiceException {
+    public ResponseIndividual searchCustomerInfoByCaID(long caID) throws RemoteException, ServiceException {
         locator.setLoanSubmissionGetCustomerInfoEndpointAddress(getCustomerInfoUrl);
 
         LoanSubmissionGetCustomerInfoSoapBindingStub stub = (LoanSubmissionGetCustomerInfoSoapBindingStub) locator.

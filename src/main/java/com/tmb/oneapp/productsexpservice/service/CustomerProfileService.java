@@ -289,21 +289,21 @@ public class CustomerProfileService {
 		DependDefaultEntry defaultEntry = new DependDefaultEntry();
 		List<CodeEntry> entry = new ArrayList();
 		CodeEntry entryLevelOne = new CodeEntry();
-		entryLevelOne.setEntryName("15000-29999");
+		entryLevelOne.setEntryName("15,000-29,999");
 		entryLevelOne.setEntryCode("30000");
 		entry.add(entryLevelOne);
 		CodeEntry entryLevelTwo = new CodeEntry();
-		entryLevelTwo.setEntryName("30000-49999");
+		entryLevelTwo.setEntryName("30,000-49,999");
 		entryLevelTwo.setEntryCode("50000");
 		entry.add(entryLevelTwo);
 
 		CodeEntry entryLevelThree = new CodeEntry();
-		entryLevelThree.setEntryName("50000-99999");
+		entryLevelThree.setEntryName("50,000-99,999");
 		entryLevelThree.setEntryCode("100000");
 		entry.add(entryLevelThree);
 
 		CodeEntry entryLevelFour = new CodeEntry();
-		entryLevelFour.setEntryName("100000-199999");
+		entryLevelFour.setEntryName("100,000-199,999");
 		entryLevelFour.setEntryCode("200000");
 		entry.add(entryLevelFour);
 		defaultEntry.setEntry(entry);

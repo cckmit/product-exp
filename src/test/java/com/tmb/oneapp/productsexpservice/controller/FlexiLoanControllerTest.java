@@ -41,7 +41,7 @@ public class FlexiLoanControllerTest {
         request.setCaID(1L);
         String correlationId = "xxx";
         SubmissionInfoResponse response = new SubmissionInfoResponse();
-        when(flexiLoanService.getSubmissionInfo(any(), any())).thenReturn(response);
+        when(flexiLoanService.getSubmissionInfo(any())).thenReturn(response);
         ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> responseEntity = flexiLoanController.getSubmissionInfo(correlationId, request);
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
@@ -51,7 +51,7 @@ public class FlexiLoanControllerTest {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaID(1L);
         String correlationId = "xxx";
-        when(flexiLoanService.getSubmissionInfo(any(), any())).thenThrow(new IllegalArgumentException());
+        when(flexiLoanService.getSubmissionInfo(any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> responseEntity = flexiLoanController.getSubmissionInfo(correlationId, request);
         assertTrue(responseEntity.getStatusCode().isError());
     }

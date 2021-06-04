@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
 import java.util.UUID;
 
 @Service
-public class LoanSubmissionGetCreditcardInfoClient {
+public class LoanSubmissionGetCreditCardInfoClient {
 	@Value("${loan-submission-get-creditcard-info.url}")
 	private String getCreditCardInfoUrl;
 
