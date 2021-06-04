@@ -1,8 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.oneapp.productsexpservice.model.MonthlyTrans;
-import com.tmb.oneapp.productsexpservice.model.loan.CashForYourResponse;
-import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.model.loan.EnquiryInstallmentRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.service.CashForUService;
-import com.tmb.oneapp.productsexpservice.service.InstallmentService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

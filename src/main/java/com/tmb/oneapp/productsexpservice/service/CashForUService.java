@@ -33,7 +33,6 @@ public class CashForUService {
 			String cashChillChillFlag, String cashTransferFlag, String correlationId,
 			EnquiryInstallmentRequest requestBody) {
 		CashForYourResponse responseModelInfo = new CashForYourResponse();
-		calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody);
 		if ("Y".equals(cashChillChillFlag) && "Y".equals(cashTransferFlag)) {
 			responseModelInfo.setCashVatRate("0");
 			responseModelInfo.setCashFeeRate("0");
