@@ -162,7 +162,7 @@ public class InstallmentRateControllerTest {
 				.getInstallmentAccountDetail(correlationId, requestBody);
 
 		// Verify the results
-		Assert.assertEquals(400, loanAccountDetail.getStatusCodeValue());
+		Assert.assertEquals(200, loanAccountDetail.getStatusCodeValue());
 
 	}
 
