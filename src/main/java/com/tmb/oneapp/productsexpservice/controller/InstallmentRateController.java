@@ -32,6 +32,7 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -59,9 +60,9 @@ public class InstallmentRateController {
 			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<CashForYourResponse>> getInstallmentAccountDetail(
-			@RequestHeader String correlationId,
-			@ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EnquiryInstallmentRequest requestBody) {
-
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers,
+			@RequestBody EnquiryInstallmentRequest requestBody) {
+		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<CashForYourResponse> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -72,8 +73,9 @@ public class InstallmentRateController {
 					.getInstallmentRate(correlationId, rateRequest);
 
 			if (loanResponse.getStatusCode() == HttpStatus.OK) {
-				CashForYourResponse cashForYouInfo = cashForService
-						.calculateInstallmentForCashForYou(loanResponse.getBody().getData(),rateRequest.getCashChillChillFlag(),rateRequest.getCashTransferFlag(),correlationId,requestBody);
+				CashForYourResponse cashForYouInfo = cashForService.calculateInstallmentForCashForYou(
+						loanResponse.getBody().getData(), rateRequest.getCashChillChillFlag(),
+						rateRequest.getCashTransferFlag(), correlationId, requestBody);
 				oneServiceResponse.setData(cashForYouInfo);
 				oneServiceResponse
 						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),

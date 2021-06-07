@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class EnquiryInstallmentRequest {
 	@ApiModelProperty(notes = "accountId", required = true, example = "0000000000000050080760015")
-	@JsonProperty("groupAccountId")
+	@JsonProperty("accountId")
 	private String accountId;
 	@ApiModelProperty(notes = "amount", required = true, example = "10000.00")
 	@JsonProperty("amount")
