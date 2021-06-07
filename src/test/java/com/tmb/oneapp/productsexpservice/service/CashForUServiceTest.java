@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.BalanceCredit;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardCashAdvance;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
@@ -47,11 +49,17 @@ public class CashForUServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 
 		CreditCardDetail creditCardDetail = new CreditCardDetail();
+		CardBalances cardBalance = new CardBalances();
+		cardBalance.setAvailableCashAdvance(BigDecimal.TEN);
+		cardBalance.setAvailableCreditAllowance(BigDecimal.TEN);
+		creditCardDetail.setCardBalances(cardBalance);
+		
 		CardCashAdvance cashAdvance = new CardCashAdvance();
 		cashAdvance.setCashAdvFeeFixedAmt(BigDecimal.ONE);
 		cashAdvance.setCashAdvFeeRate(BigDecimal.ONE);
 		cashAdvance.setCashAdvFeeVATRate(BigDecimal.ONE);
 		cashAdvance.setCashAdvIntRate(BigDecimal.ONE);
+		
 		creditCardDetail.setCardCashAdvance(cashAdvance);
 
 		cardResponse.setCreditCard(creditCardDetail);
@@ -82,12 +90,23 @@ public class CashForUServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 
 		CreditCardDetail creditCardDetail = new CreditCardDetail();
+		CardBalances cardBalance = new CardBalances();
+		cardBalance.setAvailableCashAdvance(BigDecimal.TEN);
+		cardBalance.setAvailableCreditAllowance(BigDecimal.TEN);
+		creditCardDetail.setCardBalances(cardBalance);
+		
 		CardCashAdvance cashAdvance = new CardCashAdvance();
 		cashAdvance.setCashAdvFeeFixedAmt(BigDecimal.ZERO);
 		cashAdvance.setCashAdvFeeRate(BigDecimal.ZERO);
 		cashAdvance.setCashAdvFeeVATRate(BigDecimal.ZERO);
 		cashAdvance.setCashAdvIntRate(BigDecimal.ZERO);
 		creditCardDetail.setCardCashAdvance(cashAdvance);
+		
+		CardBalances cBalance = new CardBalances();
+		BalanceCredit balanceCredit = new BalanceCredit();
+		balanceCredit.setAvailableToTransfer(BigDecimal.ZERO);
+		cBalance.setBalanceCreditLimit(balanceCredit);
+		creditCardDetail.setCardBalances(cBalance);
 
 		cardResponse.setCreditCard(creditCardDetail);
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
