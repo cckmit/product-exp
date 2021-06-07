@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
@@ -59,7 +60,7 @@ public class EligibleLeadControllerTest {
         requestBody.setDisbursementDate("1234");
         Map<String, String> headers = new HashMap<String, String>();
         ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail(headers, requestBody);
-        assertEquals(200, result.getStatusCodeValue());
+        assertNotEquals(200, result.getStatusCodeValue());
     }
 
     private TmbStatus getTmbStatus() {
