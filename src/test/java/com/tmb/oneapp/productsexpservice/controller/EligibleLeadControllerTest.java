@@ -19,7 +19,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -55,7 +57,8 @@ public class EligibleLeadControllerTest {
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
         requestBody.setDisbursementDate("1234");
-        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail("correlationId", requestBody);
+        Map<String, String> headers = new HashMap<String, String>();
+        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail(headers, requestBody);
         assertEquals(200, result.getStatusCodeValue());
     }
 
@@ -87,7 +90,8 @@ public class EligibleLeadControllerTest {
 
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
-        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail("correlationId", requestBody);
+        Map<String, String> headers = new HashMap<String, String>();
+        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail(headers, requestBody);
         assertEquals(400, result.getStatusCodeValue());
 
     }

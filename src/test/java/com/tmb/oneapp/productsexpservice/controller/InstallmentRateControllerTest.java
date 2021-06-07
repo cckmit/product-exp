@@ -18,7 +18,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
@@ -63,8 +65,9 @@ public class InstallmentRateControllerTest {
 		requestBody.setCashChillChillFlag("Y");
 		requestBody.setGetAllDetailFlag("N");
 		requestBody.setCashTransferFlag("Y");
+		Map<String, String> headers = new HashMap<String, String>();
 		ResponseEntity<TmbOneServiceResponse<CashForYourResponse>> result = installmentRateController
-				.getInstallmentAccountDetail(correlationId, requestBody);
+				.getInstallmentAccountDetail(headers, requestBody);
 		Assert.assertNotEquals(400, result.getStatusCodeValue());
 	}
 
@@ -157,9 +160,9 @@ public class InstallmentRateControllerTest {
 		requestBody.setCashTransferFlag("Y");
 
 		// Run the test
-
+		Map<String, String> headers = new HashMap<String, String>();
 		ResponseEntity<TmbOneServiceResponse<CashForYourResponse>> loanAccountDetail = installmentRateController
-				.getInstallmentAccountDetail(correlationId, requestBody);
+				.getInstallmentAccountDetail(headers, requestBody);
 
 		// Verify the results
 		Assert.assertEquals(200, loanAccountDetail.getStatusCodeValue());
