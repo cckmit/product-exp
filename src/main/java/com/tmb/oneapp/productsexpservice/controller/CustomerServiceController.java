@@ -295,7 +295,7 @@ public class CustomerServiceController {
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient
-					.getBusinessSubTypeInfo(correlationId);
+					.getBusinessSubTypeInfo(correlationId,entrycode);
 			if (Objects.nonNull(lendingResponse.getBody())) {
 				response.setData(lendingResponse.getBody().getData());
 			}

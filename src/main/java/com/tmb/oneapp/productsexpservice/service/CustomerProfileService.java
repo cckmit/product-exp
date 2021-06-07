@@ -306,6 +306,11 @@ public class CustomerProfileService {
 		entryLevelFour.setEntryName("100,000-199,999");
 		entryLevelFour.setEntryCode("200000");
 		entry.add(entryLevelFour);
+		
+		CodeEntry entryLevelFive = new CodeEntry();
+		entryLevelFive.setEntryName("200,000+");
+		entryLevelFive.setEntryCode("210000");
+		entry.add(entryLevelFive);
 		defaultEntry.setEntry(entry);
 
 		CodeEntry match = selectMatchDependency(defaultEntry, incomeBaseSalary);
