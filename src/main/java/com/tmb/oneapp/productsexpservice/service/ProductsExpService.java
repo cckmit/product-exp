@@ -145,47 +145,16 @@ public class ProductsExpService {
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, FundSummaryRq rq) {
         FundSummaryBody result = new FundSummaryBody();
-
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData = null;
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse = null;
-
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            List<String> ports = new ArrayList<>();
-            List<String> ptestPortList = new ArrayList<>();
-            PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
-            ptesBodyRequest.setRmNumber(rq.getCrmId());
-            String portData = customerExpServiceClient.getAccountSaving(correlationId, rq.getCrmId());
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
-                    investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
-
-
-            Optional<List<PtesDetail>> ptesDetailList =
-                    Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
-                            .map(TmbOneServiceResponse::getData);
-
-
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
-            if (!StringUtils.isEmpty(portData)) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readValue(portData, JsonNode.class);
-                JsonNode dataNode = node.get("data");
-                JsonNode portList = dataNode.get("mutual_fund_accounts");
-                ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
-                });
-            }
-            if (ptesDetailList.isPresent()) {
-                ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
-                        .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
-
-            }
-            ports.addAll(ptestPortList);
+            List<String> ports = getPortList(rq.getCrmId(),invHeaderReqParameter);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
-            summaryByPortResponse = investmentRequestClient
-                    .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
+            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummaryData);
             if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                 var body = fundSummaryData.getBody();
@@ -193,15 +162,43 @@ public class ProductsExpService {
                 this.setFundSummaryBody(result, ports, body, summaryByPort);
             }
             return result;
-
-
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
+        }
+    }
+
+    private List<String> getPortList(String crmId, Map<String, String> invHeaderReqParameter) throws com.fasterxml.jackson.core.JsonProcessingException {
+        List<String> ports = new ArrayList<>();
+        List<String> ptestPortList = new ArrayList<>();
+        PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
+        ptesBodyRequest.setRmNumber(crmId);
+        String portData = customerExpServiceClient.getAccountSaving(invHeaderReqParameter.get(ProductsExpServiceConstant.HEADER_CORRELATION_ID), crmId);
+        ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
+                investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
+
+
+        Optional<List<PtesDetail>> ptesDetailList =
+                Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
+                        .map(TmbOneServiceResponse::getData);
+
+
+        logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
+        if (!StringUtils.isEmpty(portData)) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readValue(portData, JsonNode.class);
+            JsonNode dataNode = node.get("data");
+            JsonNode portList = dataNode.get("mutual_fund_accounts");
+            ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
+            });
+        }
+        if (ptesDetailList.isPresent()) {
+            ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
+                    .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
 
         }
-
-
+        ports.addAll(ptestPortList);
+        return ports;
     }
 
     /***
