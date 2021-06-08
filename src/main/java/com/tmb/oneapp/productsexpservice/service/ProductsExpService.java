@@ -18,6 +18,8 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
+import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
+import com.tmb.oneapp.productsexpservice.model.fundallocation.response.SuggestAllocationBodyResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
@@ -620,6 +622,23 @@ public class ProductsExpService {
             return InformationDto.builder()
                     .information(fetchFundInformation.get())
                     .dailyNav(fetchFundDailyNav.get())
+                    .build();
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            return null;
+        }
+    }
+
+    public SuggestAllocationBodyResponse getSuggestAllocation(String correlationId, SuggestAllocationBodyRequest suggestAllocationBody) {
+        UnitHolder unitHolder = new UnitHolder();
+        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        try {
+            List<String> ports = getPortList(suggestAllocationBody.getCrmId(),invHeaderReqParameter);
+            unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter,unitHolder);
+            CompletableFuture.allOf(fundSummary);
+            return SuggestAllocationBodyResponse.builder()
+                    .fundClassList(fundSummary.get().getBody().getFundClassList())
                     .build();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
