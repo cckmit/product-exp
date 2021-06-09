@@ -54,9 +54,9 @@ public class LoanCustomerService {
     private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
-    public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request) throws ServiceException, RemoteException {
+    public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request,String crmID) throws ServiceException, RemoteException {
         Facility facility = getFacility(request.getCaID());
-        return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), request.getCrmId());
+        return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), crmID);
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, RemoteException {

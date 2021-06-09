@@ -44,8 +44,8 @@ public class LoanCustomerControllerTest {
         request.setCaID(1L);
         String correlationId = "xxx";
         LoanCustomerResponse response = new LoanCustomerResponse();
-        when(loanCustomerService.getCustomerProfile(any(), any())).thenReturn(response);
-        ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> responseEntity = loanCustomerController.getLoanCustomerProfile(correlationId, request);
+        when(loanCustomerService.getCustomerProfile(any(),any(), any())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> responseEntity = loanCustomerController.getLoanCustomerProfile("11",correlationId, request);
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
@@ -54,8 +54,8 @@ public class LoanCustomerControllerTest {
         LoanCustomerRequest request = new LoanCustomerRequest();
         request.setCaID(1L);
         String correlationId = "xxx";
-        when(loanCustomerService.getCustomerProfile(any(), any())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> responseEntity = loanCustomerController.getLoanCustomerProfile(correlationId, request);
+        when(loanCustomerService.getCustomerProfile(any(),any(), any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> responseEntity = loanCustomerController.getLoanCustomerProfile("11",correlationId, request);
         assertTrue(responseEntity.getStatusCode().isError());
     }
 
