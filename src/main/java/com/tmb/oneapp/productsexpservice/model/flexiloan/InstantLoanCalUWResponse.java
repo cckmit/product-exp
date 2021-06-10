@@ -27,5 +27,8 @@ public class InstantLoanCalUWResponse {
     private List<LoanCustomerPricing> pricings;
     private Calendar loanContractDate;
     private String firstPaymentDueDate;
+    private String rateType;
+    private BigDecimal rateTypePercent;
+
 
 }

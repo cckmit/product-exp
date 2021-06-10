@@ -33,15 +33,18 @@ public class FlexiLoanService {
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     private final LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
 
+    private static final List<String> CREDIT_CARD_CODE_LIST = List.of("VJ", "VP", "VM", "VH", "VI", "VB");
+
     public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException {
 
         Facility facilityInfo = getFacility(request.getCaID());
         Individual customerInfo = getCustomer(request.getCaID());
         CreditCard creditCardInfo = getCreditCard(request.getCaID());
-        return parseSubmissionInfoResponse(facilityInfo, customerInfo, creditCardInfo);
+        return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
     }
 
-    private SubmissionInfoResponse parseSubmissionInfoResponse(Facility facilityInfo,
+    private SubmissionInfoResponse parseSubmissionInfoResponse(String productCode,
+                                                               Facility facilityInfo,
                                                                Individual customerInfo,
                                                                CreditCard creditCardInfo) {
         SubmissionInfoResponse response = new SubmissionInfoResponse();
@@ -49,8 +52,6 @@ public class FlexiLoanService {
         SubmissionCustomerInfo customer = new SubmissionCustomerInfo();
         customer.setName(customerInfo == null ? null : String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName()));
         customer.setCitizenId(customerInfo == null ? null : customerInfo.getIdNo1());
-
-        response.setPaymentMethod(facilityInfo == null ? null : facilityInfo.getPaymentMethod());
 
         SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
@@ -67,14 +68,12 @@ public class FlexiLoanService {
             pricingInfo.setPricing(pricingList);
         }
 
-        SubmissionCreditCardInfo creditCard = new SubmissionCreditCardInfo();
-        creditCard.setEStatement(customerInfo == null ? null : customerInfo.getEmail());
-        creditCard.setFeatureType(facilityInfo == null ? null : facilityInfo.getFeatureType());
-        creditCard.setPaymentMethod(facilityInfo == null ? null : facilityInfo.getPaymentMethod());
-
-        if (creditCardInfo != null) {
-            logger.info("credit card id: " + creditCardInfo.getId());
-        }
+        SubmissionPaymentInfo payment = new SubmissionPaymentInfo();
+        payment.setEStatement(customerInfo == null ? null : customerInfo.getEmail());
+        payment.setFeatureType(facilityInfo == null ? null : facilityInfo.getFeatureType());
+        payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
+        payment.setOtherBank(facilityInfo == null ? null : facilityInfo.getLoanWithOtherBank());
+        payment.setOtherBankInProgress(facilityInfo == null ? null : facilityInfo.getConsiderLoanWithOtherBank());
 
         SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
         receiving.setOsLimit(facilityInfo == null ? null : facilityInfo.getOsLimit());
@@ -84,7 +83,7 @@ public class FlexiLoanService {
         response.setCustomerInfo(customer);
         response.setPricingInfo(pricingInfo);
         response.setReceivingInfo(receiving);
-        response.setCreditCardInfo(creditCard);
+        response.setSubmissionInfo(payment);
         return response;
     }
 
@@ -110,6 +109,13 @@ public class FlexiLoanService {
             return String.format("%s %s %.2f", pricing.getRateType(), pricing.getPercentSign(), pricing.getRateVaraince().multiply(BigDecimal.valueOf(100)));
         }
 
+    }
+
+    private String setPaymentMethod(String productCode, Facility facilityInfo, CreditCard creditCardInfo) {
+        if(CREDIT_CARD_CODE_LIST.contains(productCode)) {
+            return creditCardInfo == null ? null : creditCardInfo.getPaymentMethod();
+        }
+        return facilityInfo == null ? null : facilityInfo.getPaymentMethod();
     }
 
 
