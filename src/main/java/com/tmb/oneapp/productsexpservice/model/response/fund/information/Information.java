@@ -56,6 +56,8 @@ public class Information {
 
     private String redeemCutoffTime;
 
+    private String switchingOutFeePercent;
+
     @JsonProperty(value = "return")
     private List<FundInformationTable> returnTable;
 
