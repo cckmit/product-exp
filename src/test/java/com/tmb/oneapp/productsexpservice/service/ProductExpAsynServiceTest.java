@@ -366,8 +366,9 @@ public class ProductExpAsynServiceTest {
     @Test
     public void fetchFundFavoriteWitchException() throws Exception {
         try {
-            when(investmentRequestClient.callInvestmentFundFavoriteService(any(), anyString())).thenThrow(MockitoException.class);
-            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(any(), anyString());
+            Map<String, String> invHeaderReqParameter = new HashMap<>();
+            when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenThrow(MockitoException.class);
+            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -377,8 +378,9 @@ public class ProductExpAsynServiceTest {
 
 
     @Test
-    public void fetchFundFavorite() throws Exception {
+    public void fetchFundFavorite() {
         try {
+            Map<String, String> invHeaderReqParameter = new HashMap<>();
             List<CustFavoriteFundData> favoriteFundData = new ArrayList<>();
             CustFavoriteFundData fundHolidayBody = new CustFavoriteFundData();
             TmbOneServiceResponse<List<CustFavoriteFundData>> serviceResponseStmt = new TmbOneServiceResponse<>();
@@ -390,53 +392,63 @@ public class ProductExpAsynServiceTest {
 
             favoriteFundData.add(fundHolidayBody);
 
-
             serviceResponseStmt.setData(favoriteFundData);
             serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundFavoriteService(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+            when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+
+            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(any(), anyString());
-        Assert.assertNotNull(response);
     }
 
 
     @Test
     void testGetListCompletableFuture() throws JsonProcessingException {
+        String key = "test";
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put("test", "test");
-        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        String key = "test";
+
         ObjectMapper mapper = new ObjectMapper();
         Object value = true;
         mapper.writeValueAsString(value);
-        TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData("test");
+
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setService("products-exp-async-service");
+
+        TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        tmbOneServiceResponse.setData("test");
         tmbOneServiceResponse.setStatus(tmbStatus);
+
         ResponseEntity<TmbOneServiceResponse<String>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
         when(cacheServiceClient.getCacheByKey(any(), any())).thenReturn(response);
-        List<FundClassListInfo> fundClassLists = new ArrayList<>();
+
         FundClassListInfo fundClass = new FundClassListInfo();
         fundClass.setFundClassCode("1234");
         fundClass.setAllotType("test");
+
+        List<FundClassListInfo> fundClassLists = new ArrayList<>();
         fundClassLists.add(fundClass);
-        TmbOneServiceResponse<FundListBody> investmentResponse = new TmbOneServiceResponse<>();
-        investmentResponse.setStatus(tmbStatus);
+
         FundListBody data = new FundListBody();
         data.setFundClassList(fundClassLists);
+
+        TmbOneServiceResponse<FundListBody> investmentResponse = new TmbOneServiceResponse<>();
+        investmentResponse.setStatus(tmbStatus);
         investmentResponse.setData(data);
         ResponseEntity<TmbOneServiceResponse<FundListBody>> resp = new ResponseEntity<>(investmentResponse, HttpStatus.OK);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
 
         ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
         when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
+
         CompletableFuture<List<FundClassListInfo>> listCompletableFuture = productExpAsynService.getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
+
         assertNotEquals(100, listCompletableFuture.getNumberOfDependents());
     }
 
