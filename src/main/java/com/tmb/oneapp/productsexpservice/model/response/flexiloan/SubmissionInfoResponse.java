@@ -12,6 +12,6 @@ public class SubmissionInfoResponse {
     private SubmissionCustomerInfo customerInfo;
     private SubmissionPricingInfo pricingInfo;
     private String paymentMethod;
-    private SubmissionCreditCardInfo creditCardInfo;
+    private SubmissionPaymentInfo submissionInfo;
     private SubmissionReceivingInfo receivingInfo;
 }
