@@ -226,7 +226,6 @@ public class ProductExpAsynService {
     /**
      * Method fetchCustomerProfile get customer profile
      *
-     * @param invHeaderReqParameter
      * @param crmID
      * @return CompletableFuture<CustomerProfileResponseData>
      */
@@ -343,8 +342,9 @@ public class ProductExpAsynService {
     @Async
     public CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
         try {
+            invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CRM_ID, crmId);
             ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter, crmId);
+                    investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
