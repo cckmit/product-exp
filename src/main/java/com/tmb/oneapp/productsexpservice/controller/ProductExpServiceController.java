@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
+import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
 //import com.tmb.oneapp.productsexpservice.model.fundallocation.response.SuggestAllocationBodyResponse;
 import com.tmb.oneapp.productsexpservice.model.fundallocation.response.SuggestAllocationBodyResponse;
@@ -376,30 +377,18 @@ public class ProductExpServiceController {
     @ApiOperation(value = "Fetch Fund Suggest Allocation")
     @LogAround
     @PostMapping(value = "/suggest/allocation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<SuggestAllocationBodyResponse>> fundSuggestAllocation(
+    public ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> fundSuggestAllocation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @Valid @RequestBody SuggestAllocationBodyRequest suggestAllocationBodyRequest) {
 
-        TmbOneServiceResponse<SuggestAllocationBodyResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<SuggestAllocationDTO> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        SuggestAllocationDTO suggestAllocationBodyResponse = productsExpService.getSuggestAllocation(correlationId,suggestAllocationBodyRequest.getCrmId());
+        oneServiceResponse.setData(suggestAllocationBodyResponse);
+        return ResponseEntity.ok().body(oneServiceResponse);
 
-        FundSummaryRq fundSummaryRq = new FundSummaryRq();
-
-        if (fundSummaryResponse != null) {
-            oneServiceResponse.setData(fundSummaryResponse);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-        } else {
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-                    ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-            oneServiceResponse.setData(null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-        }
     }
 
     private ResponseEntity<TmbOneServiceResponse<InformationDto>> getTmbOneServiceResponseEntity(TmbOneServiceResponse<InformationDto> oneServiceResponse, InformationDto informationDto, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {

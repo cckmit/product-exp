@@ -13,19 +13,19 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
+import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
-import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
-import com.tmb.oneapp.productsexpservice.model.fundallocation.response.SuggestAllocationBodyResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
@@ -37,6 +37,8 @@ import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBo
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
 import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
@@ -61,10 +63,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -179,11 +178,9 @@ public class ProductsExpService {
         ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
                 investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
 
-
         Optional<List<PtesDetail>> ptesDetailList =
                 Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
                         .map(TmbOneServiceResponse::getData);
-
 
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
         if (!StringUtils.isEmpty(portData)) {
@@ -629,21 +626,107 @@ public class ProductsExpService {
         }
     }
 
-    public SuggestAllocationBodyResponse getSuggestAllocation(String correlationId, SuggestAllocationBodyRequest suggestAllocationBody) {
+    @LogAround
+    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmID) {
         UnitHolder unitHolder = new UnitHolder();
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            List<String> ports = getPortList(suggestAllocationBody.getCrmId(),invHeaderReqParameter);
+            List<String> ports = getPortList(crmID,invHeaderReqParameter);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             CompletableFuture<FundSummaryResponse> fundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter,unitHolder);
-            CompletableFuture.allOf(fundSummary);
-            return SuggestAllocationBodyResponse.builder()
-                    .fundClassList(fundSummary.get().getBody().getFundClassList())
-                    .build();
+            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsynService.suitabilityInquiry(invHeaderReqParameter,crmID);
+            CompletableFuture.allOf(fundSummary,suitabilityInfo);
+            String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
+            ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse =  investmentRequestClient.callInvestmentFundAllocation(invHeaderReqParameter, FundAllocationRequestBody.builder().suitabilityScore(suitabilityScore).build());
+            return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(),fundAllocationResponse.getBody().getData());
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
+    }
+
+    private SuggestAllocationDTO mappingSuggestAllocationDto(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
+        List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocations = mergeMutualFundWithSuggestAllocation(fundClass,fundAllocationResponse);
+        return SuggestAllocationDTO.builder()
+                .mutualFund(
+                        fundClass.stream()
+                                .map(f -> MutualFund.builder()
+                                        .fundClassCode(f.getFundClassCode())
+                                        .fundClassNameEN(f.getFundClassNameEN())
+                                        .fundClassNameTH(f.getFundClassNameTH())
+                                        .fundClassPercent(f.getFundClassPercent())
+                                        .build())
+                                .collect(Collectors.toList()))
+                .fundSuggestedAllocation(FundSuggestedAllocation.builder()
+                        .modelNumber(fundAllocationResponse.getModelNumber())
+                        .suitabilityScore(fundAllocationResponse.getSuitabilityScore())
+                        .fundSuggestionList(fundAllocationResponse.getFundSuggestAllocationList().stream()
+                                .map(fl -> FundSuggestion.builder()
+                                        .fundCode(fl.getFundCode())
+                                        .fundShortName(fl.getFundShortName())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .mutualFundWithFundSuggestedAllocation(mutualFundWithFundSuggestedAllocations)
+                .build();
+    }
+
+    private List<MutualFundWithFundSuggestedAllocation> mergeMutualFundWithSuggestAllocation(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
+        List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
+        ArrayList<String> matchClassCode = new ArrayList<String>();
+        for (FundClass mutualFund:fundClass) {
+            boolean isNotFound = true;
+            for (FundSuggestAllocationList suggestFundList:fundAllocationResponse.getFundSuggestAllocationList()) {
+                if(mutualFund.getFundClassCode() == suggestFundList.getFundClassCode()){
+                    matchClassCode.add(mutualFund.getFundClassCode());
+                    mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
+                            .fundClassCode(mutualFund.getFundClassCode())
+                            .fundClassNameTh(mutualFund.getFundClassNameTH())
+                            .fundClassNameEn(mutualFund.getFundClassNameEN())
+                            .fundClassPercent(mutualFund.getFundClassPercent())
+                            .recommendedPercent(suggestFundList.getRecommendedPercent())
+                            .fundSuggestionList(suggestFundList.getFundList().stream()
+                                    .map(fl -> FundSuggestion.builder()
+                                            .fundShortName(fl.getFundShortName())
+                                            .fundCode(fl.getFundCode())
+                                            .build())
+                                    .collect(Collectors.toList()))
+                            .build()
+                    );
+                    isNotFound = false;
+                }
+            }
+            if(isNotFound){
+                mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
+                        .fundClassCode(mutualFund.getFundClassCode())
+                        .fundClassNameTh(mutualFund.getFundClassNameTH())
+                        .fundClassNameEn(mutualFund.getFundClassNameEN())
+                        .fundClassPercent(mutualFund.getFundClassPercent())
+                        .recommendedPercent("0")
+                        .fundSuggestionList(null)
+                        .build()
+                );
+            }
+        }
+
+        mutualFundWithFundSuggestedAllocationList.addAll(fundAllocationResponse.getFundSuggestAllocationList().stream()
+                .filter(fl -> !matchClassCode.contains(fl.getFundClassCode()))
+                .map(fl -> MutualFundWithFundSuggestedAllocation.builder()
+                        .fundClassCode(fl.getFundClassCode())
+                        .fundClassNameEn(fl.getFundClassNameEn())
+                        .fundClassNameTh(fl.getFundClassNameTh())
+                        .fundClassPercent("0")
+                        .recommendedPercent(fl.getRecommendedPercent())
+                        .fundSuggestionList(fl.getFundList().stream()
+                                .map(fle -> FundSuggestion.builder()
+                                        .fundShortName(fle.getFundShortName())
+                                        .fundCode(fle.getFundCode())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList()));
+
+        return mutualFundWithFundSuggestedAllocationList;
     }
 
     /**
@@ -684,7 +767,7 @@ public class ProductsExpService {
 
     /**
      * Method logactivity
-     *
+     *suitabilityScore
      * @param data
      */
     @Async
