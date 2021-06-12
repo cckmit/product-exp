@@ -383,12 +383,33 @@ public class ProductExpServiceController {
             @Valid @RequestBody SuggestAllocationBodyRequest suggestAllocationBodyRequest) {
 
         TmbOneServiceResponse<SuggestAllocationDTO> oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setData(null);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        SuggestAllocationDTO suggestAllocationBodyResponse = productsExpService.getSuggestAllocation(correlationId,suggestAllocationBodyRequest.getCrmId());
-        oneServiceResponse.setData(suggestAllocationBodyResponse);
-        return ResponseEntity.ok().body(oneServiceResponse);
+        try{
+            SuggestAllocationDTO suggestAllocationBodyResponse = productsExpService.getSuggestAllocation(correlationId,suggestAllocationBodyRequest.getCrmId());
+            if (!StringUtils.isEmpty(suggestAllocationBodyResponse)) {
+                oneServiceResponse.setData(suggestAllocationBodyResponse);
+                oneServiceResponse.setStatus(getStatusSuccess());
+                return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+            }
+        }catch (Exception e){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            oneServiceResponse.setStatus(getStatusNotFund());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+    }
 
+    private TmbStatus getStatusNotFund() {
+        return new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
+                ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+    }
+
+    private TmbStatus getStatusSuccess() {
+        return new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE);
     }
 
     private ResponseEntity<TmbOneServiceResponse<InformationDto>> getTmbOneServiceResponseEntity(TmbOneServiceResponse<InformationDto> oneServiceResponse, InformationDto informationDto, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {

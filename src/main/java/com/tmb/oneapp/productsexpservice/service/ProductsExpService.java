@@ -660,10 +660,13 @@ public class ProductsExpService {
                 .fundSuggestedAllocation(FundSuggestedAllocation.builder()
                         .modelNumber(fundAllocationResponse.getModelNumber())
                         .suitabilityScore(fundAllocationResponse.getSuitabilityScore())
+
                         .fundSuggestionList(fundAllocationResponse.getFundSuggestAllocationList().stream()
                                 .map(fl -> FundSuggestion.builder()
-                                        .fundCode(fl.getFundCode())
-                                        .fundShortName(fl.getFundShortName())
+                                        .fundClassCode(fl.getFundClassCode())
+                                        .fundClassNameEn(fl.getFundClassNameEn())
+                                        .fundClassNameTh(fl.getFundClassNameTh())
+                                        .recommendedPercent(fl.getRecommendedPercent())
                                         .build())
                                 .collect(Collectors.toList()))
                         .build())
@@ -677,7 +680,7 @@ public class ProductsExpService {
         for (FundClass mutualFund:fundClass) {
             boolean isNotFound = true;
             for (FundSuggestAllocationList suggestFundList:fundAllocationResponse.getFundSuggestAllocationList()) {
-                if(mutualFund.getFundClassCode() == suggestFundList.getFundClassCode()){
+                if(mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())){
                     matchClassCode.add(mutualFund.getFundClassCode());
                     mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                             .fundClassCode(mutualFund.getFundClassCode())
@@ -686,7 +689,7 @@ public class ProductsExpService {
                             .fundClassPercent(mutualFund.getFundClassPercent())
                             .recommendedPercent(suggestFundList.getRecommendedPercent())
                             .fundSuggestionList(suggestFundList.getFundList().stream()
-                                    .map(fl -> FundSuggestion.builder()
+                                    .map(fl -> SubFundSuggestion.builder()
                                             .fundShortName(fl.getFundShortName())
                                             .fundCode(fl.getFundCode())
                                             .build())
@@ -718,7 +721,7 @@ public class ProductsExpService {
                         .fundClassPercent("0")
                         .recommendedPercent(fl.getRecommendedPercent())
                         .fundSuggestionList(fl.getFundList().stream()
-                                .map(fle -> FundSuggestion.builder()
+                                .map(fle -> SubFundSuggestion.builder()
                                         .fundShortName(fle.getFundShortName())
                                         .fundCode(fle.getFundCode())
                                         .build())
