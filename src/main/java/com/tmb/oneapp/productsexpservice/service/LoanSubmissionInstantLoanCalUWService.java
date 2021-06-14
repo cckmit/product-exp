@@ -56,8 +56,7 @@ public class LoanSubmissionInstantLoanCalUWService {
         if (underWriting.equals(APPROVE)) {
             if (productCode.equals(FLASH)) {
                 if (facilityInfo.getBody().getFacilities() != null) {
-                    response.setTopUpAmount(facilityInfo.getBody().getFacilities()[0].getLimitApplied());
-                    response.setLoanAmount(facilityInfo.getBody().getFacilities()[0].getFeature().getRequestAmount());
+                    response.setRequestAmount(facilityInfo.getBody().getFacilities()[0].getFeature().getRequestAmount());
                     Pricing[] pricings = facilityInfo.getBody().getFacilities()[0].getPricings();
                     List<LoanCustomerPricing> pricingList = new ArrayList<>();
 
@@ -71,10 +70,10 @@ public class LoanSubmissionInstantLoanCalUWService {
                     response.setPricings(pricingList);
                 }
             }else {
-                response.setLoanAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
+                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
 
-
+            response.setOutStandingBalance(facilityInfo.getBody().getFacilities()[0].getOutStandingBalance());
             response.setTenor(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getTenor());
             response.setPayDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getPayDate());
             response.setInterestRate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInterestRate());
