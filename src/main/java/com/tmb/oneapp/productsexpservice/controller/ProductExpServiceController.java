@@ -375,21 +375,19 @@ public class ProductExpServiceController {
     }
 
     @ApiOperation(value = "Fetch Fund Suggest Allocation")
-    @LogAround
     @PostMapping(value = "/suggest/allocation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> fundSuggestAllocation(
+    public ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> getFundSuggestAllocation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @Valid @RequestBody SuggestAllocationBodyRequest suggestAllocationBodyRequest) {
 
         TmbOneServiceResponse<SuggestAllocationDTO> oneServiceResponse = new TmbOneServiceResponse<>();
-        oneServiceResponse.setData(null);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try{
-            SuggestAllocationDTO suggestAllocationBodyResponse = productsExpService.getSuggestAllocation(correlationId,suggestAllocationBodyRequest.getCrmId());
-            if (!StringUtils.isEmpty(suggestAllocationBodyResponse)) {
-                oneServiceResponse.setData(suggestAllocationBodyResponse);
+            SuggestAllocationDTO suggestAllocationDto = productsExpService.getSuggestAllocation(correlationId,suggestAllocationBodyRequest.getCrmId());
+            if (!StringUtils.isEmpty(suggestAllocationDto)) {
+                oneServiceResponse.setData(suggestAllocationDto);
                 oneServiceResponse.setStatus(getStatusSuccess());
                 return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
             }
