@@ -64,7 +64,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -152,7 +155,7 @@ public class ProductsExpService {
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse = null;
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            List<String> ports = getPortList(rq.getCrmId(),invHeaderReqParameter);
+            List<String> ports = getPortList(rq.getCrmId(), invHeaderReqParameter);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
@@ -633,21 +636,20 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
             List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
-//            List<String> portList = getPortList(crmID,invHeaderReqParameter);
             unitHolder.setUnitHolderNo(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter,unitHolder);
-            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsynService.suitabilityInquiry(invHeaderReqParameter,crmID);
-            CompletableFuture.allOf(fundSummary,suitabilityInfo);
+            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter, unitHolder);
+            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsynService.suitabilityInquiry(invHeaderReqParameter, crmID);
+            CompletableFuture.allOf(fundSummary, suitabilityInfo);
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
-            ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse =  investmentRequestClient.callInvestmentFundAllocation(invHeaderReqParameter, FundAllocationRequestBody.builder().suitabilityScore(suitabilityScore).build());
-            return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(),fundAllocationResponse.getBody().getData());
+            ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(invHeaderReqParameter, FundAllocationRequestBody.builder().suitabilityScore(suitabilityScore).build());
+            return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
     }
 
-    private List<String> getPortListForFundSummary(Map<String, String> invHeaderReqParameter,String crmID) throws com.fasterxml.jackson.core.JsonProcessingException {
+    private List<String> getPortListForFundSummary(Map<String, String> invHeaderReqParameter, String crmID) throws com.fasterxml.jackson.core.JsonProcessingException {
         List<String> portList = new ArrayList<>();
         String portListStr = accountRequestClient.getPortList(invHeaderReqParameter, crmID);
         ObjectMapper mapper = new ObjectMapper();
@@ -662,7 +664,7 @@ public class ProductsExpService {
     }
 
     private SuggestAllocationDTO mappingSuggestAllocationDto(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
-        List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocations = mergeMutualFundWithSuggestAllocation(fundClass,fundAllocationResponse);
+        List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocations = mergeMutualFundWithSuggestAllocation(fundClass, fundAllocationResponse);
         return SuggestAllocationDTO.builder()
                 .mutualFund(
                         fundClass.stream()
@@ -693,10 +695,10 @@ public class ProductsExpService {
     private List<MutualFundWithFundSuggestedAllocation> mergeMutualFundWithSuggestAllocation(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
         ArrayList<String> matchClassCode = new ArrayList<String>();
-        for (FundClass mutualFund:fundClass) {
+        for (FundClass mutualFund : fundClass) {
             boolean isNotFound = true;
-            for (FundSuggestAllocationList suggestFundList:fundAllocationResponse.getFundSuggestAllocationList()) {
-                if(mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())){
+            for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
+                if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())) {
                     matchClassCode.add(mutualFund.getFundClassCode());
                     mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                             .fundClassCode(mutualFund.getFundClassCode())
@@ -715,7 +717,7 @@ public class ProductsExpService {
                     isNotFound = false;
                 }
             }
-            if(isNotFound){
+            if (isNotFound) {
                 mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                         .fundClassCode(mutualFund.getFundClassCode())
                         .fundClassNameTh(mutualFund.getFundClassNameTH())
@@ -786,7 +788,8 @@ public class ProductsExpService {
 
     /**
      * Method logactivity
-     *suitabilityScore
+     * suitabilityScore
+     *
      * @param data
      */
     @Async

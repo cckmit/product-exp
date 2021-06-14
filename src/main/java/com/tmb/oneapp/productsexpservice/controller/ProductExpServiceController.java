@@ -10,8 +10,6 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
-//import com.tmb.oneapp.productsexpservice.model.fundallocation.response.SuggestAllocationBodyResponse;
-import com.tmb.oneapp.productsexpservice.model.fundallocation.response.SuggestAllocationBodyResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
@@ -384,14 +382,14 @@ public class ProductExpServiceController {
         TmbOneServiceResponse<SuggestAllocationDTO> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        try{
-            SuggestAllocationDTO suggestAllocationDto = productsExpService.getSuggestAllocation(correlationId,suggestAllocationBodyRequest.getCrmId());
+        try {
+            SuggestAllocationDTO suggestAllocationDto = productsExpService.getSuggestAllocation(correlationId, suggestAllocationBodyRequest.getCrmId());
             if (!StringUtils.isEmpty(suggestAllocationDto)) {
                 oneServiceResponse.setData(suggestAllocationDto);
                 oneServiceResponse.setStatus(getStatusSuccess());
                 return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             oneServiceResponse.setStatus(getStatusNotFund());
         }
