@@ -73,7 +73,6 @@ public class LoanSubmissionInstantLoanCalUWService {
                 response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
 
-            response.setOutStandingBalance(facilityInfo.getBody().getFacilities()[0].getOutStandingBalance());
             response.setTenor(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getTenor());
             response.setPayDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getPayDate());
             response.setInterestRate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInterestRate());
