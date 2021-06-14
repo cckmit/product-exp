@@ -4,6 +4,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -631,8 +632,9 @@ public class ProductsExpService {
         UnitHolder unitHolder = new UnitHolder();
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            List<String> ports = getPortList(crmID,invHeaderReqParameter);
-            unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
+//            List<String> portList = getPortList(crmID,invHeaderReqParameter);
+            unitHolder.setUnitHolderNo(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
             CompletableFuture<FundSummaryResponse> fundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter,unitHolder);
             CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsynService.suitabilityInquiry(invHeaderReqParameter,crmID);
             CompletableFuture.allOf(fundSummary,suitabilityInfo);
@@ -643,6 +645,20 @@ public class ProductsExpService {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
+    }
+
+    private List<String> getPortListForFundSummary(Map<String, String> invHeaderReqParameter,String crmID) throws com.fasterxml.jackson.core.JsonProcessingException {
+        List<String> portList = new ArrayList<>();
+        String portListStr = accountRequestClient.getPortList(invHeaderReqParameter, crmID);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readValue(portListStr, JsonNode.class);
+        JsonNode dataNode = node.get("data");
+        ArrayNode arrayNode = (ArrayNode) dataNode.get("mutual_fund_accounts");
+        for (int i = 0; i < arrayNode.size(); i++) {
+            JsonNode itr = arrayNode.get(i);
+            portList.add(itr.get("acct_nbr").textValue());
+        }
+        return portList;
     }
 
     private SuggestAllocationDTO mappingSuggestAllocationDto(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {

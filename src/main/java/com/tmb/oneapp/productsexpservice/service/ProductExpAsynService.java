@@ -17,12 +17,10 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolde
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
