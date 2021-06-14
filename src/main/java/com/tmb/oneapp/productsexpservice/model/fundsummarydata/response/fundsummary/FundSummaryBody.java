@@ -2,14 +2,17 @@ package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsum
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FundSummaryBody extends FundClassList{
     private FundClassList fundClassList;
     private String feeAsOfDate;

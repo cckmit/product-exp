@@ -1,0 +1,40 @@
+{
+  "fundClassList": {
+    "fundClass": [{
+      "fundClassCode": "090",
+      "fundClassNameEN": "ttb smart port",
+      "fundClassNameTH": "ttb smart port",
+      "fundClassPercent": "25.41"
+    },
+      {
+        "fundClassCode": "300",
+        "fundClassNameEN": "Balanced",
+        "fundClassNameTH": "กองทุนผสม",
+        "fundClassPercent": "5.91"
+      },
+      {
+        "fundClassCode": "400",
+        "fundClassNameEN": "Equity",
+        "fundClassNameTH": "กองทุนหุ้น",
+        "fundClassPercent": "63.03"
+      },
+      {
+        "fundClassCode": "500",
+        "fundClassNameEN": "FIF Equity",
+        "fundClassNameTH": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
+        "fundClassPercent": "5.66"
+      }
+    ]
+  }
+  ,
+  "feeAsOfDate":"14/02/2021",
+  "sumAccruedFee":36565.48,
+  "percentOfFundType":{
+    "balanced":0.00,
+    "foreignEquity":0.00,
+    "foreignFixedIncome":0.00,
+    "localEquity":0.00,
+    "localFixedIncome":101613.00,
+    "others":"1"
+  }
+}

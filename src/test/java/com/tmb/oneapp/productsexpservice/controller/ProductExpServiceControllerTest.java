@@ -6,6 +6,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
+import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
+import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
@@ -47,6 +49,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public class ProductExpServiceControllerTest {
@@ -574,6 +577,43 @@ public class ProductExpServiceControllerTest {
         //When
         ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = productExpServiceController.getFundInformation(correlationId, fundCodeRequestBody);
 
+        //Then
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
+        assertNull(actual.getBody().getData());
+    }
+
+    @Test
+    void should_return_SuggestAllocationDTO_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws IOException {
+        //Given
+        ObjectMapper mapper = new ObjectMapper();
+        String correlationId = corrID;
+        SuggestAllocationBodyRequest suggestAllocationBodyRequest = SuggestAllocationBodyRequest.builder()
+                .crmId("00000018592884")
+                .build();
+
+        SuggestAllocationDTO suggestAllocationDTO = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation_dto.json").toFile(),SuggestAllocationDTO.class);
+        when(productsExpService.getSuggestAllocation(correlationId, suggestAllocationBodyRequest.getCrmId())).thenReturn(suggestAllocationDTO);
+
+//        //When
+        ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> actual = productExpServiceController.getFundSuggestAllocation(correlationId,suggestAllocationBodyRequest);
+//
+        //Then
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(suggestAllocationDTO, actual.getBody().getData());
+    }
+
+    @Test
+    void should_return_notfound_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws IOException {
+        //Given
+        ObjectMapper mapper = new ObjectMapper();
+        String correlationId = corrID;
+        SuggestAllocationBodyRequest fundCodeRequestBody = SuggestAllocationBodyRequest.builder()
+                .crmId("00000018592884")
+                .build();
+        when(productsExpService.getSuggestAllocation(correlationId, fundCodeRequestBody.getCrmId())).thenThrow(RuntimeException.class);
+//        //When
+        ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> actual = productExpServiceController.getFundSuggestAllocation(correlationId,fundCodeRequestBody);
+//
         //Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertNull(actual.getBody().getData());

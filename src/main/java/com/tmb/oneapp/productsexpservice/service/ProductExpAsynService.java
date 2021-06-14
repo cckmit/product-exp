@@ -19,6 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
+import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
@@ -28,6 +29,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBod
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -226,7 +228,6 @@ public class ProductExpAsynService {
     /**
      * Method fetchCustomerProfile get customer profile
      *
-     * @param invHeaderReqParameter
      * @param crmID
      * @return CompletableFuture<CustomerProfileResponseData>
      */
@@ -343,8 +344,36 @@ public class ProductExpAsynService {
     @Async
     public CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
         try {
+            invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CRM_ID, crmId);
             ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter, crmId);
+                    investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter);
+            return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+    /**
+     * Method fetchFundFavorite get fund favorite
+     *
+     * @param invHeaderReqParameter
+     * @param crmId
+     * @return CompletableFuture<List < CustFavoriteFundData>>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<SuitabilityInfo> suitabilityInquiry(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
+        try {
+            SuitabilityBody suitabilityBody = new SuitabilityBody();
+            suitabilityBody.setRmNumber(crmId);
+            ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity =
+                    investmentRequestClient.callInvestmentFundSuitabilityService(invHeaderReqParameter, suitabilityBody);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
