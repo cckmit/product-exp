@@ -23,14 +23,14 @@ import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/online")
+@RequestMapping("/LoanSubmissionOnline")
 @Api(tags = "waive income")
 public class LoanSubmissionOnlineController {
     private final LoanSubmissionIncomeInfoService loanSubmissionIncomeInfoService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
 
-    @GetMapping("/get_income_info")
+    @GetMapping("/GetIncomeInfo")
     @LogAround
     @ApiOperation(value = "get income info")
     public ResponseEntity<TmbOneServiceResponse<IncomeInfo>> getIncomeInfo(@ApiParam(value = "CRMID", defaultValue = "001100000000000000000001184383", required = true) @RequestHeader(name = "X-CRMID", required = false) String crmId) {
