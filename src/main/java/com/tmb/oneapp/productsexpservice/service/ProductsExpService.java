@@ -694,7 +694,7 @@ public class ProductsExpService {
 
     private List<MutualFundWithFundSuggestedAllocation> mergeMutualFundWithSuggestAllocation(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
-        ArrayList<String> matchClassCode = new ArrayList<String>();
+        ArrayList<String> matchClassCode = new ArrayList<>();
         for (FundClass mutualFund : fundClass) {
             boolean isNotFound = true;
             for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
