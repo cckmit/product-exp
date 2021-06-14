@@ -5,6 +5,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolde
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
@@ -12,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
@@ -142,14 +144,12 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund favorite service fund favorite response.
      *
-     * @param headers  the headers
+     * @param headers the headers
      * @return the fund favorite response
      */
     @PostMapping(value = "${investment.service.fund.listfavorite.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestBody String crmId);
-
-
+    public ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers);
 
 
     /**
@@ -183,4 +183,14 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.fund.daily.nav.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<DailyNavBody>> callInvestmentFundDailyNavService(@RequestHeader Map<String, String> header, @RequestBody FundCodeRequestBody fundCodeRequestBody);
+
+    /**
+     * Call investment fund allocation service to get fund allocation response.
+     *
+     * @param header the headers
+     * @return the fund allocation response
+     */
+    @PostMapping(value = "${investment.service.fund.allocation.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> callInvestmentFundAllocation(@RequestHeader Map<String, String> header, @RequestBody FundAllocationRequestBody fundAllocationRequestBody);
 }

@@ -47,12 +47,25 @@ public class FlexiLoanServiceTest {
     }
 
     @Test
-    public void testService() throws ServiceException, RemoteException {
+    public void testService_creditCard() throws ServiceException, RemoteException {
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfo());
         when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
         when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaID(1L);
+        request.setProductCode("VI");
+        flexiLoanService.getSubmissionInfo(request);
+        Assert.assertTrue(true);
+    }
+
+    @Test
+    public void testService_c2g() throws ServiceException, RemoteException {
+        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfoWithRateType());
+        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
+        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
+        SubmissionInfoRequest request = new SubmissionInfoRequest();
+        request.setCaID(1L);
+        request.setProductCode("C2G");
         flexiLoanService.getSubmissionInfo(request);
         Assert.assertTrue(true);
     }
@@ -64,6 +77,30 @@ public class FlexiLoanServiceTest {
 
         Pricing pricing = new Pricing();
         pricing.setRateVaraince(BigDecimal.TEN);
+        Pricing[] pricingList = {pricing};
+        facility.setPricings(pricingList);
+
+        Feature feature = new Feature();
+        feature.setDisbAcctNo("xxx");
+        facility.setFeature(feature);
+
+        facility.setFeatureType("S");
+
+        Facility[] facilities = {facility};
+        body.setFacilities(facilities);
+        facilityInfo.setBody(body);
+        return facilityInfo;
+    }
+
+    private ResponseFacility mockFacilityInfoWithRateType() {
+        ResponseFacility facilityInfo = new ResponseFacility();
+        Body body = new Body();
+        Facility facility = new Facility();
+
+        Pricing pricing = new Pricing();
+        pricing.setRateVaraince(BigDecimal.TEN);
+        pricing.setRateType("CPR");
+        pricing.setPercentSign("+");
         Pricing[] pricingList = {pricing};
         facility.setPricings(pricingList);
 

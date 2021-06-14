@@ -45,6 +45,7 @@
       "riskSpectrumNumber": "6",
       "purchaseCutoffTime": "1530",
       "redeemCutoffTime": "1530",
+      "switchingOutFeePercent": "0.000000",
       "standardDeviation": [
         {
           "duration": "1Y",
