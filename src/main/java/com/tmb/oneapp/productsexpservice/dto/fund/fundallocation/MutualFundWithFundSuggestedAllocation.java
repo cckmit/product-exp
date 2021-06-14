@@ -14,10 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MutualFundWithFundSuggestedAllocation {
-    public String fundClassCode;
-    public String fundClassNameTh;
-    public String fundClassNameEn;
-    public String fundClassPercent;
-    public String recommendedPercent;
-    public List<SubFundSuggestion> fundSuggestionList;
+    private String fundClassCode;
+    private String fundClassNameTh;
+    private String fundClassNameEn;
+    private String fundClassPercent;
+    private String recommendedPercent;
+    private List<SubFundSuggestion> fundSuggestionList;
 }

@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MutualFund {
-    public String fundClassCode;
-    public String fundClassNameTH;
-    public String fundClassNameEN;
-    public String fundClassPercent;
+    private String fundClassCode;
+    private String fundClassNameTH;
+    private String fundClassNameEN;
+    private String fundClassPercent;
 }

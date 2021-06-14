@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubFundSuggestion {
-    public String fundCode;
-    public String fundShortName;
+    private String fundCode;
+    private String fundShortName;
 }
