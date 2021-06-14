@@ -1,11 +1,12 @@
 package com.tmb.oneapp.productsexpservice.model.response.suitability;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuitabilityInfo {
     private String suitabilityScore;
