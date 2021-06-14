@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.model.CardInstallment;
+import com.tmb.common.model.creditcard.CardInstallment;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;

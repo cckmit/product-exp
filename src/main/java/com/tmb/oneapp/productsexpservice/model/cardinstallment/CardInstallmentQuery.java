@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.tmb.common.model.CardInstallment;
+import com.tmb.common.model.creditcard.CardInstallment;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

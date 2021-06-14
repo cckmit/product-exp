@@ -1,9 +1,9 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.CardInstallment;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.creditcard.CardInstallment;
 import com.tmb.oneapp.productsexpservice.constant.NotificationConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
