@@ -1,0 +1,66 @@
+{
+    "suitabilityScore": "2 ",
+    "modelNumber": "2 ",
+    "fundClassList": [
+      {
+        "fundClassCode": "300",
+        "fundClassNameTh": "กองทุนผสม",
+        "fundClassNameEn": "Balanced",
+        "recommendedPercent": "5.00",
+        "fundList": [
+          {
+            "fundCode": "TMBINCOME",
+            "fundShortName": "TMBINCOME"
+          }
+        ]
+      },
+      {
+        "fundClassCode": "400",
+        "fundClassNameTh": "กองทุนหุ้น",
+        "fundClassNameEn": "Equity",
+        "recommendedPercent": "22.00",
+        "fundList": [
+          {
+            "fundCode": "JB25",
+            "fundShortName": "JB25"
+          },
+          {
+            "fundCode": "TISCOHD",
+            "fundShortName": "TISCOHD"
+          }
+        ]
+      },
+      {
+        "fundClassCode": "800",
+        "fundClassNameTh": "Super Savings Fund(SSF)/LTF",
+        "fundClassNameEn": "Super Savings Fund(SSF)/LTF",
+        "recommendedPercent": "33.00",
+        "fundList": [
+          {
+            "fundCode": "JB25LTF",
+            "fundShortName": "JB25 LTF"
+          },
+          {
+            "fundCode": "JBPLTF",
+            "fundShortName": "JBP LTF"
+          }
+        ]
+      },
+      {
+        "fundClassCode": "900",
+        "fundClassNameTh": "กองทุนรวมเพื่อการเลี้ยงชีพ",
+        "fundClassNameEn": "Retirement Mutual Fund",
+        "recommendedPercent": "40.00",
+        "fundList": [
+          {
+            "fundCode": "ABSIRMF",
+            "fundShortName": "ABSI-RMF"
+          },
+          {
+            "fundCode": "JB25RMF",
+            "fundShortName": "JB25RMF"
+          }
+        ]
+      }
+    ]
+}
