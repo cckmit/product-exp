@@ -29,6 +29,7 @@ public class ProductsExpServiceConstant {
     public static final String X_CORRELATION_ID = "x-correlation-id";
     public static final String ACCOUNT_ID = "account-id";
     public static final int ZERO = 0;
+    public static final String STRING_ZERO = "0";
     public static final String EMPTY = "";
     public static final String CVV = "cvv";
     public static final String CARD_EXPIRY = "card-expiry";
@@ -132,6 +133,8 @@ public class ProductsExpServiceConstant {
     public static final String ACCEPT_LANGUAGE_EN = "en";
     public static final String ACCEPT_LANGUAGE_TH = "th";
     public static final String APPLICATION_STATUS_CC = "CC";
+    public static final String HEADER_PROSPECTIVE = "prospective";
+    public static final String TRUE = "true";
     public static final String APPLICATION_STATUS_FLAG_TRUE = "Y";
     public static final String RSL_CURRENT_NODE_1 = "1";
     public static final String HEADER_CITIZEN_ID = "Citizen-ID";

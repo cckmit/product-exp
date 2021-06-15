@@ -6,13 +6,19 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.model.request.ApplicationStatusRequest;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.ApplicationStatusService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,37 +46,41 @@ public class ApplicationStatusController {
     }
 
     /**
-     * @param requestHeaders
-     * @param serviceTypeId
-     * @return
+     * @param requestHeaders correlation id, crm id, device id, language
+     * @param serviceTypeId  service type id
+     * @return application statuses
      */
     @LogAround
     @ApiOperation(value = "Get Application Status")
-    @GetMapping(value = "/application/status")
+    @PostMapping(value = "/application/status")
     @ApiImplicitParams({
             @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
             @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000001184383", required = true, dataType = "string", paramType = "header"),
             @ApiImplicitParam(name = DEVICE_ID, defaultValue = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true, dataType = "string", paramType = "header"),
             @ApiImplicitParam(name = ACCEPT_LANGUAGE, defaultValue = "en", required = true, paramType = "header"),
+            @ApiImplicitParam(name = HEADER_PROSPECTIVE, defaultValue = "false", paramType = "header"),
     })
     public ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> getApplicationStatus(
             @ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
             @ApiParam(value = "Service Type Id", defaultValue = "AST", required = true)
-            @RequestParam("service_type_id") String serviceTypeId) {
+            @RequestParam("service_type_id") String serviceTypeId,
+            @RequestBody ApplicationStatusRequest requestBody) {
 
         TmbOneServiceResponse<ApplicationStatusResponse> response = new TmbOneServiceResponse<>();
 
-        if (!requestHeaders.containsKey(X_CORRELATION_ID) ||
+        if ((!requestHeaders.containsKey(X_CORRELATION_ID) ||
                 !requestHeaders.containsKey(X_CRMID) ||
-                !requestHeaders.containsKey(DEVICE_ID)) {
+                !requestHeaders.containsKey(DEVICE_ID)) &&
+                !TRUE.equals(requestHeaders.get(HEADER_PROSPECTIVE))) {
             response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
                     ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+            logger.error("Missing mandatory header field.");
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
 
         try {
             ApplicationStatusResponse applicationStatusResponse =
-                    applicationStatusService.getApplicationStatus(requestHeaders, serviceTypeId);
+                    applicationStatusService.getApplicationStatus(requestHeaders, serviceTypeId, requestBody);
 
             response.setData(applicationStatusResponse);
 
