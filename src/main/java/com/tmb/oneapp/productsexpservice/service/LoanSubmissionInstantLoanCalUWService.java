@@ -56,7 +56,7 @@ public class LoanSubmissionInstantLoanCalUWService {
         if (underWriting.equals(APPROVE)) {
             if (productCode.equals(FLASH)) {
                 if (facilityInfo.getBody().getFacilities() != null) {
-                    response.setTopUpAmount(facilityInfo.getBody().getFacilities()[0].getLimitApplied());
+                    response.setRequestAmount(facilityInfo.getBody().getFacilities()[0].getFeature().getRequestAmount());
                     Pricing[] pricings = facilityInfo.getBody().getFacilities()[0].getPricings();
                     List<LoanCustomerPricing> pricingList = new ArrayList<>();
 
@@ -69,8 +69,8 @@ public class LoanSubmissionInstantLoanCalUWService {
                     }
                     response.setPricings(pricingList);
                 }
-            } else {
-                response.setLoanAmount(BigDecimal.valueOf(200000));
+            }else {
+                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
 
             response.setTenor(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getTenor());
