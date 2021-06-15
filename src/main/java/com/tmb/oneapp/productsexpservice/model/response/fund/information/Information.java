@@ -49,4 +49,17 @@ public class Information {
 
     @JsonProperty(value = "holdingList")
     private List<Holding> holdings;
+
+    private String riskSpectrumNumber;
+
+    private String purchaseCutoffTime;
+
+    private String redeemCutoffTime;
+
+    @JsonProperty(value = "return")
+    private List<FundInformationTable> returnTable;
+
+    private List<FundInformationTable> standardDeviation;
+
+    private List<FundInformationTable> maxDrawdown;
 }

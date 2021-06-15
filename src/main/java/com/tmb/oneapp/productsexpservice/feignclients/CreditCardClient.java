@@ -83,12 +83,12 @@ public interface CreditCardClient {
             @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody SetPinQuery requestBodyParameter);
 
-    @PostMapping(value = "/installment/get-eligible-leads")
+    @PostMapping(value = "/apis/creditcard/installment/get-eligible-leads")
     ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getEligibleLeads(
             @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody EligibleLeadRequest requestBodyParameter);
 
-    @PostMapping(value = "/installment/get-installment-rate")
+    @PostMapping(value = "/apis/creditcard/installment/get-installment-rate")
     ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> getInstallmentRate(
             @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody InstallmentRateRequest requestBodyParameter);

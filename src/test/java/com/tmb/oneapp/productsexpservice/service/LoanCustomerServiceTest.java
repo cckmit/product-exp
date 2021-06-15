@@ -67,7 +67,7 @@ public class LoanCustomerServiceTest {
 
         LoanCustomerRequest request = new LoanCustomerRequest();
         request.setCaID(1L);
-        LoanCustomerResponse response = loanCustomerService.getCustomerProfile("xxx", request);
+        LoanCustomerResponse response = loanCustomerService.getCustomerProfile("xxx", request,"11");
         Assert.assertNotNull(response);
     }
 

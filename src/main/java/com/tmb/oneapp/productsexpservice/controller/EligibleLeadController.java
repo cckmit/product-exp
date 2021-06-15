@@ -11,6 +11,9 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,84 +25,95 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
+
 import java.time.Instant;
+import java.util.Map;
 
 @RestController
 @Api(tags = "Credit Card-Cash For You")
 public class EligibleLeadController {
-    private static final TMBLogger<EligibleLeadController> logger = new TMBLogger<>(EligibleLeadController.class);
+	private static final TMBLogger<EligibleLeadController> logger = new TMBLogger<>(EligibleLeadController.class);
 
-    private final CreditCardClient creditCardClient;
+	private final CreditCardClient creditCardClient;
 
-    @Autowired
-    public EligibleLeadController(CreditCardClient creditCardClient) {
-        this.creditCardClient = creditCardClient;
-    }
+	@Autowired
+	public EligibleLeadController(CreditCardClient creditCardClient) {
+		this.creditCardClient = creditCardClient;
+	}
 
-    /**
-     * @param correlationId
-     * @param requestBody
-     * @return
-     */
-    @LogAround
-    @PostMapping(value = "/loan/get-eligible-lead", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getLoanAccountDetail(
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true) @RequestHeader String correlationId,
-            @ApiParam(value = "Account ID , start date, end date", defaultValue = "00016109738001", required = true) @RequestBody EligibleLeadRequest requestBody) {
+	/**
+	 * @param correlationId
+	 * @param requestBody
+	 * @return
+	 */
+	@LogAround
+	@PostMapping(value = "/loan/get-eligible-lead", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "get account eligible lead details")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+	public ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getLoanEligibleDetail(
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers,
+			@RequestBody EligibleLeadRequest requestBody) {
+		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+		TmbOneServiceResponse<EligibleLeadResponse> serviceResponse = new TmbOneServiceResponse<>();
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<EligibleLeadResponse> serviceResponse = new TmbOneServiceResponse<>();
+		try {
 
+			String groupAccountId = requestBody.getGroupAccountId();
+			String disbursementDate = requestBody.getDisbursementDate();
 
-        try {
+			if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate)) {
+				ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> loanResponse = creditCardClient
+						.getEligibleLeads(correlationId, requestBody);
+				int statusCodeValue = loanResponse.getStatusCodeValue();
+				HttpStatus statusCode = loanResponse.getStatusCode();
 
-            String groupAccountId = requestBody.getGroupAccountId();
-            String disbursementDate = requestBody.getDisbursementDate();
+				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-            if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate)) {
-                ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> loanResponse = creditCardClient.getEligibleLeads(correlationId, requestBody);
-                int statusCodeValue = loanResponse.getStatusCodeValue();
-                HttpStatus statusCode = loanResponse.getStatusCode();
+					EligibleLeadResponse loanDetails = loanResponse.getBody().getData();
 
-                if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
+					serviceResponse
+							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+					serviceResponse.setData(loanDetails);
+					return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
+				} else {
+					return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
 
-                    EligibleLeadResponse loanDetails = loanResponse.getBody().getData();
+				}
+			} else {
+				return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
+			}
 
-                    serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                            ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                    serviceResponse.setData(loanDetails);
-                    return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
-                } else {
-                    return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
+		} catch (Exception e) {
+			return getFailedResponse(responseHeaders, serviceResponse, e);
+		}
 
-                }
-            } else {
-                return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
-            }
+	}
 
-        } catch (Exception e) {
-            return getFailedResponse(responseHeaders, serviceResponse, e);
-        }
+	ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getFailedResponse(HttpHeaders responseHeaders,
+			TmbOneServiceResponse<EligibleLeadResponse> serviceResponse, Exception e) {
+		logger.error("Error while getting eligible lead controller: {}", e);
+		serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+				ResponseCode.FAILED.getService()));
+		return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+	}
 
-    }
-
-    ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getFailedResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<EligibleLeadResponse> serviceResponse, Exception e) {
-        logger.error("Error while getting eligible lead controller: {}", e);
-        serviceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService()));
-        return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
-    }
-
-    /**
-     * @param responseHeaders
-     * @param serviceResponse
-     * @return
-     */
-    private ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getTmbOneServiceResponseResponseEntity(HttpHeaders responseHeaders, TmbOneServiceResponse<EligibleLeadResponse> serviceResponse) {
-        serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-                ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-                ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-        return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
-    }
+	/**
+	 * @param responseHeaders
+	 * @param serviceResponse
+	 * @return
+	 */
+	private ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getTmbOneServiceResponseResponseEntity(
+			HttpHeaders responseHeaders, TmbOneServiceResponse<EligibleLeadResponse> serviceResponse) {
+		serviceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
+				ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
+				ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
+		return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
+	}
 }
