@@ -189,6 +189,10 @@ public class LoanCustomerService {
 
         } catch (NullPointerException e) {
             logger.error("get account saving fail: ", e);
+            throw e;
+        }catch (Exception ex) {
+            logger.error("get account saving fail: ", ex);
+            throw ex;
         }
 
         for (DepositAccount acc : oneTmbOneServiceResponse.getData().getDepositAccountLists()) {
