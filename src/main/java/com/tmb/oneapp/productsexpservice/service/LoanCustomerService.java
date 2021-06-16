@@ -94,7 +94,7 @@ public class LoanCustomerService {
 
     }
 
-    private Facility getFacility(Long caID) throws Exception {
+    private Facility getFacility(Long caID) throws TMBCommonException {
         try {
             ResponseFacility getFacilityResp = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
             if (getFacilityResp.getHeader().getResponseCode().equals("MSG_000")) {
@@ -107,11 +107,13 @@ public class LoanCustomerService {
 
         } catch (Exception e) {
             logger.error("searchFacilityInfoByCaID got exception:{}", e);
-            throw e;
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
     }
 
-    private void updateFacility(@NonNull Facility facility) throws Exception {
+    private void updateFacility(@NonNull Facility facility) throws TMBCommonException {
         try {
             com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = updateFacilityInfoClient.updateFacilityInfo(facility);
 
@@ -122,7 +124,9 @@ public class LoanCustomerService {
             }
         } catch (Exception e) {
             logger.error("updateFacilityInfo got exception:{}", e);
-            throw e;
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
     }
 
