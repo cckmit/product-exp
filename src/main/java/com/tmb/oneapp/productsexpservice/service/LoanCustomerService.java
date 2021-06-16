@@ -57,18 +57,18 @@ public class LoanCustomerService {
     private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
-    public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws Exception {
+    public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = getFacility(request.getCaID());
         return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), crmID);
     }
 
-    public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws Exception {
+    public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = getFacility(request.getCaID());
         saveFacility(request, facility);
         return parseSaveFacilityResponse(request, facility);
     }
 
-    private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) throws Exception {
+    private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) throws ServiceException, TMBCommonException, RemoteException {
         facility.setFeatureType(request.getFeatureType());
         if (request.getFeatureType().equals(FEATURE_TYPE_C)) {
             facility.getFeature().setRequestAmount(request.getRequestAmount());
@@ -94,7 +94,7 @@ public class LoanCustomerService {
 
     }
 
-    private Facility getFacility(Long caID) throws TMBCommonException {
+    private Facility getFacility(Long caID) throws ServiceException, TMBCommonException, RemoteException {
         try {
             ResponseFacility getFacilityResp = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
             if (getFacilityResp.getHeader().getResponseCode().equals("MSG_000")) {
@@ -107,13 +107,11 @@ public class LoanCustomerService {
 
         } catch (Exception e) {
             logger.error("searchFacilityInfoByCaID got exception:{}", e);
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+            throw e;
         }
     }
 
-    private void updateFacility(@NonNull Facility facility) throws TMBCommonException {
+    private void updateFacility(@NonNull Facility facility) throws ServiceException, TMBCommonException, RemoteException {
         try {
             com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = updateFacilityInfoClient.updateFacilityInfo(facility);
 
@@ -124,9 +122,7 @@ public class LoanCustomerService {
             }
         } catch (Exception e) {
             logger.error("updateFacilityInfo got exception:{}", e);
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+            throw e;
         }
     }
 
@@ -215,7 +211,7 @@ public class LoanCustomerService {
         return annualInterest;
     }
 
-    private LoanCustomerResponse parseLoanCustomerResponse(String correlationId, Facility facility, Long caID, String crmId) throws Exception {
+    private LoanCustomerResponse parseLoanCustomerResponse(String correlationId, Facility facility, Long caID, String crmId) throws ServiceException, TMBCommonException, RemoteException {
         LoanCustomerResponse response = new LoanCustomerResponse();
 
         List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
@@ -242,7 +238,7 @@ public class LoanCustomerService {
         return response;
     }
 
-    private Facility getFacilityFeature(Facility f, Long caID, String featureType) throws Exception {
+    private Facility getFacilityFeature(Facility f, Long caID, String featureType) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = f;
         facility.getFeature().setDisbAcctName("0");
         facility.getFeature().setDisbAcctNo("0");
