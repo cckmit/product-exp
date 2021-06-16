@@ -16,6 +16,7 @@ public class ProductsExpServiceConstant {
     public static final String EXCEPTION_OCCURED = "Exception occured : {}";
     public static final String HEADER_CORRELATION_ID = "X-Correlation-ID";
     public static final String HEADER_CORRELATION_ID_DESC = "Correlation ID";
+    public static final String HEADER_CRM_ID = "crmId";
     public static final String X_COR_ID_DEFAULT = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";
@@ -28,6 +29,7 @@ public class ProductsExpServiceConstant {
     public static final String X_CORRELATION_ID = "x-correlation-id";
     public static final String ACCOUNT_ID = "account-id";
     public static final int ZERO = 0;
+    public static final String STRING_ZERO = "0";
     public static final String EMPTY = "";
     public static final String CVV = "cvv";
     public static final String CARD_EXPIRY = "card-expiry";
@@ -106,8 +108,8 @@ public class ProductsExpServiceConstant {
     public static final String MODE_PERMANENT = "permanent";
     public static final String MODE_TEMPORARY = "temporary";
     public static final String ACTIVITY_ID_VERIFY_CARD_NO = "00700100";
-    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN="00700600";
-    public static final String ACTIVITY_ID_LOAD_CARD_DETAILS="00700800";
+    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN = "00700600";
+    public static final String ACTIVITY_ID_LOAD_CARD_DETAILS = "00700800";
     public static final String METHOD = "SCAN/KEY IN";
     public static final String UNIT_HOLDER = "PT000000000000587870";
     public static final String SUITABILITY_EXPIRED = "2";
@@ -131,6 +133,8 @@ public class ProductsExpServiceConstant {
     public static final String ACCEPT_LANGUAGE_EN = "en";
     public static final String ACCEPT_LANGUAGE_TH = "th";
     public static final String APPLICATION_STATUS_CC = "CC";
+    public static final String HEADER_PROSPECTIVE = "prospective";
+    public static final String TRUE = "true";
     public static final String APPLICATION_STATUS_FLAG_TRUE = "Y";
     public static final String RSL_CURRENT_NODE_1 = "1";
     public static final String HEADER_CITIZEN_ID = "Citizen-ID";
@@ -154,7 +158,7 @@ public class ProductsExpServiceConstant {
 
     public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
     public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
-    public static final String SMART_PORT_CODE = "090" ;
+    public static final String SMART_PORT_CODE = "090";
 
     public static final String SERVICE_TYPE_MATRIX_CODE_NCB_BY_POST = "O0001";
     public static final String SERVICE_TYPE_MATRIX_CODE_NCB_BY_EMAIL = "O0003";

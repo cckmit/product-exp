@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.google.common.base.Strings;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
@@ -11,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.LoanDetails;
+import com.tmb.oneapp.productsexpservice.model.request.ApplicationStatusRequest;
 import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusApplication;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
@@ -24,7 +26,12 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.tmb.oneapp.productsexpservice.constant.ApplicationStatusEnum.SD2;
@@ -54,24 +61,23 @@ public class ApplicationStatusService {
     /**
      * Get get HP and RSL application status
      *
-     * @param requestHeaders correlatinoId, crmId, deviceId, accept-language
+     * @param requestHeaders correlationId, crmId, deviceId, accept-language
      * @param serviceTypeId  service type for this endpoint
      * @return CustomerProfileResponseData customer data
      */
     public ApplicationStatusResponse getApplicationStatus(Map<String, String> requestHeaders,
-                                                          String serviceTypeId) throws TMBCommonException {
+                                                          String serviceTypeId,
+                                                          ApplicationStatusRequest requestBody) throws TMBCommonException {
         try {
             ApplicationStatusResponse response = new ApplicationStatusResponse();
 
             String correlationId = requestHeaders.get(X_CORRELATION_ID);
             String crmId = requestHeaders.get(X_CRMID);
-            String deviceId = requestHeaders.get(DEVICE_ID);
             String language = requestHeaders.get(ACCEPT_LANGUAGE);
+            String prospective = requestHeaders.getOrDefault(HEADER_PROSPECTIVE, "false");
 
-            //GET /apis/customers/{crmId} CUSTOMER-SERVICE
-            CustGeneralProfileResponse customerProfileResponseData = getCustomerCrmId(crmId);
-            String nationalId = customerProfileResponseData.getIdNo();
-            String mobileNo = customerProfileResponseData.getPhoneNoFull();
+            // === Get Cust Data ===
+            ApplicationStatusRequest custData = getCitizenIdMobileNo(crmId, prospective, requestBody);
 
             // === Get Node Text ===
             List<NodeDetails> nodeTextList = getNodeText();
@@ -80,12 +86,12 @@ public class ApplicationStatusService {
             //GET /apis/hpservice/loan-status/application-list
             //GET /apis/hpservice/loan-status/application-detail
             CompletableFuture<List<LoanDetails>> hpResponse =
-                    asyncApplicationStatusService.getHpData(correlationId, language, nationalId, mobileNo);
+                    asyncApplicationStatusService.getHpData(correlationId, language, custData.getCitizenId(), custData.getMobileNo());
 
             // === RSL ===
             //GET /apis/lending-service/rsl/status
             CompletableFuture<List<LendingRslStatusResponse>> rslResponse =
-                    asyncApplicationStatusService.getRSLData(correlationId, nationalId, mobileNo);
+                    asyncApplicationStatusService.getRSLData(correlationId, custData.getCitizenId(), custData.getMobileNo());
 
             CompletableFuture.allOf(hpResponse, rslResponse).get();
 
@@ -109,14 +115,7 @@ public class ApplicationStatusService {
             });
 
             // === Check First Time Usage ===
-            //GET /apis/customers/firstTimeUsage
-            CustomerFirstUsage customerFirstUsage = getFirstTimeUsage(requestHeaders, serviceTypeId);
-            logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
-
-            //POST /apis/customers/firstTimeUsage
-            if (customerFirstUsage == null) {
-                asyncPostFirstTime(crmId, deviceId, serviceTypeId);
-            }
+            CustomerFirstUsage customerFirstUsage = checkFirstTimeUsage(requestHeaders, serviceTypeId);
 
             return response
                     .setFirstUsageExperience(customerFirstUsage == null)
@@ -134,6 +133,68 @@ public class ApplicationStatusService {
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
+    }
+
+    /**
+     * Description: Check first time usage of customer, record first time usage if not first time
+     *
+     * @param requestHeaders headers
+     * @param serviceTypeId service type id
+     * @return return customer first time usage info
+     */
+    private CustomerFirstUsage checkFirstTimeUsage(Map<String, String> requestHeaders, String serviceTypeId) throws TMBCommonException {
+        String crmId = requestHeaders.get(X_CRMID);
+        String deviceId = requestHeaders.get(DEVICE_ID);
+        String prospective = requestHeaders.getOrDefault(HEADER_PROSPECTIVE, "false");
+
+        if (!STRING_ZERO.equals(crmId) && !TRUE.equalsIgnoreCase(prospective)) {
+            //GET /apis/customers/firstTimeUsage
+            CustomerFirstUsage customerFirstUsage
+                    = getFirstTimeUsage(requestHeaders, serviceTypeId);
+            logger.info("GET /apis/customers/firstTimeUsage response: {}", customerFirstUsage);
+
+            //POST /apis/customers/firstTimeUsage
+            if (customerFirstUsage == null) {
+                asyncPostFirstTime(crmId, deviceId, serviceTypeId);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Description: Get citizen id and mobile no of customer and validate
+     *
+     * @param crmId customerId
+     * @param prospective prospective customer
+     * @param requestBody nationalId, mobileNo
+     * @return return customer status data if found
+     */
+    private ApplicationStatusRequest getCitizenIdMobileNo(String crmId, String prospective,
+                                                          ApplicationStatusRequest requestBody) throws TMBCommonException {
+
+        String nationalId;
+        String mobileNo;
+
+        if (STRING_ZERO.equals(crmId) || TRUE.equalsIgnoreCase(prospective)) { //Prospective Customer flow
+            nationalId = requestBody != null ? requestBody.getCitizenId() : null;
+            mobileNo = requestBody != null ? requestBody.getMobileNo() : null;
+            if (Strings.isNullOrEmpty(nationalId) || Strings.isNullOrEmpty(mobileNo)) {
+                logger.error("National ID and Mobile No not provided.");
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                        ResponseCode.FAILED.getMessage(),
+                        ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+            }
+        } else { //Existing Customer flow
+            //GET /apis/customers/{crmId}.
+            CustGeneralProfileResponse customerProfileResponseData = getCustomerCrmId(crmId);
+            nationalId = customerProfileResponseData.getIdNo();
+            mobileNo = customerProfileResponseData.getPhoneNoFull();
+        }
+
+        return new ApplicationStatusRequest()
+                .setCitizenId(nationalId)
+                .setMobileNo(mobileNo);
     }
 
     /**

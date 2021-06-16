@@ -46,7 +46,7 @@ public class InvestmentRequestClientTest {
     private final FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
-    private Map<String, String> createHeader(String correlationId){
+    private Map<String, String> createHeader(String correlationId) {
         Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -84,8 +84,8 @@ public class InvestmentRequestClientTest {
             ex.printStackTrace();
         }
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
-        Assert.assertEquals(HttpStatus.OK.value(),responseEntity.getStatusCodeValue());
-        Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
+        Assert.assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
+        Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
         Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
     }
 
@@ -120,11 +120,13 @@ public class InvestmentRequestClientTest {
             ex.printStackTrace();
         }
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
-        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
-     //   Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
-      //  Assert.assertEquals(2,responseEntity.getBody().getData().getOrderToBeProcess().getOrder()
-     //           .size());
-      //  Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
+        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), responseEntity.getStatusCodeValue());
+     /*
+         Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
+        Assert.assertEquals(2,responseEntity.getBody().getData().getOrderToBeProcess().getOrder()
+                 .size());
+        Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
+      */
     }
 
 }

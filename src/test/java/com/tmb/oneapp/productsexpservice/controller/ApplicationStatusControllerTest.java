@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.request.ApplicationStatusRequest;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.ApplicationStatusService;
 import org.junit.jupiter.api.Test;
@@ -13,12 +14,12 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -29,7 +30,7 @@ class ApplicationStatusControllerTest {
 
     @Test
     void getApplicationStatus() throws TMBCommonException {
-        when(applicationStatusService.getApplicationStatus(anyMap(), anyString()))
+        when(applicationStatusService.getApplicationStatus(anyMap(), anyString(), isNull()))
                 .thenReturn(new ApplicationStatusResponse()
                         .setHpStatus(0)
                         .setRslStatus(0));
@@ -41,7 +42,7 @@ class ApplicationStatusControllerTest {
         header.put(ACCEPT_LANGUAGE, "en");
 
         ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> response =
-                applicationStatusController.getApplicationStatus(header, "AST");
+                applicationStatusController.getApplicationStatus(header, "AST", null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -57,7 +58,7 @@ class ApplicationStatusControllerTest {
     }
 
     void testHpRslError(int hpSuccess, int rslSuccess, String errorCode) throws TMBCommonException {
-        when(applicationStatusService.getApplicationStatus(anyMap(), anyString()))
+        when(applicationStatusService.getApplicationStatus(anyMap(), anyString(), isNull()))
                 .thenReturn(new ApplicationStatusResponse()
                         .setHpStatus(hpSuccess)
                         .setRslStatus(rslSuccess));
@@ -69,17 +70,17 @@ class ApplicationStatusControllerTest {
         header.put(ACCEPT_LANGUAGE, "en");
 
         ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> response =
-                applicationStatusController.getApplicationStatus(header, "AST");
+                applicationStatusController.getApplicationStatus(header, "AST", null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(errorCode, response.getBody().getStatus().getCode());
+        assertEquals(errorCode, Objects.requireNonNull(response.getBody()).getStatus().getCode());
 
     }
 
     @Test
     void getCaseStatus_exception() throws TMBCommonException {
 
-        when(applicationStatusService.getApplicationStatus(anyMap(), anyString()))
+        when(applicationStatusService.getApplicationStatus(anyMap(), anyString(), isNull()))
                 .thenThrow(new TMBCommonException("fail"));
 
         Map<String, String> header = new HashMap<>();
@@ -89,7 +90,7 @@ class ApplicationStatusControllerTest {
         header.put(ACCEPT_LANGUAGE, "en");
 
         ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> response =
-                applicationStatusController.getApplicationStatus(header, "AST");
+                applicationStatusController.getApplicationStatus(header, "AST", null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -104,7 +105,7 @@ class ApplicationStatusControllerTest {
         header.put(ACCEPT_LANGUAGE, "en");
 
         ResponseEntity<TmbOneServiceResponse<ApplicationStatusResponse>> response =
-                applicationStatusController.getApplicationStatus(header, "AST");
+                applicationStatusController.getApplicationStatus(header, "AST", null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
