@@ -12,7 +12,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuggestAllocationDTO {
     private List<MutualFund> mutualFund;
     private FundSuggestedAllocation fundSuggestedAllocation;
