@@ -12,6 +12,7 @@
       "unrealizedProfit": "FFFFF",
       "unrealizedProfitPerc": "FFFFF",
       "taxDoc": "FFFFF",
-      "unitLTF5Y": "FFFFF"
+      "unitLTF5Y": "FFFFF",
+      "nickName" : "nickName"
     }
 }
