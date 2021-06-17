@@ -55,21 +55,19 @@ public class LoanSubmissionInstantLoanCalUWService {
         response.setProduct(productCode);
 
         if (underWriting.equals(APPROVE)) {
-            if (productCode.equals(FLASH)) {
-                if (facilityInfo.getBody().getFacilities() != null) {
-                    response.setRequestAmount(facilityInfo.getBody().getFacilities()[0].getFeature().getRequestAmount());
-                    Pricing[] pricings = facilityInfo.getBody().getFacilities()[0].getPricings();
-                    List<LoanCustomerPricing> pricingList = new ArrayList<>();
+            if (productCode.equals(FLASH) && facilityInfo.getBody().getFacilities() != null) {
+                response.setRequestAmount(facilityInfo.getBody().getFacilities()[0].getFeature().getRequestAmount());
+                Pricing[] pricings = facilityInfo.getBody().getFacilities()[0].getPricings();
+                List<LoanCustomerPricing> pricingList = new ArrayList<>();
 
-                    for (Pricing p : pricings) {
-                        LoanCustomerPricing pricing = new LoanCustomerPricing();
-                        pricing.setMonthFrom(p.getMonthFrom());
-                        pricing.setMonthTo(p.getMonthTo());
-                        pricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
-                        pricingList.add(pricing);
-                    }
-                    response.setPricings(pricingList);
+                for (Pricing p : pricings) {
+                    LoanCustomerPricing pricing = new LoanCustomerPricing();
+                    pricing.setMonthFrom(p.getMonthFrom());
+                    pricing.setMonthTo(p.getMonthTo());
+                    pricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+                    pricingList.add(pricing);
                 }
+                response.setPricings(pricingList);
             }else {
                 response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()==null?null:loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
