@@ -391,8 +391,8 @@ public class ProductExpServiceController {
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            oneServiceResponse.setStatus(getStatusNotFund());
         }
+        oneServiceResponse.setStatus(getStatusNotFund());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 
