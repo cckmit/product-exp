@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
@@ -70,20 +71,23 @@ public class LoanSubmissionInstantLoanCalUWService {
                     response.setPricings(pricingList);
                 }
             }else {
-                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
+                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()==null?null:loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
 
-            response.setTenor(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getTenor());
-            response.setPayDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getPayDate());
-            response.setInterestRate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInterestRate());
-            response.setDisburstAccountNo(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getDisburstAccountNo());
-            response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
+            if(loanCalUWResponse.getBody().getApprovalMemoFacilities()!=null){
+                ApprovalMemoFacility approvalMemoFacility = loanCalUWResponse.getBody().getApprovalMemoFacilities()[0];
+                response.setTenor(approvalMemoFacility.getTenor());
+                response.setPayDate(approvalMemoFacility.getPayDate());
+                response.setInterestRate(approvalMemoFacility.getInterestRate());
+                response.setDisburstAccountNo(approvalMemoFacility.getDisburstAccountNo());
+                response.setCreditLimit(approvalMemoFacility.getCreditLimit());
 
-            response.setFirstPaymentDueDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getFirstPaymentDueDate());
-            response.setLoanContractDate(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getLoanContractDate());
-            response.setInstallmentAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getInstallmentAmount());
-            response.setRateType(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getRateType());
-            response.setRateTypePercent(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getRateTypePercent());
+                response.setFirstPaymentDueDate(approvalMemoFacility.getFirstPaymentDueDate());
+                response.setLoanContractDate(approvalMemoFacility.getLoanContractDate());
+                response.setInstallmentAmount(approvalMemoFacility.getInstallmentAmount());
+                response.setRateType(approvalMemoFacility.getRateType());
+                response.setRateTypePercent(approvalMemoFacility.getRateTypePercent());
+            }
         }
 
         return response;
