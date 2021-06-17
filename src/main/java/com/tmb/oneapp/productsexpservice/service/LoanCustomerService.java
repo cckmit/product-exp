@@ -70,7 +70,7 @@ public class LoanCustomerService {
 
     private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) throws ServiceException, TMBCommonException, RemoteException {
         facility.setFeatureType(request.getFeatureType());
-        if (request.getFeatureType().equals(FEATURE_TYPE_C)) {
+        if (request.getFeatureType().equals(FEATURE_TYPE_S)) {
             facility.getFeature().setRequestAmount(request.getRequestAmount());
         }
         facility.getFeature().setTenure(request.getTenure());
@@ -137,7 +137,7 @@ public class LoanCustomerService {
 
     private List<LoanCustomerPricing> getLoanCustomerPricings(Facility facility) {
         List<LoanCustomerPricing> pricings = new ArrayList<>();
-        if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
+        if (facility.getFeatureType().equals(FEATURE_TYPE_S)) {
 
             LoanCustomerPricing pricing = new LoanCustomerPricing();
 
@@ -164,7 +164,7 @@ public class LoanCustomerService {
 
     private List<LoanCustomerTenure> getLoanCustomerTenure(Facility facility) throws ServiceException, RemoteException {
         List<LoanCustomerTenure> installments = new ArrayList<>();
-        if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
+        if (facility.getFeatureType().equals(FEATURE_TYPE_S)) {
             CommonCodeEntry[] entries = getDropdownList(DROPDOWN_TENURE);
             for (CommonCodeEntry e : entries) {
                 LoanCustomerTenure installment = new LoanCustomerTenure();
@@ -228,10 +228,10 @@ public class LoanCustomerService {
 
         Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
 
-        List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityC);
+        List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityS);
         response.setPricings(pricings);
 
-        List<LoanCustomerTenure> installments = getLoanCustomerTenure(facilityC);
+        List<LoanCustomerTenure> installments = getLoanCustomerTenure(facilityS);
         response.setInstallments(installments);
 
         List<LoanCustomerFeature> features = getLoanCustomerFeatures(facilityS, facilityC);
