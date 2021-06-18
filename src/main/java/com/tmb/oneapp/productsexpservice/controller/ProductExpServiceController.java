@@ -373,7 +373,7 @@ public class ProductExpServiceController {
     }
 
     @ApiOperation(value = "Fetch Fund Suggest Allocation")
-    @PostMapping(value = "/suggest/allocation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/suggested/allocation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> getFundSuggestAllocation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
@@ -391,8 +391,8 @@ public class ProductExpServiceController {
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            oneServiceResponse.setStatus(getStatusNotFund());
         }
+        oneServiceResponse.setStatus(getStatusNotFund());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 

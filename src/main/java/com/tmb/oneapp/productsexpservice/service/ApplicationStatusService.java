@@ -157,6 +157,8 @@ public class ApplicationStatusService {
             if (customerFirstUsage == null) {
                 asyncPostFirstTime(crmId, deviceId, serviceTypeId);
             }
+
+            return customerFirstUsage;
         }
 
         return null;

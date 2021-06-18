@@ -15,9 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
@@ -39,7 +37,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testGetLoanCustomerProfileSuccess() throws ServiceException, RemoteException {
+    public void testGetLoanCustomerProfileSuccess() throws Exception {
         LoanCustomerRequest request = new LoanCustomerRequest();
         request.setCaID(1L);
         String correlationId = "xxx";
@@ -50,7 +48,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testGetLoanCustomerProfileFail() throws ServiceException, RemoteException {
+    public void testGetLoanCustomerProfileFail() throws Exception {
         LoanCustomerRequest request = new LoanCustomerRequest();
         request.setCaID(1L);
         String correlationId = "xxx";
@@ -60,7 +58,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testSaveCustomerProfileSuccess() throws ServiceException, RemoteException {
+    public void testSaveCustomerProfileSuccess() throws Exception {
         LoanCustomerSubmissionRequest request = new LoanCustomerSubmissionRequest();
         request.setCaID(1L);
         request.setFeatureType("S");
@@ -76,7 +74,7 @@ public class LoanCustomerControllerTest {
     }
 
     @Test
-    public void testSaveCustomerProfileFail() throws ServiceException, RemoteException {
+    public void testSaveCustomerProfileFail() throws Exception {
         LoanCustomerSubmissionRequest request = new LoanCustomerSubmissionRequest();
         request.setCaID(1L);
         request.setFeatureType("S");
