@@ -62,10 +62,15 @@ public class LoanSubmissionInstantLoanCalUWService {
 
                 for (Pricing p : pricings) {
                     LoanCustomerPricing pricing = new LoanCustomerPricing();
-                    pricing.setMonthFrom(p.getMonthFrom());
-                    pricing.setMonthTo(p.getMonthTo());
-                    pricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
-                    pricingList.add(pricing);
+                    if (p.getPricingType().equals("S")) {
+                        pricing.setMonthFrom(p.getMonthFrom());
+                        pricing.setMonthTo(p.getMonthTo());
+                        pricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+                        pricing.setYearTo(p.getYearTo());
+                        pricing.setYearFrom(p.getYearFrom());
+                        pricingList.add(pricing);
+                    }
+
                 }
                 response.setPricings(pricingList);
             }else {
