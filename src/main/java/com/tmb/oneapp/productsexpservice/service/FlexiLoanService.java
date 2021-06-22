@@ -56,14 +56,17 @@ public class FlexiLoanService {
         SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
         if (facilityInfo != null) {
+            LoanCustomerPricing customerPricing = new LoanCustomerPricing();
             for (Pricing p : facilityInfo.getPricings()) {
-                LoanCustomerPricing customerPricing = new LoanCustomerPricing();
-                customerPricing.setMonthFrom(p.getMonthFrom());
-                customerPricing.setMonthTo(p.getMonthTo());
-                customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
-                customerPricing.setRate(parseRate(p));
-
-                pricingList.add(customerPricing);
+                if (p.getPricingType().equals("S")) {
+                    customerPricing.setMonthFrom(p.getMonthFrom());
+                    customerPricing.setMonthTo(p.getMonthTo());
+                    customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+                    customerPricing.setRate(parseRate(p));
+                    customerPricing.setYearTo(p.getYearTo());
+                    customerPricing.setYearFrom(p.getYearFrom());
+                    pricingList.add(customerPricing);
+                }
             }
             pricingInfo.setPricing(pricingList);
         }
@@ -84,6 +87,7 @@ public class FlexiLoanService {
         response.setPricingInfo(pricingInfo);
         response.setReceivingInfo(receiving);
         response.setSubmissionInfo(payment);
+        response.setTenure(facilityInfo.getTenure());
         return response;
     }
 
