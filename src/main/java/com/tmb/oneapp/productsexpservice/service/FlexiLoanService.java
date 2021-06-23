@@ -37,9 +37,9 @@ public class FlexiLoanService {
 
     public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException {
 
-        Facility facilityInfo = getFacility(request.getCaID());
-        Individual customerInfo = getCustomer(request.getCaID());
-        CreditCard creditCardInfo = getCreditCard(request.getCaID());
+        Facility facilityInfo = getFacility(request.getCaId());
+        Individual customerInfo = getCustomer(request.getCaId());
+        CreditCard creditCardInfo = getCreditCard(request.getCaId());
         return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
     }
 
@@ -53,37 +53,43 @@ public class FlexiLoanService {
         customer.setName(customerInfo == null ? null : String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName()));
         customer.setCitizenId(customerInfo == null ? null : customerInfo.getIdNo1());
 
+        SubmissionPaymentInfo payment = new SubmissionPaymentInfo();
+        SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
         SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
         if (facilityInfo != null) {
+            LoanCustomerPricing customerPricing = new LoanCustomerPricing();
             for (Pricing p : facilityInfo.getPricings()) {
-                LoanCustomerPricing customerPricing = new LoanCustomerPricing();
-                customerPricing.setMonthFrom(p.getMonthFrom());
-                customerPricing.setMonthTo(p.getMonthTo());
-                customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
-                customerPricing.setRate(parseRate(p));
-
-                pricingList.add(customerPricing);
+                if (p.getPricingType().equals("S")) {
+                    customerPricing.setMonthFrom(p.getMonthFrom());
+                    customerPricing.setMonthTo(p.getMonthTo());
+                    customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+                    customerPricing.setRate(parseRate(p));
+                    customerPricing.setYearTo(p.getYearTo());
+                    customerPricing.setYearFrom(p.getYearFrom());
+                    pricingList.add(customerPricing);
+                }
             }
             pricingInfo.setPricing(pricingList);
+            payment.setFeatureType(facilityInfo.getFeatureType());
+            payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
+            payment.setOtherBank(facilityInfo.getLoanWithOtherBank());
+            payment.setOtherBankInProgress(facilityInfo.getConsiderLoanWithOtherBank());
+
+            receiving.setOsLimit(facilityInfo.getOsLimit());
+            receiving.setHostAcfNo(facilityInfo.getHostAcfNo());
+            receiving.setDisburseAccount(String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
+
+            response.setTenure(facilityInfo.getTenure());
         }
 
-        SubmissionPaymentInfo payment = new SubmissionPaymentInfo();
         payment.setEStatement(customerInfo == null ? null : customerInfo.getEmail());
-        payment.setFeatureType(facilityInfo == null ? null : facilityInfo.getFeatureType());
-        payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
-        payment.setOtherBank(facilityInfo == null ? null : facilityInfo.getLoanWithOtherBank());
-        payment.setOtherBankInProgress(facilityInfo == null ? null : facilityInfo.getConsiderLoanWithOtherBank());
-
-        SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
-        receiving.setOsLimit(facilityInfo == null ? null : facilityInfo.getOsLimit());
-        receiving.setHostAcfNo(facilityInfo == null ? null : facilityInfo.getHostAcfNo());
-        receiving.setDisburseAccount(facilityInfo == null ? null : String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
 
         response.setCustomerInfo(customer);
         response.setPricingInfo(pricingInfo);
         response.setReceivingInfo(receiving);
         response.setSubmissionInfo(payment);
+
         return response;
     }
 
