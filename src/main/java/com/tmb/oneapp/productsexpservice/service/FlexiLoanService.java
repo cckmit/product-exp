@@ -53,6 +53,8 @@ public class FlexiLoanService {
         customer.setName(customerInfo == null ? null : String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName()));
         customer.setCitizenId(customerInfo == null ? null : customerInfo.getIdNo1());
 
+        SubmissionPaymentInfo payment = new SubmissionPaymentInfo();
+        SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
         SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
         if (facilityInfo != null) {
@@ -69,25 +71,25 @@ public class FlexiLoanService {
                 }
             }
             pricingInfo.setPricing(pricingList);
+            payment.setFeatureType(facilityInfo.getFeatureType());
+            payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
+            payment.setOtherBank(facilityInfo.getLoanWithOtherBank());
+            payment.setOtherBankInProgress(facilityInfo.getConsiderLoanWithOtherBank());
+
+            receiving.setOsLimit(facilityInfo.getOsLimit());
+            receiving.setHostAcfNo(facilityInfo.getHostAcfNo());
+            receiving.setDisburseAccount(String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
+
+            response.setTenure(facilityInfo.getTenure());
         }
 
-        SubmissionPaymentInfo payment = new SubmissionPaymentInfo();
         payment.setEStatement(customerInfo == null ? null : customerInfo.getEmail());
-        payment.setFeatureType(facilityInfo == null ? null : facilityInfo.getFeatureType());
-        payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
-        payment.setOtherBank(facilityInfo == null ? null : facilityInfo.getLoanWithOtherBank());
-        payment.setOtherBankInProgress(facilityInfo == null ? null : facilityInfo.getConsiderLoanWithOtherBank());
-
-        SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
-        receiving.setOsLimit(facilityInfo == null ? null : facilityInfo.getOsLimit());
-        receiving.setHostAcfNo(facilityInfo == null ? null : facilityInfo.getHostAcfNo());
-        receiving.setDisburseAccount(facilityInfo == null ? null : String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
 
         response.setCustomerInfo(customer);
         response.setPricingInfo(pricingInfo);
         response.setReceivingInfo(receiving);
         response.setSubmissionInfo(payment);
-        response.setTenure(facilityInfo.getTenure());
+
         return response;
     }
 
