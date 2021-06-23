@@ -38,7 +38,7 @@ public class FlexiLoanControllerTest {
     @Test
     public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
-        request.setCaID(1L);
+        request.setCaId(1L);
         String correlationId = "xxx";
         SubmissionInfoResponse response = new SubmissionInfoResponse();
         when(flexiLoanService.getSubmissionInfo(any())).thenReturn(response);
@@ -49,7 +49,7 @@ public class FlexiLoanControllerTest {
     @Test
     public void testGetSubmissionInfoFail() throws ServiceException, RemoteException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
-        request.setCaID(1L);
+        request.setCaId(1L);
         String correlationId = "xxx";
         when(flexiLoanService.getSubmissionInfo(any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> responseEntity = flexiLoanController.getSubmissionInfo(correlationId, request);

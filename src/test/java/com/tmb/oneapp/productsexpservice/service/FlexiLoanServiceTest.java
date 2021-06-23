@@ -56,7 +56,7 @@ public class FlexiLoanServiceTest {
         when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
         when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
-        request.setCaID(1L);
+        request.setCaId(1L);
         request.setProductCode("VI");
         flexiLoanService.getSubmissionInfo(request);
         Assert.assertTrue(true);
@@ -68,7 +68,7 @@ public class FlexiLoanServiceTest {
         when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
         when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
-        request.setCaID(1L);
+        request.setCaId(1L);
         request.setProductCode("C2G");
         flexiLoanService.getSubmissionInfo(request);
         Assert.assertTrue(true);
