@@ -37,9 +37,9 @@ public class FlexiLoanService {
 
     public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException {
 
-        Facility facilityInfo = getFacility(request.getCaID());
-        Individual customerInfo = getCustomer(request.getCaID());
-        CreditCard creditCardInfo = getCreditCard(request.getCaID());
+        Facility facilityInfo = getFacility(request.getCaId());
+        Individual customerInfo = getCustomer(request.getCaId());
+        CreditCard creditCardInfo = getCreditCard(request.getCaId());
         return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
     }
 

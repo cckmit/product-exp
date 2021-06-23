@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 public class SubmissionInfoRequest {
 
     @NotNull
-    private Long caID;
+    private Long caId;
     @NotEmpty
     private String productCode;
 
