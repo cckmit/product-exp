@@ -32,6 +32,7 @@ public class LoanSubmissionInstantLoanCalUWService {
 
     static final String APPROVE = "APPROVE";
     static final String FLASH = "RC01";
+    static final String C2G02 = "C2G02";
 
     public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws ServiceException, RemoteException {
 
@@ -62,18 +63,24 @@ public class LoanSubmissionInstantLoanCalUWService {
 
                 for (Pricing p : pricings) {
                     LoanCustomerPricing pricing = new LoanCustomerPricing();
-                    pricing.setMonthFrom(p.getMonthFrom());
-                    pricing.setMonthTo(p.getMonthTo());
-                    pricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
-                    pricingList.add(pricing);
+                    if (p.getPricingType().equals("S")) {
+                        pricing.setMonthFrom(p.getMonthFrom());
+                        pricing.setMonthTo(p.getMonthTo());
+                        pricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+                        pricing.setYearTo(p.getYearTo());
+                        pricing.setYearFrom(p.getYearFrom());
+                        pricingList.add(pricing);
+                    }
                 }
                 response.setPricings(pricingList);
-            }else {
-                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()==null?null:loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
+            }else if (productCode.equals(C2G02) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null){
+                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
+
 
             if(loanCalUWResponse.getBody().getApprovalMemoFacilities()!=null){
                 ApprovalMemoFacility approvalMemoFacility = loanCalUWResponse.getBody().getApprovalMemoFacilities()[0];
+
                 response.setTenor(approvalMemoFacility.getTenor());
                 response.setPayDate(approvalMemoFacility.getPayDate());
                 response.setInterestRate(approvalMemoFacility.getInterestRate());
