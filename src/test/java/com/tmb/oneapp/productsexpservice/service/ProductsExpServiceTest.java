@@ -16,8 +16,10 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
+import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
@@ -79,6 +81,7 @@ public class ProductsExpServiceTest {
         FundSummaryByPortResponse fundSummaryByPortResponse;
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
         List<PtesDetail> ptesDetailList = null;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
 
@@ -109,6 +112,10 @@ public class ProductsExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+            oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
@@ -118,6 +125,10 @@ public class ProductsExpServiceTest {
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
+
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(),any())).thenReturn(
+                    ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                    .body(oneServiceResponseCountToBeProcessOrder));
 
 
         } catch (Exception ex) {
@@ -130,7 +141,6 @@ public class ProductsExpServiceTest {
         Assert.assertEquals(0, result.getSmartPortList().size());
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getPtPortList().size());
-
     }
 
     @Test
@@ -145,6 +155,8 @@ public class ProductsExpServiceTest {
         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
         List<PtesDetail> ptesDetailList = null;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
+
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
@@ -173,6 +185,10 @@ public class ProductsExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+            oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
@@ -182,6 +198,13 @@ public class ProductsExpServiceTest {
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
+
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(),any())).thenReturn(
+                    ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                            .body(oneServiceResponseCountToBeProcessOrder));
+
+
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -205,6 +228,7 @@ public class ProductsExpServiceTest {
         FundSummaryByPortResponse fundSummaryByPortResponse;
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
@@ -224,11 +248,19 @@ public class ProductsExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+            oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
+
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(),any())).thenReturn(
+                    ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                            .body(oneServiceResponseCountToBeProcessOrder));
 
         } catch (Exception ex) {
             ex.printStackTrace();
