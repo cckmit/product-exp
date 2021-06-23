@@ -73,8 +73,8 @@ public class LoanSubmissionInstantLoanCalUWService {
                     }
                 }
                 response.setPricings(pricingList);
-            }else if (productCode.equals(C2G02)){
-                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()==null?null:loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
+            }else if (productCode.equals(C2G02) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null){
+                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
 
 
