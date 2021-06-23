@@ -39,7 +39,7 @@ public class LoanCustomerControllerTest {
     @Test
     public void testGetLoanCustomerProfileSuccess() throws Exception {
         LoanCustomerRequest request = new LoanCustomerRequest();
-        request.setCaID(1L);
+        request.setCaId(1L);
         String correlationId = "xxx";
         LoanCustomerResponse response = new LoanCustomerResponse();
         when(loanCustomerService.getCustomerProfile(any(),any(), any())).thenReturn(response);
@@ -50,7 +50,7 @@ public class LoanCustomerControllerTest {
     @Test
     public void testGetLoanCustomerProfileFail() throws Exception {
         LoanCustomerRequest request = new LoanCustomerRequest();
-        request.setCaID(1L);
+        request.setCaId(1L);
         String correlationId = "xxx";
         when(loanCustomerService.getCustomerProfile(any(),any(), any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> responseEntity = loanCustomerController.getLoanCustomerProfile("11",correlationId, request);

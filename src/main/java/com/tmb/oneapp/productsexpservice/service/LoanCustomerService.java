@@ -58,8 +58,8 @@ public class LoanCustomerService {
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
-        Facility facility = getFacility(request.getCaID());
-        return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), crmID);
+        Facility facility = getFacility(request.getCaId());
+        return parseLoanCustomerResponse(correlationId, facility, request.getCaId(), crmID);
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, TMBCommonException, RemoteException {
@@ -143,17 +143,23 @@ public class LoanCustomerService {
 
             pricing.setMonthFrom(PRICING_MONTH_FROM);
             pricing.setMonthTo(PRICING_MONTH_TO);
+            pricing.setYearFrom(BigDecimal.valueOf(1));
+            pricing.setYearTo(BigDecimal.valueOf(1));
             pricing.setRateVariance(RATE_VARIANCE);
 
             LoanCustomerPricing pricing1 = new LoanCustomerPricing();
             pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
             pricing1.setMonthTo(PRICING_MONTH_TO_5);
+            pricing1.setYearFrom(BigDecimal.valueOf(2));
+            pricing1.setYearTo(BigDecimal.valueOf(1));
             pricing1.setRateVariance(RATE_VARIANCE_1);
 
             LoanCustomerPricing pricing2 = new LoanCustomerPricing();
             pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
             pricing2.setMonthTo(PRICING_MONTH_TO_12);
             pricing2.setRateVariance(RATE_VARIANCE_2);
+            pricing2.setYearFrom(BigDecimal.valueOf(3));
+            pricing2.setYearTo(BigDecimal.valueOf(99));
             pricings.add(pricing);
             pricings.add(pricing1);
             pricings.add(pricing2);

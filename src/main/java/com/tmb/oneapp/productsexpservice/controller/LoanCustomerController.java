@@ -36,7 +36,7 @@ public class LoanCustomerController {
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@ApiParam(value = "CRMID", defaultValue = "001100000000000000000001184383", required = true)
-                                                                                                  @RequestHeader(name = "X-CRMID", required = false) String crmId,
+                                                                                                  @RequestHeader(name = "X-CRMID", required = true) String crmId,
                                                                                               @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                               @Valid LoanCustomerRequest request) {
 
