@@ -67,8 +67,69 @@ public class PersonalLoanService {
         productData1.setProductDescTh(PRODUCT_DES);
         productData1.setIconId("/product/apply_loan/ttb_c2g.png");
 
+        ProductData productData2= new ProductData();
+        productData2.setRslCode("C2G");
+        productData2.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
+        productData2.setProductNameEn("cash2go");
+        productData2.setProductNameTh("สินเชื่อบุคคล");
+        productData2.setProductDescEn(PRODUCT_DES);
+        productData2.setProductDescTh(PRODUCT_DES);
+        productData2.setIconId("/product/apply_loan/ttb_c2g.png");
+
+        ProductData productData3= new ProductData();
+        productData3.setRslCode("C2G");
+        productData3.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
+        productData3.setProductNameEn("cash2go");
+        productData3.setProductNameTh("สินเชื่อบุคคล");
+        productData3.setProductDescEn(PRODUCT_DES);
+        productData3.setProductDescTh(PRODUCT_DES);
+        productData3.setIconId("/product/apply_loan/ttb_c2g.png");
+
+        ProductData productData4 = new ProductData();
+        productData4.setRslCode("RC");
+        productData4.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
+        productData4.setProductNameEn("flash card");
+        productData4.setProductNameTh("บัตรกดเงินสด");
+        productData4.setProductDescEn(PRODUCT_DES);
+        productData4.setProductDescTh(PRODUCT_DES);
+        productData4.setIconId("/product/apply_loan/ttb_flash.png");
+
+        ProductData productData5 = new ProductData();
+        productData5.setRslCode("RC");
+        productData5.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
+        productData5.setProductNameEn("flash card");
+        productData5.setProductNameTh("บัตรกดเงินสด");
+        productData5.setProductDescEn(PRODUCT_DES);
+        productData5.setProductDescTh(PRODUCT_DES);
+        productData5.setIconId("/product/apply_loan/ttb_flash.png");
+
+        ProductData productData6 = new ProductData();
+        productData6.setRslCode("RC");
+        productData6.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
+        productData6.setProductNameEn("flash card");
+        productData6.setProductNameTh("บัตรกดเงินสด");
+        productData6.setProductDescEn(PRODUCT_DES);
+        productData6.setProductDescTh(PRODUCT_DES);
+        productData6.setIconId("/product/apply_loan/ttb_flash.png");
+
+
+        ProductData productData7= new ProductData();
+        productData7.setRslCode("C2G");
+        productData7.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
+        productData7.setProductNameEn("cash2go");
+        productData7.setProductNameTh("สินเชื่อบุคคล");
+        productData7.setProductDescEn(PRODUCT_DES);
+        productData7.setProductDescTh(PRODUCT_DES);
+        productData7.setIconId("/product/apply_loan/ttb_c2g.png");
+
         productDataList.add(productData);
         productDataList.add(productData1);
+        productDataList.add(productData2);
+        productDataList.add(productData3);
+        productDataList.add(productData4);
+        productDataList.add(productData5);
+        productDataList.add(productData6);
+        productDataList.add(productData7);
         return productDataList;
     }
 
