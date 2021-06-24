@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWRespons
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
+import com.tmb.oneapp.productsexpservice.model.response.loan.ApplyPersonalLoan;
 import com.tmb.oneapp.productsexpservice.model.response.loan.ProductData;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionInstantLoanCalUWService;
 import com.tmb.oneapp.productsexpservice.service.PersonalLoanService;
@@ -99,15 +100,18 @@ public class PersonalLoanController {
     @GetMapping(value = "/get-product-loan-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product loan list")
-    public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductList() {
-        TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+    public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
+        TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
         try {
-            List<ProductData> productDataList = personalLoanService.getProducts();
+            ApplyPersonalLoan productDataList = personalLoanService.getProducts();
             oneTmbOneServiceResponse.setData(productDataList);
-            dataSuccess(responseHeaders,oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product list: {}", e);
