@@ -681,6 +681,7 @@ public class ProductsExpService {
         return SuggestAllocationDTO.builder()
                 .mutualFund(
                         fundClass.stream()
+                                .filter(f -> !f.getFundClassCode().equals("090"))
                                 .map(f -> MutualFund.builder()
                                         .fundClassCode(f.getFundClassCode())
                                         .fundClassNameEN(f.getFundClassNameEN())
@@ -709,9 +710,13 @@ public class ProductsExpService {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
         ArrayList<String> matchClassCode = new ArrayList<>();
         for (FundClass mutualFund : fundClass) {
+            if(mutualFund.getFundClassCode().equals("090")){
+                continue;
+            }
             boolean isNotFound = true;
             for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
-                if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())) {
+                if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())
+                     ) {
                     matchClassCode.add(mutualFund.getFundClassCode());
                     mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                             .fundClassCode(mutualFund.getFundClassCode())
@@ -723,6 +728,7 @@ public class ProductsExpService {
                                     .map(fl -> SubFundSuggestion.builder()
                                             .fundShortName(fl.getFundShortName())
                                             .fundCode(fl.getFundCode())
+                                            .fundPercent(fl.getFundPercent())
                                             .build())
                                     .collect(Collectors.toList()))
                             .build()
@@ -755,6 +761,7 @@ public class ProductsExpService {
                                 .map(fle -> SubFundSuggestion.builder()
                                         .fundShortName(fle.getFundShortName())
                                         .fundCode(fle.getFundCode())
+                                        .fundPercent(fle.getFundPercent())
                                         .build())
                                 .collect(Collectors.toList()))
                         .build())

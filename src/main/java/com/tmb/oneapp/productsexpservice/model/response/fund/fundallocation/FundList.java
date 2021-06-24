@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class FundList {
     private String fundCode;
     private String fundShortName;
+    private String fundPercent;
 }
