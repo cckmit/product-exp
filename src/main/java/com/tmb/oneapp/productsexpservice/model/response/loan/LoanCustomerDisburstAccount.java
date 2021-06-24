@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanCustomerDisburstAccount {
-
     private String accountNo;
     private String accountName;
 

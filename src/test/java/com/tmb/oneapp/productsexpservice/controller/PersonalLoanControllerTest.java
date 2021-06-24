@@ -107,4 +107,19 @@ public class PersonalLoanControllerTest {
 		assertTrue(result.getStatusCode().isError());
 	}
 
+	@Test
+	public void testGetProductCreditListSuccess() {
+		when(personalLoanService.getProductsCredit()).thenReturn(any());
+		personalLoanController.getProductList();
+		assertTrue(true);
+	}
+
+	@Test
+	public void testGetProductCreditListFail() {
+		when(personalLoanService.getProductsCredit()).thenThrow(new NullPointerException());
+
+		ResponseEntity<TmbOneServiceResponse<List<ProductData>>> result = personalLoanController.getProductCreditList();
+		assertTrue(result.getStatusCode().isError());
+	}
+
 }
