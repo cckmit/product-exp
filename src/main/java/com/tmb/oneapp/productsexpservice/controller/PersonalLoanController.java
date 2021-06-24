@@ -52,15 +52,13 @@ public class PersonalLoanController {
                                                                                    @Valid LoanPreloadRequest loanPreloadRequest) {
         TmbOneServiceResponse<LoanPreloadResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
         try {
 
             oneTmbOneServiceResponse.setData(personalLoanService.checkPreload(correlationId, loanPreloadRequest));
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneTmbOneServiceResponse.setStatus(getStatus());
 
-            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
+            extracted(responseHeaders, "Timestamp");
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while getConfig: {}", e);
@@ -78,15 +76,13 @@ public class PersonalLoanController {
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
 
         try {
             InstantLoanCalUWResponse instantLoanCalUWResponse = loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest);
             oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-            responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+            oneTmbOneServiceResponse.setStatus(getStatus());
+            extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
@@ -103,15 +99,13 @@ public class PersonalLoanController {
     public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
         TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
 
         try {
             ApplyPersonalLoan productDataList = personalLoanService.getProducts();
             oneTmbOneServiceResponse.setData(productDataList);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-            responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+            oneTmbOneServiceResponse.setStatus(getStatus());
+            extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product list: {}", e);
@@ -121,13 +115,14 @@ public class PersonalLoanController {
         }
     }
 
+
     @GetMapping(value = "/get-product-credit-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product credit list")
     public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList() {
         TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
 
         try {
             List<ProductData> productDataList = personalLoanService.getProductsCredit();
@@ -144,11 +139,19 @@ public class PersonalLoanController {
     }
 
     ResponseEntity<TmbOneServiceResponse<List<ProductData>>> dataSuccess(HttpHeaders responseHeaders, TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse) {
-        oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        oneTmbOneServiceResponse.setStatus(getStatus());
+        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
         return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
     }
+    private TmbStatus getStatus() {
+        return new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE);
+    }
+
+    private void extracted(HttpHeaders responseHeaders, String headerTimestamp) {
+        responseHeaders.set(headerTimestamp, String.valueOf(Instant.now().toEpochMilli()));
+    }
+
 
 }
