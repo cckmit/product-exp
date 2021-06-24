@@ -20,7 +20,7 @@ public class PersonalLoanService {
 
     private static final TMBLogger<PersonalLoanService> logger = new TMBLogger(PersonalLoanService.class);
     private final CommonServiceClient commonServiceClient;
-    
+    private static final String PRODUCT_DES = "ตอบโจทย์ทุกการใช้ชีวิต";
     @Autowired 
     public PersonalLoanService(CommonServiceClient commonServiceClient) {
     	this.commonServiceClient = commonServiceClient;
@@ -42,8 +42,8 @@ public class PersonalLoanService {
         productData.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
         productData.setProductNameEn("flash card");
         productData.setProductNameTh("บัตรกดเงินสด");
-        productData.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
-        productData.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+        productData.setProductDescEn(PRODUCT_DES);
+        productData.setProductDescTh(PRODUCT_DES);
         productData.setIconId("/product/apply_loan/ttb_flash.png");
 
         ProductData productData1= new ProductData();
@@ -51,8 +51,8 @@ public class PersonalLoanService {
         productData1.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
         productData1.setProductNameEn("cash2go");
         productData1.setProductNameTh("สินเชื่อบุคคล");
-        productData1.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
-        productData1.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+        productData1.setProductDescEn(PRODUCT_DES);
+        productData1.setProductDescTh(PRODUCT_DES);
         productData1.setIconId("/product/apply_loan/ttb_c2g.png");
 
         productDataList.add(productData);
