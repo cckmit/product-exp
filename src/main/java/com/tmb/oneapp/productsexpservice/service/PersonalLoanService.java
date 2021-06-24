@@ -36,12 +36,18 @@ public class PersonalLoanService {
     private static final String CONTENT_LINK_C2G = "https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n";
     private static final String ICON_C2G = "/product/apply_loan/ttb_c2g.png";
     private static final String ICON_FLASH = "/product/apply_loan/ttb_flash.png";
+    private static final String ICON_SO_FAST = "/product/apply_loan/ttb_flash.png";
+    private static final String ICON_VI = "/product/apply_loan/ttb_reserve_infinite.png";
+    private static final String ICON_VJ = "/product/apply_loan/ttb_signature.png";
+    private static final String ICON_VM = "/product/apply_loan/ttb_so_smart.png";
+    private static final String ICON_VH = "/product/apply_loan/ttb_so_chill.png";
     private static final String C2G = "C2G";
     private static final String RC = "RC";
     private static final String CASH_2_GO = "cash2go";
     private static final String FLASH_CARD = "flash card";
     private static final String CREDIT = "บัตรกดเงินสด";
     private static final String LOAN = "สินเชื่อบุคคล";
+    private static final String CONTENT_LINK_VI_VB = "https://www-uat.tau2904.com/ttb-reserve/main/index.html?inapp=y&dl=n";
 
     @Autowired 
     public PersonalLoanService(CommonServiceClient commonServiceClient) {
@@ -147,21 +153,21 @@ public class PersonalLoanService {
         List<ProductData> productDataList = new ArrayList();
         ProductData productData = new ProductData();
         productData.setRslCode("VI");
-        productData.setContentLink("https://www-uat.tau2904.com/ttb-reserve/main/index.html?inapp=y&dl=n");
+        productData.setContentLink(CONTENT_LINK_VI_VB);
         productData.setProductNameEn(PRODUCT_NAME_VI);
         productData.setProductNameTh(PRODUCT_NAME_VI);
         productData.setProductDescEn(PRODUCT_DES_CREDIT);
         productData.setProductDescTh(PRODUCT_DES_CREDIT);
-        productData.setIconId("/product/apply_loan/ttb_reserve_infinite.png");
+        productData.setIconId(ICON_VI);
 
         ProductData productData1= new ProductData();
         productData1.setRslCode("VB");
-        productData1.setContentLink("https://www-uat.tau2904.com/ttb-reserve/main/index.html?inapp=y&dl=n");
+        productData1.setContentLink(CONTENT_LINK_VI_VB);
         productData1.setProductNameEn(PRODUCT_NAME_VB);
         productData1.setProductNameTh(PRODUCT_NAME_VB);
         productData1.setProductDescEn(PRODUCT_DES_CREDIT_VB);
         productData1.setProductDescTh(PRODUCT_DES_CREDIT_VB);
-        productData1.setIconId("/product/apply_loan/ttb_c2g.png");
+        productData1.setIconId(ICON_C2G);
 
         ProductData productData2= new ProductData();
         productData2.setRslCode("VJ");
@@ -170,7 +176,7 @@ public class PersonalLoanService {
         productData2.setProductNameTh(PRODUCT_NAME_VJ);
         productData2.setProductDescEn(PRODUCT_DES);
         productData2.setProductDescTh(PRODUCT_DES);
-        productData2.setIconId("/product/apply_loan/ttb_signature.png");
+        productData2.setIconId(ICON_VJ);
 
         ProductData productData3 = new ProductData();
         productData3.setRslCode("VP");
@@ -179,7 +185,7 @@ public class PersonalLoanService {
         productData3.setProductNameTh(PRODUCT_NAME_VP);
         productData3.setProductDescEn(PRODUCT_DES_CREDIT_VP);
         productData3.setProductDescTh(PRODUCT_DES_CREDIT_VP);
-        productData3.setIconId("/product/apply_loan/ttb_so_fast.png");
+        productData3.setIconId(ICON_SO_FAST);
 
         ProductData productData4 = new ProductData();
         productData4.setRslCode("VM");
@@ -188,7 +194,7 @@ public class PersonalLoanService {
         productData4.setProductNameTh(PRODUCT_NAME_VM);
         productData4.setProductDescEn(PRODUCT_DES_CREDIT_VM);
         productData4.setProductDescTh(PRODUCT_DES_CREDIT_VM);
-        productData4.setIconId("/product/apply_loan/ttb_so_smart.png");
+        productData4.setIconId(ICON_VM);
 
         ProductData productData5 = new ProductData();
         productData5.setRslCode("VH");
@@ -197,7 +203,7 @@ public class PersonalLoanService {
         productData5.setProductNameTh(PRODUCT_NAME_VH);
         productData5.setProductDescEn(PRODUCT_DES_CREDIT_VH);
         productData5.setProductDescTh(PRODUCT_DES_CREDIT_VH);
-        productData5.setIconId("/product/apply_loan/ttb_so_chill.png");
+        productData5.setIconId(ICON_VH);
 
         productDataList.add(productData);
         productDataList.add(productData1);
