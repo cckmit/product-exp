@@ -62,7 +62,7 @@ public class PersonalLoanController {
             responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
-            logger.error("Error while getConfig: {}", e);
+            logger.error("error while getConfig: {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
@@ -88,7 +88,7 @@ public class PersonalLoanController {
             responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
-            logger.error("Error while getConfig: {}", e);
+            logger.error("error while check under writing: {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
@@ -113,7 +113,7 @@ public class PersonalLoanController {
             responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
-            logger.error("Error while getConfig: {}", e);
+            logger.error("error while get product list: {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
