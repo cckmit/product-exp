@@ -7,11 +7,12 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
-
+import com.tmb.oneapp.productsexpservice.model.response.loan.ProductData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,6 +34,33 @@ public class PersonalLoanService {
 
         return loanPreloadResponse;
     }
+
+    public List<ProductData>  getProducts() {
+        List<ProductData> productDataList = new ArrayList();
+        ProductData productData = new ProductData();
+        productData.setRslCode("RC");
+        productData.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
+        productData.setProductNameEn("flash card");
+        productData.setProductNameTh("บัตรกดเงินสด");
+        productData.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
+        productData.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+        productData.setIconId("/product/apply_loan/ttb_flash.png");
+
+        ProductData productData1= new ProductData();
+        productData1.setRslCode("C2G");
+        productData1.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
+        productData1.setProductNameEn("cash2go");
+        productData1.setProductNameTh("สินเชื่อบุคคล");
+        productData1.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
+        productData1.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+        productData1.setIconId("/product/apply_loan/ttb_c2g.png");
+
+        productDataList.add(productData);
+        productDataList.add(productData1);
+        return productDataList;
+    }
+
+
 
     public TmbOneServiceResponse<List<CommonData>> getAllConfig(String correlationId,String search) {
         TmbOneServiceResponse<List<CommonData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
