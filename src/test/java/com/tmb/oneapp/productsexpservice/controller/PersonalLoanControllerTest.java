@@ -116,7 +116,7 @@ public class PersonalLoanControllerTest {
 
 	@Test
 	public void testGetProductCreditListFail() {
-		when(personalLoanService.getProducts()).thenThrow(new NullPointerException());
+		when(personalLoanService.getProductsCredit()).thenThrow(new NullPointerException());
 
 		ResponseEntity<TmbOneServiceResponse<List<ProductData>>> result = personalLoanController.getProductCreditList();
 		assertTrue(result.getStatusCode().isError());
