@@ -52,20 +52,17 @@ public class PersonalLoanController {
     public ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> checkPreload(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                    @Valid LoanPreloadRequest loanPreloadRequest) {
         TmbOneServiceResponse<LoanPreloadResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
-            oneTmbOneServiceResponse.setData(personalLoanService.checkPreload(correlationId, loanPreloadRequest));
+            LoanPreloadResponse loanResponse = personalLoanService.checkPreload(correlationId, loanPreloadRequest);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-
-            extracted();
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setData(loanResponse);
+            return ResponseEntity.ok().headers(responseHeaders).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while getConfig: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatusFailed());
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
-
-
     }
 
     @GetMapping(value = "/get-preload-brms", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,14 +70,12 @@ public class PersonalLoanController {
     @ApiOperation("Get preload brms")
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
-
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
             InstantLoanCalUWResponse instantLoanCalUWResponse = loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest);
-            oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-            extracted();
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
+            return ResponseEntity.ok().headers(responseHeaders).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatusFailed());
@@ -94,13 +89,11 @@ public class PersonalLoanController {
     @ApiOperation("Get product loan list")
     public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
         TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
-
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
             ApplyPersonalLoan productDataLoanList = personalLoanService.getProducts();
-            oneTmbOneServiceResponse.setData(productDataLoanList);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-            extracted();
+            oneTmbOneServiceResponse.setData(productDataLoanList);
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product list: {}", e);
@@ -109,19 +102,17 @@ public class PersonalLoanController {
         }
     }
 
-
     @GetMapping(value = "/get-product-credit-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product credit list")
     public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList() {
         TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
-
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
             List<ProductData> productDataCreditList = personalLoanService.getProductsCredit();
+            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             oneTmbOneServiceResponse.setData(productDataCreditList);
-            dataSuccess(oneTmbOneServiceResponse);
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            return ResponseEntity.ok().headers(responseHeaders).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product credit list: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatusFailed());
@@ -134,21 +125,9 @@ public class PersonalLoanController {
                 ResponseCode.FAILED.getService());
     }
 
-    ResponseEntity<TmbOneServiceResponse<List<ProductData>>> dataSuccess(TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse) {
-        oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-        extracted();
-        return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
-    }
-
     private TmbStatus getStatusSuccess() {
         return new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE);
     }
-
-    private void extracted() {
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-    }
-
-
 }
