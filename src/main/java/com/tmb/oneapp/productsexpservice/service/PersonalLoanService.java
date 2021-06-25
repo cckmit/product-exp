@@ -7,6 +7,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
+import com.tmb.oneapp.productsexpservice.model.response.loan.ApplyPersonalLoan;
 import com.tmb.oneapp.productsexpservice.model.response.loan.ProductData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -63,8 +64,7 @@ public class PersonalLoanService {
         return loanPreloadResponse;
     }
 
-    public List<ProductData>  getProducts() {
-        List<ProductData> productDataList = new ArrayList();
+    public ApplyPersonalLoan getProducts() {
         ProductData productData = new ProductData();
         productData.setRslCode(RC);
         productData.setContentLink(CONTENT_LINK_FLASH);
@@ -128,7 +128,6 @@ public class PersonalLoanService {
         productData6.setProductDescTh(PRODUCT_DES);
         productData6.setIconId(ICON_FLASH);
 
-
         ProductData productData7= new ProductData();
         productData7.setRslCode(RC);
         productData7.setContentLink(CONTENT_LINK_FLASH);
@@ -138,15 +137,29 @@ public class PersonalLoanService {
         productData7.setProductDescTh(PRODUCT_DES);
         productData7.setIconId(ICON_C2G);
 
-        productDataList.add(productData);
-        productDataList.add(productData1);
-        productDataList.add(productData2);
-        productDataList.add(productData3);
-        productDataList.add(productData4);
-        productDataList.add(productData5);
-        productDataList.add(productData6);
-        productDataList.add(productData7);
-        return productDataList;
+        List<ProductData> productDataCreditList = new ArrayList();
+        productDataCreditList.add(productData1);
+        productDataCreditList.add(productData2);
+        productDataCreditList.add(productData3);
+
+        List<ProductData> productDataFlashList = new ArrayList();
+        productDataFlashList.add(productData);
+        productDataFlashList.add(productData4);
+        productDataFlashList.add(productData5);
+        productDataFlashList.add(productData6);
+        productDataFlashList.add(productData7);
+
+        ApplyPersonalLoan applyPersonalLoans = new ApplyPersonalLoan();
+        ApplyPersonalLoan personalCreditLoan = new ApplyPersonalLoan();
+        ApplyPersonalLoan personalFlashLoan = new ApplyPersonalLoan();
+
+        personalCreditLoan.setProductCreditList(productDataCreditList);
+        personalFlashLoan.setProductFlashList(productDataFlashList);
+
+        applyPersonalLoans.setProductFlashList(productDataFlashList);
+        applyPersonalLoans.setProductCreditList(productDataCreditList);
+
+        return applyPersonalLoans;
     }
 
     public List<ProductData>  getProductsCredit() {
