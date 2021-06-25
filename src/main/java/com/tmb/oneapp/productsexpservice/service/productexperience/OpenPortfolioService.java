@@ -33,8 +33,6 @@ public class OpenPortfolioService {
      * @param openPortfolioRequest
      */
     public ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> validateOpenPortfolio(String correlationId, OpenPortfolioRequest openPortfolioRequest) {
-        ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> responseEntity = commonServiceClient.getTermAndConditionByServiceCodeAndChannel(correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
-        logger.info(responseEntity.getBody().toString());
-        return responseEntity;
+        return commonServiceClient.getTermAndConditionByServiceCodeAndChannel(correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
     }
 }
