@@ -52,13 +52,12 @@ public class PersonalLoanController {
     public ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> checkPreload(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                    @Valid LoanPreloadRequest loanPreloadRequest) {
         TmbOneServiceResponse<LoanPreloadResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
+        extracted();
         try {
-
             oneTmbOneServiceResponse.setData(personalLoanService.checkPreload(correlationId, loanPreloadRequest));
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
 
-            extracted(responseHeaders, "Timestamp");
+            extracted();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while getConfig: {}", e);
@@ -74,13 +73,13 @@ public class PersonalLoanController {
     @ApiOperation("Get preload brms")
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
+        extracted();
 
         try {
             InstantLoanCalUWResponse instantLoanCalUWResponse = loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest);
             oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-            extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
+            extracted();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
@@ -95,13 +94,13 @@ public class PersonalLoanController {
     @ApiOperation("Get product loan list")
     public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
         TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
+        extracted();
 
         try {
-            ApplyPersonalLoan productDataList = personalLoanService.getProducts();
-            oneTmbOneServiceResponse.setData(productDataList);
+            ApplyPersonalLoan productDataLoanList = personalLoanService.getProducts();
+            oneTmbOneServiceResponse.setData(productDataLoanList);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-            extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
+            extracted();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product list: {}", e);
@@ -116,13 +115,12 @@ public class PersonalLoanController {
     @ApiOperation("Get product credit list")
     public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList() {
         TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
+        extracted();
 
         try {
-            List<ProductData> productDataList = personalLoanService.getProductsCredit();
-            oneTmbOneServiceResponse.setData(productDataList);
-            dataSuccess(responseHeaders, oneTmbOneServiceResponse);
-
+            List<ProductData> productDataCreditList = personalLoanService.getProductsCredit();
+            oneTmbOneServiceResponse.setData(productDataCreditList);
+            dataSuccess(oneTmbOneServiceResponse);
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product credit list: {}", e);
@@ -136,9 +134,9 @@ public class PersonalLoanController {
                 ResponseCode.FAILED.getService());
     }
 
-    ResponseEntity<TmbOneServiceResponse<List<ProductData>>> dataSuccess(HttpHeaders responseHeaders, TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse) {
+    ResponseEntity<TmbOneServiceResponse<List<ProductData>>> dataSuccess(TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse) {
         oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-        extracted(responseHeaders, ProductsExpServiceConstant.HEADER_TIMESTAMP);
+        extracted();
         return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
     }
 
@@ -148,8 +146,8 @@ public class PersonalLoanController {
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE);
     }
 
-    private void extracted(HttpHeaders responseHeaders, String headerTimestamp) {
-        responseHeaders.set(headerTimestamp, String.valueOf(Instant.now().toEpochMilli()));
+    private void extracted() {
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
     }
 
 
