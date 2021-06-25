@@ -33,5 +33,5 @@ public class FundSummaryBody extends FundClassList{
     private Boolean isSmartPort;
     private List<FundClass> smartPortList;
     private List<FundClass> ptPortList;
-
+    private String countProcessedOrder;
 }

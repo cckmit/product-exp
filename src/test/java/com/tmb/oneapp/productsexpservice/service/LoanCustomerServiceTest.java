@@ -5,6 +5,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.feature.Feature;
+import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -16,6 +17,7 @@ import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
 import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
+import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerSubmissionResponse;
 import org.junit.Assert;
@@ -27,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -148,7 +151,7 @@ public class LoanCustomerServiceTest {
         when(customerExpServiceClient.getCustomerAccountSaving(any(), any())).thenReturn(mockAccountSaving());
 
         LoanCustomerRequest request = new LoanCustomerRequest();
-        request.setCaID(1L);
+        request.setCaId(1L);
         LoanCustomerResponse response = loanCustomerService.getCustomerProfile("111",request,"111");
 
         Assert.assertNotNull(response);
@@ -158,8 +161,33 @@ public class LoanCustomerServiceTest {
     private Facility mockFacility() {
         Facility facility = new Facility();
         Feature feature = new Feature();
+        Pricing p = new Pricing();
+        LoanCustomerResponse loanCustomerResponse = new LoanCustomerResponse();
         facility.setFeatureType("S");
         facility.setFeature(feature);
+
+        p.setRateVaraince(BigDecimal.TEN);
+        Pricing[] pricings = new Pricing[1];
+        pricings[0] = p;
+
+        List<LoanCustomerPricing> pricingList = new ArrayList<>();
+        pricings[0].setMonthTo(BigDecimal.ONE);
+        pricings[0].setMonthFrom(BigDecimal.ONE);
+        pricings[0].setRateVaraince(BigDecimal.ONE);
+        pricings[0].setYearFrom(BigDecimal.ONE);
+        pricings[0].setYearTo(BigDecimal.ONE);
+        pricings[0].setPricingType("S");
+
+        LoanCustomerPricing customerPricing = new LoanCustomerPricing();
+        customerPricing.setYearFrom(BigDecimal.ONE);
+        customerPricing.setYearTo(BigDecimal.ONE);
+        customerPricing.setMonthFrom(BigDecimal.ONE);
+        customerPricing.setMonthTo(BigDecimal.ONE);
+        customerPricing.setRate("12");
+        customerPricing.setRateVariance(BigDecimal.ONE);
+        pricingList.add(customerPricing);
+        loanCustomerResponse.setPricings(pricingList);
+
         return facility;
     }
 
@@ -187,3 +215,4 @@ public class LoanCustomerServiceTest {
     }
 
 }
+

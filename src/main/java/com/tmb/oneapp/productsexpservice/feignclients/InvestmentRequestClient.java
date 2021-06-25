@@ -5,6 +5,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolde
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -12,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyReque
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
+import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
@@ -81,6 +83,17 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> callInvestmentFundSummaryByPortService(@RequestHeader Map<String, String> headers
             , @RequestBody UnitHolder unitHolder);
+
+    /***
+     * Call investment to get fund sumaary by port
+     * @param headers
+     * @param countToBeProcessOrderRequestBody
+     * @return
+     */
+    @PostMapping(value = "${investment.service.fund.processed.order.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> callInvestmentCountProcessOrderService(@RequestHeader Map<String, String> headers
+            , @RequestBody CountToBeProcessOrderRequestBody countToBeProcessOrderRequestBody);
 
     /**
      * Call investment fund summary service fund summary response.

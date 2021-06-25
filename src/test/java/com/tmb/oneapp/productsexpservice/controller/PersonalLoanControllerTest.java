@@ -5,6 +5,8 @@ import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWRespons
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
+import com.tmb.oneapp.productsexpservice.model.response.loan.ApplyPersonalLoan;
+import com.tmb.oneapp.productsexpservice.model.response.loan.ProductData;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionInstantLoanCalUWService;
 import com.tmb.oneapp.productsexpservice.service.PersonalLoanService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -86,6 +89,37 @@ public class PersonalLoanControllerTest {
 		when(loanCalUWService.checkCalculateUnderwriting(request)).thenThrow(new NullPointerException());
 
 		ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = personalLoanController.checkCalUW(request);
+		assertTrue(result.getStatusCode().isError());
+	}
+
+
+	@Test
+	public void testGetProductListSuccess() {
+		when(personalLoanService.getProducts()).thenReturn(any());
+		personalLoanController.getProductList();
+		assertTrue(true);
+	}
+
+	@Test
+	public void testGetProductListFail() {
+		when(personalLoanService.getProducts()).thenThrow(new NullPointerException());
+
+		ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> result = personalLoanController.getProductList();
+		assertTrue(result.getStatusCode().isError());
+	}
+
+	@Test
+	public void testGetProductCreditListSuccess() {
+		when(personalLoanService.getProductsCredit()).thenReturn(any());
+		personalLoanController.getProductList();
+		assertTrue(true);
+	}
+
+	@Test
+	public void testGetProductCreditListFail() {
+		when(personalLoanService.getProductsCredit()).thenThrow(new NullPointerException());
+
+		ResponseEntity<TmbOneServiceResponse<List<ProductData>>> result = personalLoanController.getProductCreditList();
 		assertTrue(result.getStatusCode().isError());
 	}
 

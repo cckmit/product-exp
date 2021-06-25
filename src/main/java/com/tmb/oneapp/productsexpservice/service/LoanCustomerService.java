@@ -58,8 +58,8 @@ public class LoanCustomerService {
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
-        Facility facility = getFacility(request.getCaID());
-        return parseLoanCustomerResponse(correlationId, facility, request.getCaID(), crmID);
+        Facility facility = getFacility(request.getCaId());
+        return parseLoanCustomerResponse(correlationId, facility, request.getCaId(), crmID);
     }
 
     public LoanCustomerSubmissionResponse saveCustomerSubmission(LoanCustomerSubmissionRequest request) throws ServiceException, TMBCommonException, RemoteException {

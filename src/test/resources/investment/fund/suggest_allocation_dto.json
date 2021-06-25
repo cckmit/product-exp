@@ -1,12 +1,6 @@
 {
     "mutualFund": [
       {
-        "fundClassCode": "090",
-        "fundClassNameTH": "ttb smart port",
-        "fundClassNameEN": "ttb smart port",
-        "fundClassPercent": "25.41"
-      },
-      {
         "fundClassCode": "300",
         "fundClassNameTH": "กองทุนผสม",
         "fundClassNameEN": "Balanced",
@@ -56,13 +50,6 @@
       ]
     },
     "mutualFundWithFundSuggestedAllocation": [
-      {
-        "fundClassCode": "090",
-        "fundClassNameTh": "ttb smart port",
-        "fundClassNameEn": "ttb smart port",
-        "fundClassPercent": "25.41",
-        "recommendedPercent": "0"
-      },
       {
         "fundClassCode": "300",
         "fundClassNameTh": "กองทุนผสม",

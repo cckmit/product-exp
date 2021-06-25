@@ -5,16 +5,15 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanCustomerPricing {
-    private BigDecimal monthFrom;
-    private BigDecimal monthTo;
-    private BigDecimal yearFrom;
-    private BigDecimal yearTo;
-    private BigDecimal rateVariance;
-    private String rate;
+public class ProductData {
+    private String rslCode;
+    private String contentLink;
+    private String productNameEn;
+    private String productNameTh;
+    private String productDescEn;
+    private String productDescTh;
+    private String iconId;
 }

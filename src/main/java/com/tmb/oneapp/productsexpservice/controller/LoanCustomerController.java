@@ -13,7 +13,6 @@ import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerSubmiss
 import com.tmb.oneapp.productsexpservice.service.LoanCustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,8 +34,7 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@ApiParam(value = "CRMID", defaultValue = "001100000000000000000001184383", required = true)
-                                                                                                  @RequestHeader(name = "X-CRMID", required = false) String crmId,
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@Valid @RequestHeader(name = "X-CRMID") String crmId,
                                                                                               @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                               @Valid LoanCustomerRequest request) {
 

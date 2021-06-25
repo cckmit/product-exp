@@ -26,6 +26,7 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
@@ -37,6 +38,7 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
@@ -154,18 +156,29 @@ public class ProductsExpService {
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse = null;
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = null;
         try {
-            List<String> ports = getPortList(rq.getCrmId(), invHeaderReqParameter);
+            String crmId = rq.getCrmId();
+            List<String> ports = getPortList(crmId, invHeaderReqParameter);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
             summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
+            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(invHeaderReqParameter,
+                    CountToBeProcessOrderRequestBody.builder().serviceType("1").rm(crmId).build());
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummaryData);
+
             if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                 var body = fundSummaryData.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
                 this.setFundSummaryBody(result, ports, body, summaryByPort);
             }
+
+            result.setCountProcessedOrder("0");
+            if (HttpStatus.OK.value() == countOrderProcessingResponse.getStatusCode().value()) {
+                result.setCountProcessedOrder(countOrderProcessingResponse.getBody().getData().getCountProcessOrder());
+            }
+
             return result;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
@@ -668,6 +681,7 @@ public class ProductsExpService {
         return SuggestAllocationDTO.builder()
                 .mutualFund(
                         fundClass.stream()
+                                .filter(f -> !f.getFundClassCode().equals("090"))
                                 .map(f -> MutualFund.builder()
                                         .fundClassCode(f.getFundClassCode())
                                         .fundClassNameEN(f.getFundClassNameEN())
@@ -696,9 +710,13 @@ public class ProductsExpService {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
         ArrayList<String> matchClassCode = new ArrayList<>();
         for (FundClass mutualFund : fundClass) {
+            if(mutualFund.getFundClassCode().equals("090")){
+                continue;
+            }
             boolean isNotFound = true;
             for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
-                if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())) {
+                if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())
+                     ) {
                     matchClassCode.add(mutualFund.getFundClassCode());
                     mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                             .fundClassCode(mutualFund.getFundClassCode())
@@ -710,6 +728,7 @@ public class ProductsExpService {
                                     .map(fl -> SubFundSuggestion.builder()
                                             .fundShortName(fl.getFundShortName())
                                             .fundCode(fl.getFundCode())
+                                            .fundPercent(fl.getFundPercent())
                                             .build())
                                     .collect(Collectors.toList()))
                             .build()
@@ -742,6 +761,7 @@ public class ProductsExpService {
                                 .map(fle -> SubFundSuggestion.builder()
                                         .fundShortName(fle.getFundShortName())
                                         .fundCode(fle.getFundCode())
+                                        .fundPercent(fle.getFundPercent())
                                         .build())
                                 .collect(Collectors.toList()))
                         .build())
