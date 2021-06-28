@@ -1,11 +1,9 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDeta
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.CashForYourResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.EnquiryInstallmentRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.ModelTenor;
 import com.tmb.oneapp.productsexpservice.model.loan.PricingTier;
@@ -31,13 +30,6 @@ public class CashForUService {
 
 	private static CashForUConfigInfo rateCashForUInfo = null;
 
-	@PostConstruct
-	public void doCachRate() {
-		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = commonServiceClient
-				.getCurrentCashForYouRate();
-		rateCashForUInfo = response.getBody().getData();
-	}
-
 	public CashForUService(CreditCardClient creditCardClient, CommonServiceClient commonServiceClient) {
 		this.creditCardClient = creditCardClient;
 		this.commonServiceClient = commonServiceClient;
@@ -45,19 +37,24 @@ public class CashForUService {
 
 	/**
 	 * calculate cash for your model
-	 * 
-	 * @param installmentRateResponse
-	 * @param cashTransferFlag
-	 * @param cashChillChillFlag
+	 * @param rateRequest
 	 * @param correlationId
 	 * @param requestBody
 	 * @return
 	 */
-	public CashForYourResponse calculateInstallmentForCashForYou(InstallmentRateResponse installmentRateResponse,
-			String cashChillChillFlag, String cashTransferFlag, String correlationId,
-			EnquiryInstallmentRequest requestBody) {
+	public CashForYourResponse calculateInstallmentForCashForYou(InstallmentRateRequest rateRequest,
+			String correlationId, EnquiryInstallmentRequest requestBody) {
 		CashForYourResponse responseModelInfo = new CashForYourResponse();
-		if ("Y".equals(cashChillChillFlag) && "Y".equals(cashTransferFlag)) {
+		if ("Y".equals(requestBody.getCashChillChillFlag()) && "Y".equals(requestBody.getCashTransferFlag())) {
+
+			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
+					.getInstallmentRate(correlationId, rateRequest);
+			InstallmentRateResponse installmentRateResponse = loanResponse.getBody().getData();
+			if (Objects.isNull(rateCashForUInfo)) {
+				ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = commonServiceClient
+						.getCurrentCashForYouRate();
+				rateCashForUInfo = response.getBody().getData();
+			}
 			responseModelInfo.setCashVatRate(rateCashForUInfo.getCashTransferVat());
 			responseModelInfo.setCashFeeRate(rateCashForUInfo.getCashTransferFee());
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
@@ -108,10 +105,24 @@ public class CashForUService {
 		ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 				requestBody.getAccountId());
 		CreditCardDetail cardDetail = fetchCardResponse.getBody().getCreditCard();
-		responseModelInfo.setCashFeeRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeRate()));
+		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
+		BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))
+				.multiply(new BigDecimal(requestBody.getAmount()));
+		BigDecimal summaryFeee = cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt();
+		if ("1".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
+			if (feeAmt.compareTo(cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt()) > 0) {
+				summaryFeee = feeAmt;
+			}
+			responseModelInfo.setCashFeeRate(String.valueOf(summaryFeee));
+		} else if ("2".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
+			BigDecimal totalFee = feeAmt.add(summaryFeee);
+			responseModelInfo.setCashFeeRate(String.valueOf(totalFee));
+		} else {
+			responseModelInfo.setCashFeeRate(String.valueOf(feeAmt));
+		}
 		responseModelInfo.setCashInterestRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate()));
 		responseModelInfo.setCashVatRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate()));
-		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
+
 	}
 
 	public static void setRateCashForUInfo(CashForUConfigInfo rateCashForUInfo) {

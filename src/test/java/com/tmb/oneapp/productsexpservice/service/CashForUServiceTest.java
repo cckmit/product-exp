@@ -22,6 +22,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.loan.CashForYourResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.EnquiryInstallmentRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentData;
+import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.ModelTenor;
 
@@ -75,9 +76,9 @@ public class CashForUServiceTest {
 
 		cardResponse.setCreditCard(creditCardDetail);
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
-
-		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(installmentRateResponse,
-				cashChillChillFlag, cashTransferFlag, correlationId, requestBody);
+		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
+		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId,
+				requestBody);
 		Assert.assertNull(cashResponse.getInstallmentData());
 		Assert.assertNotEquals("0", cashResponse.getCashFeeRate());
 		Assert.assertNotEquals("0", cashResponse.getCashInterestRate());
@@ -93,7 +94,6 @@ public class CashForUServiceTest {
 		List<ModelTenor> modelTenors = new ArrayList<ModelTenor>();
 		cashChillChillInst.setModelTenors(modelTenors);
 		installmentRateResponse.setInstallmentData(cashChillChillInst);
-		
 
 		String cashChillChillFlag = "Y";
 		String cashTransferFlag = "Y";
@@ -131,8 +131,8 @@ public class CashForUServiceTest {
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
 		when(commonServiceClient.getCurrentCashForYouRate()).thenReturn(response);
 		CashForUService.setRateCashForUInfo(resp);
-		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(installmentRateResponse,
-				cashChillChillFlag, cashTransferFlag, correlationId, requestBody);
+		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
+		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
 		Assert.assertNotNull(cashResponse.getInstallmentData());
 	}
 
