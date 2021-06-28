@@ -26,8 +26,8 @@ import org.springframework.stereotype.Service;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -190,33 +190,16 @@ public class LoanCustomerService {
         } catch (NullPointerException e) {
             logger.error("get account saving fail: ", e);
             throw e;
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             logger.error("get account saving fail: ", ex);
             throw ex;
         }
 
-        List<DepositAccount> accList = oneTmbOneServiceResponse.getData().getDepositAccountLists();
-        int[] orders = new int[accList.size()];
-        for (int i = 0; i < accList.size(); i++) {
-            if (accList.get(i).getProductConfigSortOrder() != null) {
-                int order = Integer.parseInt(accList.get(i).getProductConfigSortOrder());
-                orders[i] = order;
-            }
-        }
-        Arrays.sort(orders);
-        for (int order1 : orders) {
-            for (DepositAccount acc : accList) {
-                if (acc.getProductConfigSortOrder() != null) {
-                    int order2 = Integer.parseInt(acc.getProductConfigSortOrder());
-                    var accNo = disburstAccounts.stream().filter(a -> a.getAccountNo() == acc.getAccountNumber()).findAny();
-                    if (order1 == order2 && accNo.isEmpty()) {
-                        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
-                        disburstAccount.setAccountNo(acc.getAccountNumber());
-                        disburstAccount.setAccountName(acc.getProductNameTh());
-                        disburstAccounts.add(disburstAccount);
-                    }
-                }
-            }
+        for (DepositAccount acc : oneTmbOneServiceResponse.getData().getDepositAccountLists()) {
+            LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
+            disburstAccount.setAccountNo(acc.getAccountNumber());
+            disburstAccount.setAccountName(acc.getProductNameTh());
+            disburstAccounts.add(disburstAccount);
         }
 
         return disburstAccounts;
