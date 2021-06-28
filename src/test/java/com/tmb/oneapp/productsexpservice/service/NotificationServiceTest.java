@@ -95,7 +95,7 @@ public class NotificationServiceTest {
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
 
-		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
 		Assert.assertTrue(true);
 	}
@@ -130,7 +130,7 @@ public class NotificationServiceTest {
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
 		when(customerServiceClient.getCustomerProfile(any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
-		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<>();
 		List<ProductConfig> productConfigs = new ArrayList<>();
@@ -138,7 +138,7 @@ public class NotificationServiceTest {
 		when(commonServiceClient.getProductConfig(any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(productResponse));
 
-		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		notificationService.sendCardActiveEmail(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
 		Assert.assertTrue(true);
 
@@ -167,7 +167,7 @@ public class NotificationServiceTest {
 		when(customerServiceClient.getCustomerProfile(any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
-		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<>();
 		List<ProductConfig> productConfigs = new ArrayList<>();
@@ -179,7 +179,7 @@ public class NotificationServiceTest {
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
 
-		notificationService.doNotifySuccessForSetPin(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		notificationService.doNotifySuccessForSetPin(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
 		Assert.assertTrue(true);
 	}
@@ -208,7 +208,7 @@ public class NotificationServiceTest {
 		when(customerServiceClient.getCustomerProfile(any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
-		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
 		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<>();
@@ -223,7 +223,7 @@ public class NotificationServiceTest {
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
 
-		notificationService.doNotifySuccessForBlockCard(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		notificationService.doNotifySuccessForBlockCard(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208");
 		Assert.assertTrue(true);
 	}
@@ -272,7 +272,7 @@ public class NotificationServiceTest {
 		when(customerServiceClient.getCustomerProfile(any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
-		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
 		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<>();
@@ -285,7 +285,7 @@ public class NotificationServiceTest {
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
 
-		notificationService.doNotifySuccessForTemporaryLimit(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		notificationService.doNotifySuccessForTemporaryLimit(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208", req);
 		Assert.assertTrue(true);
 	}
@@ -334,7 +334,7 @@ public class NotificationServiceTest {
 		when(customerServiceClient.getCustomerProfile(any()))
 				.thenReturn(ResponseEntity.status(HttpStatus.OK).body(profileResponse));
 
-		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		when(creditCardClient.getCreditCardDetails(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193")).thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
 		TmbOneServiceResponse<List<ProductConfig>> productResponse = new TmbOneServiceResponse<List<ProductConfig>>();
@@ -346,7 +346,7 @@ public class NotificationServiceTest {
 		TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<NotificationResponse>();
 		sendEmailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "succcess", "notification-service"));
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(sendEmailResponse);
-		notificationService.doNotifySuccessForChangeUsageLimit(ProductsExpServiceConstant.HEADER_CORRELATION_ID,
+		notificationService.doNotifySuccessForChangeUsageLimit(ProductsExpServiceConstant.X_CORRELATION_ID,
 				"0000000050079650011000193", "001100000000000000000012036208", req);
 		Assert.assertTrue(true);
 	}

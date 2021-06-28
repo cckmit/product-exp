@@ -75,7 +75,7 @@ public class ProductExpServiceController {
     @PostMapping(value = "/account/detail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<FundAccountRs>> getFundAccountDetail(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FundAccountRq fundAccountRq) {
 
         TmbOneServiceResponse<FundAccountRs> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -110,7 +110,7 @@ public class ProductExpServiceController {
     @PostMapping(value = "/summary", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> getFundSummary(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FundSummaryRq fundSummaryRq) {
 
         TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -145,7 +145,7 @@ public class ProductExpServiceController {
     @PostMapping(value = "/paymentDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> getFundPrePaymentDetail(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FundPaymentDetailRq fundPaymentDetailRq) {
         TmbOneServiceResponse<FundPaymentDetailRs> oneServiceResponse = new TmbOneServiceResponse<>();
 
@@ -187,7 +187,7 @@ public class ProductExpServiceController {
     @PostMapping(value = "/alternative/validation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<FfsResponse>> getFundFFSAndValidation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FfsRequestBody ffsRequestBody) {
         TmbOneServiceResponse<FfsResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
@@ -254,7 +254,7 @@ public class ProductExpServiceController {
     @PostMapping(value = "/alternative/sellAndSwitch", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<FundResponse>> validateAlternativeSellAndSwitch(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody AlternativeRq alternativeRq) {
         TmbOneServiceResponse<FundResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -304,7 +304,7 @@ public class ProductExpServiceController {
     @PostMapping(value = "/search/fundList", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> getFundListInfo(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FundListRq fundListRq) {
 
         TmbOneServiceResponse<List<FundClassListInfo>> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -342,7 +342,7 @@ public class ProductExpServiceController {
     @PostMapping(value = "/suggested/allocation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> getFundSuggestAllocation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody SuggestAllocationBodyRequest suggestAllocationBodyRequest) {
 
         TmbOneServiceResponse<SuggestAllocationDTO> oneServiceResponse = new TmbOneServiceResponse<>();
