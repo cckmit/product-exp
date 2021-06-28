@@ -7,7 +7,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.dto.fund.information.InformationDto;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -373,11 +372,5 @@ public class ProductExpServiceController {
         return new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE);
-    }
-
-    private ResponseEntity<TmbOneServiceResponse<InformationDto>> getTmbOneServiceResponseEntity(TmbOneServiceResponse<InformationDto> oneServiceResponse, InformationDto informationDto, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {
-        oneServiceResponse.setData(informationDto);
-        oneServiceResponse.setStatus(new TmbStatus(statusCode, statusMessage, ProductsExpServiceConstant.SERVICE_NAME, statusMessage));
-        return status.headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 }
