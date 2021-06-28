@@ -39,7 +39,6 @@ class InvestmentAsyncServiceTest {
     @InjectMocks
     private InvestmentAsyncService investmentAsyncService;
 
-
     @Test
     void should_return_information_body_when_call_fetch_fund_information_given_header_and_fund_code_request_body() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
         //Given
