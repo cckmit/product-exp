@@ -26,8 +26,8 @@ import org.springframework.stereotype.Service;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -138,15 +138,27 @@ public class LoanCustomerService {
     private List<LoanCustomerPricing> getLoanCustomerPricings(Facility facility) {
         List<LoanCustomerPricing> pricings = new ArrayList<>();
         if (facility.getFeatureType().equals(FEATURE_TYPE_S)) {
-            var facilityPricings = facility.getPricings();
-            for (var item : facilityPricings) {
-                LoanCustomerPricing pricing = new LoanCustomerPricing();
-                pricing.setMonthFrom(item.getMonthFrom());
-                pricing.setMonthTo(item.getMonthTo());
-                pricing.setRateVariance(item.getRateVaraince());
-                pricings.add(pricing);
-            }
+
+            LoanCustomerPricing pricing = new LoanCustomerPricing();
+
+            pricing.setMonthFrom(PRICING_MONTH_FROM);
+            pricing.setMonthTo(PRICING_MONTH_TO);
+            pricing.setRateVariance(RATE_VARIANCE);
+
+            LoanCustomerPricing pricing1 = new LoanCustomerPricing();
+            pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
+            pricing1.setMonthTo(PRICING_MONTH_TO_5);
+            pricing1.setRateVariance(RATE_VARIANCE_1);
+
+            LoanCustomerPricing pricing2 = new LoanCustomerPricing();
+            pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
+            pricing2.setMonthTo(PRICING_MONTH_TO_12);
+            pricing2.setRateVariance(RATE_VARIANCE_2);
+            pricings.add(pricing);
+            pricings.add(pricing1);
+            pricings.add(pricing2);
         }
+
         return pricings;
     }
 
@@ -178,33 +190,16 @@ public class LoanCustomerService {
         } catch (NullPointerException e) {
             logger.error("get account saving fail: ", e);
             throw e;
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             logger.error("get account saving fail: ", ex);
             throw ex;
         }
 
-        List<DepositAccount> accList = oneTmbOneServiceResponse.getData().getDepositAccountLists();
-        int[] orders = new int[accList.size()];
-        for (int i = 0; i < accList.size(); i++) {
-            if (accList.get(i).getProductConfigSortOrder() != null) {
-                int order = Integer.parseInt(accList.get(i).getProductConfigSortOrder());
-                orders[i] = order;
-            }
-        }
-        Arrays.sort(orders);
-        for (int order1 : orders) {
-            for (DepositAccount acc : accList) {
-                if (acc.getProductConfigSortOrder() != null) {
-                    int order2 = Integer.parseInt(acc.getProductConfigSortOrder());
-                    var accNo = disburstAccounts.stream().filter(a -> a.getAccountNo() == acc.getAccountNumber()).findAny();
-                    if (order1 == order2 && accNo.isEmpty()) {
-                        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
-                        disburstAccount.setAccountNo(acc.getAccountNumber());
-                        disburstAccount.setAccountName(acc.getProductNameTh());
-                        disburstAccounts.add(disburstAccount);
-                    }
-                }
-            }
+        for (DepositAccount acc : oneTmbOneServiceResponse.getData().getDepositAccountLists()) {
+            LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
+            disburstAccount.setAccountNo(acc.getAccountNumber());
+            disburstAccount.setAccountName(acc.getProductNameTh());
+            disburstAccounts.add(disburstAccount);
         }
 
         return disburstAccounts;
@@ -249,9 +244,9 @@ public class LoanCustomerService {
 
     private Facility getFacilityFeature(Facility f, Long caID, String featureType) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = f;
-        facility.getFeature().setDisbAcctName(facility.getFeature().getDisbAcctName());
-        facility.getFeature().setDisbAcctNo(facility.getFeature().getDisbAcctNo());
-        facility.getFeature().setDisbBankCode(facility.getFeature().getDisbBankCode());
+        facility.getFeature().setDisbAcctName("0");
+        facility.getFeature().setDisbAcctNo("0");
+        facility.getFeature().setDisbBankCode("0");
         facility.getFeature().setRequestAmount(BigDecimal.ZERO);
         facility.getFeature().setTenure(1L);
         facility.setFeatureType(featureType);
@@ -265,7 +260,7 @@ public class LoanCustomerService {
         facilityFeature.setFeatureType(facility.getFeatureType());
         facilityFeature.setAmountMin(AMOUNT_MIN);
         facilityFeature.setAmountMax(facility.getLimitApplied());
-        facilityFeature.setLimitAmount(facility.getLimitApplied());
+        facilityFeature.setLimitAmount(LIMIT_AMOUNT);
         return facilityFeature;
     }
 
