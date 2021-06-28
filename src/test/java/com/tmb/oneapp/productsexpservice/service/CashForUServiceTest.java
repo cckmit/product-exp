@@ -75,6 +75,7 @@ public class CashForUServiceTest {
 		creditCardDetail.setCardCashAdvance(cashAdvance);
 
 		cardResponse.setCreditCard(creditCardDetail);
+		requestBody.setAmount("10000");
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
 		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId,
@@ -132,8 +133,10 @@ public class CashForUServiceTest {
 		when(commonServiceClient.getCurrentCashForYouRate()).thenReturn(response);
 		CashForUService.setRateCashForUInfo(resp);
 		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
+		rateRequest.setAmount("10000");
+		requestBody.setAmount(rateRequest.getAmount());
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
-		Assert.assertNotNull(cashResponse.getInstallmentData());
+		Assert.assertNull(cashResponse.getInstallmentData());
 	}
 
 }
