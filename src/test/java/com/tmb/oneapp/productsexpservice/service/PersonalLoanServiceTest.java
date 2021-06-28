@@ -1,11 +1,10 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.tmb.common.model.AllowCashDayOne;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.*;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
+import com.tmb.oneapp.productsexpservice.model.response.loan.ApplyPersonalLoan;
 import com.tmb.oneapp.productsexpservice.model.response.loan.ProductData;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -74,30 +74,85 @@ public class PersonalLoanServiceTest {
 
 	@Test
 	public void testProductList() {
+		ApplyPersonalLoan applyPersonalLoans = new ApplyPersonalLoan();
+		ApplyPersonalLoan personalCreditLoan = new ApplyPersonalLoan();
+		ApplyPersonalLoan personalFlashLoan = new ApplyPersonalLoan();
+
+		ProductData productLoanData = new ProductData();
+		ProductData productCreditData = new ProductData();
 
 		List<ProductData> productDataList = new ArrayList<>();
-		ProductData productData = new ProductData();
-		productData.setRslCode("RC");
-		productData.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
-		productData.setProductNameEn("flash card");
-		productData.setProductNameTh("บัตรกดเงินสด");
-		productData.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
-		productData.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
-		productData.setIconId("/product/credit_card/cards_flash.png");
 
-		ProductData productData1= new ProductData();
-		productData1.setRslCode("C2G");
-		productData1.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
-		productData1.setProductNameEn("cash2go");
-		productData1.setProductNameTh("สินเชื่อบุคคล");
-		productData1.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
-		productData1.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
-		productData1.setIconId("/product/logo/icon_09.png");
+		productLoanData.setRslCode("RC");
+		productLoanData.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
+		productLoanData.setProductNameEn("flash card");
+		productLoanData.setProductNameTh("บัตรกดเงินสด");
+		productLoanData.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
+		productLoanData.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+		productLoanData.setIconId("/product/credit_card/cards_flash.png");
 
-		productDataList.add(productData);
-		productDataList.add(productData1);
+		productCreditData.setRslCode("C2G");
+		productCreditData.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
+		productCreditData.setProductNameEn("cash2go");
+		productCreditData.setProductNameTh("สินเชื่อบุคคล");
+		productCreditData.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
+		productCreditData.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+		productCreditData.setIconId("/product/logo/icon_09.png");
 
-		personalLoanService.getProducts();
+		List<ProductData> productDataCreditList = new ArrayList();
+		productDataCreditList.add(productCreditData);
+
+		List<ProductData> productDataFlashList = new ArrayList();
+		productDataFlashList.add(productLoanData);
+
+		personalCreditLoan.setProductCreditList(productDataCreditList);
+		personalFlashLoan.setProductFlashList(productDataFlashList);
+
+		applyPersonalLoans.setProductFlashList(productDataFlashList);
+		applyPersonalLoans.setProductCreditList(productDataCreditList);
+
+
+		Optional<ProductData> optionalProductData = productDataList.stream().filter(a-> a.getRslCode().equals("RC")).findAny();
+
+		Optional<ProductData> applyPersonalLoans1 = productDataList.stream().filter(a-> a.getRslCode().equals("C2G")).findAny();
+
+		TmbOneServiceResponse<List<CommonData>> list = new TmbOneServiceResponse<List<CommonData>>();
+		List<CommonData> listData = new ArrayList<CommonData>();
+		CommonData cData = new CommonData();
+		cData.setAccount221Url("");
+		List<ApplyProductData> applyPersonalLoans2 = new ArrayList<ApplyProductData>();
+		List<ApplyProductData> applyCreditCards = new ArrayList<ApplyProductData>();
+		ApplyPersonalLoan personalLoan = new ApplyPersonalLoan();
+		personalLoan.setProductCreditList(productDataCreditList);
+		personalLoan.setProductFlashList(productDataFlashList);
+
+		ApplyProductData apls = new ApplyProductData();
+		apls.setRslCode("RC");
+		apls.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/flash-card");
+		apls.setProductNameEn("flash card");
+		apls.setProductNameTh("บัตรกดเงินสด");
+		apls.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
+		apls.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+		apls.setIconId("/product/credit_card/cards_flash.png");
+		applyPersonalLoans2.add(apls);
+
+		ApplyProductData applyCreditCards1 = new ApplyProductData();
+		applyCreditCards1.setRslCode("C2G");
+		applyCreditCards1.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
+		applyCreditCards1.setProductNameEn("cash2go");
+		applyCreditCards1.setProductNameTh("สินเชื่อบุคคล");
+		applyCreditCards1.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
+		applyCreditCards1.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+		applyCreditCards1.setIconId("/product/logo/icon_09.png");
+		applyCreditCards.add(applyCreditCards1);
+
+		cData.setApplyPersonalLoans(applyPersonalLoans2);
+		cData.setApplyCreditCards(applyCreditCards);
+		listData.add(cData);
+		list.setData(listData);
+
+		when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(list));
+		personalLoanService.getProductsLoan("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "lending_module");
 
 		Assert.assertTrue(true);
 	}
@@ -168,7 +223,27 @@ public class PersonalLoanServiceTest {
 		productDataList.add(productData5);
 		productDataList.add(productData1);
 
-		personalLoanService.getProductsCredit();
+		TmbOneServiceResponse<List<CommonData>> list = new TmbOneServiceResponse<List<CommonData>>();
+		List<CommonData> listData = new ArrayList<CommonData>();
+		CommonData cData = new CommonData();
+		cData.setAccount221Url("");
+
+		List<ApplyProductData> applyCreditCards = new ArrayList<ApplyProductData>();
+		ApplyProductData applyCreditCards1 = new ApplyProductData();
+		applyCreditCards1.setRslCode("C2G");
+		applyCreditCards1.setContentLink("https://www-uat.tau2904.com/th/personal/loans/personal-loan/cash-2-go?inapp=y&dl=n");
+		applyCreditCards1.setProductNameEn("cash2go");
+		applyCreditCards1.setProductNameTh("สินเชื่อบุคคล");
+		applyCreditCards1.setProductDescEn("ตอบโจทย์ทุกการใช้ชีวิต");
+		applyCreditCards1.setProductDescTh("ตอบโจทย์ทุกการใช้ชีวิต");
+		applyCreditCards1.setIconId("/product/logo/icon_09.png");
+		applyCreditCards.add(applyCreditCards1);
+		cData.setApplyCreditCards(applyCreditCards);
+		listData.add(cData);
+		list.setData(listData);
+
+		when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(list));
+		personalLoanService.getProductsCredit("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","lending_module");
 
 		Assert.assertTrue(true);
 	}
