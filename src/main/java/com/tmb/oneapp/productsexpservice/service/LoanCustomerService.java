@@ -56,6 +56,7 @@ public class LoanCustomerService {
     private static final BigDecimal RATE_VARIANCE_2 = BigDecimal.valueOf(23.00);
     private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
+    private int[] oders;
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = getFacility(request.getCaId());
@@ -198,23 +199,19 @@ public class LoanCustomerService {
         List<DepositAccount> accList = oneTmbOneServiceResponse.getData().getDepositAccountLists();
         int[] orders = new int[accList.size()];
         for (int i = 0; i < accList.size(); i++) {
-            if (accList.get(i).getProductConfigSortOrder() != null) {
-                int order = Integer.parseInt(accList.get(i).getProductConfigSortOrder());
-                orders[i] = order;
-            }
+            int order = Integer.parseInt(accList.get(i).getProductConfigSortOrder());
+            orders[i] = order;
         }
         Arrays.sort(orders);
         for (int order1 : orders) {
             for (DepositAccount acc : accList) {
-                if (acc.getProductConfigSortOrder() != null) {
-                    int order2 = Integer.parseInt(acc.getProductConfigSortOrder());
-                    var accNo = disburstAccounts.stream().filter(a -> a.getAccountNo() == acc.getAccountNumber()).findAny();
-                    if (order1 == order2 && accNo.isEmpty()) {
-                        LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
-                        disburstAccount.setAccountNo(acc.getAccountNumber());
-                        disburstAccount.setAccountName(acc.getProductNameTh());
-                        disburstAccounts.add(disburstAccount);
-                    }
+                int order2 = Integer.parseInt(acc.getProductConfigSortOrder());
+                var accNo = disburstAccounts.stream().filter(a -> a.getAccountNo() == acc.getAccountNumber()).findAny();
+                if (order1 == order2 && accNo.isEmpty()) {
+                    LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
+                    disburstAccount.setAccountNo(acc.getAccountNumber());
+                    disburstAccount.setAccountName(acc.getProductNameTh());
+                    disburstAccounts.add(disburstAccount);
                 }
             }
         }
