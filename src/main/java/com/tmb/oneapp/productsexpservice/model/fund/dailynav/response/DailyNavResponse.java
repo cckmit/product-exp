@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.fund.information;
+package com.tmb.oneapp.productsexpservice.model.fund.dailynav.response;
 
 import com.tmb.oneapp.productsexpservice.model.response.Status;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InformationResponse {
+public class DailyNavResponse {
 
     private Status status;
 
-    private InformationBody data;
+    private DailyNavBody data;
 }

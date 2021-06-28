@@ -165,4 +165,10 @@ public class ProductsExpServiceConstant {
     public static final String CASE_NUMBER = "case_number";
     public static final String PTES_PORT_FOLIO_FLAG = "2";
     public static final String TRANSACTION_DATE = "transaction_date";
+
+    //Channel
+    public static final String CHANNEL_MOBILE_BANKING = "mb";
+
+    //Service code
+    public static final String SERVICE_CODE_OPEN_PORTFOLIO = "INVT_OPENPT";
 }

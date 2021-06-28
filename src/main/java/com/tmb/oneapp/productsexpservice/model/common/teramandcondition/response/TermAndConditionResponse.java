@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.fund.dailynav;
+package com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response;
 
 import com.tmb.oneapp.productsexpservice.model.response.Status;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DailyNavResponse {
+public class TermAndConditionResponse {
 
     private Status status;
 
-    private DailyNavBody data;
+    private TermAndConditionResponseBody data;
 }

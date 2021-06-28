@@ -7,6 +7,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.address.Province;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
 import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import io.swagger.annotations.ApiOperation;
@@ -41,8 +42,20 @@ public interface CommonServiceClient {
 
 	@GetMapping(value = "/apis/common/internal/lovmaster/config")
 	ResponseEntity<TmbOneServiceResponse<LovMaster>> getLookupMasterModule(@RequestParam("code") String code);
-	
+
+	/**
+	 * Get term and condition by channel and service code by calling common api
+	 *
+	 * @param correlationId the
+	 * @param serviceCode   the service code
+	 * @param channel       the channel
+	 * @return the term and condition response
+	 */
+	@GetMapping(value = "/apis/common/internal/term-condition/service/{serviceCode}/{channel}")
+	ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> getTermAndConditionByServiceCodeAndChannel(
+			@RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+			@PathVariable("serviceCode") String serviceCode, @PathVariable("channel") String channel);
+
 	@GetMapping(value = "/apis/common/internal/lending/config/cashforyou")
 	ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> getCurrentCashForYouRate();
-
 }

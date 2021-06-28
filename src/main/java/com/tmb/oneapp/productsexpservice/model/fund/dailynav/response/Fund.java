@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.request.fund;
+package com.tmb.oneapp.productsexpservice.model.fund.dailynav.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -6,15 +6,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@NotNull
-public class FundCodeRequestBody {
+public class Fund {
 
     @JsonProperty(value = "fundCode")
     private String code;
+
+    @JsonProperty(value = "fundShortName")
+    private String shortName;
+
+    @JsonProperty(value = "dailyNavList")
+    private List<List<String>> dailyNavDto;
 }
