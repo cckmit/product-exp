@@ -166,6 +166,8 @@ public class ProductsExpServiceConstant {
     public static final String PTES_PORT_FOLIO_FLAG = "2";
     public static final String TRANSACTION_DATE = "transaction_date";
 
+    public static final String FATCA_FLAG = "fatca_flag";
+
     //Channel
     public static final String CHANNEL_MOBILE_BANKING = "mb";
 

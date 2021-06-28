@@ -7,10 +7,7 @@ import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
@@ -18,7 +15,6 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
-import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
@@ -27,6 +23,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.customer.SearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
@@ -36,7 +33,6 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassLi
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
@@ -54,7 +50,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -73,6 +68,7 @@ public class ProductExpServiceTest {
     CommonServiceClient commonServiceClient;
     ProductExpAsynService productExpAsynService;
     CustomerExpServiceClient customerExpServiceClient;
+    CustomerServiceClient customerServiceClient;
 
     private final String success_code = "0000";
     private final String notfund_code = "0009";
@@ -89,7 +85,15 @@ public class ProductExpServiceTest {
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsynService = mock(ProductExpAsynService.class);
-        productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient, productExpAsynService, topicName, customerExpServiceClient);
+        customerServiceClient = mock(CustomerServiceClient.class);
+        productsExpService = new ProductsExpService(investmentRequestClient,
+                accountRequestClient,
+                kafkaProducerService,
+                commonServiceClient,
+                productExpAsynService,
+                topicName,
+                customerExpServiceClient,
+                customerServiceClient);
 
     }
 
@@ -763,6 +767,7 @@ public class ProductExpServiceTest {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -815,6 +820,7 @@ public class ProductExpServiceTest {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -875,6 +881,7 @@ public class ProductExpServiceTest {
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
             when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseResponseEntity));
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -884,7 +891,8 @@ public class ProductExpServiceTest {
         FundResponse fundResponse = new FundResponse();
 
         productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq);
-        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(corrID, ffsRequestBody, fundResponse);
+        String flatcaFlag = "0";
+        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(corrID, ffsRequestBody, fundResponse,flatcaFlag);
         Assert.assertNotNull(fundResponse);
     }
 
@@ -969,6 +977,7 @@ public class ProductExpServiceTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1087,6 +1096,15 @@ public class ProductExpServiceTest {
         when(accountRequestClient.getPortList(any(), anyString())).thenThrow(RuntimeException.class);
         SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(corrID, crmId);
         Assert.assertNull(suggestAllocationDTO);
+    }
+
+    private void mockGetFlatcaResponseFromCustomerSearch() {
+        Map<String, String> response = new HashMap<>();
+        response.put(ProductsExpServiceConstant.FATCA_FLAG,"0");
+        TmbOneServiceResponse<List<SearchResponse>> customerSearchResponse = new TmbOneServiceResponse<>();
+        customerSearchResponse.setData(List.of(SearchResponse.builder().fatcaFlag("0").build()));
+        ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
+        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(mockResponse);
     }
 
 }
