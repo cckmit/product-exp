@@ -138,7 +138,7 @@ public class LoanStatementControllerTest {
         setCreditLimitResp.setCardStatement(cardStatement);
         oneServiceResponse.setData(setCreditLimitResp);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+        responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
         when(accountRequestClient.getLoanAccountStatement(any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         final TmbOneServiceResponse<LoanStatementResponse> loanStatementResponse = new TmbOneServiceResponse();

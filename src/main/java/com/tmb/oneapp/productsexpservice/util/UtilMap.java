@@ -240,7 +240,7 @@ public class UtilMap {
      */
     public static Map<String, Object> createHeader(String correlationId, int pageSize, int pageNo) {
         Map<String, Object> invHeaderReqParameter = new HashMap<>();
-        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
+        invHeaderReqParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         invHeaderReqParameter.put(ProductsExpServiceConstant.PAGE_SIZE, pageSize);
         invHeaderReqParameter.put(ProductsExpServiceConstant.PAGE_NO, pageNo);
@@ -255,7 +255,7 @@ public class UtilMap {
      */
     public static Map<String, String> createHeader(String correlationId) {
         Map<String, String> invHeaderReqParameter = new HashMap<>();
-        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, correlationId);
+        invHeaderReqParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
     }

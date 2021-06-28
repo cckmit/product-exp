@@ -191,7 +191,7 @@ public class ProductsExpService {
         List<String> ptestPortList = new ArrayList<>();
         PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
         ptesBodyRequest.setRmNumber(crmId);
-        String portData = customerExpServiceClient.getAccountSaving(invHeaderReqParameter.get(ProductsExpServiceConstant.HEADER_CORRELATION_ID), crmId);
+        String portData = customerExpServiceClient.getAccountSaving(invHeaderReqParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID), crmId);
         ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
                 investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
 

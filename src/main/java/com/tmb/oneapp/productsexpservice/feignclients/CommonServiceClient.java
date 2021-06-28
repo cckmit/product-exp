@@ -21,7 +21,7 @@ public interface CommonServiceClient {
 
 	@GetMapping(value = "/apis/common/fetch/product-config")
 	ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfig(
-			@RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID);
+			@RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID);
 
 	@GetMapping(value = "/apis/common/internal/common/config")
 	ResponseEntity<TmbOneServiceResponse<List<CommonData>>> getCommonConfigByModule(

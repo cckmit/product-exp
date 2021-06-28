@@ -23,11 +23,14 @@ import com.tmb.oneapp.productsexpservice.model.loan.CashForYourResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.EnquiryInstallmentRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentData;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.ModelTenor;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(JUnit4.class)
 public class CashForUServiceTest {
@@ -87,7 +90,10 @@ public class CashForUServiceTest {
 		InstallmentData cashChillChillInst = new InstallmentData();
 		cashChillChillInst.setCashChillChillModel("Y");
 		cashChillChillInst.setCashTransferModel("Y");
+		List<ModelTenor> modelTenors = new ArrayList<ModelTenor>();
+		cashChillChillInst.setModelTenors(modelTenors);
 		installmentRateResponse.setInstallmentData(cashChillChillInst);
+		
 
 		String cashChillChillFlag = "Y";
 		String cashTransferFlag = "Y";

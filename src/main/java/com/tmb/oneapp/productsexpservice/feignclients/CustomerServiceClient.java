@@ -95,7 +95,7 @@ public interface CustomerServiceClient {
     @PostMapping(value = "/apis/customers/case/submit")
     ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitCustomerCase(
             @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = HEADER_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestBody CustomerCaseSubmitBody requestBody
     );
 }

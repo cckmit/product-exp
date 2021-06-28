@@ -1,7 +1,11 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import java.util.List;
+import java.util.Objects;
+
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,8 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.loan.CashForYourResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.EnquiryInstallmentRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.ModelTenor;
+import com.tmb.oneapp.productsexpservice.model.loan.PricingTier;
 
 @Service
 public class CashForUService {
@@ -58,14 +64,37 @@ public class CashForUService {
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
 			CardBalances cardBalances = fetchCardResponse.getBody().getCreditCard().getCardBalances();
-			responseModelInfo.setCashInterestRate(String
-					.valueOf(fetchCardResponse.getBody().getCreditCard().getCardCashAdvance().getCashAdvIntRate()));
+			String leadRate = fillterForRateCashTrasfer(installmentRateResponse);
+			responseModelInfo.setCashInterestRate(leadRate);
 			responseModelInfo.setMaximumTransferAmt(
 					String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer()));
 		} else {
 			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody);
 		}
 		return responseModelInfo;
+	}
+
+	/**
+	 * Find rate for cash transfer amount
+	 * 
+	 * @param installmentRateResponse
+	 * @return
+	 */
+	private String fillterForRateCashTrasfer(InstallmentRateResponse installmentRateResponse) {
+		List<ModelTenor> modelTenors = installmentRateResponse.getInstallmentData().getModelTenors();
+		String rateCashTrasfer = null;
+		ModelTenor cashTransferModel = null;
+		for (ModelTenor tenors : modelTenors) {
+			if ("CT".equals(tenors.getModelType())) {
+				cashTransferModel = tenors;
+			}
+		}
+		if (Objects.nonNull(cashTransferModel)) {
+			List<PricingTier> pricingTier = cashTransferModel.getPricingTiers();
+			rateCashTrasfer = pricingTier.get(0).getRate();
+		}
+
+		return rateCashTrasfer;
 	}
 
 	/**
@@ -85,9 +114,8 @@ public class CashForUService {
 		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
 	}
 
-
 	public static void setRateCashForUInfo(CashForUConfigInfo rateCashForUInfo) {
 		CashForUService.rateCashForUInfo = rateCashForUInfo;
 	}
-	
+
 }
