@@ -113,7 +113,7 @@ public interface CustomerServiceClient {
     @PostMapping(value = "/apis/customers/search")
     ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> customerSearch(
             @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = HEADER_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestBody CrmSearchBody requestBody
     );
 }
