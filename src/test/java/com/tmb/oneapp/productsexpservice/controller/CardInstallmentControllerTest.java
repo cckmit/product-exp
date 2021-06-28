@@ -187,7 +187,7 @@ public class CardInstallmentControllerTest {
 		cardStatement.setPromotionFlag("Y");
 		oneServiceResponse.setData(cardInstallment);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+		responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
 		when(creditCardClient.confirmCardInstallment(any(), any()))
 				.thenThrow(new IllegalStateException("Error occurred"));
 		final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();
@@ -229,7 +229,7 @@ public class CardInstallmentControllerTest {
 		cardStatement.setPromotionFlag("Y");
 		oneServiceResponse.setData(cardInstallment);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+		responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
 		when(creditCardClient.confirmCardInstallment(any(), any()))
 				.thenThrow(new IllegalStateException("Error occurred"));
 		final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();

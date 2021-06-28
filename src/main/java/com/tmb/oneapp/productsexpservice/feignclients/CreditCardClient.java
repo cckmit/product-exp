@@ -38,7 +38,7 @@ public interface CreditCardClient {
 
     @PostMapping(value = "/apis/creditcard/set-credit-limit")
     ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> fetchSetCreditLimit(
-            @RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody SetCreditLimitReq requestBodyParameter);
 
     @GetMapping(value = "/apis/creditcard/credit-card/fetch-reason-list")

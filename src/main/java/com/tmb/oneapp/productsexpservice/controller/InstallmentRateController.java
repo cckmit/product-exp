@@ -6,11 +6,9 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.loan.CashForYourResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.EnquiryInstallmentRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
-import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.service.CashForUService;
 
 import io.swagger.annotations.Api;
@@ -20,7 +18,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,18 +30,15 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @Api(tags = "Credit Card-Cash For You")
 public class InstallmentRateController {
 	private static final TMBLogger<InstallmentRateController> logger = new TMBLogger<>(InstallmentRateController.class);
-	private final CreditCardClient creditCardClient;
 	private final CashForUService cashForService;
 
 	@Autowired
-	public InstallmentRateController(CreditCardClient creditCardClient, CashForUService cashForService) {
-		this.creditCardClient = creditCardClient;
+	public InstallmentRateController( CashForUService cashForService) {
 		this.cashForService = cashForService;
 	}
 
@@ -69,28 +63,13 @@ public class InstallmentRateController {
 
 		try {
 			InstallmentRateRequest rateRequest = constructInstallmentRequest(requestBody);
-			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
-					.getInstallmentRate(correlationId, rateRequest);
-
-			if (loanResponse.getStatusCode() == HttpStatus.OK) {
-				CashForYourResponse cashForYouInfo = cashForService.calculateInstallmentForCashForYou(
-						loanResponse.getBody().getData(), rateRequest.getCashChillChillFlag(),
-						rateRequest.getCashTransferFlag(), correlationId, requestBody);
-				oneServiceResponse.setData(cashForYouInfo);
-				oneServiceResponse
-						.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-								ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-			} else {
-				if (Objects.isNull(loanResponse.getBody())) {
-					oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
-							ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(),
-							ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
-							ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
-				} else {
-					oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(),
-							ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService()));
-				}
-			}
+			
+			CashForYourResponse cashForYouInfo = cashForService.calculateInstallmentForCashForYou(
+					rateRequest, correlationId, requestBody);
+			oneServiceResponse.setData(cashForYouInfo);
+			oneServiceResponse
+					.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+							ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		} catch (Exception e) {
 			logger.error("Error while getting installment rate controller: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),

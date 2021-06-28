@@ -15,7 +15,7 @@ public interface OneappAuthClient {
 
 	@PostMapping(value = "${feign.oneapp-auth-service.endpoint}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     TranslatePinRes fetchEcasTranslatePinData(
-            @RequestHeader(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationID,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
             @RequestBody SetPinReqParameter requestBodyParameter);
 
 }

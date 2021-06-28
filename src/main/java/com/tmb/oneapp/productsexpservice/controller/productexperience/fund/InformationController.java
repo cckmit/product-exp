@@ -52,7 +52,7 @@ public class InformationController {
     @PostMapping(value = "/info", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<InformationDto>> getFundInformation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FundCodeRequestBody fundCodeRequestBody) {
 
         TmbOneServiceResponse<InformationDto> oneServiceResponse = new TmbOneServiceResponse<>();
