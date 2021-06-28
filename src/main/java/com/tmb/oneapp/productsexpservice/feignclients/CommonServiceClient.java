@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
+import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -40,5 +41,8 @@ public interface CommonServiceClient {
 
 	@GetMapping(value = "/apis/common/internal/lovmaster/config")
 	ResponseEntity<TmbOneServiceResponse<LovMaster>> getLookupMasterModule(@RequestParam("code") String code);
+	
+	@GetMapping(value = "/apis/common/internal/lending/config/cashforyou")
+	ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> getCurrentCashForYouRate();
 
 }

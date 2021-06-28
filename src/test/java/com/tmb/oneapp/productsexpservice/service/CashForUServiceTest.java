@@ -7,7 +7,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import com.tmb.common.model.CashForUConfigInfo;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.BalanceCredit;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
@@ -32,10 +37,13 @@ public class CashForUServiceTest {
 
 	private CashForUService cashForUservice;
 
+	@Mock
+	private CommonServiceClient commonServiceClient;
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		cashForUservice = new CashForUService(creditCardClient);
+		cashForUservice = new CashForUService(creditCardClient, commonServiceClient);
 	}
 
 	@Test
@@ -53,13 +61,13 @@ public class CashForUServiceTest {
 		cardBalance.setAvailableCashAdvance(BigDecimal.TEN);
 		cardBalance.setAvailableCreditAllowance(BigDecimal.TEN);
 		creditCardDetail.setCardBalances(cardBalance);
-		
+
 		CardCashAdvance cashAdvance = new CardCashAdvance();
 		cashAdvance.setCashAdvFeeFixedAmt(BigDecimal.ONE);
 		cashAdvance.setCashAdvFeeRate(BigDecimal.ONE);
 		cashAdvance.setCashAdvFeeVATRate(BigDecimal.ONE);
 		cashAdvance.setCashAdvIntRate(BigDecimal.ONE);
-		
+
 		creditCardDetail.setCardCashAdvance(cashAdvance);
 
 		cardResponse.setCreditCard(creditCardDetail);
@@ -80,13 +88,12 @@ public class CashForUServiceTest {
 		cashChillChillInst.setCashChillChillModel("Y");
 		cashChillChillInst.setCashTransferModel("Y");
 		installmentRateResponse.setInstallmentData(cashChillChillInst);
-		
-		
+
 		String cashChillChillFlag = "Y";
 		String cashTransferFlag = "Y";
 		String correlationId = "xxdasdvvd";
 		EnquiryInstallmentRequest requestBody = new EnquiryInstallmentRequest();
-		
+
 		FetchCardResponse cardResponse = new FetchCardResponse();
 
 		CreditCardDetail creditCardDetail = new CreditCardDetail();
@@ -94,14 +101,14 @@ public class CashForUServiceTest {
 		cardBalance.setAvailableCashAdvance(BigDecimal.TEN);
 		cardBalance.setAvailableCreditAllowance(BigDecimal.TEN);
 		creditCardDetail.setCardBalances(cardBalance);
-		
+
 		CardCashAdvance cashAdvance = new CardCashAdvance();
 		cashAdvance.setCashAdvFeeFixedAmt(BigDecimal.ZERO);
 		cashAdvance.setCashAdvFeeRate(BigDecimal.ZERO);
 		cashAdvance.setCashAdvFeeVATRate(BigDecimal.ZERO);
 		cashAdvance.setCashAdvIntRate(BigDecimal.ZERO);
 		creditCardDetail.setCardCashAdvance(cashAdvance);
-		
+
 		CardBalances cBalance = new CardBalances();
 		BalanceCredit balanceCredit = new BalanceCredit();
 		balanceCredit.setAvailableToTransfer(BigDecimal.ZERO);
@@ -109,9 +116,15 @@ public class CashForUServiceTest {
 		creditCardDetail.setCardBalances(cBalance);
 
 		cardResponse.setCreditCard(creditCardDetail);
-		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
 
-		
+		CashForUConfigInfo resp = new CashForUConfigInfo();
+		TmbOneServiceResponse<CashForUConfigInfo> serverResponse = new TmbOneServiceResponse<>();
+		serverResponse.setData(resp);
+		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = new ResponseEntity<>(serverResponse,
+				HttpStatus.OK);
+		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
+		when(commonServiceClient.getCurrentCashForYouRate()).thenReturn(response);
+		CashForUService.setRateCashForUInfo(resp);
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(installmentRateResponse,
 				cashChillChillFlag, cashTransferFlag, correlationId, requestBody);
 		Assert.assertNotNull(cashResponse.getInstallmentData());
