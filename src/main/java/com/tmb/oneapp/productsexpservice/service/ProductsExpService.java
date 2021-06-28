@@ -37,6 +37,7 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.customer.SearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
@@ -316,7 +317,7 @@ public class ProductsExpService {
      * @return FfsRsAndValidation
      */
     @LogAround
-    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) throws Exception {
+    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody)  {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
@@ -352,7 +353,7 @@ public class ProductsExpService {
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq) throws Exception {
+    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq)  {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
@@ -369,17 +370,14 @@ public class ProductsExpService {
         return fundResponse;
     }
 
-    private String getFatcaFlag(String correlationId,String crmId) throws Exception {
+    private String getFatcaFlag(String correlationId,String crmId) {
         CrmSearchBody request = CrmSearchBody.builder()
                 .searchType("rm-id")
                 .searchValue(crmId)
                 .build();
-        ResponseEntity<TmbOneServiceResponse<List>> response =
+        ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> response =
                 customerServiceClient.customerSearch(crmId,correlationId,request);
-        Object responseObj = response.getBody().getData().get(0);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.convertValue(responseObj, JsonNode.class);
-        String fatcaFlag = node.get(ProductsExpServiceConstant.FATCA_FLAG).textValue();
+        String fatcaFlag = response.getBody().getData().get(0).getFatcaFlag();
         return  fatcaFlag;
     }
 
