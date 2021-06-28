@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,8 +13,8 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
@@ -24,7 +25,6 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
-import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -38,10 +38,8 @@ import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBo
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
@@ -318,7 +316,7 @@ public class ProductsExpService {
      * @return FfsRsAndValidation
      */
     @LogAround
-    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) {
+    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) throws Exception {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
@@ -354,7 +352,7 @@ public class ProductsExpService {
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq) {
+    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq) throws Exception {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
@@ -371,14 +369,18 @@ public class ProductsExpService {
         return fundResponse;
     }
 
-    private String getFatcaFlag(String correlationId,String crmId) {
+    private String getFatcaFlag(String correlationId,String crmId) throws Exception {
         CrmSearchBody request = CrmSearchBody.builder()
                 .searchType("rm-id")
                 .searchValue(crmId)
                 .build();
-        ResponseEntity<TmbOneServiceResponse<Map<String, String>>> response =
+        ResponseEntity<TmbOneServiceResponse<List>> response =
                 customerServiceClient.customerSearch(crmId,correlationId,request);
-        return response.getBody().getData().get(ProductsExpServiceConstant.FATCA_FLAG);
+        Object responseObj = response.getBody().getData().get(0);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.convertValue(responseObj, JsonNode.class);
+        String fatcaFlag = node.get(ProductsExpServiceConstant.FATCA_FLAG).textValue();
+        return  fatcaFlag;
     }
 
     /**
@@ -671,22 +673,6 @@ public class ProductsExpService {
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return listFund;
-        }
-    }
-
-    public InformationDto getFundInformation(String correlationId, FundCodeRequestBody fundCodeRequestBody) {
-        Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
-        try {
-            CompletableFuture<InformationBody> fetchFundInformation = productExpAsynService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);
-            CompletableFuture<DailyNavBody> fetchFundDailyNav = productExpAsynService.fetchFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
-            CompletableFuture.allOf(fetchFundInformation, fetchFundDailyNav);
-            return InformationDto.builder()
-                    .information(fetchFundInformation.get())
-                    .dailyNav(fetchFundDailyNav.get())
-                    .build();
-        } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-            return null;
         }
     }
 

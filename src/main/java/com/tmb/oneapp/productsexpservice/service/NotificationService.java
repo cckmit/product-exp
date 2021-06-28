@@ -20,9 +20,9 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimit
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
-import com.tmb.oneapp.productsexpservice.model.request.notification.*;
-import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
-import com.tmb.oneapp.productsexpservice.util.NotificationUtil;
+import com.tmb.common.model.request.notification.*;
+import com.tmb.common.model.response.notification.NotificationResponse;
+import com.tmb.common.util.NotificationUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

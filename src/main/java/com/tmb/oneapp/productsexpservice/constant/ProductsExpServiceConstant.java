@@ -168,4 +168,10 @@ public class ProductsExpServiceConstant {
     public static final String TRANSACTION_DATE = "transaction_date";
 
     public static final String FATCA_FLAG = "fatca_flag";
+
+    //Channel
+    public static final String CHANNEL_MOBILE_BANKING = "mb";
+
+    //Service code
+    public static final String SERVICE_CODE_OPEN_PORTFOLIO = "INVT_OPENPT";
 }

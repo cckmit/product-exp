@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
-import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
+import com.tmb.common.model.request.notification.NotificationRequest;
+import com.tmb.common.model.response.notification.NotificationResponse;
 
 @FeignClient(name = "notification-service", url = "${notification-service.url}")
 public interface NotificationServiceClient {

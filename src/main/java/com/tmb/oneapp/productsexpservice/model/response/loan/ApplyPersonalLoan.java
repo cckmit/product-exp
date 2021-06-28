@@ -11,5 +11,6 @@ import java.util.List;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ApplyPersonalLoan {
-    private List<ProductData> productDataList;
+    private List<ProductData> productCreditList;
+    private List<ProductData> productFlashList;
 }
