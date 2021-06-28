@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.fund.information;
+package com.tmb.oneapp.productsexpservice.model.fund.information.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Holding {
+public class Actual {
 
-    private String name;
+    private String frontLoad;
 
-    private String weight;
+    private String deferLoad;
 }
