@@ -94,6 +94,7 @@ dependencies {
 	implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
 	implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
 	testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+	implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:2.1.0')
 }
 
 dependencyManagement {
