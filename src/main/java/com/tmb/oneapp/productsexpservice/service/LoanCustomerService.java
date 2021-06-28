@@ -138,15 +138,27 @@ public class LoanCustomerService {
     private List<LoanCustomerPricing> getLoanCustomerPricings(Facility facility) {
         List<LoanCustomerPricing> pricings = new ArrayList<>();
         if (facility.getFeatureType().equals(FEATURE_TYPE_S)) {
-            var facilityPricings = facility.getPricings();
-            for (var item : facilityPricings) {
-                LoanCustomerPricing pricing = new LoanCustomerPricing();
-                pricing.setMonthFrom(item.getMonthFrom());
-                pricing.setMonthTo(item.getMonthTo());
-                pricing.setRateVariance(item.getRateVaraince());
-                pricings.add(pricing);
-            }
+
+            LoanCustomerPricing pricing = new LoanCustomerPricing();
+
+            pricing.setMonthFrom(PRICING_MONTH_FROM);
+            pricing.setMonthTo(PRICING_MONTH_TO);
+            pricing.setRateVariance(RATE_VARIANCE);
+
+            LoanCustomerPricing pricing1 = new LoanCustomerPricing();
+            pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
+            pricing1.setMonthTo(PRICING_MONTH_TO_5);
+            pricing1.setRateVariance(RATE_VARIANCE_1);
+
+            LoanCustomerPricing pricing2 = new LoanCustomerPricing();
+            pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
+            pricing2.setMonthTo(PRICING_MONTH_TO_12);
+            pricing2.setRateVariance(RATE_VARIANCE_2);
+            pricings.add(pricing);
+            pricings.add(pricing1);
+            pricings.add(pricing2);
         }
+
         return pricings;
     }
 
@@ -249,9 +261,9 @@ public class LoanCustomerService {
 
     private Facility getFacilityFeature(Facility f, Long caID, String featureType) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = f;
-        facility.getFeature().setDisbAcctName(facility.getFeature().getDisbAcctName());
-        facility.getFeature().setDisbAcctNo(facility.getFeature().getDisbAcctNo());
-        facility.getFeature().setDisbBankCode(facility.getFeature().getDisbBankCode());
+        facility.getFeature().setDisbAcctName("0");
+        facility.getFeature().setDisbAcctNo("0");
+        facility.getFeature().setDisbBankCode("0");
         facility.getFeature().setRequestAmount(BigDecimal.ZERO);
         facility.getFeature().setTenure(1L);
         facility.setFeatureType(featureType);
@@ -265,7 +277,7 @@ public class LoanCustomerService {
         facilityFeature.setFeatureType(facility.getFeatureType());
         facilityFeature.setAmountMin(AMOUNT_MIN);
         facilityFeature.setAmountMax(facility.getLimitApplied());
-        facilityFeature.setLimitAmount(facility.getLimitApplied());
+        facilityFeature.setLimitAmount(LIMIT_AMOUNT);
         return facilityFeature;
     }
 
