@@ -95,31 +95,31 @@ public class PersonalLoanControllerTest {
 
 	@Test
 	public void testGetProductListSuccess() {
-		when(personalLoanService.getProducts()).thenReturn(any());
-		personalLoanController.getProductList();
+		when(personalLoanService.getProductsLoan("xxx","lending_module")).thenReturn(any());
+		personalLoanController.getProductList("xxx","lending_module");
 		assertTrue(true);
 	}
 
 	@Test
 	public void testGetProductListFail() {
-		when(personalLoanService.getProducts()).thenThrow(new NullPointerException());
+		when(personalLoanService.getProductsLoan("xxx","lending_module")).thenThrow(new NullPointerException());
 
-		ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> result = personalLoanController.getProductList();
+		ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> result = personalLoanController.getProductList("xxx","lending_module");
 		assertTrue(result.getStatusCode().isError());
 	}
 
 	@Test
 	public void testGetProductCreditListSuccess() {
-		when(personalLoanService.getProductsCredit()).thenReturn(any());
-		personalLoanController.getProductList();
+		when(personalLoanService.getProductsCredit("xxx","lending_module")).thenReturn(any());
+		personalLoanController.getProductCreditList("xxx","lending_module");
 		assertTrue(true);
 	}
 
 	@Test
 	public void testGetProductCreditListFail() {
-		when(personalLoanService.getProductsCredit()).thenThrow(new NullPointerException());
+		when(personalLoanService.getProductsCredit("xxx","lending_module")).thenThrow(new NullPointerException());
 
-		ResponseEntity<TmbOneServiceResponse<List<ProductData>>> result = personalLoanController.getProductCreditList();
+		ResponseEntity<TmbOneServiceResponse<List<ProductData>>> result = personalLoanController.getProductCreditList("xxx","lending_module");
 		assertTrue(result.getStatusCode().isError());
 	}
 

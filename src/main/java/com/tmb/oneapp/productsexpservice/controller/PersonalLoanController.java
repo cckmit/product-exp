@@ -22,10 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -52,12 +49,11 @@ public class PersonalLoanController {
     public ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> checkPreload(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                    @Valid LoanPreloadRequest loanPreloadRequest) {
         TmbOneServiceResponse<LoanPreloadResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
+
         try {
             oneTmbOneServiceResponse.setData(personalLoanService.checkPreload(correlationId, loanPreloadRequest));
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-
-            extracted();
+            setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while getConfig: {}", e);
@@ -73,13 +69,11 @@ public class PersonalLoanController {
     @ApiOperation("Get preload brms")
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
-
         try {
             InstantLoanCalUWResponse instantLoanCalUWResponse = loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest);
             oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-            extracted();
+            setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
@@ -92,15 +86,15 @@ public class PersonalLoanController {
     @GetMapping(value = "/get-product-loan-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product loan list")
-    public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
+    public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                   @RequestParam("search") @Valid String search ) {
         TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
 
         try {
-            ApplyPersonalLoan productDataLoanList = personalLoanService.getProducts();
+            ApplyPersonalLoan productDataLoanList = personalLoanService.getProductsLoan(correlationId,search);
             oneTmbOneServiceResponse.setData(productDataLoanList);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-            extracted();
+            setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product list: {}", e);
@@ -113,14 +107,14 @@ public class PersonalLoanController {
     @GetMapping(value = "/get-product-credit-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product credit list")
-    public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList() {
+    public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                         @RequestParam("search") @Valid String search) {
         TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        extracted();
-
         try {
-            List<ProductData> productDataCreditList = personalLoanService.getProductsCredit();
+            List<ProductData> productDataCreditList = personalLoanService.getProductsCredit(correlationId,search);
             oneTmbOneServiceResponse.setData(productDataCreditList);
-            dataSuccess(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
+            setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get product credit list: {}", e);
@@ -134,11 +128,6 @@ public class PersonalLoanController {
                 ResponseCode.FAILED.getService());
     }
 
-    ResponseEntity<TmbOneServiceResponse<List<ProductData>>> dataSuccess(TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse) {
-        oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-        extracted();
-        return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
-    }
 
     private TmbStatus getStatusSuccess() {
         return new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -146,7 +135,7 @@ public class PersonalLoanController {
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE);
     }
 
-    private void extracted() {
+    private void setHeader() {
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
     }
 
