@@ -131,10 +131,10 @@ public class CashForUServiceTest {
 				HttpStatus.OK);
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
 		when(commonServiceClient.getCurrentCashForYouRate()).thenReturn(response);
-		CashForUService.setRateCashForUInfo(resp);
 		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
 		rateRequest.setAmount("10000");
 		requestBody.setAmount(rateRequest.getAmount());
+		cashForUservice.setRateCashForUInfo(resp);
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
 		Assert.assertNull(cashResponse.getInstallmentData());
 	}

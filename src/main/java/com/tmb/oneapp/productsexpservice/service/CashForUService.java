@@ -28,7 +28,7 @@ public class CashForUService {
 
 	private CommonServiceClient commonServiceClient;
 
-	private static CashForUConfigInfo rateCashForUInfo = null;
+	private CashForUConfigInfo rateCashForUInfo = null;
 
 	public CashForUService(CreditCardClient creditCardClient, CommonServiceClient commonServiceClient) {
 		this.creditCardClient = creditCardClient;
@@ -125,8 +125,8 @@ public class CashForUService {
 
 	}
 
-	public static void setRateCashForUInfo(CashForUConfigInfo rateCashForUInfo) {
-		CashForUService.rateCashForUInfo = rateCashForUInfo;
+	public void setRateCashForUInfo(CashForUConfigInfo rateCashForUInfo) {
+		this.rateCashForUInfo = rateCashForUInfo;
 	}
 
 }
