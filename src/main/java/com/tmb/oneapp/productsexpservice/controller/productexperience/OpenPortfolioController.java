@@ -4,7 +4,6 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.controller.ProductExpServiceController;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
@@ -28,7 +27,7 @@ import javax.validation.Valid;
 @Api(tags = "Get portfolio data than return it back")
 public class OpenPortfolioController {
 
-    private static final TMBLogger<ProductExpServiceController> logger = new TMBLogger<>(ProductExpServiceController.class);
+    private static final TMBLogger<OpenPortfolioController> logger = new TMBLogger<>(OpenPortfolioController.class);
 
     private OpenPortfolioService openPortfolioService;
 

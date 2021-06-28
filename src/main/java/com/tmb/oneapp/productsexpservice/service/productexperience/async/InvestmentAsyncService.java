@@ -7,10 +7,9 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
-import com.tmb.oneapp.productsexpservice.service.ProductExpAsynService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class InvestmentAsyncService {
 
-    private static final TMBLogger<ProductExpAsynService> logger = new TMBLogger<>(ProductExpAsynService.class);
+    private static final TMBLogger<InvestmentAsyncService> logger = new TMBLogger<>(InvestmentAsyncService.class);
 
     private InvestmentRequestClient investmentRequestClient;
 
