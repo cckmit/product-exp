@@ -6,10 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -24,6 +21,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.exceptions.base.MockitoException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -46,6 +44,7 @@ public class ProductExpServiceCloseTest {
     CommonServiceClient commonServiceClient;
     ProductExpAsynService productExpAsynService;
     CustomerExpServiceClient customerExpServiceClient;
+    CustomerServiceClient customerServiceClient;
     ObjectMapper mapper;
 
     private FundRuleBody fundRuleBody = null;
@@ -61,9 +60,10 @@ public class ProductExpServiceCloseTest {
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsynService = mock(ProductExpAsynService.class);
+        customerServiceClient = mock(CustomerServiceClient.class);
         mapper = mock(ObjectMapper.class);
         productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient,
-                productExpAsynService, topicName, customerExpServiceClient);
+                productExpAsynService, topicName, customerExpServiceClient,customerServiceClient);
 
     }
 
@@ -108,6 +108,7 @@ public class ProductExpServiceCloseTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -148,7 +149,7 @@ public class ProductExpServiceCloseTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
-
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -193,6 +194,8 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
 
+            mockGetFlatcaResponseFromCustomerSearch();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -201,6 +204,16 @@ public class ProductExpServiceCloseTest {
         Assert.assertEquals(true, isBusClose);
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
+    }
+
+    private void mockGetFlatcaResponseFromCustomerSearch() {
+        Map<String, String> response = new HashMap<>();
+        response.put(ProductsExpServiceConstant.FATCA_FLAG,"0");
+        TmbOneServiceResponse<Map<String, String>> customerSearchResponse = new TmbOneServiceResponse<>();
+        customerSearchResponse.setData(response);
+
+        ResponseEntity<TmbOneServiceResponse<Map<String, String>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
+        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(mockResponse);
     }
 
     @Test
@@ -253,6 +266,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFfs));
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -310,6 +324,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenThrow(MockitoException.class);
+            mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
