@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.fund.dailynav;
+package com.tmb.oneapp.productsexpservice.model.fund.dailynav.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

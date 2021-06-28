@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.fund.information;
+package com.tmb.oneapp.productsexpservice.model.fund.information.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

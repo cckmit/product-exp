@@ -13,7 +13,6 @@ import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -25,7 +24,6 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
-import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -39,10 +37,8 @@ import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBo
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
@@ -627,22 +623,6 @@ public class ProductsExpService {
         }
     }
 
-    public InformationDto getFundInformation(String correlationId, FundCodeRequestBody fundCodeRequestBody) {
-        Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
-        try {
-            CompletableFuture<InformationBody> fetchFundInformation = productExpAsynService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);
-            CompletableFuture<DailyNavBody> fetchFundDailyNav = productExpAsynService.fetchFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
-            CompletableFuture.allOf(fetchFundInformation, fetchFundDailyNav);
-            return InformationDto.builder()
-                    .information(fetchFundInformation.get())
-                    .dailyNav(fetchFundDailyNav.get())
-                    .build();
-        } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-            return null;
-        }
-    }
-
     @LogAround
     public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmID) {
         UnitHolder unitHolder = new UnitHolder();
@@ -710,13 +690,13 @@ public class ProductsExpService {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
         ArrayList<String> matchClassCode = new ArrayList<>();
         for (FundClass mutualFund : fundClass) {
-            if(mutualFund.getFundClassCode().equals("090")){
+            if (mutualFund.getFundClassCode().equals("090")) {
                 continue;
             }
             boolean isNotFound = true;
             for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
                 if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())
-                     ) {
+                ) {
                     matchClassCode.add(mutualFund.getFundClassCode());
                     mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                             .fundClassCode(mutualFund.getFundClassCode())

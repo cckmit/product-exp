@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.fund.information;
+package com.tmb.oneapp.productsexpservice.model.fund.information.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
