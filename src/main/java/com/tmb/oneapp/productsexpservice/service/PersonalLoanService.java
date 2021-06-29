@@ -35,10 +35,10 @@ public class PersonalLoanService {
         return loanPreloadResponse;
     }
 
-    public ApplyPersonalLoan getProductsLoan(String correlationId, String search) {
+    public ApplyPersonalLoan getProductsLoan(String correlationId) {
         ProductData productLoanData = new ProductData();
         ProductData productCreditData = new ProductData();
-        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(correlationId, search);
+        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(correlationId, "lending_module");
 
         ApplyPersonalLoan applyPersonalLoans = new ApplyPersonalLoan();
         ApplyPersonalLoan personalCreditLoan = new ApplyPersonalLoan();
@@ -85,10 +85,10 @@ public class PersonalLoanService {
         return applyPersonalLoans;
     }
 
-    public List<ProductData> getProductsCredit(String correlationId, String search) {
+    public List<ProductData> getProductsCredit(String correlationId) {
         List<ProductData> productDataList = new ArrayList();
 
-        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(correlationId, search);
+        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(correlationId, "lending_module");
 
         for (CommonData commonData : productList.getData()) {
             List<ApplyProductData> personalLoans = commonData.getApplyCreditCards();
