@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ public class LoanSubmissionUpdateFacilityInfoClient {
         req.setHeader(header);
 
         Body body = new Body();
+        facility.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
         body.setFacility(facility);
         req.setBody(body);
 
