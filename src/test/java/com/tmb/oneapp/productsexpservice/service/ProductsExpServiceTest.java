@@ -2,24 +2,20 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
@@ -36,12 +32,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class ProductsExpServiceTest {
@@ -79,6 +73,7 @@ public class ProductsExpServiceTest {
         FundSummaryByPortResponse fundSummaryByPortResponse;
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
         List<PtesDetail> ptesDetailList = null;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
 
@@ -109,6 +104,10 @@ public class ProductsExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+            oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
@@ -118,6 +117,10 @@ public class ProductsExpServiceTest {
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
+
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
+                    ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                            .body(oneServiceResponseCountToBeProcessOrder));
 
 
         } catch (Exception ex) {
@@ -130,7 +133,6 @@ public class ProductsExpServiceTest {
         Assert.assertEquals(0, result.getSmartPortList().size());
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getPtPortList().size());
-
     }
 
     @Test
@@ -145,6 +147,8 @@ public class ProductsExpServiceTest {
         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
         List<PtesDetail> ptesDetailList = null;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
+
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
@@ -173,6 +177,10 @@ public class ProductsExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+            oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
@@ -182,6 +190,12 @@ public class ProductsExpServiceTest {
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
+
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
+                    ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                            .body(oneServiceResponseCountToBeProcessOrder));
+
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -205,6 +219,7 @@ public class ProductsExpServiceTest {
         FundSummaryByPortResponse fundSummaryByPortResponse;
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
@@ -224,11 +239,19 @@ public class ProductsExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
+            oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
+
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
+                    ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                            .body(oneServiceResponseCountToBeProcessOrder));
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -305,52 +328,6 @@ public class ProductsExpServiceTest {
         fundResponse.setError(true);
         productsExpService.errorData(validation, fundResponse);
         assertNotNull(fundResponse);
-    }
-
-    @Test
-    void should_return_information_dto_when_call_get_fund_information_given_correlation_id_and_fund_code_request_body() throws IOException, TMBCommonException {
-        //Given
-        ObjectMapper mapper = new ObjectMapper();
-        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
-                .code("TMBCOF")
-                .build();
-
-        InformationResponse informationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/fund_information.json").toFile(),
-                InformationResponse.class);
-        when(productExpAsynService.fetchFundInformation(any(), any())).thenReturn(CompletableFuture.completedFuture(informationResponse.getData()));
-
-        DailyNavResponse dailyNavResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/fund_daily_nav.json").toFile(),
-                DailyNavResponse.class);
-        when(productExpAsynService.fetchFundDailyNav(any(), any())).thenReturn(CompletableFuture.completedFuture(dailyNavResponse.getData()));
-
-        //When
-        InformationDto actual = productsExpService.getFundInformation(correlationId, fundCodeRequestBody);
-
-        //Then
-        InformationDto expected = InformationDto.builder()
-                .information(informationResponse.getData())
-                .dailyNav(dailyNavResponse.getData())
-                .build();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void should_return_null_when_call_get_fund_information_given_throw_runtime_exception_from_product_exp_asyn_service() throws TMBCommonException {
-        //Given
-        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
-                .code("TMBCOF")
-                .build();
-
-        when(productExpAsynService.fetchFundInformation(any(), any())).thenThrow(TMBCommonException.class);
-
-        //When
-        InformationDto actual = productsExpService.getFundInformation(correlationId, fundCodeRequestBody);
-
-        //Then
-        assertNull(actual);
     }
 }
 

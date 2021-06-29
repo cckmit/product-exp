@@ -16,12 +16,9 @@ import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
@@ -384,50 +381,5 @@ public class ProductExpAsynService {
                     HttpStatus.OK,
                     null);
         }
-    }
-
-    /**
-     * Method fetchFundInformation to get fund information
-     *
-     * @param fundCodeRequestBody
-     * @return CompletableFuture<Information>
-     */
-    @LogAround
-    @Async
-    public CompletableFuture<InformationBody> fetchFundInformation(Map<String, String> investmentRequestHeader, FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
-        try {
-            ResponseEntity<TmbOneServiceResponse<InformationBody>> response = investmentRequestClient.callInvestmentFundInformationService(investmentRequestHeader, fundCodeRequestBody);
-            return CompletableFuture.completedFuture(response.getBody().getData());
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw getTmbCommonException();
-        }
-    }
-
-    /**
-     * Method fetchFundDailyNav to get fund daily nav
-     *
-     * @param fundCodeRequestBody
-     * @return CompletableFuture<DailyNav>
-     */
-    @LogAround
-    @Async
-    public CompletableFuture<DailyNavBody> fetchFundDailyNav(Map<String, String> investmentRequestHeader, FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
-        try {
-            ResponseEntity<TmbOneServiceResponse<DailyNavBody>> response = investmentRequestClient.callInvestmentFundDailyNavService(investmentRequestHeader, fundCodeRequestBody);
-            return CompletableFuture.completedFuture(response.getBody().getData());
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw getTmbCommonException();
-        }
-    }
-
-    private TMBCommonException getTmbCommonException() {
-        return new TMBCommonException(
-                ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
-                null);
     }
 }

@@ -9,11 +9,11 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
-import com.tmb.oneapp.productsexpservice.model.request.notification.EmailChannel;
-import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRecord;
-import com.tmb.oneapp.productsexpservice.model.request.notification.NotificationRequest;
+import com.tmb.common.model.request.notification.EmailChannel;
+import com.tmb.common.model.request.notification.NotificationRecord;
+import com.tmb.common.model.request.notification.NotificationRequest;
 import com.tmb.oneapp.productsexpservice.model.response.ncb.NcbPaymentConfirmResponse;
-import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
+import com.tmb.common.model.response.notification.NotificationResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

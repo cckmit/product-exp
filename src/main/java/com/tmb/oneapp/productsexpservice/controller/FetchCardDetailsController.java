@@ -69,7 +69,7 @@ public class FetchCardDetailsController {
     @PostMapping(value = "/credit-card/fetch-card-details")
     @ApiOperation(value = "Fetch credit card details")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
+            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
     public ResponseEntity<TmbOneServiceResponse<FetchCardResponse>> fetchCardDetails(
             @RequestBody FetchCreditCardDetailsReq request,
             @Valid @RequestHeader Map<String, String> requestHeadersParameter) {

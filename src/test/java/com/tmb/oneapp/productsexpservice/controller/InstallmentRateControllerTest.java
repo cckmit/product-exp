@@ -38,7 +38,7 @@ public class InstallmentRateControllerTest {
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		installmentRateController = new InstallmentRateController(creditCardClient, cashForUService);
+		installmentRateController = new InstallmentRateController(cashForUService);
 	}
 
 	@Test

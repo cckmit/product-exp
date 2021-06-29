@@ -3,7 +3,9 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
+import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
+import com.tmb.oneapp.productsexpservice.model.response.customer.SearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -95,7 +97,23 @@ public interface CustomerServiceClient {
     @PostMapping(value = "/apis/customers/case/submit")
     ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitCustomerCase(
             @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = HEADER_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestBody CustomerCaseSubmitBody requestBody
+    );
+
+    /**
+     * Post submit NCB customer case
+     *
+     * @param crmId customer ID
+     * @param correlationId correlationId
+     * @param requestBody CustomerCaseSubmitBody
+     *
+     * @return Map<String, String>
+     */
+    @PostMapping(value = "/apis/customers/search")
+    ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> customerSearch(
+            @RequestHeader(value = X_CRMID) String crmId,
+            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
+            @RequestBody CrmSearchBody requestBody
     );
 }
