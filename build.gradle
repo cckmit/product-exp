@@ -96,6 +96,11 @@ dependencies {
 	implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
 	testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
 	implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:2.1.0')
+    implementation 'org.apache.commons:commons-vfs2:2.8.0'
+    implementation 'com.jcraft:jsch:0.1.55'
+    compile('org.apache.xmlgraphics:fop:2.6'){
+        exclude group: 'xml-apis'
+    }
 }
 
 dependencyManagement {
