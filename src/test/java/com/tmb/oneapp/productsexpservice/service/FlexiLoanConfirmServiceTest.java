@@ -67,7 +67,7 @@ public class FlexiLoanConfirmServiceTest {
     }
 
     private void mockSuccess() throws Exception {
-        doReturn(mockGetFacilityInfoSuccess()).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        doReturn(mockGetFacilityInfoSuccess("C2G01")).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
         doReturn(mockGetCustomerInfoSuccess()).when(getCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
         doReturn(mockGetCreditCardInfoSuccess()).when(getCreditCardInfoClient).searchCreditcardInfoByCaID(anyLong());
         doReturn(mockGetApplicationInfoSuccess()).when(getApplicationInfoClient).getApplicationInfo(anyLong());
@@ -82,6 +82,7 @@ public class FlexiLoanConfirmServiceTest {
     public void testFlexiLoanConfirmService_CreditCard_Success() throws Exception {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode());
+        doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
         flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
     }
 
@@ -89,6 +90,7 @@ public class FlexiLoanConfirmServiceTest {
     public void testFlexiLoanConfirmService_FlashCared_Success() throws Exception {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode());
+        doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
         flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
     }
 
@@ -108,7 +110,7 @@ public class FlexiLoanConfirmServiceTest {
         return request;
     }
 
-    private ResponseFacility mockGetFacilityInfoSuccess() {
+    private ResponseFacility mockGetFacilityInfoSuccess(String productCode) {
         ResponseFacility response = new ResponseFacility();
 
         Header header = new Header();
@@ -117,6 +119,7 @@ public class FlexiLoanConfirmServiceTest {
 
         Body body = new Body();
         Facility facility = new Facility();
+        facility.setProductCode(productCode);
 
         Pricing pricing = new Pricing();
         pricing.setPricingType("S");
