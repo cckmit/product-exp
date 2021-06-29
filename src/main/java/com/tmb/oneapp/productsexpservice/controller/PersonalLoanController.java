@@ -86,11 +86,11 @@ public class PersonalLoanController {
     @GetMapping(value = "/get-product-loan-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product loan list")
-    public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId ) {
+    public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
         TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ApplyPersonalLoan productDataLoanList = personalLoanService.getProductsLoan(correlationId);
+            ApplyPersonalLoan productDataLoanList = personalLoanService.getProductsLoan();
             oneTmbOneServiceResponse.setData(productDataLoanList);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();
@@ -106,10 +106,10 @@ public class PersonalLoanController {
     @GetMapping(value = "/get-product-credit-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product credit list")
-    public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId) {
+    public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList() {
         TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            List<ProductData> productDataCreditList = personalLoanService.getProductsCredit(correlationId);
+            List<ProductData> productDataCreditList = personalLoanService.getProductsCredit();
             oneTmbOneServiceResponse.setData(productDataCreditList);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();

@@ -152,7 +152,7 @@ public class PersonalLoanServiceTest {
 		list.setData(listData);
 
 		when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(list));
-		personalLoanService.getProductsLoan("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "lending_module");
+		personalLoanService.getProductsLoan();
 
 		Assert.assertTrue(true);
 	}
@@ -243,7 +243,7 @@ public class PersonalLoanServiceTest {
 		list.setData(listData);
 
 		when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(list));
-		personalLoanService.getProductsCredit("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","lending_module");
+		personalLoanService.getProductsCredit();
 
 		Assert.assertTrue(true);
 	}

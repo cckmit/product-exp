@@ -11,8 +11,6 @@ buildscript {
 				password = 'ad123Tmb*'
 			}
 		}
-//		mavenCentral()
-//		mavenLocal()
 	}
 
 	dependencies {
@@ -53,9 +51,6 @@ repositories {
 			password = 'ad123Tmb*'
 		}
 	}
-
-//	mavenCentral()
-//	mavenLocal()
 
 }
 

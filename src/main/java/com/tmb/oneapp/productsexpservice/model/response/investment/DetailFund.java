@@ -22,4 +22,5 @@ public class DetailFund {
     private String unrealizedProfitPerc;
     private String taxDoc;
     private String unitLTF5Y;
+    private String nickName;
 }
