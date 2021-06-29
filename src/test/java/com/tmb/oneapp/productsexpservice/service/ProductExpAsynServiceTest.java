@@ -5,18 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
@@ -31,7 +24,6 @@ import org.mockito.exceptions.base.MockitoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,10 +32,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -366,8 +357,9 @@ public class ProductExpAsynServiceTest {
     @Test
     public void fetchFundFavoriteWitchException() throws Exception {
         try {
-            when(investmentRequestClient.callInvestmentFundFavoriteService(any(), anyString())).thenThrow(MockitoException.class);
-            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(any(), anyString());
+            Map<String, String> invHeaderReqParameter = new HashMap<>();
+            when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenThrow(MockitoException.class);
+            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -377,8 +369,9 @@ public class ProductExpAsynServiceTest {
 
 
     @Test
-    public void fetchFundFavorite() throws Exception {
+    public void fetchFundFavorite() {
         try {
+            Map<String, String> invHeaderReqParameter = new HashMap<>();
             List<CustFavoriteFundData> favoriteFundData = new ArrayList<>();
             CustFavoriteFundData fundHolidayBody = new CustFavoriteFundData();
             TmbOneServiceResponse<List<CustFavoriteFundData>> serviceResponseStmt = new TmbOneServiceResponse<>();
@@ -390,53 +383,63 @@ public class ProductExpAsynServiceTest {
 
             favoriteFundData.add(fundHolidayBody);
 
-
             serviceResponseStmt.setData(favoriteFundData);
             serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundFavoriteService(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+            when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+
+            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
+            Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        CompletableFuture<List<CustFavoriteFundData>> response = productExpAsynService.fetchFundFavorite(any(), anyString());
-        Assert.assertNotNull(response);
     }
 
 
     @Test
     void testGetListCompletableFuture() throws JsonProcessingException {
+        String key = "test";
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         Map<String, String> invHeaderReqParameter = new HashMap<>();
         invHeaderReqParameter.put("test", "test");
-        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        String key = "test";
+
         ObjectMapper mapper = new ObjectMapper();
         Object value = true;
         mapper.writeValueAsString(value);
-        TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData("test");
+
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setService("products-exp-async-service");
+
+        TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        tmbOneServiceResponse.setData("test");
         tmbOneServiceResponse.setStatus(tmbStatus);
+
         ResponseEntity<TmbOneServiceResponse<String>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
         when(cacheServiceClient.getCacheByKey(any(), any())).thenReturn(response);
-        List<FundClassListInfo> fundClassLists = new ArrayList<>();
+
         FundClassListInfo fundClass = new FundClassListInfo();
         fundClass.setFundClassCode("1234");
         fundClass.setAllotType("test");
+
+        List<FundClassListInfo> fundClassLists = new ArrayList<>();
         fundClassLists.add(fundClass);
-        TmbOneServiceResponse<FundListBody> investmentResponse = new TmbOneServiceResponse<>();
-        investmentResponse.setStatus(tmbStatus);
+
         FundListBody data = new FundListBody();
         data.setFundClassList(fundClassLists);
+
+        TmbOneServiceResponse<FundListBody> investmentResponse = new TmbOneServiceResponse<>();
+        investmentResponse.setStatus(tmbStatus);
         investmentResponse.setData(data);
         ResponseEntity<TmbOneServiceResponse<FundListBody>> resp = new ResponseEntity<>(investmentResponse, HttpStatus.OK);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
 
         ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
         when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
+
         CompletableFuture<List<FundClassListInfo>> listCompletableFuture = productExpAsynService.getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
+
         assertNotEquals(100, listCompletableFuture.getNumberOfDependents());
     }
 
@@ -473,99 +476,5 @@ public class ProductExpAsynServiceTest {
 
 
         assertNotNull(response);
-    }
-
-    @Test
-    void should_return_information_body_when_call_fetch_fund_information_given_header_and_fund_code_request_body() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
-        //Given
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> investmentRequestHeader = Map.of("test", "test");
-        InformationResponse informationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/fund_information.json").toFile(),
-                InformationResponse.class);
-        TmbOneServiceResponse<InformationBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData(informationResponse.getData());
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setService("products-exp-async-service");
-        tmbOneServiceResponse.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<InformationBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
-                .code("TMBCOF")
-                .build();
-        when(investmentRequestClient.callInvestmentFundInformationService(investmentRequestHeader, fundCodeRequestBody)).thenReturn(response);
-
-        //When
-        CompletableFuture<InformationBody> actual = productExpAsynService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);
-
-        //Then
-        CompletableFuture<InformationBody> expected = CompletableFuture.completedFuture(informationResponse.getData());
-        assertEquals(expected.get(), actual.get());
-    }
-
-    @Test
-    void should_return_null_when_call_fetch_fund_information_given_throw_exception_from_api() {
-        //Given
-        when(investmentRequestClient.callInvestmentFundInformationService(any(), any())).thenThrow(RuntimeException.class);
-
-        //When
-        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            productExpAsynService.fetchFundInformation(any(), any());
-        });
-
-        //Then
-        TMBCommonException expected = new TMBCommonException(
-                ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
-                null);
-
-        assertEquals(expected.getClass(), actual.getClass());
-    }
-
-    @Test
-    void should_return_daily_nav_body_when_call_fetch_fund_daily_nav_given_header_and_fund_code_request_body() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
-        //Given
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> investmentRequestHeader = Map.of("test", "test");
-        DailyNavResponse dailyNavResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/fund_daily_nav.json").toFile(),
-                DailyNavResponse.class);
-        TmbOneServiceResponse<DailyNavBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData(dailyNavResponse.getData());
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setService("products-exp-async-service");
-        tmbOneServiceResponse.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<DailyNavBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
-                .code("TMBCOF")
-                .build();
-        when(investmentRequestClient.callInvestmentFundDailyNavService(investmentRequestHeader, fundCodeRequestBody)).thenReturn(response);
-
-        //When
-        CompletableFuture<DailyNavBody> actual = productExpAsynService.fetchFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
-
-        //Then
-        CompletableFuture<DailyNavBody> expected = CompletableFuture.completedFuture(dailyNavResponse.getData());
-        assertEquals(expected.get(), actual.get());
-    }
-
-    @Test
-    void should_return_null_when_call_fetch_fund_daily_nav_given_throw_exception_from_api() {
-        //Given
-        when(investmentRequestClient.callInvestmentFundDailyNavService(any(), any())).thenThrow(RuntimeException.class);
-
-        //When
-        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            productExpAsynService.fetchFundDailyNav(any(), any());
-        });
-
-        //Then
-        TMBCommonException expected = new TMBCommonException(
-                ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
-                null);
-
-        assertEquals(expected.getClass(), actual.getClass());
     }
 }

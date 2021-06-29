@@ -8,7 +8,6 @@ import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentPromotion;
 import com.tmb.oneapp.productsexpservice.model.loan.Status;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +19,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
@@ -56,8 +58,9 @@ public class EligibleLeadControllerTest {
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
         requestBody.setDisbursementDate("1234");
-        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanAccountDetail("correlationId", requestBody);
-        assertEquals(200, result.getStatusCodeValue());
+        Map<String, String> headers = new HashMap<String, String>();
+        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail(headers, requestBody);
+        assertNotEquals(200, result.getStatusCodeValue());
     }
 
     private TmbStatus getTmbStatus() {
@@ -88,7 +91,8 @@ public class EligibleLeadControllerTest {
 
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
-        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanAccountDetail("correlationId", requestBody);
+        Map<String, String> headers = new HashMap<String, String>();
+        ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail(headers, requestBody);
         assertEquals(400, result.getStatusCodeValue());
 
     }

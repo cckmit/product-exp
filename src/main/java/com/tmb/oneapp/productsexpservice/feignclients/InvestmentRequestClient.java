@@ -4,15 +4,19 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
+import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
+import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
+import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -80,6 +84,17 @@ public interface InvestmentRequestClient {
     ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> callInvestmentFundSummaryByPortService(@RequestHeader Map<String, String> headers
             , @RequestBody UnitHolder unitHolder);
 
+    /***
+     * Call investment to get fund sumaary by port
+     * @param headers
+     * @param countToBeProcessOrderRequestBody
+     * @return
+     */
+    @PostMapping(value = "${investment.service.fund.processed.order.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> callInvestmentCountProcessOrderService(@RequestHeader Map<String, String> headers
+            , @RequestBody CountToBeProcessOrderRequestBody countToBeProcessOrderRequestBody);
+
     /**
      * Call investment fund summary service fund summary response.
      *
@@ -142,14 +157,12 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund favorite service fund favorite response.
      *
-     * @param headers  the headers
+     * @param headers the headers
      * @return the fund favorite response
      */
     @PostMapping(value = "${investment.service.fund.listfavorite.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers, @RequestHeader String crmId);
-
-
+    public ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers);
 
 
     /**
@@ -172,7 +185,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.information.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<InformationBody>> callInvestmentFundInformationService(@RequestHeader Map<String, String> header, @RequestBody FundCodeRequestBody fundCodeRequestBody);
+    ResponseEntity<TmbOneServiceResponse<InformationBody>> getFundInformation(@RequestHeader Map<String, String> header, @RequestBody FundCodeRequestBody fundCodeRequestBody);
 
     /**
      * Call investment fund daily nav service to get fund daily nav response.
@@ -182,5 +195,15 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.daily.nav.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<DailyNavBody>> callInvestmentFundDailyNavService(@RequestHeader Map<String, String> header, @RequestBody FundCodeRequestBody fundCodeRequestBody);
+    ResponseEntity<TmbOneServiceResponse<DailyNavBody>> getFundDailyNav(@RequestHeader Map<String, String> header, @RequestBody FundCodeRequestBody fundCodeRequestBody);
+
+    /**
+     * Call investment fund allocation service to get fund allocation response.
+     *
+     * @param header the headers
+     * @return the fund allocation response
+     */
+    @PostMapping(value = "${investment.service.fund.allocation.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> callInvestmentFundAllocation(@RequestHeader Map<String, String> header, @RequestBody FundAllocationRequestBody fundAllocationRequestBody);
 }

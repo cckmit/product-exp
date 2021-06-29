@@ -42,6 +42,44 @@
         "utilities": "0.855630"
       },
       "multiInvestmentStrategy": "ลงทุนใน UBS (Lux) Equity Fund–China Opportunity (USD) ในหน่วยลงทุนชนิด Class I-A1-acc ซึ่งกองทุนหลักจะลงทุนสองในสามของมูลค่าทรัพย์สิน ในตราสารทุนประเทศจีน",
+      "riskSpectrumNumber": "6",
+      "purchaseCutoffTime": "1530",
+      "redeemCutoffTime": "1530",
+      "switchingOutFeePercent": "0.000000",
+      "standardDeviation": [
+        {
+          "duration": "1Y",
+          "thisFund": "18.255000",
+          "average": "18.318000"
+        },
+        {
+          "duration": "3Y",
+          "thisFund": "19.201000",
+          "average": "18.884000"
+        },
+        {
+          "duration": "5Y",
+          "thisFund": "16.652000",
+          "average": "16.176000"
+        }
+      ],
+      "maxDrawdown": [
+        {
+          "duration": "1Y",
+          "thisFund": "-10.024000",
+          "average": null
+        },
+        {
+          "duration": "3Y",
+          "thisFund": "-23.215000",
+          "average": null
+        },
+        {
+          "duration": "5Y",
+          "thisFund": "-24.566000",
+          "average": null
+        }
+      ],
       "exposureList": [
         {
           "country": "China",
@@ -56,6 +94,28 @@
         {
           "name": "UBS (Lux) EF China Oppo(USD) 1-A1 USDacc",
           "weight": "98.312870"
+        }
+      ],
+      "return": [
+        {
+          "duration": "YTD",
+          "thisFund": "-2.385340",
+          "average": "2.989150"
+        },
+        {
+          "duration": "1Y",
+          "thisFund": "22.612110",
+          "average": "35.567820"
+        },
+        {
+          "duration": "3Y",
+          "thisFund": "9.585790",
+          "average": "8.641870"
+        },
+        {
+          "duration": "5Y",
+          "thisFund": "18.070070",
+          "average": "11.509910"
         }
       ]
     }

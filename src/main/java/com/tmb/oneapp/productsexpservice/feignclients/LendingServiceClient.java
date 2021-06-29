@@ -74,7 +74,7 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/criteria/businesstype/{entrycode}")
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getBusinessSubTypeInfo(
-			@RequestHeader(X_CORRELATION_ID) String correlationId);
+			@RequestHeader(X_CORRELATION_ID) String correlationId, @PathVariable("entrycode") String reference);
 
 	/**
 	 * Call RSL Criteria for get source of income

@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @RestController
-@Api(tags = "Lend Customer information service")
+@Api(tags = "Lead Customer information service")
 public class CustomerServiceController {
 
 	private static final TMBLogger<CustomerServiceController> logger = new TMBLogger<>(CustomerServiceController.class);
@@ -295,7 +295,7 @@ public class CustomerServiceController {
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient
-					.getBusinessSubTypeInfo(correlationId);
+					.getBusinessSubTypeInfo(correlationId,entrycode);
 			if (Objects.nonNull(lendingResponse.getBody())) {
 				response.setData(lendingResponse.getBody().getData());
 			}

@@ -4,6 +4,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.creditcard.CardInstallment;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
@@ -186,7 +187,7 @@ public class CardInstallmentControllerTest {
 		cardStatement.setPromotionFlag("Y");
 		oneServiceResponse.setData(cardInstallment);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+		responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
 		when(creditCardClient.confirmCardInstallment(any(), any()))
 				.thenThrow(new IllegalStateException("Error occurred"));
 		final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();
@@ -228,7 +229,7 @@ public class CardInstallmentControllerTest {
 		cardStatement.setPromotionFlag("Y");
 		oneServiceResponse.setData(cardInstallment);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "123");
+		responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
 		when(creditCardClient.confirmCardInstallment(any(), any()))
 				.thenThrow(new IllegalStateException("Error occurred"));
 		final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();

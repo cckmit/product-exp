@@ -289,23 +289,28 @@ public class CustomerProfileService {
 		DependDefaultEntry defaultEntry = new DependDefaultEntry();
 		List<CodeEntry> entry = new ArrayList();
 		CodeEntry entryLevelOne = new CodeEntry();
-		entryLevelOne.setEntryName("15000-29999");
-		entryLevelOne.setEntryCode("30000");
+		entryLevelOne.setEntryName("15,000-29,999 THB");
+		entryLevelOne.setEntryCode("29999");
 		entry.add(entryLevelOne);
 		CodeEntry entryLevelTwo = new CodeEntry();
-		entryLevelTwo.setEntryName("30000-49999");
-		entryLevelTwo.setEntryCode("50000");
+		entryLevelTwo.setEntryName("30,000-49,999 THB");
+		entryLevelTwo.setEntryCode("49999");
 		entry.add(entryLevelTwo);
 
 		CodeEntry entryLevelThree = new CodeEntry();
-		entryLevelThree.setEntryName("50000-99999");
-		entryLevelThree.setEntryCode("100000");
+		entryLevelThree.setEntryName("50,000-99,999 THB");
+		entryLevelThree.setEntryCode("99999");
 		entry.add(entryLevelThree);
 
 		CodeEntry entryLevelFour = new CodeEntry();
-		entryLevelFour.setEntryName("100000-199999");
-		entryLevelFour.setEntryCode("200000");
+		entryLevelFour.setEntryName("100,000-199,999 THB");
+		entryLevelFour.setEntryCode("199999");
 		entry.add(entryLevelFour);
+		
+		CodeEntry entryLevelFive = new CodeEntry();
+		entryLevelFive.setEntryName(">=200,000 THB");
+		entryLevelFive.setEntryCode("200000");
+		entry.add(entryLevelFive);
 		defaultEntry.setEntry(entry);
 
 		CodeEntry match = selectMatchDependency(defaultEntry, incomeBaseSalary);

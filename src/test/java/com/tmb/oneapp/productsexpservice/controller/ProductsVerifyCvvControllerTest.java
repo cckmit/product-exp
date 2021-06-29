@@ -150,7 +150,7 @@ public class ProductsVerifyCvvControllerTest {
     public Map<String, String> headerRequestParameter(String correlationId, String accountNo, String cvv,
                                                       String cardExpiry) {
         Map<String, String> headers = new HashMap<>();
-        headers.put(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "c83936c284cb398fA46CF16F399C");
+        headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, "c83936c284cb398fA46CF16F399C");
         headers.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078360018000167");
         headers.put(ProductsExpServiceConstant.CVV, "896");
         headers.put(ProductsExpServiceConstant.CARD_EXPIRY, "2506");

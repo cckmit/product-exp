@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.util;
 
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundClass;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
@@ -180,7 +181,7 @@ public class UtilMapTest {
         String correlationId = "1234";
         Map<String, String> result = UtilMap.createHeader(correlationId);
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("X-Correlation-ID", "1234");
+        hashMap.put(ProductsExpServiceConstant.X_CORRELATION_ID, "1234");
         hashMap.put("content-type", "application/json");
         Assert.assertEquals(hashMap, result);
     }

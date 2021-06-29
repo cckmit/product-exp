@@ -9,8 +9,6 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 public class LoanPreloadRequest {
     @NotEmpty
-    private String crmId;
-    @NotEmpty
     private String productCode;
     @NotEmpty
     private String search;
