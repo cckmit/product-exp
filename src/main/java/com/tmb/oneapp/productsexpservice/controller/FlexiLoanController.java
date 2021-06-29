@@ -4,37 +4,78 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
+import com.tmb.oneapp.productsexpservice.model.response.flexiloan.FlexiLoanConfirmResponse;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
-import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
+import com.tmb.oneapp.productsexpservice.service.FlexiLoanConfirmService;
 import com.tmb.oneapp.productsexpservice.service.FlexiLoanService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.Map;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
+
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/lending")
-@Api(tags = "Flexi Loan C2G")
-@RestController
+@Api(tags = "Flexi Loan")
 public class FlexiLoanController {
 
-    private static final TMBLogger<CustomerProfileService> logger = new TMBLogger<>(CustomerProfileService.class);
+    private static final TMBLogger<FlexiLoanService> logger = new TMBLogger<>(FlexiLoanService.class);
+
+    private final FlexiLoanConfirmService flexiLoanConfirmService;
     private final FlexiLoanService flexiLoanService;
 
     @LogAround
+    @ApiOperation("Flexi Loan Confirm")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+            @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000000051187", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "account-id", value = "Account Id", required = true, dataType = "string", paramType = "header", example = "0000000050078360018000167")
+    })
+    @PostMapping(value = "/flexiLoan/confirm", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<FlexiLoanConfirmResponse>> submit(@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
+                                                                                  @Valid FlexiLoanConfirmRequest request) {
+
+        TmbOneServiceResponse<FlexiLoanConfirmResponse> response = new TmbOneServiceResponse<>();
+
+        try {
+            FlexiLoanConfirmResponse confirmResponse = flexiLoanConfirmService.confirm(requestHeaders, request);
+            response.setData(confirmResponse);
+            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(),
+                    ResponseCode.SUCESS.getMessage(), ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .headers(TMBUtils.getResponseHeaders())
+                    .body(response);
+
+        } catch (Exception e) {
+            logger.error("Error product-exp-service confirmFlexiLoan : {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+                    ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+
+    }
+
+    @LogAround
     @ApiOperation("Flexi loan submission info")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-Correlation-ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
+    })
     @GetMapping(value = "/submission/info", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> getSubmissionInfo(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
                                                                                            @Valid SubmissionInfoRequest request) {

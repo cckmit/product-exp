@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.constant;
 
+import java.util.List;
+
 /**
  * Constant class for Application
  */
@@ -162,4 +164,13 @@ public class ProductsExpServiceConstant {
     public static final String CASE_NUMBER = "case_number";
     public static final String PTES_PORT_FOLIO_FLAG = "2";
     public static final String TRANSACTION_DATE = "transaction_date";
+
+    public static final List<String> CREDIT_CARDS_CODE = List.of(
+            RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode(),
+            RSLProductCodeEnum.CREDIT_CARD_TTB_SO_FAST.getProductCode(),
+            RSLProductCodeEnum.CREDIT_CARD_TTB_SO_SMART.getProductCode(),
+            RSLProductCodeEnum.CREDIT_CARD_TTB_SO_CHILL.getProductCode(),
+            RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_INFINITE.getProductCode(),
+            RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_SIGNATURE.getProductCode()
+    );
 }
