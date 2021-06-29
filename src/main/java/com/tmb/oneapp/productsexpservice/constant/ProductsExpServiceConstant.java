@@ -40,6 +40,7 @@ public class ProductsExpServiceConstant {
     public static final String FAILED_MESSAGE = "failed";
 
     public static final String MF_TIME_HHMM = "HHmm";
+    public static final String MF_TIME_WITH_COLON_HHMM = "HH:mm";
     public static final String MF_DATE_YYYYMMDD = "yyyy-MM-dd";
     public static final String PAGE_SIZE = "pageSize";
     public static final String PAGE_NO = "pageNo";
