@@ -84,12 +84,11 @@ public class PersonalLoanController {
     @GetMapping(value = "/get-product-loan-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product loan list")
-    public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList(@Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
-                                                                                   @RequestParam("search") @Valid String search ) {
+    public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
         TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ApplyPersonalLoan productDataLoanList = personalLoanService.getProductsLoan(correlationId,search);
+            ApplyPersonalLoan productDataLoanList = personalLoanService.getProductsLoan();
             oneTmbOneServiceResponse.setData(productDataLoanList);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();
@@ -101,14 +100,14 @@ public class PersonalLoanController {
         }
     }
 
+
     @GetMapping(value = "/get-product-credit-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product credit list")
-    public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList(@Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
-                                                                                         @RequestParam("search") @Valid String search) {
+    public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList() {
         TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            List<ProductData> productDataCreditList = personalLoanService.getProductsCredit(correlationId,search);
+            List<ProductData> productDataCreditList = personalLoanService.getProductsCredit();
             oneTmbOneServiceResponse.setData(productDataCreditList);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();

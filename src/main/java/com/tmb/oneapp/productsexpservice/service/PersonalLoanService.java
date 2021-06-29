@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.*;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
@@ -35,10 +36,10 @@ public class PersonalLoanService {
         return loanPreloadResponse;
     }
 
-    public ApplyPersonalLoan getProductsLoan(String correlationId, String search) {
+    public ApplyPersonalLoan getProductsLoan() {
         ProductData productLoanData = new ProductData();
         ProductData productCreditData = new ProductData();
-        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(correlationId, search);
+        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(ProductsExpServiceConstant.X_CORRELATION_ID, "lending_module");
 
         ApplyPersonalLoan applyPersonalLoans = new ApplyPersonalLoan();
         ApplyPersonalLoan personalCreditLoan = new ApplyPersonalLoan();
@@ -85,10 +86,10 @@ public class PersonalLoanService {
         return applyPersonalLoans;
     }
 
-    public List<ProductData> getProductsCredit(String correlationId, String search) {
+    public List<ProductData> getProductsCredit() {
         List<ProductData> productDataList = new ArrayList();
 
-        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(correlationId, search);
+        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(ProductsExpServiceConstant.X_CORRELATION_ID, "lending_module");
 
         for (CommonData commonData : productList.getData()) {
             List<ApplyProductData> personalLoans = commonData.getApplyCreditCards();
