@@ -234,22 +234,22 @@ public class UtilMap {
 
     public static boolean isTimeBetweenTwoTime(String argStartTime,
                                         String argEndTime, String argCurrentTime) throws ParseException {
-        String reg = "^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$";
+        String reg = "^([0-1][0-9]|2[0-3]):([0-5][0-9])$";
         if (argStartTime.matches(reg) && argEndTime.matches(reg)
                 && argCurrentTime.matches(reg)) {
             boolean valid = false;
             // Start Time
-            java.util.Date startTime = new SimpleDateFormat("HH:mm:ss")
+            java.util.Date startTime = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM)
                     .parse(argStartTime);
             Calendar startCalendar = Calendar.getInstance();
             startCalendar.setTime(startTime);
             // Current Time
-            java.util.Date currentTime = new SimpleDateFormat("HH:mm:ss")
+            java.util.Date currentTime = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM)
                     .parse(argCurrentTime);
             Calendar currentCalendar = Calendar.getInstance();
             currentCalendar.setTime(currentTime);
             // End Time
-            java.util.Date endTime = new SimpleDateFormat("HH:mm:ss")
+            java.util.Date endTime = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM)
                     .parse(argEndTime);
             Calendar endCalendar = Calendar.getInstance();
             endCalendar.setTime(endTime);
