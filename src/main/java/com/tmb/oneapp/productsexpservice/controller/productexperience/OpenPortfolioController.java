@@ -3,16 +3,22 @@ package com.tmb.oneapp.productsexpservice.controller.productexperience;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
+import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.openportfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -46,10 +52,45 @@ public class OpenPortfolioController {
     @ApiOperation(value = "Get term and condition with open portfolio status")
     @LogAround
     @PostMapping(value = "/open/portfolio", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> getFundAccountDetail(
+    public ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> validateOpenPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody OpenPortfolioRequest openPortfolioRequest) {
         return openPortfolioService.validateOpenPortfolio(correlationId, openPortfolioRequest);
+    }
+
+    /**
+     * Description:- method call to MF service to open portfolio
+     *
+     * @param correlationId       the correlation id
+     * @param customerRequestBody the customer request body
+     * @return return status of open portfolio
+     */
+    @ApiOperation(value = "Get term and condition with open portfolio status")
+    @LogAround
+    @PostMapping(value = "/info/openportfolio", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponse>> createCustomer(
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestBody CustomerRequestBody customerRequestBody) {
+
+        TmbOneServiceResponse<OpenPortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            OpenPortfolioResponse openPortfolioResponse = openPortfolioService.createCustomer(correlationId, customerRequestBody);
+            if (!StringUtils.isEmpty(openPortfolioResponse)) {
+                return getTmbOneServiceResponseEntity(oneServiceResponse, openPortfolioResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
+            } else {
+                return getTmbOneServiceResponseEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
+            }
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            return getTmbOneServiceResponseEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
+        }
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponse>> getTmbOneServiceResponseEntity(TmbOneServiceResponse<OpenPortfolioResponse> oneServiceResponse, OpenPortfolioResponse openPortfolioResponse, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {
+        oneServiceResponse.setData(openPortfolioResponse);
+        oneServiceResponse.setStatus(new TmbStatus(statusCode, statusMessage, ProductsExpServiceConstant.SERVICE_NAME, statusMessage));
+        return status.headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 }

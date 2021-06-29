@@ -7,6 +7,9 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
+import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
+import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
@@ -63,6 +66,38 @@ public class InvestmentAsyncService {
     public CompletableFuture<DailyNavBody> fetchFundDailyNav(Map<String, String> investmentRequestHeader, FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<DailyNavBody>> response = investmentRequestClient.getFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw getTmbCommonException();
+        }
+    }
+
+    /**
+     * Method fetchAccountPurpose to get customer account purpose
+     *
+     * @return CompletableFuture<AccountPurposeBody>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose(Map<String, String> investmentRequestHeader) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<AccountPurposeResponseBody>> response = investmentRequestClient.getCustomerAccountPurpose(investmentRequestHeader);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw getTmbCommonException();
+        }
+    }
+
+    /**
+     * Method fetchFundDailyNav to get customer account redeem
+     *
+     * @return CompletableFuture<AccountRedeemBody>
+     */
+    public CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem(Map<String, String> investmentRequestHeader, AccountRedeemRequest accountRedeemRequest) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, accountRedeemRequest);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
