@@ -1,0 +1,92 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "purposeList": [
+      {
+        "purposeCode": "TMB_PTFPURPOSE_10_RETIREMENT",
+        "purposeEnglishDescription": "Retirement",
+        "purposeThaiDescription": "เพื่อเกษียณอายุ"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_15_EARLYRETIREMENT",
+        "purposeEnglishDescription": "Early Retirement",
+        "purposeThaiDescription": "เพื่อเกษียณล่วงหน้า"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_20_CHILDSEDUCATION",
+        "purposeEnglishDescription": "Child's Education",
+        "purposeThaiDescription": "เพื่อการศึกษาบุตร"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_25_LEGACYFORCHILDREN",
+        "purposeEnglishDescription": "Legacy For Children",
+        "purposeThaiDescription": "เพื่อมรดกสำหรับบุตร"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_30_GETMARRIED",
+        "purposeEnglishDescription": "Get Married",
+        "purposeThaiDescription": "เพื่อแต่งงาน"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_35_POTENTIALMEDICALEXPENSE",
+        "purposeEnglishDescription": "Potential Medical Expense",
+        "purposeThaiDescription": "เพื่อค่าใช้จ่ายรักษาพยาบาล"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_40_GROWWEALTH",
+        "purposeEnglishDescription": "Grow Wealth",
+        "purposeThaiDescription": "เพื่อผลตอบแทนอนาคต"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_45_STARTABUSINESS",
+        "purposeEnglishDescription": "Start a Business",
+        "purposeThaiDescription": "เพื่อเริ่มธุรกิจ"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_50_BUYAHOUSE",
+        "purposeEnglishDescription": "Buy a House",
+        "purposeThaiDescription": "เพื่อที่อยู่อาศัย"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_55_BUYACAR",
+        "purposeEnglishDescription": "Buy a Car",
+        "purposeThaiDescription": "เพื่อซื้อรถยนต์"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_60_DONATION",
+        "purposeEnglishDescription": "Donation",
+        "purposeThaiDescription": "เพื่อการบริจาค"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_65_TRAVELABROAD",
+        "purposeEnglishDescription": "Travel Abroad",
+        "purposeThaiDescription": "เพื่อการท่องเที่ยว"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_70_FORTAXBENEFIT",
+        "purposeEnglishDescription": "For Tax Benefit",
+        "purposeThaiDescription": "เพื่อสิทธิประโยชน์ทางภาษี"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_75_LIQUIDITYMANAGEMENT",
+        "purposeEnglishDescription": "Liquidity Management",
+        "purposeThaiDescription": "บริหารสภาพคล่อง"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_80_CASHMANAGEMENT",
+        "purposeEnglishDescription": "Cash management for investment",
+        "purposeThaiDescription": "บริหารเงินรอลงทุน"
+      },
+      {
+        "purposeCode": "TMB_PTFPURPOSE_99_OTHER",
+        "purposeEnglishDescription": "Other",
+        "purposeThaiDescription": "ทั่วไป"
+      }
+    ]
+  }
+}
