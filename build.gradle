@@ -34,7 +34,7 @@ sourceCompatibility = '11'
 if (project.hasProperty('projVersion')) {
 	project.version = project.projVersion
 } else {
-	project.version = '2.1.0'
+	project.version = '2.0.0'
 }
 
 configurations {
