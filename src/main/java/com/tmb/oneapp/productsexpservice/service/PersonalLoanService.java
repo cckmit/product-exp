@@ -39,7 +39,7 @@ public class PersonalLoanService {
     public ApplyPersonalLoan getProductsLoan() {
         ProductData productLoanData = new ProductData();
         ProductData productCreditData = new ProductData();
-        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "lending_module");
+        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(ProductsExpServiceConstant.X_CORRELATION_ID, "lending_module");
 
         ApplyPersonalLoan applyPersonalLoans = new ApplyPersonalLoan();
         ApplyPersonalLoan personalCreditLoan = new ApplyPersonalLoan();
@@ -89,7 +89,7 @@ public class PersonalLoanService {
     public List<ProductData> getProductsCredit() {
         List<ProductData> productDataList = new ArrayList();
 
-        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(ProductsExpServiceConstant.HEADER_CORRELATION_ID, "lending_module");
+        TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(ProductsExpServiceConstant.X_CORRELATION_ID, "lending_module");
 
         for (CommonData commonData : productList.getData()) {
             List<ApplyProductData> personalLoans = commonData.getApplyCreditCards();
