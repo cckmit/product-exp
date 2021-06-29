@@ -6,7 +6,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.controller.ProductExpServiceController;
 import com.tmb.oneapp.productsexpservice.dto.fund.information.InformationDto;
 import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.InformationService;
@@ -32,7 +31,7 @@ import java.time.Instant;
 @Api(tags = "Get fund detail and fund rule than return to front-end")
 public class InformationController {
 
-    private static final TMBLogger<ProductExpServiceController> logger = new TMBLogger<>(ProductExpServiceController.class);
+    private static final TMBLogger<InformationController> logger = new TMBLogger<>(InformationController.class);
 
     private InformationService informationService;
 
