@@ -1,0 +1,12 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "crmId": "00000007924129",
+    "accountRedeem": "0322555145"
+  }
+}

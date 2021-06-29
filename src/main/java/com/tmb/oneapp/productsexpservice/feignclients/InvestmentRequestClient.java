@@ -1,10 +1,18 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
+import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
+import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
+import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
+import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -14,9 +22,7 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
-import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
-import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -206,4 +212,37 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.fund.allocation.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> callInvestmentFundAllocation(@RequestHeader Map<String, String> header, @RequestBody FundAllocationRequestBody fundAllocationRequestBody);
+
+    /**
+     * Call investment fund allocation service to get fund allocation response.
+     *
+     * @param header the headers
+     * @return the fund allocation response
+     */
+    @PostMapping(value = "${investment.service.customer.create.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> createCustomer(
+            @RequestHeader Map<String, String> header,
+            @RequestBody CustomerRequestBody customerRequestBody);
+
+    /**
+     * Call investment account purpose service to get account purpose response.
+     *
+     * @param header the headers
+     * @return the account purpose response
+     */
+    @PostMapping(value = "${investment.service.customer.account.purpose.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<AccountPurposeResponseBody>> getCustomerAccountPurpose(@RequestHeader Map<String, String> header);
+
+    /**
+     * Call investment account redeem service to get account redeem response.
+     *
+     * @param header the headers
+     * @param accountRedeemRequest the accountRedeemRequest
+     * @return the account redeem response
+     */
+    @PostMapping(value = "${investment.service.customer.account.redeem.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> getCustomerAccountRedeem(@RequestHeader Map<String, String> header, @RequestBody AccountRedeemRequest accountRedeemRequest);
 }
