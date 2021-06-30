@@ -5,17 +5,16 @@
         <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
             <fo:layout-master-set>
                 <fo:simple-page-master master-name="simple">
-                    <fo:region-body margin-top="1.0cm" margin-bottom="2.9cm" margin-left="2.0cm" margin-right="2.0cm"/>
-                    <fo:region-before/>
-                    <fo:region-after extent="2.6cm"/>
+                    <fo:region-body region-name="xsl-region-body" margin-top="3.0cm" margin-bottom="3.0cm"
+                                    margin-left="2.0cm" margin-right="2.0cm"/>
+                    <fo:region-before region-name="xsl-region-before"/>
+                    <fo:region-after region-name="xsl-region-after" extent="3.5cm"/>
                 </fo:simple-page-master>
             </fo:layout-master-set>
 
             <fo:page-sequence master-reference="simple">
-                <fo:flow flow-name="xsl-region-body">
-                    <!--start logo -->
-                    <fo:table width="100%" vertical-align="middle" font-family="DBOzoneX" color="#333333"
-                              font-size="13pt" font-weight="normal" empty-cells="show">
+                <fo:static-content flow-name="xsl-region-before">
+                    <fo:table width="100%" margin-top="1.0cm" margin-left="0.5cm" margin-right="1.5cm">
                         <fo:table-column column-width="50%" text-align="left"/>
                         <fo:table-column column-width="50%" text-align="right"/>
                         <fo:table-body>
@@ -29,7 +28,8 @@
 
                                 <fo:table-cell text-align="right">
                                     <fo:block text-align="right">
-                                        <fo:external-graphic src="makerealchange.png" content-width="1.2in" scaling="non-uniform"/>
+                                        <fo:external-graphic src="makerealchange.png" content-width="1.2in"
+                                                             scaling="non-uniform"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -42,8 +42,22 @@
                             </fo:table-row>
                         </fo:table-body>
                     </fo:table>
-                    <!--  end of logo -->
-
+                </fo:static-content>
+                <fo:static-content flow-name="xsl-region-after">
+                    <fo:table width="100%" margin-left="0.0cm" margin-right="1.0cm">
+                        <fo:table-column column-width="100%" text-align="left"/>
+                        <fo:table-body>
+                            <fo:table-row>
+                                <fo:table-cell text-align="left">
+                                    <fo:block text-align="left">
+                                        <fo:external-graphic src="tmbaddress.png"/>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
+                </fo:static-content>
+                <fo:flow flow-name="xsl-region-body">
                     <fo:table width="100%" vertical-align="middle" font-family="DBOzoneX" color="#333333"
                               font-size="13pt" font-weight="normal" empty-cells="show">
                         <fo:table-column column-width="50%" text-align="left"/>
@@ -52,7 +66,9 @@
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell text-align="left" font-size="11pt" number-columns-spanned="2">
-                                    <fo:block background-color="#C0C0C0" border="solid 0.2mm black">รายละเอียดการขอสินเชื่อ</fo:block>
+                                    <fo:block background-color="#C0C0C0" border="solid 0.2mm black">
+                                        รายละเอียดการขอสินเชื่อ
+                                    </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
 
@@ -70,7 +86,7 @@
 
                     <fo:table width="100%" vertical-align="middle" font-family="DBOzoneX"
                               color="#333333" font-size="13pt" font-weight="normal" empty-cells="show"
-                              start-indent="0cm" margin-top="-0.5cm">
+                              start-indent="0cm" margin-top="-1.0cm">
                         <fo:table-column column-width="50%" text-align="right"/>
                         <fo:table-column column-width="50%" text-align="left"/>
                         <fo:table-body>
@@ -121,14 +137,23 @@
 
                                 <fo:table-cell text-align="right">
                                     <fo:block>
-                                        <xsl:value-of select="citizenId"/>
+                                        <xsl:value-of select="idCardNo"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
 
                             <fo:table-row>
                                 <fo:table-cell>
-                                    <fo:block>วงเงินกู้ :</fo:block>
+                                    <fo:block>
+                                        <xsl:choose>
+                                            <xsl:when test="productCode='C2G01' or productCode='C2G02'">
+                                                วงเงินกู้ :
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                วงเงินบัตร :
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </fo:block>
                                 </fo:table-cell>
 
                                 <fo:table-cell text-align="right">
@@ -201,16 +226,16 @@
 
                             <xsl:if test="productCode='C2G01' or productCode='C2G02'">
 
-                            <fo:table-row>
-                                <fo:table-cell>
-                                    <fo:block>บัญชีรับเงิน :</fo:block>
-                                </fo:table-cell>
-                                <fo:table-cell text-align="right">
-                                    <fo:block>
-                                        <xsl:value-of select="disburseAccountNo"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>บัญชีรับเงิน :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="disburseAccountNo"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
 
                                 <fo:table-row>
                                     <fo:table-cell>
@@ -727,7 +752,7 @@
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
-                                        ผู้สมัครให้ความยินยอมโดย : <xsl:value-of select="customerName"/>
+                                        ผู้สมัครให้ความยินยอมโดย : Access Pin
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -735,20 +760,11 @@
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
                                         วันเวลาที่ให้ความยินยอม
-<<<<<<< HEAD
-                                        <xsl:value-of select="ConsentDate"/> /
-                                        <xsl:value-of select="ConsentTime"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-=======
                                         <xsl:value-of select="consentDate"/> /
                                         <xsl:value-of select="consentTime"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
->>>>>>> develop
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block>
@@ -769,22 +785,6 @@
                                                 ไม่ยินยอม
                                             </xsl:otherwise>
                                         </xsl:choose>
-<<<<<<< HEAD
-                                        ให้ ธนาคารทหารไทยธนชาต จำกัด (มหาชน)ซึ่งเป็นสมาชิก ของบริษัทข้อมูลเครดิต
-                                        นำข้อมูลของข้าพเจ้าที่ได้รับจากบริษัทข้อมูลเครดิตเฉพาะส่วนที่ไม่สามารถระบุตัวตน
-                                        เช่น ชื่อ นามสกุลเลขประจำตัว ประชาชน
-                                        รวมถึงข้อมูลอื่นใดที่สามารถระบุว่าเป็นข้าพเจ้าได้
-                                        ไปใช้เป็นปัจจัยหนึ่งในการจัดทำแบบจำลองด้านเครดิตกำหนดเท่านั้น และให้คู่ฉบับ
-                                        และบรรดาสำเนาภาพถ่าย ข้อมูลอิเล็กทรอนิกส์ หรือ โทรสาร
-                                        ที่ได้ทำซ้ำขึ้นจากหนังสือให้ความยินยอมฉบับนี้โดยการถ่ายสำเนา ภาพถ่าย
-                                        หรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ
-                                        ให้ถือเป็นหลักฐานในการให้ความยินยอมของข้าพเจ้าเช่นเดียวกัน
-                                        ทั้งนี้ข้าพเจ้าทราบว่าเจ้าของข้อมูลมีสิทธิที่จะ
-                                        ให้ความยินยอมหรือไม่ก็ได้และเมื่อให้ความยินยอมแล้วเจ้าของข้อมูลจะแจ้งความประสงค์ไม่ให้ความยินยอมอีกต่อไปได้
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-=======
                                         ให้ ธนาคารทหารไทย จำกัด (มหาชน) ซึ่งเป็นสมาชิกของบริษัทข้อมูลเครดิต
                                         นำข้อมูลของข้าพเจ้าที่ได้รับจากบริษัทข้อมูลเครดิตเฉพาะส่วนที่ไม่สามารถ
                                         ระบุตัวตน เช่น ชื่อ นามสกุล เลขประจำตัวประชาชน
@@ -813,7 +813,7 @@
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
                                         ผู้สมัครให้ความยินยอมโดย :
-                                        <xsl:value-of select="customerName"/>
+                                        <xsl:value-of select="ConsentDate"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -828,7 +828,6 @@
                                 </fo:table-cell>
                             </fo:table-row>
 
->>>>>>> develop
                         </fo:table-body>
                     </fo:table>
                 </fo:flow>
