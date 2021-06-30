@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -45,17 +46,6 @@ public class LoanCustomerService {
 
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
-    private static final Double INTEREST = 0.16;
-    private static final BigDecimal PRICING_MONTH_FROM = BigDecimal.valueOf(1);
-    private static final BigDecimal PRICING_MONTH_TO = BigDecimal.valueOf(3);
-    private static final BigDecimal RATE_VARIANCE = BigDecimal.valueOf(1.73);
-    private static final BigDecimal PRICING_MONTH_FROM_4 = BigDecimal.valueOf(4);
-    private static final BigDecimal PRICING_MONTH_TO_5 = BigDecimal.valueOf(5);
-    private static final BigDecimal RATE_VARIANCE_1 = BigDecimal.valueOf(12.00);
-    private static final BigDecimal PRICING_MONTH_FROM_6 = BigDecimal.valueOf(6);
-    private static final BigDecimal PRICING_MONTH_TO_12 = BigDecimal.valueOf(12);
-    private static final BigDecimal RATE_VARIANCE_2 = BigDecimal.valueOf(23.00);
-    private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
@@ -143,7 +133,11 @@ public class LoanCustomerService {
                 LoanCustomerPricing pricing = new LoanCustomerPricing();
                 pricing.setMonthFrom(item.getMonthFrom());
                 pricing.setMonthTo(item.getMonthTo());
-                pricing.setRateVariance(item.getRateVaraince());
+                pricing.setYearFrom(item.getYearFrom());
+                pricing.setYearTo(item.getYearTo());
+                pricing.setRate(String.valueOf(item.getCalculatedRate().floatValue() * 100));
+                pricing.setRateVariance(BigDecimal.valueOf(item.getRateVaraince().floatValue() * 100));
+                pricings.add(pricing);
             }
         }
 
@@ -200,7 +194,12 @@ public class LoanCustomerService {
 
     private AnnualInterest getAnnualInterest(Facility facility) {
         AnnualInterest annualInterest = new AnnualInterest();
-        annualInterest.setInterest(INTEREST);
+        for (Pricing q : facility.getPricings()) {
+            if (q.getPricingType().equals("C")) {
+                annualInterest.setInterest(q.getCalculatedRate().doubleValue() * 100);
+                break;
+            }
+        }
         annualInterest.setVat(VAT);
         annualInterest.setCharge(CHARGE);
         return annualInterest;
@@ -216,11 +215,11 @@ public class LoanCustomerService {
 
         Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
 
-        AnnualInterest annualInterest = getAnnualInterest(facility);
-        response.setAnnualInterest(annualInterest);
-
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityS);
         response.setPricings(pricings);
+
+        AnnualInterest annualInterest = getAnnualInterest(facility);
+        response.setAnnualInterest(annualInterest);
 
         List<LoanCustomerTenure> installments = getLoanCustomerTenure(facilityS);
         response.setInstallments(installments);
