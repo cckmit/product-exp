@@ -54,7 +54,7 @@ public class FlexiLoanConfirmService {
 
     private static final String E_APP_TEMPLATE = "fop/e_app.xsl";
 
-    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws Exception {
+    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws ServiceException, RemoteException {
         Facility facilityInfo = getFacility(request.getCaID());
         Individual customerInfo = getCustomer(request.getCaID());
         CreditCard creditCardInfo = getCreditCard(request.getCaID(), request.getProductCode());
@@ -78,7 +78,7 @@ public class FlexiLoanConfirmService {
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
 
-    private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) throws Exception {
+    private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) {
         try {
             notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
                     requestHeaders.get(ProductsExpServiceConstant.ACCOUNT_ID.toLowerCase()),
@@ -220,7 +220,7 @@ public class FlexiLoanConfirmService {
     private String generateFlexiLoanConfirmReport(FlexiLoanSubmissionWrapper wrapper, String appRefNo) {
         String fileName = parseCompletePDFFileName(appRefNo);
         fileGeneratorService.generateFlexiLoanSubmissionPdf(wrapper, fileName, E_APP_TEMPLATE);
-        return String.format("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", fileName);
+        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", System.getProperty("sftp.remote-host"), fileName);
     }
 
     private void storeEAppFile(Map<String, String> requestHeaders, String appRefNo, String fileName) {
@@ -288,7 +288,7 @@ public class FlexiLoanConfirmService {
         dateStr = dateStr.replaceAll("[-:T ]", "");
         dateStr = dateStr.substring(2, 14);
         String docType = "00111";
-        return String.format("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", dateStr, appRefNo, docType);
+        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", System.getProperty("sftp.remote-host"), dateStr, appRefNo, docType);
     }
 
     private ResponseApplication getApplicationInfo(long caID) throws ServiceException, RemoteException {
