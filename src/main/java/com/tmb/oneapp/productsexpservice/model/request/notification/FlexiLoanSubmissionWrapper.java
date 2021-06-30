@@ -9,36 +9,37 @@ import java.util.List;
 @Setter
 @Getter
 public class FlexiLoanSubmissionWrapper {
+    private String productCode;
+    private String featureType;
     private String appRefNo;
     private String productName;
     private String customerName;
-    private String citizenId;
-    private BigDecimal creditLimit;
-    private String productCode;
-    private BigDecimal interestRateDS;
+    private String idCardNo;
+    private BigDecimal finalLoanAmount;
+    private Long tenor;
     private BigDecimal interestRate;
-    private String rateTypeValue;
-    private String disburseAccountNo;
-    private String featureType;
-    private BigDecimal outstandingBal;
-    private BigDecimal existingOsBal;
-    private String existingAcctNo;
-    private BigDecimal tenor;
+    private BigDecimal requestAmount;
     private String applyDate;
+    private String paymentMethod;
+    private String email;
+    private String botAnswer1;
+    private String botAnswer2;
+    private String disburseAccountNo;
+    private String consentDate;
+    private String consentTime;
+    private String ncbConsentFlag;
+    private String dueDate;
     private String firstPaymentDueDate;
     private String nextPaymentDueDate;
-    private BigDecimal installmentAmount;
-    private String paymentMethod;
-    private String eStatement;
+    private BigDecimal installment;
+    private BigDecimal cashDisbursement;
+    private BigDecimal currentLoan;
+    private String currentAccount;
+
+    private BigDecimal interestRateDS;
+    private String rateTypeValue;
     private String showBOTFields;
-    private String loanWithOtherBank;
-    private String considerLoanWithOtherBank;
-    private String tenureFeat;
-    private BigDecimal requestAmount;
     private Boolean isReject;
-    private String ncbConsentFlag;
-    private String ConsentDate;
-    private String ConsentTime;
-    private String email;
+
     private List<String> attachments;
 }

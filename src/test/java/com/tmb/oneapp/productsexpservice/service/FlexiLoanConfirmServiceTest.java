@@ -15,13 +15,15 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
+import com.tmb.common.model.response.notification.NotificationResponse;
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
 import com.tmb.oneapp.productsexpservice.feignclients.SFTPClientImp;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.*;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
-import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.flexiloan.FlexiLoanConfirmResponse;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +69,7 @@ public class FlexiLoanConfirmServiceTest {
     }
 
     private void mockSuccess() throws Exception {
-        doReturn(mockGetFacilityInfoSuccess()).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        doReturn(mockGetFacilityInfoSuccess("C2G01")).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
         doReturn(mockGetCustomerInfoSuccess()).when(getCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
         doReturn(mockGetCreditCardInfoSuccess()).when(getCreditCardInfoClient).searchCreditcardInfoByCaID(anyLong());
         doReturn(mockGetApplicationInfoSuccess()).when(getApplicationInfoClient).getApplicationInfo(anyLong());
@@ -82,14 +84,18 @@ public class FlexiLoanConfirmServiceTest {
     public void testFlexiLoanConfirmService_CreditCard_Success() throws Exception {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode());
-        flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        Assert.assertNotNull(response);
     }
 
     @Test
     public void testFlexiLoanConfirmService_FlashCared_Success() throws Exception {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode());
-        flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        Assert.assertNotNull(response);
     }
 
     private Map<String, String> mockRequestHeaders() {
@@ -108,7 +114,7 @@ public class FlexiLoanConfirmServiceTest {
         return request;
     }
 
-    private ResponseFacility mockGetFacilityInfoSuccess() {
+    private ResponseFacility mockGetFacilityInfoSuccess(String productCode) {
         ResponseFacility response = new ResponseFacility();
 
         Header header = new Header();
@@ -117,6 +123,7 @@ public class FlexiLoanConfirmServiceTest {
 
         Body body = new Body();
         Facility facility = new Facility();
+        facility.setProductCode(productCode);
 
         Pricing pricing = new Pricing();
         pricing.setPricingType("S");

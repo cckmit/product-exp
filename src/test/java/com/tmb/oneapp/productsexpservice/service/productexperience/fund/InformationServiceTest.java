@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 class InformationServiceTest {
 
     @Mock
-    private TMBLogger<ProductsExpService> logger;
+    private TMBLogger<InformationServiceTest> logger;
 
     @Mock
     private InvestmentAsyncService investmentAsyncService;

@@ -7,7 +7,11 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponse;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
+import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.openportfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
 import org.junit.jupiter.api.Test;
@@ -28,7 +32,7 @@ import static org.mockito.Mockito.when;
 class OpenPortfolioControllerTest {
 
     @Mock
-    private TMBLogger<ProductsExpService> logger;
+    private TMBLogger<OpenPortfolioControllerTest> logger;
 
     @Mock
     private OpenPortfolioService openPortfolioService;
@@ -37,7 +41,7 @@ class OpenPortfolioControllerTest {
     private OpenPortfolioController openPortfolioController;
 
     @Test
-    void should_term_and_condition_body_not_null_when_call_validation_give_correlation_id_and_open_portfolio_request() throws IOException {
+    void should_term_and_condition_body_not_null_when_call_validate_open_portfolio_give_correlation_id_and_open_portfolio_request() throws IOException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         TermAndConditionResponse termAndConditionResponse = mapper.readValue(Paths.get("src/test/resources/investment/openportfolio/validation.json").toFile(),
@@ -51,7 +55,51 @@ class OpenPortfolioControllerTest {
         when(openPortfolioService.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         // When
-        ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> actual = openPortfolioController.getFundAccountDetail("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
+        ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
+
+        // Then
+        assertNotNull(actual.getBody());
+    }
+
+    @Test
+    void should_open_portfolio_response_when_call_create_customer_give_correlation_id_and_customer_request() throws IOException {
+        // Given
+        CustomerRequestBody customerRequestBody = CustomerRequestBody.builder()
+                .crmId("00000007924129")
+                .wealthCrmId("D0000000988")
+                .phoneNumber("0948096953")
+                .dateOfBirth("2019-04-03T09:23:45")
+                .emailAddress("test@tmbbank.com")
+                .maritalStatus("M")
+                .residentGeoCode("TH")
+                .taxNumber("1234567890123")
+                .branchCode("D0000000988")
+                .makerCode("D0000000988")
+                .kycFlag("Y")
+                .amloFlag("N")
+                .lastDateSync("2019-04-03T09:23:45")
+                .nationalDocumentExpireDate("2019-04-03T09:23:45")
+                .nationalDocumentId("1909057937549")
+                .nationalDocumentIdentificationType("TMB_CITIZEN_ID")
+                .customerThaiName("นาย นัท")
+                .customerEnglishName("MR NUT")
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        AccountPurposeResponse accountPurposeResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_purpose.json").toFile(),
+                AccountPurposeResponse.class);
+        AccountRedeemResponse accountRedeemResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_redeem.json").toFile(),
+                AccountRedeemResponse.class);
+
+        OpenPortfolioResponse openPortfolioResponse = OpenPortfolioResponse.builder()
+                .accountPurposeResponseBody(accountPurposeResponse.getData())
+                .accountRedeemResponseBody(accountRedeemResponse.getData())
+                .build();
+
+        when(openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequestBody)).thenReturn(openPortfolioResponse);
+
+        // When
+        ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponse>> actual = openPortfolioController.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequestBody);
 
         // Then
         assertNotNull(actual.getBody());
