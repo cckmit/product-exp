@@ -26,8 +26,9 @@ import org.springframework.stereotype.Service;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -211,7 +212,7 @@ public class LoanCustomerService {
     }
 
 
-    private AnnualInterest getAnnualInterest(Facility facility) {
+    private AnnualInterest getAnnualInterest() {
         AnnualInterest annualInterest = new AnnualInterest();
         annualInterest.setInterest(INTEREST);
         annualInterest.setVat(VAT);
@@ -229,7 +230,7 @@ public class LoanCustomerService {
 
         Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
 
-        AnnualInterest annualInterest = getAnnualInterest(facility);
+        AnnualInterest annualInterest = getAnnualInterest();
         response.setAnnualInterest(annualInterest);
 
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityS);
