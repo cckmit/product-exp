@@ -12,6 +12,7 @@ public class NotificationConstant {
 	public static final String REQUEST_TEMPORARY_TEMPLATE_VALUE = "ONEAPP_006";
 	public static final String BLOCK_CARD_TEMPLATE_VALUE = "ONEAPP_007";
 	public static final String APPLY_SO_GOOD_TEMPLATE_VALUE = "ONEAPP_010";
+	public static final String FLEXI_LOAN_SUBMISSION_VALUE = "ONEAPP_014";
 
 	public static final String CHANNEL_NAME_TH = "channelNameTH";
 	public static final String CHANNEL_NAME_EN = "channelNameEN";

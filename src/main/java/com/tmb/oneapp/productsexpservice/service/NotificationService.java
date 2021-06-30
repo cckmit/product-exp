@@ -395,7 +395,7 @@ public class NotificationService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param moneyString
 	 * @return
 	 */
@@ -412,7 +412,7 @@ public class NotificationService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param money
 	 * @return
 	 */
@@ -802,4 +802,61 @@ public class NotificationService {
 		processResultLog(sendEmailResponse, notificationRequest);
 	}
 
+	public TmbOneServiceResponse<NotificationResponse> sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) throws Exception {
+		NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
+				defaultChannelTh, null, wrapper.getProductName(), null,
+				wrapper.getCustomerName());
+		String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HTML_DATE_FORMAT));
+		String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HH_MM));
+
+		notifyCommon.setAccountId(accountId);
+		notifyCommon.setCrmId(crmId);
+
+		if (StringUtils.isNotBlank(wrapper.getEmail())) {
+			NotificationRequest notificationRequest = new NotificationRequest();
+			List<NotificationRecord> notificationRecords = new ArrayList<>();
+			NotificationRecord record = new NotificationRecord();
+
+			EmailChannel emailChannel = new EmailChannel();
+			emailChannel.setEmailEndpoint(wrapper.getEmail());
+			emailChannel.setEmailSearch(false);
+
+			List<String> attachments = new ArrayList<>();
+			attachments.add("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/01_210622164232_001CC59047978_00111.pdf");
+			record.setAttachments(attachments);
+
+			record.setEmail(emailChannel);
+			record.setAccount(accountId);
+
+			Map<String, Object> params = new HashMap<>();
+			params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.FLEXI_LOAN_SUBMISSION_VALUE);
+			params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
+			params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+			params.put(NotificationConstant.TRAN_DATE, tranDate);
+			params.put(NotificationConstant.TRAN_TIME, tranTime);
+			params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
+
+			record.setParams(params);
+			record.setCrmId(notifyCommon.getCrmId());
+			record.setLanguage(NotificationConstant.LOCALE_TH);
+
+			record.setAttachments(wrapper.getAttachments());
+
+			setRequestForEmailAndSms(wrapper.getEmail(), null, record);
+
+			notificationRecords.add(record);
+			notificationRequest.setRecords(notificationRecords);
+
+			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+					.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+			processResultLog(sendEmailResponse, notificationRequest);
+
+			return sendEmailResponse;
+
+		}
+
+		throw new Exception("send noti fail");
+
+	}
 }
