@@ -1,16 +1,22 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequest;
+import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
-import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
+import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
@@ -222,7 +228,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> createCustomer(
             @RequestHeader Map<String, String> header,
-            @RequestBody CustomerRequestBody customerRequestBody);
+            @RequestBody CustomerRequest customerRequest);
 
     /**
      * Call investment account purpose service to get account purpose response.
@@ -237,11 +243,44 @@ public interface InvestmentRequestClient {
     /**
      * Call investment account redeem service to get account redeem response.
      *
-     * @param header the headers
+     * @param header               the headers
      * @param accountRedeemRequest the accountRedeemRequest
      * @return the account redeem response
      */
     @PostMapping(value = "${investment.service.customer.account.redeem.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> getCustomerAccountRedeem(@RequestHeader Map<String, String> header, @RequestBody AccountRedeemRequest accountRedeemRequest);
+
+    /**
+     * Call investment client relationship service to update client relationship.
+     *
+     * @param header                  the headers
+     * @param relationshipRequest the relationshipRequest
+     * @return the client relationship response
+     */
+    @PostMapping(value = "${investment.service.client.relationship.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> updateClientRelationship(Map<String, String> header, RelationshipRequest relationshipRequest);
+
+    /**
+     * Call investment open portfolio service to open portfolio.
+     *
+     * @param header                   the headers
+     * @param openPortfolioRequest the openPortfolioRequest
+     * @return the open portfolio response
+     */
+    @PostMapping(value = "${investment.service.open.portfolio.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> openPortfolio(Map<String, String> header, OpenPortfolioRequest openPortfolioRequest);
+
+    /**
+     * Call investment portfolio nickname service to create or update portfolio nickname.
+     *
+     * @param header                       the headers
+     * @param portfolioNicknameRequest the portfolioNicknameRequest
+     * @return the portfolio nickname response
+     */
+    @PostMapping(value = "${investment.service.portfolio.nickname.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> updatePortfolioNickname(Map<String, String> header, PortfolioNicknameRequest portfolioNicknameRequest);
 }

@@ -1,6 +1,5 @@
-package com.tmb.oneapp.productsexpservice.model.openportfolio.request;
+package com.tmb.oneapp.productsexpservice.model.portfolio.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OpenPortfolioRequest {
 
-    @JsonProperty(value = "rmId")
     private String crmId;
+
+    private String riskProfile;
+
+    private String portfolioType;
+
+    private String purposeTypeCode;
 }

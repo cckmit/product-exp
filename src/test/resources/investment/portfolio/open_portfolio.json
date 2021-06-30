@@ -1,0 +1,16 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "crmId": "00000000002914",
+    "clientRelationshipCode": "RI000000000000000281",
+    "portfolioNumber": "PT000000000001831820",
+    "omnibusFlag": "Y",
+    "omniNature": "RoboOmniContract",
+    "validationDate": "2021-06-29"
+  }
+}
