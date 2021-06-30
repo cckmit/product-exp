@@ -5,7 +5,6 @@ import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
-import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
