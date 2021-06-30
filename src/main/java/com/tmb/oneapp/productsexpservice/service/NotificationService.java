@@ -803,7 +803,7 @@ public class NotificationService {
 		processResultLog(sendEmailResponse, notificationRequest);
 	}
 
-	public void sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) throws Exception {
+	public void sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) {
 		NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
 				defaultChannelTh, null, wrapper.getProductName(), null,
 				wrapper.getCustomerName());
@@ -852,10 +852,6 @@ public class NotificationService {
 					.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
 
 			processResultLog(sendEmailResponse, notificationRequest);
-
-			if (!sendEmailResponse.getData().isSuccess()) {
-				throw new Exception("send notification error");
-			}
 		}
 	}
 }

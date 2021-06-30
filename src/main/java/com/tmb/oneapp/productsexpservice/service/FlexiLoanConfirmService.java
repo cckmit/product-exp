@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -14,7 +13,6 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.common.model.response.notification.NotificationResponse;
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
@@ -61,8 +59,6 @@ public class FlexiLoanConfirmService {
         Individual customerInfo = getCustomer(request.getCaID());
         CreditCard creditCardInfo = getCreditCard(request.getCaID(), request.getProductCode());
 
-//        ResponseInstantLoanSubmit submitApplicationResp = submitApplication(BigDecimal.valueOf(request.getCaID()));
-
         ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
         String appRefNo = applicationResp.getBody().getAppRefNo();
         ResponseInstantLoanCalUW loanCalUWResponse = getInstantLoanCalUW(BigDecimal.valueOf(request.getCaID()));
@@ -75,27 +71,12 @@ public class FlexiLoanConfirmService {
 
         List<String> notificationAttachments = new ArrayList<>();
 
-//        notificationAttachments.add(eAppFileName);
         notificationAttachments.add(letterOfConsentFileName);
         wrapper.setAttachments(notificationAttachments);
         wrapper.setEmail("oranuch@odds.team");
         sendNotification(requestHeaders, wrapper);
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
-
-
-//    private ResponseInstantLoanSubmit submitApplication(BigDecimal caID) throws Exception {
-//        try {
-//            ResponseInstantLoanSubmit response = submitApplicationClient.submitApplication(caID, "Y");
-//            if (!LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
-//                throw new Exception("submit application fail");
-//            }
-//            return response;
-//        } catch (Exception e) {
-//            logger.error("submissionApplication error: {}", e);
-//            throw e;
-//        }
-//    }
 
     private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) throws Exception {
         try {
@@ -288,17 +269,6 @@ public class FlexiLoanConfirmService {
             wrapper.setInterestRate(approvalMemoFacility.getInterestRate());
             wrapper.setInstallment(approvalMemoFacility.getInstallmentAmount());
         }
-
-//        wrapper.setConsentDate("");
-//        wrapper.setConsentTime("");
-//        wrapper.setNcbConsentFlag(true);
-//        wrapper.setCashDisbursement();
-//        wrapper.setCurrentLoan();
-//        wrapper.setCurrentAccount();
-//        wrapper.setInterestRateDS();
-//        wrapper.setRateTypeValue();
-//        wrapper.setShowBOTFields();
-//        wrapper.setIsReject();
 
         return wrapper;
     }
