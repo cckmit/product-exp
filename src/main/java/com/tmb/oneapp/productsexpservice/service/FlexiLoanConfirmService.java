@@ -220,7 +220,7 @@ public class FlexiLoanConfirmService {
     private String generateFlexiLoanConfirmReport(FlexiLoanSubmissionWrapper wrapper, String appRefNo) {
         String fileName = parseCompletePDFFileName(appRefNo);
         fileGeneratorService.generateFlexiLoanSubmissionPdf(wrapper, fileName, E_APP_TEMPLATE);
-        return String.format("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", fileName);
+        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", System.getProperty("sftp.remote-host"), fileName);
     }
 
     private void storeEAppFile(Map<String, String> requestHeaders, String appRefNo, String fileName) {
@@ -288,7 +288,7 @@ public class FlexiLoanConfirmService {
         dateStr = dateStr.replaceAll("[-:T ]", "");
         dateStr = dateStr.substring(2, 14);
         String docType = "00111";
-        return String.format("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", dateStr, appRefNo, docType);
+        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", System.getProperty("sftp.remote-host"), dateStr, appRefNo, docType);
     }
 
     private ResponseApplication getApplicationInfo(long caID) throws ServiceException, RemoteException {

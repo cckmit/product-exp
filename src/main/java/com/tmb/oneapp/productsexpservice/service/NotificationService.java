@@ -822,10 +822,6 @@ public class NotificationService {
 			emailChannel.setEmailEndpoint(wrapper.getEmail());
 			emailChannel.setEmailSearch(false);
 
-			List<String> attachments = new ArrayList<>();
-			attachments.add("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/01_210622164232_001CC59047978_00111.pdf");
-			record.setAttachments(attachments);
-
 			record.setEmail(emailChannel);
 			record.setAccount(accountId);
 
