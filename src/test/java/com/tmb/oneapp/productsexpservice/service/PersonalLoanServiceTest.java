@@ -105,11 +105,11 @@ public class PersonalLoanServiceTest {
 		List<ProductData> productDataFlashList = new ArrayList();
 		productDataFlashList.add(productLoanData);
 
-		personalCreditLoan.setProductCreditList(productDataCreditList);
+		personalCreditLoan.setProductLoanList(productDataCreditList);
 		personalFlashLoan.setProductFlashList(productDataFlashList);
 
 		applyPersonalLoans.setProductFlashList(productDataFlashList);
-		applyPersonalLoans.setProductCreditList(productDataCreditList);
+		applyPersonalLoans.setProductLoanList(productDataCreditList);
 
 
 		Optional<ProductData> optionalProductData = productDataList.stream().filter(a-> a.getRslCode().equals("RC")).findAny();
@@ -123,7 +123,7 @@ public class PersonalLoanServiceTest {
 		List<ApplyProductData> applyPersonalLoans2 = new ArrayList<ApplyProductData>();
 		List<ApplyProductData> applyCreditCards = new ArrayList<ApplyProductData>();
 		ApplyPersonalLoan personalLoan = new ApplyPersonalLoan();
-		personalLoan.setProductCreditList(productDataCreditList);
+		personalLoan.setProductLoanList(productDataCreditList);
 		personalLoan.setProductFlashList(productDataFlashList);
 
 		ApplyProductData apls = new ApplyProductData();
