@@ -78,7 +78,7 @@ public class FlexiLoanConfirmService {
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
 
-    private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) throws Exception {
+    private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) {
         try {
             notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
                     requestHeaders.get(ProductsExpServiceConstant.ACCOUNT_ID.toLowerCase()),
