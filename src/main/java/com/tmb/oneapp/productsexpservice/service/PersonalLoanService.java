@@ -42,11 +42,9 @@ public class PersonalLoanService {
         TmbOneServiceResponse<List<CommonData>> productList = getAllConfig(ProductsExpServiceConstant.X_CORRELATION_ID, "lending_module");
 
         ApplyPersonalLoan applyPersonalLoans = new ApplyPersonalLoan();
-        ApplyPersonalLoan personalCreditLoan = new ApplyPersonalLoan();
-        ApplyPersonalLoan personalFlashLoan = new ApplyPersonalLoan();
 
         for (CommonData commonData : productList.getData()) {
-            Optional<ApplyProductData> personalLoans = commonData.getApplyPersonalLoans().stream().filter(a -> a.getRslCode().equals("RC")).findAny();
+            Optional<ApplyProductData> personalLoans = commonData.getApplyPersonalLoans().stream().filter(a -> a.getRslCode().equals("C2G")).findAny();
             if (personalLoans.isPresent()) {
                 productLoanData.setRslCode(personalLoans.get().getRslCode());
                 productLoanData.setContentLink(personalLoans.get().getContentLink());
@@ -57,7 +55,7 @@ public class PersonalLoanService {
                 productLoanData.setIconId(personalLoans.get().getIconId());
             }
 
-            Optional<ApplyProductData> personalLoansCredit = commonData.getApplyPersonalLoans().stream().filter(a -> a.getRslCode().equals("C2G")).findAny();
+            Optional<ApplyProductData> personalLoansCredit = commonData.getApplyPersonalLoans().stream().filter(a -> a.getRslCode().equals("RC")).findAny();
             if (personalLoansCredit.isPresent()) {
                 productCreditData.setRslCode(personalLoansCredit.get().getRslCode());
                 productCreditData.setContentLink(personalLoansCredit.get().getContentLink());
@@ -71,17 +69,14 @@ public class PersonalLoanService {
 
         }
 
-        List<ProductData> productDataCreditList = new ArrayList();
-        productDataCreditList.add(productCreditData);
+        List<ProductData> productDataLoanList = new ArrayList();
+        productDataLoanList.add(productLoanData);
 
         List<ProductData> productDataFlashList = new ArrayList();
-        productDataFlashList.add(productLoanData);
-
-        personalCreditLoan.setProductCreditList(productDataCreditList);
-        personalFlashLoan.setProductFlashList(productDataFlashList);
+        productDataFlashList.add(productCreditData);
 
         applyPersonalLoans.setProductFlashList(productDataFlashList);
-        applyPersonalLoans.setProductCreditList(productDataCreditList);
+        applyPersonalLoans.setProductLoanList(productDataLoanList);
 
         return applyPersonalLoans;
     }
