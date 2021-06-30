@@ -48,7 +48,7 @@ public class FlexiLoanController {
     })
     @PostMapping(value = "/flexiLoan/confirm", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<FlexiLoanConfirmResponse>> submit(@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
-                                                                                  @Valid FlexiLoanConfirmRequest request) {
+                                                                                  @Valid @RequestBody FlexiLoanConfirmRequest request) {
 
         TmbOneServiceResponse<FlexiLoanConfirmResponse> response = new TmbOneServiceResponse<>();
 
