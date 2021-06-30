@@ -62,8 +62,6 @@ public class FlexiLoanConfirmService {
         Individual customerInfo = getCustomer(request.getCaID());
         CreditCard creditCardInfo = getCreditCard(request.getCaID(), request.getProductCode());
 
-//        ResponseInstantLoanSubmit submitApplicationResp = submitApplication(BigDecimal.valueOf(request.getCaID()));
-
         ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
         String appRefNo = applicationResp.getBody().getAppRefNo();
         ResponseInstantLoanCalUW loanCalUWResponse = getInstantLoanCalUW(BigDecimal.valueOf(request.getCaID()));
@@ -86,19 +84,6 @@ public class FlexiLoanConfirmService {
         sendNotification(requestHeaders, wrapper);
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
-
-//    private ResponseInstantLoanSubmit submitApplication(BigDecimal caID) throws Exception {
-//        try {
-//            ResponseInstantLoanSubmit response = submitApplicationClient.submitApplication(caID, "Y");
-//            if (!LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
-//                throw new Exception("submit application fail");
-//            }
-//            return response;
-//        } catch (Exception e) {
-//            logger.error("submissionApplication error: {}", e);
-//            throw e;
-//        }
-//    }
 
     private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) {
         try {
@@ -290,17 +275,6 @@ public class FlexiLoanConfirmService {
             wrapper.setInterestRate(approvalMemoFacility.getInterestRate());
             wrapper.setInstallment(approvalMemoFacility.getInstallmentAmount());
         }
-
-//        wrapper.setConsentDate("");
-//        wrapper.setConsentTime("");
-//        wrapper.setNcbConsentFlag(true);
-//        wrapper.setCashDisbursement();
-//        wrapper.setCurrentLoan();
-//        wrapper.setCurrentAccount();
-//        wrapper.setInterestRateDS();
-//        wrapper.setRateTypeValue();
-//        wrapper.setShowBOTFields();
-//        wrapper.setIsReject();
 
         return wrapper;
     }
