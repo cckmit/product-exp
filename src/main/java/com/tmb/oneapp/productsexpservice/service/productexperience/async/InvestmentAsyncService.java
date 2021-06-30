@@ -7,12 +7,18 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequestBody;
+import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequestBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -98,6 +104,51 @@ public class InvestmentAsyncService {
     public CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem(Map<String, String> investmentRequestHeader, AccountRedeemRequest accountRedeemRequest) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, accountRedeemRequest);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw getTmbCommonException();
+        }
+    }
+
+    /**
+     * Method updateClientRelationship to update client relationship
+     *
+     * @return CompletableFuture<RelationshipResponseBody>
+     */
+    public CompletableFuture<RelationshipResponseBody> updateClientRelationship(Map<String, String> investmentRequestHeader, RelationshipRequestBody relationshipRequestBody) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> response = investmentRequestClient.updateClientRelationship(investmentRequestHeader, relationshipRequestBody);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw getTmbCommonException();
+        }
+    }
+
+    /**
+     * Method openPortfolio to open portfolio
+     *
+     * @return CompletableFuture<OpenPortfolioResponseBody>
+     */
+    public CompletableFuture<OpenPortfolioResponseBody> openPortfolio(Map<String, String> investmentRequestHeader, OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> response = investmentRequestClient.openPortfolio(investmentRequestHeader, openPortfolioRequestBody);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw getTmbCommonException();
+        }
+    }
+
+    /**
+     * Method updatePortfolioNickname to create or update portfolio nickname
+     *
+     * @return CompletableFuture<PortfolioNicknameResponseBody>
+     */
+    public CompletableFuture<PortfolioNicknameResponseBody> updatePortfolioNickname(Map<String, String> investmentRequestHeader, PortfolioNicknameRequestBody portfolioNicknameRequestBody) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> response = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.openportfolio.response;
+package com.tmb.oneapp.productsexpservice.model.portfolio.response;
 
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OpenPortfolioResponse {
+public class OpenPortfolioValidationResponse {
 
-    private AccountPurposeResponseBody accountPurposeResponseBody;
+    private AccountPurposeResponseBody accountPurposeResponse;
 
-    private AccountRedeemResponseBody accountRedeemResponseBody;
+    private AccountRedeemResponseBody accountRedeemResponse;
 }
