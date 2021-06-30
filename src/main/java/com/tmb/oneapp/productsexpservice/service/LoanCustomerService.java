@@ -27,6 +27,7 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -39,9 +40,10 @@ public class LoanCustomerService {
     private final LoanSubmissionUpdateFacilityInfoClient updateFacilityInfoClient;
     private final LoanSubmissionGetDropdownListClient getDropdownListClient;
     private final CustomerExpServiceClient customerExpServiceClient;
-    private static final String DROPDOWN_TENURE = "TENURE";
     private static final String FEATURE_TYPE_S = "S";
     private static final String FEATURE_TYPE_C = "C";
+    private static final String DROPDOWN_TENURE = "TENURE";
+
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
     private static final Double INTEREST = 0.16;
@@ -190,17 +192,21 @@ public class LoanCustomerService {
         } catch (NullPointerException e) {
             logger.error("get account saving fail: ", e);
             throw e;
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("get account saving fail: ", ex);
             throw ex;
         }
 
-        for (DepositAccount acc : oneTmbOneServiceResponse.getData().getDepositAccountLists()) {
+        var accList = oneTmbOneServiceResponse.getData().getDepositAccountLists();
+        accList.sort(Comparator.comparing(DepositAccount::getProductConfigSortOrder));
+
+        for (DepositAccount acc : accList) {
             LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
             disburstAccount.setAccountNo(acc.getAccountNumber());
             disburstAccount.setAccountName(acc.getProductNameTh());
             disburstAccounts.add(disburstAccount);
         }
+
 
         return disburstAccounts;
     }
@@ -208,7 +214,6 @@ public class LoanCustomerService {
 
     private AnnualInterest getAnnualInterest() {
         AnnualInterest annualInterest = new AnnualInterest();
-
         annualInterest.setInterest(INTEREST);
         annualInterest.setVat(VAT);
         annualInterest.setCharge(CHARGE);
@@ -223,10 +228,10 @@ public class LoanCustomerService {
 
         Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
 
+        Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
+
         AnnualInterest annualInterest = getAnnualInterest();
         response.setAnnualInterest(annualInterest);
-
-        Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
 
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityS);
         response.setPricings(pricings);
