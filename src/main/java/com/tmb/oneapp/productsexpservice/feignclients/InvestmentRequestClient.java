@@ -260,7 +260,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.client.relationship.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> updateClientRelationship(Map<String, String> header, RelationshipRequest relationshipRequest);
+    ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> updateClientRelationship(@RequestHeader Map<String, String> header, @RequestBody RelationshipRequest relationshipRequest);
 
     /**
      * Call investment open portfolio service to open portfolio.
@@ -271,7 +271,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.open.portfolio.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> openPortfolio(Map<String, String> header, OpenPortfolioRequest openPortfolioRequest);
+    ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> openPortfolio(@RequestHeader Map<String, String> header, @RequestBody OpenPortfolioRequest openPortfolioRequest);
 
     /**
      * Call investment portfolio nickname service to create or update portfolio nickname.
@@ -282,5 +282,5 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.portfolio.nickname.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> updatePortfolioNickname(Map<String, String> header, PortfolioNicknameRequest portfolioNicknameRequest);
+    ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> updatePortfolioNickname(@RequestHeader Map<String, String> header, @RequestBody PortfolioNicknameRequest portfolioNicknameRequest);
 }
