@@ -13,7 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
@@ -113,7 +113,7 @@ class OpenPortfolioControllerTest {
     @Test
     void should_return_portfolio_response_when_call_open_portfolio_given_correlation_id_and_open_portfolio_request() throws IOException, TMBCommonException {
         // Given
-        OpenPortfolioRequest openPortfolioRequest = OpenPortfolioRequest.builder()
+        OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
                 .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
@@ -146,10 +146,10 @@ class OpenPortfolioControllerTest {
                 .portfolioNicknameResponse(portfolioNicknameResponse.getData())
                 .build();
 
-        when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest)).thenReturn(portfolioResponse);
+        when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody)).thenReturn(portfolioResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
+        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual.getBody());

@@ -6,7 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequestBody;
+import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponse;
@@ -19,10 +19,10 @@ import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavRe
 import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequestBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
 import org.junit.jupiter.api.Test;
@@ -252,7 +252,7 @@ class InvestmentAsyncServiceTest {
         tmbOneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
-        RelationshipRequestBody relationshipRequestBody = RelationshipRequestBody.builder()
+        RelationshipRequest relationshipRequest = RelationshipRequest.builder()
                 .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
@@ -265,10 +265,10 @@ class InvestmentAsyncServiceTest {
                 .preferredAddressType("Contact")
                 .status("Active")
                 .build();
-        when(investmentRequestClient.updateClientRelationship(investmentRequestHeader, relationshipRequestBody)).thenReturn(response);
+        when(investmentRequestClient.updateClientRelationship(investmentRequestHeader, relationshipRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<RelationshipResponseBody> actual = investmentAsyncService.updateClientRelationship(investmentRequestHeader, relationshipRequestBody);
+        CompletableFuture<RelationshipResponseBody> actual = investmentAsyncService.updateClientRelationship(investmentRequestHeader, relationshipRequest);
 
         //Then
         CompletableFuture<RelationshipResponseBody> expected = CompletableFuture.completedFuture(relationshipResponse.getData());
@@ -310,16 +310,16 @@ class InvestmentAsyncServiceTest {
         tmbOneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
-        OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
+        OpenPortfolioRequest openPortfolioRequest = OpenPortfolioRequest.builder()
                 .crmId("00000000002914")
                 .riskProfile("5")
                 .portfolioType("TMB_ADVTYPE_10_ADVISORY")
                 .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
                 .build();
-        when(investmentRequestClient.openPortfolio(investmentRequestHeader, openPortfolioRequestBody)).thenReturn(response);
+        when(investmentRequestClient.openPortfolio(investmentRequestHeader, openPortfolioRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<OpenPortfolioResponseBody> actual = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequestBody);
+        CompletableFuture<OpenPortfolioResponseBody> actual = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
 
         //Then
         CompletableFuture<OpenPortfolioResponseBody> expected = CompletableFuture.completedFuture(openPortfolioResponse.getData());
@@ -361,14 +361,14 @@ class InvestmentAsyncServiceTest {
         tmbOneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
-        PortfolioNicknameRequestBody portfolioNicknameRequestBody = PortfolioNicknameRequestBody.builder()
+        PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
                 .portfolioNumber("PT000000000000108261")
                 .portfolioNickName("อนาคตเพื่อการศึกษา")
                 .build();
-        when(investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequestBody)).thenReturn(response);
+        when(investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<PortfolioNicknameResponseBody> actual = investmentAsyncService.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequestBody);
+        CompletableFuture<PortfolioNicknameResponseBody> actual = investmentAsyncService.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
 
         //Then
         CompletableFuture<PortfolioNicknameResponseBody> expected = CompletableFuture.completedFuture(portfolioNicknameResponse.getData());

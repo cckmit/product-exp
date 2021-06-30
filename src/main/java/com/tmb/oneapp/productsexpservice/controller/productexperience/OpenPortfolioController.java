@@ -8,7 +8,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
@@ -94,7 +94,7 @@ public class OpenPortfolioController {
      * Description:- method call to MF service to open portfolio
      *
      * @param correlationId        the correlation id
-     * @param openPortfolioRequest the open portfolio request
+     * @param openPortfolioRequestBody the open portfolio request
      * @return return open portfolio data and portfolio nickname
      */
     @ApiOperation(value = "Get open portfolio and portfolio nickname")
@@ -103,11 +103,11 @@ public class OpenPortfolioController {
     public ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> openPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody OpenPortfolioRequest openPortfolioRequest) {
+            @Valid @RequestBody OpenPortfolioRequestBody openPortfolioRequestBody) {
 
         TmbOneServiceResponse<PortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, openPortfolioRequest);
+            PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, openPortfolioRequestBody);
             if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
                 return getTmbOneServiceResponseEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
             } else {

@@ -23,7 +23,7 @@ import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerRespons
 import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
@@ -223,7 +223,7 @@ class OpenPortfolioServiceTest {
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
         when(investmentAsyncService.updatePortfolioNickname(any(), any())).thenReturn(CompletableFuture.completedFuture(oneServicePortfolioNicknameResponse.getData()));
 
-        OpenPortfolioRequest openPortfolioRequest = OpenPortfolioRequest.builder()
+        OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
                 .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
@@ -243,7 +243,7 @@ class OpenPortfolioServiceTest {
                 .build();
 
         // When
-        PortfolioResponse actual = openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
+        PortfolioResponse actual = openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual);

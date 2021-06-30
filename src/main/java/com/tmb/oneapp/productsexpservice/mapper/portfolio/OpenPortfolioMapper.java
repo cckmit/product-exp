@@ -1,17 +1,17 @@
 package com.tmb.oneapp.productsexpservice.mapper.portfolio;
 
-import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequestBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequestBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface OpenPortfolioMapper {
 
-    RelationshipRequestBody openPortfolioRequestToRelationshipRequestBody(OpenPortfolioRequest openPortfolioRequest);
+    RelationshipRequest openPortfolioRequestBodyToRelationshipRequest(OpenPortfolioRequestBody openPortfolioRequestBody);
 
-    OpenPortfolioRequestBody openPortfolioRequestToOpenPortfolioRequestBody(OpenPortfolioRequest openPortfolioRequest);
+    OpenPortfolioRequest openPortfolioRequestBodyToOpenPortfolioRequest(OpenPortfolioRequestBody openPortfolioRequestBody);
 
-    PortfolioNicknameRequestBody openPortfolioRequestToPortfolioNicknameRequestBody(OpenPortfolioRequest openPortfolioRequest);
+    PortfolioNicknameRequest openPortfolioRequestBodyToPortfolioNicknameRequest(OpenPortfolioRequestBody openPortfolioRequestBody);
 }

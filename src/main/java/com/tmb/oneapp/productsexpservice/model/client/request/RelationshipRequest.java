@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RelationshipRequestBody {
+public class RelationshipRequest {
 
     private String crmId;
 
