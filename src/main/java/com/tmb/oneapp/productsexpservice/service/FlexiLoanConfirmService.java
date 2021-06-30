@@ -99,13 +99,10 @@ public class FlexiLoanConfirmService {
 
     private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) throws Exception {
         try {
-            TmbOneServiceResponse<NotificationResponse> notiResp = notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
+            notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
                     requestHeaders.get(ProductsExpServiceConstant.ACCOUNT_ID.toLowerCase()),
                     requestHeaders.get(ProductsExpServiceConstant.X_CRMID.toLowerCase()),
                     wrapper);
-            if (!notiResp.getData().isSuccess()) {
-                throw new Exception("send notification error");
-            }
         } catch (Exception e) {
             logger.error("sendNotifyFlexiLoanSubmission error: {}", e);
             throw e;
