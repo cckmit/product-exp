@@ -138,36 +138,76 @@
                                 </fo:table-cell>
                             </fo:table-row>
 
-                            <xsl:if test="productCode='RC01'">
+                            <fo:table-row>
+                                <fo:table-cell text-align="left" number-columns-spanned="2">
+                                    <fo:block>
+                                        <fo:leader leader-pattern="space"/>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+
+                            <!-- For Cash2Go and Cash2Go TopUp -->
+                            <xsl:if test="productCode='C2G01' or productCode='C2G02'">
+                                <xsl:if test="count(interestRateDS) >= 1">
+                                    <fo:table-row>
+                                        <fo:table-cell text-align="left" number-columns-spanned="2">
+                                            <fo:block>
+                                                <fo:leader leader-pattern="space"/>
+                                            </fo:block>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+
+                                    <fo:table-row>
+                                        <fo:table-cell text-align="left" number-columns-spanned="2">
+                                            <fo:block>อัตราดอกเบี้ย :</fo:block>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+
+                                    <xsl:for-each select="interestRateDS">
+                                        <fo:table-row>
+                                            <fo:table-cell text-align="left" number-columns-spanned="2">
+                                                <fo:block>
+                                                    <xsl:value-of select="interestRate"/>
+                                                </fo:block>
+                                            </fo:table-cell>
+                                        </fo:table-row>
+                                    </xsl:for-each>
+
+                                    <fo:table-row>
+                                        <fo:table-cell text-align="left" number-columns-spanned="2">
+                                            <fo:block>
+                                                <xsl:value-of select="rateTypeValue"/>
+                                            </fo:block>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+
+                                    <fo:table-row>
+                                        <fo:table-cell text-align="left" number-columns-spanned="2">
+                                            <fo:block>
+                                                <fo:leader leader-pattern="space"/>
+                                            </fo:block>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+                                </xsl:if>
                                 <fo:table-row>
                                     <fo:table-cell>
-                                        <fo:block>ระยะเวลาการผ่อนชำระ :</fo:block>
+                                        <fo:block>บัญชีรับเงิน :</fo:block>
                                     </fo:table-cell>
-
                                     <fo:table-cell text-align="right">
                                         <fo:block>
-                                            <xsl:value-of select="tenor"/>
+                                            <xsl:value-of select="disburseAccountNo"/>
                                         </fo:block>
                                     </fo:table-cell>
                                 </fo:table-row>
                             </xsl:if>
 
-                            <xsl:if test="productCode='C2G01' or productCode='C2G02'">
-                                <fo:table-row>
-                                    <fo:table-cell text-align="left" number-columns-spanned="2">
-                                        <fo:block>
-                                            <fo:leader leader-pattern="space"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-                            </xsl:if>
+                            <!-- For Ready Cash -->
 
-                            <xsl:if test="productCode='RC01' or productCode='C2G01' or productCode='C2G02'">
+                            <xsl:if test="productCode='RC01' and featureType=''">
                                 <fo:table-row>
                                     <fo:table-cell>
                                         <fo:block>อัตราดอกเบี้ย :</fo:block>
                                     </fo:table-cell>
-
                                     <fo:table-cell text-align="right">
                                         <fo:block>
                                             <xsl:value-of select="interestRate"/>
@@ -176,42 +216,44 @@
                                 </fo:table-row>
                             </xsl:if>
 
-                            <xsl:if test="productCode='C2G01' or productCode='C2G02'">
+
+                            <xsl:if test="productCode='RC01' and featureType='C'">
                                 <fo:table-row>
-                                    <fo:table-cell text-align="left" number-columns-spanned="2">
-                                        <fo:block>
-                                            <fo:leader leader-pattern="space"/>
+                                    <fo:table-cell>
+                                        <fo:block>อัตราดอกเบี้ย :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block><xsl:value-of select="interestRate"/>%
                                         </fo:block>
                                     </fo:table-cell>
                                 </fo:table-row>
                             </xsl:if>
 
+                            <!-- For Cash2Go TopUp -->
                             <xsl:if test="productCode='C2G02'">
                                 <fo:table-row>
                                     <fo:table-cell>
-                                        <fo:block>ยอดเงินที่จะได้รับโอนเข้าบัญชี :</fo:block>
+                                        <fo:block>ยอดเงินกู้ที่โอนเข้าบัญชี :</fo:block>
                                     </fo:table-cell>
                                     <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="cashDisbursement"/>
+                                        <fo:block><xsl:value-of select="outstandingBal"/>บาท
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>ยอดเงินกู้ที่นำไปชำระหนี้ เดิม:</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block><xsl:value-of select="existingOsBal"/>บาท (บัญชีเงินกู้เลขที่
+                                            <xsl:value-of select="existingAcctNo"/>)
                                         </fo:block>
                                     </fo:table-cell>
                                 </fo:table-row>
                             </xsl:if>
 
-                            <xsl:if test="productCode='C2G01' or productCode='C2G02'">
-
-                            <fo:table-row>
-                                <fo:table-cell>
-                                    <fo:block>บัญชีรับเงิน :</fo:block>
-                                </fo:table-cell>
-                                <fo:table-cell text-align="right">
-                                    <fo:block>
-                                        <xsl:value-of select="disburseAccountNo"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
+                            <!-- For Cash2Go and Cash2Go TopUp -->
+                            <xsl:if test=" productCode='C2G01' or productCode='C2G02' ">
                                 <fo:table-row>
                                     <fo:table-cell>
                                         <fo:block>ระยะเวลาผ่อนชำระตามสัญญา :</fo:block>
@@ -222,282 +264,18 @@
                                         </fo:block>
                                     </fo:table-cell>
                                 </fo:table-row>
-
-                            </xsl:if>
-
-                            <xsl:if test="productCode='C2G02'">
-                                <fo:table-row>
-
-                                    <fo:table-cell>
-                                        <fo:block>ยอดเงินกู้ที่นำไปชำระหนี้เดิม :</fo:block>
-                                    </fo:table-cell>
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="currentLoan"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>บัญชีเงินกู้เลขที่ :</fo:block>
-                                    </fo:table-cell>
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="currentAccount"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-
-                            </xsl:if>
-
-                            <xsl:if test="productCode='RC01'">
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>จำนวนเงินที่ต้องการขอเบิกใช้ :</fo:block>
-                                    </fo:table-cell>
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="requestAmount"/> บาท
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
                             </xsl:if>
 
                             <fo:table-row>
                                 <fo:table-cell>
                                     <fo:block>วันที่ทำสัญญา :</fo:block>
                                 </fo:table-cell>
-
                                 <fo:table-cell text-align="right">
                                     <fo:block>
                                         <xsl:value-of select="applyDate"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
-
-                            <xsl:if test="productCode='C2G01' or productCode='C2G02'">
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>วันครบรอบกาหนดชำระ :</fo:block>
-                                    </fo:table-cell>
-
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="dueDate"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>เริ่มชำระงวดแรก :</fo:block>
-                                    </fo:table-cell>
-
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="firstPaymentDueDate"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>รอบชำระเงินถัดไป :</fo:block>
-                                    </fo:table-cell>
-
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="nextPaymentDueDate"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>ยอดเงินท่ีต้องชำระรายเดือน :</fo:block>
-                                    </fo:table-cell>
-
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="installment"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-                            </xsl:if>
-
-                            <fo:table-row>
-                                <fo:table-cell>
-                                    <fo:block>
-                                        <xsl:choose>
-                                            <xsl:when test="productCode='C2G01' or productCode='C2G02'">
-                                                วิธีการผ่อนชำระเงิน :
-                                            </xsl:when>
-                                            <xsl:otherwise>
-                                                วิธีการชำระเงิน :
-                                            </xsl:otherwise>
-                                        </xsl:choose>
-                                    </fo:block>
-                                </fo:table-cell>
-
-                                <fo:table-cell text-align="right">
-                                    <fo:block>
-                                        <xsl:value-of select="paymentMethod"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-                            <fo:table-row>
-                                <fo:table-cell>
-                                    <fo:block>Estatement :</fo:block>
-                                </fo:table-cell>
-
-                                <fo:table-cell text-align="right">
-                                    <fo:block>
-                                        <xsl:value-of select="email"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-                            <xsl:if test="productCode='RC01' or productCode='C2G01' or productCode='C2G02'">
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>สินเชื่อฯ กับสถาบันการเงินอื่น :</fo:block>
-                                    </fo:table-cell>
-
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="botAnswer1"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-
-                                <fo:table-row>
-                                    <fo:table-cell>
-                                        <fo:block>สินเชื่อฯ ที่อยู่ระหว่างการพิจารณา :</fo:block>
-                                    </fo:table-cell>
-
-                                    <fo:table-cell text-align="right">
-                                        <fo:block>
-                                            <xsl:value-of select="botAnswer2"/>
-                                        </fo:block>
-                                    </fo:table-cell>
-                                </fo:table-row>
-                            </xsl:if>
-                            <fo:table-row>
-                                <fo:table-cell text-align="left" number-columns-spanned="2">
-                                    <fo:block>
-                                        <fo:leader leader-pattern="space"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-                            <!--                            &lt;!&ndash; For Cash2Go and Cash2Go TopUp &ndash;&gt;-->
-                            <!--                            <xsl:if test="productCode='C2G01' or productCode='C2G02'">-->
-                            <!--                                <xsl:if test="count(interestRateDS) >= 1">-->
-                            <!--                                    <fo:table-row>-->
-                            <!--                                        <fo:table-cell text-align="left" number-columns-spanned="2">-->
-                            <!--                                            <fo:block>-->
-                            <!--                                                <fo:leader leader-pattern="space"/>-->
-                            <!--                                            </fo:block>-->
-                            <!--                                        </fo:table-cell>-->
-                            <!--                                    </fo:table-row>-->
-
-                            <!--                                    <fo:table-row>-->
-                            <!--                                        <fo:table-cell text-align="left" number-columns-spanned="2">-->
-                            <!--                                            <fo:block>อัตราดอกเบี้ย :</fo:block>-->
-                            <!--                                        </fo:table-cell>-->
-                            <!--                                    </fo:table-row>-->
-
-                            <!--                                    <xsl:for-each select="interestRateDS">-->
-                            <!--                                        <fo:table-row>-->
-                            <!--                                            <fo:table-cell text-align="left" number-columns-spanned="2">-->
-                            <!--                                                <fo:block>-->
-                            <!--                                                    <xsl:value-of select="interestRate"/>-->
-                            <!--                                                </fo:block>-->
-                            <!--                                            </fo:table-cell>-->
-                            <!--                                        </fo:table-row>-->
-                            <!--                                    </xsl:for-each>-->
-
-                            <!--                                    <fo:table-row>-->
-                            <!--                                        <fo:table-cell text-align="left" number-columns-spanned="2">-->
-                            <!--                                            <fo:block>-->
-                            <!--                                                <xsl:value-of select="rateTypeValue"/>-->
-                            <!--                                            </fo:block>-->
-                            <!--                                        </fo:table-cell>-->
-                            <!--                                    </fo:table-row>-->
-
-                            <!--                                    <fo:table-row>-->
-                            <!--                                        <fo:table-cell text-align="left" number-columns-spanned="2">-->
-                            <!--                                            <fo:block>-->
-                            <!--                                                <fo:leader leader-pattern="space"/>-->
-                            <!--                                            </fo:block>-->
-                            <!--                                        </fo:table-cell>-->
-                            <!--                                    </fo:table-row>-->
-                            <!--                                </xsl:if>-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>บัญชีรับเงิน :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block>-->
-                            <!--                                            <xsl:value-of select="disburseAccountNo"/>-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                            </xsl:if>-->
-
-                            <!--                            &lt;!&ndash; For Ready Cash &ndash;&gt;-->
-
-                            <!--                            <xsl:if test="productCode='RC01' and featureType=''">-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>อัตราดอกเบี้ย :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block>-->
-                            <!--                                            <xsl:value-of select="interestRate"/>-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                            </xsl:if>-->
-
-
-                            <!--                            <xsl:if test="productCode='RC01' and featureType='C'">-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>อัตราดอกเบี้ย :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block><xsl:value-of select="interestRate"/>%-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                            </xsl:if>-->
-
-                            <!--                            &lt;!&ndash; For Cash2Go TopUp &ndash;&gt;-->
-                            <!--                            <xsl:if test="productCode='C2G02'">-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>ยอดเงินกู้ที่โอนเข้าบัญชี :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block><xsl:value-of select="outstandingBal"/>บาท-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>ยอดเงินกู้ที่นำไปชำระหนี้ เดิม:</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block><xsl:value-of select="existingOsBal"/>บาท (บัญชีเงินกู้เลขที่-->
-                            <!--                                            <xsl:value-of select="existingAcctNo"/>)-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                            </xsl:if>-->
-
 
                             <!-- For Ready Cash and Credit Card -->
                             <!-- <xsl:if test=" productCode!='C2G01' and productCode!='C2G02' and productCode!='RC01'">
@@ -540,64 +318,125 @@
                                 </fo:table-cell>
                             </fo:table-row>
                             </xsl:if> -->
+                            <!-- For Cash2Go and Cash2Go TopUp -->
+                            <xsl:if test=" productCode='C2G01' or productCode='C2G02' ">
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>เริ่มชำระงวดแรก :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="firstPaymentDueDate"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>รอบชำระเงินถัดไป :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="nextPaymentDueDate"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>ยอดเงินที่ต้องชำระรายเดือน :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="installmentAmount"/> บาท
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                            </xsl:if>
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block>วิธีการชำระเงิน :</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell text-align="right">
+                                    <fo:block>
+                                        <xsl:choose>
+                                            <xsl:when test="paymentMethod='0'">
+                                                เงินสด
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                หักจากบัญชีธนาคาร ทีทีบี
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block>E-statement :</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell text-align="right">
+                                    <fo:block>
+                                        <xsl:value-of select="eStatement"/>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
 
 
-                            <!--                            <xsl:if test=" showBOTFields='Y' ">-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>สินเชื่อฯ กับสถาบันการเงินอื่น :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block>-->
-                            <!--                                            <xsl:value-of select="loanWithOtherBank"/>-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>สินเชื่อฯ ที่อยู่ระหว่างการพิจารณา :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block>-->
-                            <!--                                            <xsl:value-of select="considerLoanWithOtherBank"/>-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                            </xsl:if>-->
+                            <xsl:if test=" showBOTFields='Y' ">
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>สินเชื่อฯ กับสถาบันการเงินอื่น :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="loanWithOtherBank"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>สินเชื่อฯ ที่อยู่ระหว่างการพิจารณา :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="considerLoanWithOtherBank"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                            </xsl:if>
 
 
-                            <!--                            <xsl:if test="productCode='RC01' and featureType='S'">-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>ระยะเวลาผ่อนชำระตามสัญญา(เดือน) :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block>-->
-                            <!--                                            <xsl:value-of select="tenureFeat"/>-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                            </xsl:if>-->
-                            <!--                            <xsl:if test="productCode='RC01' and requestAmount!='[-]'">-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell>-->
-                            <!--                                        <fo:block>จำนวนเงินที่ต้องการขอเบิกใช้ :</fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                    <fo:table-cell text-align="right">-->
-                            <!--                                        <fo:block>-->
-                            <!--                                            <xsl:value-of select="requestAmount"/> บาท-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                            </xsl:if>-->
+                            <xsl:if test="productCode='RC01' and featureType='S'">
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>ระยะเวลาผ่อนชำระตามสัญญา(เดือน) :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="tenureFeat"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                            </xsl:if>
+                            <xsl:if test="productCode='RC01' and requestAmount!='[-]'">
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>จำนวนเงินที่ต้องการขอเบิกใช้ :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="requestAmount"/> บาท
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                            </xsl:if>
 
                         </fo:table-body>
                     </fo:table>
 
+
                     <fo:table width="100%" vertical-align="middle" font-family="DBOzoneX" color="#333333"
                               font-size="13pt" font-weight="normal" empty-cells="show">
                         <fo:table-body>
-
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block>
@@ -605,25 +444,24 @@
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
-
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
-                                        ข้าพเจ้าขอยืนยันต่อธนาคารว่าข้อมูลที่ข้าพเจ้าให้ไว้ต่อธนาคารเป็นความจริงทุกประการและข้าพเจ้าอนุญาตให้ธนาคารเรียก
-                                        หลักฐานการเงินเพิ่มเติมเพื่อวัตถุประสงค์ในการประเมินวงเงินสินเชื่อ
-                                        ข้าพเจ้ารับทราบว่าการสมัครของข้าพเจ้าจะเป็นที่ยอมรับได้
-                                        ต่อเมื่อได้รับการอนุมัติเป็นลายลักษณ์อักษรจากกธนาคารแล้ว
-                                        โดยข้าพเจ้ายินยอมผูกพันและตกลงปฏิบัติตามข้อกำหนดและเงื่อนไขของ
-                                        สินเชื่อบุคคลแคชทูโกที่ระบุไว้ทุกประการ
-                                        รวมตลอดถึงข้อกำหนดและเงื่อนไขเพิ่มเติมที่ธนาคารจะได้แจ้งให้ทราบเป็นครั้งคราว
-                                        ในกรณีที่
-                                        ธนาคารไม่สามารถอนุมัติจำนวนเงินกู้และระยะเวลาการผ่อนชำระคืนได้ตามความประสงค์ของข้าพเจ้าที่ระบุในคำขอนี้
-                                        ข้าพเจ้ายังประสงค์
-                                        และตกลงผูกพันตามจำนวนเงินกู้และระยะเวลาการผ่อนชำระคืน
-                                        ตลอดจนข้อกำหนดและเงื่อนไขที่ธนาคารได้อนุมัติให้ข้าพเจ้าทุกประการ
-                                        ข้าพเจ้าได้อ่านและเข้าใจข้อกำหนดและเงื่อนไขที่เกี่ยวข้องอย่างถี่ถ้วนแล้ว
-                                        จึงลงลายมือชื่ออิเล็กทรอนิกส์ไว้เป็นหลักฐานแห่งการกู้ยืม
-                                        และข้าพเจ้ารับทราบว่าธนาคารจะจัดส่งสำเนาสัญญาสินเชื่อให้แก่ข้าพเจ้าผ่านทางจดหมายอิเล็กทรอนิกส์
+                                        ข้าพเจ้าขอยืนยันต่อทางธนาคารว่าข้อความที่ให้ไว้ในการสมัครสินเชื่อเป็นจริงและสมบูรณ์
+                                        ข้าพเจ้าอนุญาตให้ธนาคารเรียกหลักฐานการเงิน เพิ่มเติม
+                                        เพื่อวัตถุประสงค์ในการประเมินวงเงินสินเชื่อ
+                                        ข้าพเจ้ารับทราบว่าใบสมัครของข้าพเจ้าจะเป็นที่ยอมรับได้ก็ต่อเมื่อได้รับการอนุมัติเป็นลายลักษณ์
+                                        อักษรจากธนาคารแล้ว
+                                        โดยข้าพเจ้ายินยอมผูกพันและตกลงปฏิบัติตามข้อกำหนดและเงื่อนไขของสัญญาให้สินเชื่อที่ระบุไว้ด้านบนคำขอนี้ทุกประการ
+                                        ทั้งที่มีอยู่ ในปัจจุบันและที่จะมีขึ้นในอนาคต รวมตลอดถึงข้อกำหนด และ เงื่อนไข
+                                        เพิ่มเติมใดๆ ที่ธนาคารจะได้แจ้งให้ทราบเป็นครั้งคราวในกรณีที่ธนาคาร
+                                        ไม่สามารถอนุมัติจำนวนเงินกู้ และ/หรือระยะเวลาการผ่อน ชำระ
+                                        คืนได้ตามความประสงค์ของข้าพเจ้าที่ระบุไว้ในใบสมัครนี้ข้าพเจ้ายังประสงค์และตกลง
+                                        ผูกพันตามจำนวนเงินกู้
+                                        และ/หรือระยะเวลาการผ่อนชำระคืนตลอดจนข้อกำหนดและเงื่อนไขที่ธนาคารได้อนุมัติให้ข้าพเจ้าทุกประการ
+                                        ข้าพเจ้าได้อ่าน และเข้าใจข้อกำหนด และเงื่อนไขต่างๆ ที่เกี่ยวข้องอย่างถี่ถ้วนแล้ว
+                                        จึงลงลายมือชื่อไว้เป็นหลักฐานแห่งการกู้ยืม และข้าพเจ้าได้รับสำเนาสัญญาให้
+                                        สินเชื่อจากธนาคารไว้เรียบร้อยแล้ว
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -631,103 +469,95 @@
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
-                                        ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้ไว้ในการสมัครสินเชื่อนี้เป็นความจริงทุกประการ
-                                        และตกลงให้บริษัทข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท) เปิดเผยหรือ
-                                        ให้ข้อมูลของข้าพเจ้าแก่ธนาคารทหารไทย จำกัด (มหาชน)
-                                        ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัทเพื่อประโยชน์ในการวิเคราะห์สินเชื่อ
-                                        การออก
-                                        บัตรเครดิต ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้า
-                                        รวมทั้งเพื่อประโยชน์ในการทบทวนสินเชื่อต่ออายุสัญญาสินเชื่อ/บัตรเครดิต การบริหาร
-                                        และป้องกันความเสี่ยง ตามข้อกำหนดของธนาคารแห่งประเทศไทย และให้ถือว่าคู่ฉบับ
-                                        และบรรดาสำเนาภาพถ่าย ข้อมูลอิเล็กทรอนิกส์หรือโทรสารที่
-                                        ทำสำเนาขึ้นจากหนังสือให้ความยินยอมฉบับนี้ โดยการถ่ายสำเนา ถ่ายภาพ
-                                        หรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ เป็นหลักฐานในการให้ความยินยอมของ
-                                        ข้าพเจ้าเช่นเดียวกัน จนกว่าข้าพเจ้าจะแจ้งยกเลิก
-                                        หรือเพิกถอนความยินยอมนี้เป็นลายลักษณ์อักษรต่อธนาคาร
-                                        รวมถึงยอมรับผูกพันปฏิบัติตามข้อกำหนด
-                                        และเงื่อนไขการใช้บัตรเครดิตของธนาคาร หรือ กฏระเบียบข้อบังคับ
-                                        การเป็นสมาชิกบัตรเครดิตของธนาคารที่ได้รับ พร้อมบัตรเครดิตของธนาคารรวม
-                                        ทั้งที่แก้ไขเพิ่มเติมต่อไปด้วย
+                                        <xsl:choose>
+                                            <xsl:when test="isReject='Y'">
+                                                ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้ไว้ในการสมัครสินเชื่อนี้เป็นความจริงทุกประการ
+                                                และในกรณีที่ข้าพเจ้าได้ตกลงให้บริษัทข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท)
+                                                เปิดเผยหรือให้ข้อมูลของข้าพเจ้าแก่ธนาคารทหารไทยธนชาต จำกัด (มหาชน)
+                                                ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัทนั้นเพื่อประโยชน์ในการ
+                                                วิเคราะห์สินเชื่อ การออกบัตรเครดิต
+                                                ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้ารวมทั้งเพื่อประโยชน์ในการทบทวนสินเชื่อต่ออายุสัญญา
+                                                สินเชื่อ/บัตรเครดิต
+                                                การบริหารและป้องกันความเสี่ยงตามข้อกำหนดของธนาคารแห่งประเทศไทย
+                                                และให้ถือว่าคู่ฉบับและบรรดาสำเนาภาพถ่าย
+                                                ข้อมูลอิเล็กทรอนิกส์หรือโทรสารที่ทำสำเนาขึ้น
+                                                จากหนังสือให้ความยินยอมฉบับนี้ โดยการถ่ายสำเนาถ่ายภาพ
+                                                หรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ
+                                                เป็นหลักฐานในการให้ความยินยอมของข้าพเจ้าเช่นเดียวกัน
+                                                จนกว่าข้าพเจ้าจะแจ้งยกเลิกหรือเพิกถอนความยินยอมนี้เป็นลายลักษณ์อักษร
+                                                ต่อธนาคาร
+                                                รวมถึงยอมรับผูกพันปฏิบัติตามข้อกำหนดและเงื่อนไขการใช้บัตรเครดิตของธนาคาร
+                                                หรือกฎระเบียบข้อบังคับการเป็นสมาชิกบัตร เครดิตของธนาคารที่ได้รับ
+                                                พร้อมบัตร เครดิตของธนาคารรวมทั้งที่แก้ไขเพิ่มเติมต่อไปด้วย
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้ไว้ในการสมัครสินเชื่อนี้เป็นความจริงทุกประการ
+                                                และตกลงให้บริษัทข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท)
+                                                เปิดเผยหรือให้ข้อมูลของข้าพเจ้าแก่ธนาคารทหารไทยธนชาต จำกัด (มหาชน)
+                                                ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัทเพื่อประโยชน์ในการวิเคราะห์สินเชื่อ
+                                                การออกบัตรเครดิต ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้า
+                                                รวมทั้งเพื่อประโยชน์ในการทบทวนสินเชื่อต่ออายุสัญญาสินเชื่อ/บัตรเครดิต
+                                                การบริหารและป้องกันความเสี่ยง ตามข้อกำหนดของธนาคารแห่งประเทศไทย
+                                                และให้ถือว่าคู่ฉบับ และบรรดาสำเนาภาพถ่ายข้อมูล
+                                                อิเล็กทรอนิกส์หรือโทรสารที่ทำสำเนาขึ้นจากหนังสือให้ความยินยอมฉบับนี้
+                                                โดยการถ่ายสำเนา ถ่ายภาพ หรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ
+                                                เป็นหลักฐานในการให้ความยินยอมของข้าพเจ้าเช่นเดียวกัน
+                                                จนกว่าข้าพเจ้าจะแจ้งยกเลิก หรือเพิกถอนความยินยอมนี้เป็นลายลักษณ์อักษรต่อ
+                                                ธนาคาร
+                                                รวมถึงยอมรับผูกพันปฏิบัติตามข้อกำหนดและเงื่อนไขการใช้บัตรเครดิตของธนาคาร
+                                                หรือ กฏระเบียบข้อบังคับการเป็นสมาชิกบัตรเครดิต ของธนาคารที่ได้รับ
+                                                พร้อมบัตรเครดิตของธนาคารรวมทั้งที่แก้ไขเพิ่มเติมต่อไปด้วย
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
-
+                            <xsl:if test="paymentMethod='1'">
+                                <fo:table-row>
+                                    <fo:table-cell text-align="left">
+                                        <fo:block text-indent="1cm">
+                                            <fo:inline>กรณีที่ข้าพเจ้าเลือก ชำระด้วยการหักบัญชีเงินฝาก ttb บนใบสมัครนี้
+                                                หมายถึง ยินยอมให้ธนาคารหักเงินฝากจากบัญชีเงินฝากออมทรัพย์ เลขที่
+                                            </fo:inline>
+                                            <fo:inline>
+                                                <xsl:value-of select="directDebitAcct"/>
+                                            </fo:inline>
+                                            <fo:inline>
+                                                ดังกล่าวเพื่อชำระหนี้หรือค่าธรรมเนียมหรือค่าใช้จ่ายอื่นใดที่เกิดจากการใช้บริการสินเชื่อ
+                                                โดยไม่ต้องขอความยินยอมจากข้าพเจ้าแต่อย่างใด
+                                            </fo:inline>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell text-align="left">
+                                        <fo:block>
+                                            <fo:leader leader-pattern="space"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell text-align="left">
+                                        <fo:block text-indent="1cm">
+                                            ผู้สมัครให้ความยินยอมโดย : Access Pin
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell text-align="left">
+                                        <fo:block text-indent="1cm">
+                                            วันเวลาที่ให้ความยินยอม
+                                            <xsl:value-of select="ConsentDate"/> /
+                                            <xsl:value-of select="ConsentTime"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
+                            </xsl:if>
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
-                                        กรณีที่ข้าพเจ้าเลือก ชำระด้วยการหักบัญชีเงินฝาก TMB บนใบสมัครนี้ หมายถึง
-                                        ยินยอมให้ธนาคารหักเงินฝากจากบัญชีเงินฝากออมทรัพย์
-                                        เลขที่
-                                        <xsl:value-of select="disburseAccountNo"/> [TMB Direct Debit Account value]
-                                        ดังกล่าวเพื่อชำระหนี้หรือค่าธรรมเนียมหรือค่าใช้จ่ายอื่นใดที่เกิดจากการใช้บริการ
-                                        สินเชื่อ โดยไม่ต้องขอความยินยอมจากข้าพเจ้า
-                                        และธนาคารไม่จำเป็นต้องแจ้งการหักบัญชีแก่ข้าพเจ้าแต่อย่างใด
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-                            <!--                            <fo:table-row>-->
-                            <!--                                <fo:table-cell text-align="left">-->
-                            <!--                                    <fo:block text-indent="1cm">-->
-                            <!--                                        <xsl:choose>-->
-                            <!--                                            <xsl:when test="isReject='Y'">-->
-                            <!--                                                ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้ไว้ในการสมัครสินเชื่อนี้เป็นความจริงทุกประการ และตกลงให้บริษัท-->
-                            <!--                                                ข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท) เปิดเผยหรือให้ข้อมูลของข้าพเจ้าแก่ธนาคารทหารไทย-->
-                            <!--                                                จำกัด (มหาชน) ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัทเพื่อประโยชน์ในการวิเคราะห์สินเชื่อ-->
-                            <!--                                                การออกบัตรเครดิต ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้า รวมทั้งเพื่อประโยชน์ในการ-->
-                            <!--                                                ทบทวนสินเชื่อต่ออายุสัญญาสินเชื่อ/บัตรเครดิต การบริหารและป้องกันความเสี่ยง ตามข้อกำหนดของ-->
-                            <!--                                                ธนาคารแห่งประเทศไทย และให้ถือว่าคู่ฉบับ และบรรดาสำเนาภาพถ่าย ข้อมูลอิเล็กทรอนิกส์หรือ-->
-                            <!--                                                โทรสารที่ทำสำเนาขึ้นจากหนังสือให้ความยินยอมฉบับนี้ โดยการถ่ายสำเนา ถ่ายภาพ หรือบันทึกไว้-->
-                            <!--                                                ไม่ว่าในรูปแบบใดๆ เป็นหลักฐานในการให้ความยินยอมของข้าพเจ้าเช่นเดียวกัน จนกว่าข้าพเจ้าจะ-->
-                            <!--                                                แจ้งยกเลิก หรือเพิกถอนความยินยอมนี้เป็นลายลักษณ์อักษรต่อธนาคาร รวมถึงยอมรับผูกพันปฏิบัติตาม-->
-                            <!--                                                ข้อกำหนดและเงื่อนไขการใช้บัตรเครดิตของธนาคาร หรือ กฏระเบียบข้อบังคับ การเป็นสมาชิกบัตร-->
-                            <!--                                                เครดิตของธนาคารที่ได้รับ พร้อมบัตรเครดิตของธนาคารรวมทั้งที่แก้ไขเพิ่มเติมต่อไปด้วย-->
-                            <!--                                            </xsl:when>-->
-                            <!--                                            <xsl:otherwise>-->
-                            <!--                                                ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้ไว้ในการสมัครสินเชื่อนี้เป็นความจริงทุกประการ-->
-                            <!--                                                และตกลงให้บริษัทข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท)-->
-                            <!--                                                เปิดเผยหรือให้ข้อมูลของข้าพเจ้าแก่ธนาคารทหารไทยธนชาต จำกัด (มหาชน)-->
-                            <!--                                                ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัทเพื่อประโยชน์ในการวิเคราะห์สินเชื่อ-->
-                            <!--                                                การออกบัตรเครดิต ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้า-->
-                            <!--                                                รวมทั้งเพื่อประโยชน์ในการทบทวนสินเชื่อต่ออายุสัญญาสินเชื่อ/บัตรเครดิต-->
-                            <!--                                                การบริหารและป้องกันความเสี่ยง ตามข้อกำหนดของธนาคารแห่งประเทศไทย-->
-                            <!--                                                และให้ถือว่าคู่ฉบับ และบรรดาสำเนาภาพถ่ายข้อมูล-->
-                            <!--                                                อิเล็กทรอนิกส์หรือโทรสารที่ทำสำเนาขึ้นจากหนังสือให้ความยินยอมฉบับนี้-->
-                            <!--                                                โดยการถ่ายสำเนา ถ่ายภาพ หรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ-->
-                            <!--                                                เป็นหลักฐานในการให้ความยินยอมของข้าพเจ้าเช่นเดียวกัน-->
-                            <!--                                                จนกว่าข้าพเจ้าจะแจ้งยกเลิก หรือเพิกถอนความยินยอมนี้เป็นลายลักษณ์อักษรต่อ-->
-                            <!--                                                ธนาคาร-->
-                            <!--                                                รวมถึงยอมรับผูกพันปฏิบัติตามข้อกำหนดและเงื่อนไขการใช้บัตรเครดิตของธนาคาร-->
-                            <!--                                                หรือ กฏระเบียบข้อบังคับการเป็นสมาชิกบัตรเครดิต ของธนาคารที่ได้รับ-->
-                            <!--                                                พร้อมบัตรเครดิตของธนาคารรวมทั้งที่แก้ไขเพิ่มเติมต่อไปด้วย-->
-                            <!--                                            </xsl:otherwise>-->
-                            <!--                                        </xsl:choose>-->
-
-                            <!--                                    </fo:block>-->
-                            <!--                                </fo:table-cell>-->
-                            <!--                            </fo:table-row>-->
-                            <!--                            <xsl:if test="paymentMethod='1'">-->
-                            <!--                                <fo:table-row>-->
-                            <!--                                    <fo:table-cell text-align="left">-->
-                            <!--                                        <fo:block text-indent="1cm">-->
-                            <!--                                            <fo:inline>กรณีที่ข้าพเจ้าเลือก ชำระด้วยการหักบัญชีเงินฝาก ttb บนใบสมัครนี้-->
-                            <!--                                                หมายถึง ยินยอมให้ธนาคารหักเงินฝากจากบัญชีเงินฝากออมทรัพย์ เลขที่-->
-                            <!--                                            </fo:inline>-->
-                            <!--                                            <fo:inline>-->
-                            <!--                                                <xsl:value-of select="directDebitAcct"/>-->
-                            <!--                                            </fo:inline>-->
-                            <!--                                            <fo:inline>-->
-                            <!--                                                ดังกล่าวเพื่อชำระหนี้หรือค่าธรรมเนียมหรือค่าใช้จ่ายอื่นใดที่เกิดจากการใช้บริการสินเชื่อ-->
-                            <!--                                                โดยไม่ต้องขอความยินยอมจากข้าพเจ้าแต่อย่างใด-->
-                            <!--                                            </fo:inline>-->
-                            <!--                                        </fo:block>-->
-                            <!--                                    </fo:table-cell>-->
-                            <!--                                </fo:table-row>-->
-                            <!--                        </xsl:if>-->
-                            <fo:table-row>
-                                <fo:table-cell text-align="left">
-                                    <fo:block text-indent="1cm">
-                                        ผู้สมัครให้ความยินยอมโดย : <xsl:value-of select="customerName"/>
+                                        ผู้สมัครให้ความยินยอมโดย : Access Pin
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -735,20 +565,12 @@
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
                                         วันเวลาที่ให้ความยินยอม
-<<<<<<< HEAD
                                         <xsl:value-of select="ConsentDate"/> /
                                         <xsl:value-of select="ConsentTime"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
 
-=======
-                                        <xsl:value-of select="consentDate"/> /
-                                        <xsl:value-of select="consentTime"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
->>>>>>> develop
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block>
@@ -769,7 +591,6 @@
                                                 ไม่ยินยอม
                                             </xsl:otherwise>
                                         </xsl:choose>
-<<<<<<< HEAD
                                         ให้ ธนาคารทหารไทยธนชาต จำกัด (มหาชน)ซึ่งเป็นสมาชิก ของบริษัทข้อมูลเครดิต
                                         นำข้อมูลของข้าพเจ้าที่ได้รับจากบริษัทข้อมูลเครดิตเฉพาะส่วนที่ไม่สามารถระบุตัวตน
                                         เช่น ชื่อ นามสกุลเลขประจำตัว ประชาชน
@@ -784,51 +605,6 @@
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
-=======
-                                        ให้ ธนาคารทหารไทย จำกัด (มหาชน) ซึ่งเป็นสมาชิกของบริษัทข้อมูลเครดิต
-                                        นำข้อมูลของข้าพเจ้าที่ได้รับจากบริษัทข้อมูลเครดิตเฉพาะส่วนที่ไม่สามารถ
-                                        ระบุตัวตน เช่น ชื่อ นามสกุล เลขประจำตัวประชาชน
-                                        รวมถึงข้อมูลอื่นใดที่สามารถระบุว่าเป็นข้าพเจ้าได้
-                                        ไปใช้เป็นปัจจัยหนึ่งในการจัดทำแบบจำลองด้าน
-                                        เครดิตกำหนดเท่านั้น และให้คู่ฉบับและบรรดาสำเนาภาพถ่าย ข้อมูลอิเล็กทรอนิกส์ หรือ
-                                        โทรสาร ที่ได้ทำซ้ำขึ้นจากหนังสือให้ความยินยอมฉบับนี้ โดยการ
-                                        ถ่ายสำเนาภาพถ่าย หรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ
-                                        ให้ถือเป็นหลักฐานในการให้ความยินยอมของข้าพเจ้าเช่นเดียวกัน ทั้งนี้
-                                        ข้าพเจ้าทราบว่าเจ้าของ
-                                        ข้อมูลมีสิทธิที่จะให้ความยินยอมหรือไม่ก็ได้
-                                        และเมื่อให้ความยินยอมแล้วเจ้าของข้อมูลจะแจ้งความประสงค์ไม่ให้ความยินยอมอีกต่อไปได้
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-                            <fo:table-row>
-                                <fo:table-cell text-align="left">
-                                    <fo:block>
-                                        <fo:leader leader-pattern="space"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-                            <fo:table-row>
-                                <fo:table-cell text-align="left">
-                                    <fo:block text-indent="1cm">
-                                        ผู้สมัครให้ความยินยอมโดย :
-                                        <xsl:value-of select="customerName"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
-                            <fo:table-row>
-                                <fo:table-cell text-align="left">
-                                    <fo:block text-indent="1cm">
-                                        วันเวลาที่ให้ความยินยอม
-                                        <xsl:value-of select="ConsentDate"/> /
-                                        <xsl:value-of select="ConsentTime"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-
->>>>>>> develop
                         </fo:table-body>
                     </fo:table>
                 </fo:flow>
