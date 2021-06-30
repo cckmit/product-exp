@@ -752,7 +752,7 @@
                             <fo:table-row>
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
-                                        ผู้สมัครให้ความยินยอมโดย : Access Pin
+                                        ผู้สมัครให้ความยินยอมโดย : <xsl:value-of select="customerName"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -813,7 +813,7 @@
                                 <fo:table-cell text-align="left">
                                     <fo:block text-indent="1cm">
                                         ผู้สมัครให้ความยินยอมโดย :
-                                        <xsl:value-of select="ConsentDate"/>
+                                        <xsl:value-of select="customerName"/>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
