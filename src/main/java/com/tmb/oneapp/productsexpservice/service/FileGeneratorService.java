@@ -27,8 +27,6 @@ public class FileGeneratorService {
     private final FopFactory fopFactory;
     private final TransformerFactory transformerFactory;
 
-    private static final String FILE_TYPE = MimeConstants.MIME_PDF;
-
     private void generatePDFFile(String jsonData, String fileName, String template) throws IOException, FOPException, TransformerException {
         FOUserAgent userAgent = fopFactory.newFOUserAgent();
         String baseDir = System.getProperty("user.dir");
@@ -43,7 +41,7 @@ public class FileGeneratorService {
         try (OutputStream out = new FileOutputStream(pdfFile);
              BufferedOutputStream buffOut = new BufferedOutputStream(out)) {
 
-            Fop fop = fopFactory.newFop(FILE_TYPE, userAgent, buffOut);
+            Fop fop = fopFactory.newFop("application/pdf", userAgent, buffOut);
             Transformer transformer = transformerFactory.newTransformer(new StreamSource(new File(template)));
             Result res = new SAXResult(fop.getDefaultHandler());
             transformer.transform(data, res);
