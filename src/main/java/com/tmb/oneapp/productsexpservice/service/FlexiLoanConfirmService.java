@@ -25,9 +25,12 @@ import com.tmb.oneapp.productsexpservice.model.response.flexiloan.*;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
 import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
+import org.apache.fop.apps.FOPException;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.rmi.server.ExportException;
@@ -54,29 +57,48 @@ public class FlexiLoanConfirmService {
 
     private static final String E_APP_TEMPLATE = "fop/e_app.xsl";
 
-    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws ServiceException, RemoteException {
+    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws ServiceException, IOException, FOPException, TransformerException {
         Facility facilityInfo = getFacility(request.getCaID());
         Individual customerInfo = getCustomer(request.getCaID());
         CreditCard creditCardInfo = getCreditCard(request.getCaID(), request.getProductCode());
+
+//        ResponseInstantLoanSubmit submitApplicationResp = submitApplication(BigDecimal.valueOf(request.getCaID()));
 
         ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
         String appRefNo = applicationResp.getBody().getAppRefNo();
         ResponseInstantLoanCalUW loanCalUWResponse = getInstantLoanCalUW(BigDecimal.valueOf(request.getCaID()));
         FlexiLoanSubmissionWrapper wrapper = parseFlexiLoanSubmissionWrapper(request, facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse, appRefNo);
 
-        String eAppFileName = generateFlexiLoanConfirmReport(wrapper, appRefNo);
-        storeEAppFile(requestHeaders, appRefNo, eAppFileName);
+        String fileName = parseCompletePDFFileName(appRefNo);
+        String filePath = generateFlexiLoanConfirmReport(wrapper, fileName);
+        storeEAppFile(requestHeaders, appRefNo, filePath);
 
-        String letterOfConsentFileName = getLetterOfConsentSFTPFilePath(appRefNo, applicationResp);
+        String letterOfConsentAttachments = getLetterOfConsentSFTPFilePath(appRefNo, applicationResp);
+
+        String eAppAttachments = String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", sftpClientImp.getRemoteHost(), fileName);
 
         List<String> notificationAttachments = new ArrayList<>();
+        notificationAttachments.add(eAppAttachments);
+        notificationAttachments.add(letterOfConsentAttachments);
 
-        notificationAttachments.add(letterOfConsentFileName);
         wrapper.setAttachments(notificationAttachments);
         wrapper.setEmail("oranuch@odds.team");
         sendNotification(requestHeaders, wrapper);
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
+
+//    private ResponseInstantLoanSubmit submitApplication(BigDecimal caID) throws Exception {
+//        try {
+//            ResponseInstantLoanSubmit response = submitApplicationClient.submitApplication(caID, "Y");
+//            if (!LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
+//                throw new Exception("submit application fail");
+//            }
+//            return response;
+//        } catch (Exception e) {
+//            logger.error("submissionApplication error: {}", e);
+//            throw e;
+//        }
+//    }
 
     private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) {
         try {
@@ -139,6 +161,8 @@ public class FlexiLoanConfirmService {
                 LoanCustomerPricing customerPricing = new LoanCustomerPricing();
                 customerPricing.setMonthFrom(p.getMonthFrom());
                 customerPricing.setMonthTo(p.getMonthTo());
+                customerPricing.setYearFrom(p.getYearFrom());
+                customerPricing.setYearTo(p.getYearTo());
                 customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
                 customerPricing.setRate(parseRate(p));
 
@@ -217,14 +241,11 @@ public class FlexiLoanConfirmService {
         return facilityInfo == null ? null : facilityInfo.getPaymentMethod();
     }
 
-    private String generateFlexiLoanConfirmReport(FlexiLoanSubmissionWrapper wrapper, String appRefNo) {
-        String fileName = parseCompletePDFFileName(appRefNo);
-        fileGeneratorService.generateFlexiLoanSubmissionPdf(wrapper, fileName, E_APP_TEMPLATE);
-        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", System.getProperty("sftp.remote-host"), fileName);
+    private String generateFlexiLoanConfirmReport(FlexiLoanSubmissionWrapper wrapper, String fileName) throws FOPException, IOException, TransformerException {
+        return fileGeneratorService.generateFlexiLoanSubmissionPdf(wrapper, fileName, E_APP_TEMPLATE);
     }
 
-    private void storeEAppFile(Map<String, String> requestHeaders, String appRefNo, String fileName) {
-        String eAppFilePath = "./pdf/" + fileName;
+    private void storeEAppFile(Map<String, String> requestHeaders, String appRefNo, String eAppFilePath) {
         storeFileOnSFTP("/users/mibuser", "u01/datafile/mib/mibshare/ApplyLoan/" + requestHeaders.get(ProductsExpServiceConstant.X_CRMID) + "/" + appRefNo, eAppFilePath);
         storeFileOnSFTP("/users/mibuser", "u01/datafile/mib/mibshare", eAppFilePath);
         storeFileOnSFTP("/users/enotiftp/SIT/MIB", "TempAttachments", eAppFilePath);
@@ -270,6 +291,17 @@ public class FlexiLoanConfirmService {
             wrapper.setInstallment(approvalMemoFacility.getInstallmentAmount());
         }
 
+//        wrapper.setConsentDate("");
+//        wrapper.setConsentTime("");
+//        wrapper.setNcbConsentFlag(true);
+//        wrapper.setCashDisbursement();
+//        wrapper.setCurrentLoan();
+//        wrapper.setCurrentAccount();
+//        wrapper.setInterestRateDS();
+//        wrapper.setRateTypeValue();
+//        wrapper.setShowBOTFields();
+//        wrapper.setIsReject();
+
         return wrapper;
     }
 
@@ -288,7 +320,9 @@ public class FlexiLoanConfirmService {
         dateStr = dateStr.replaceAll("[-:T ]", "");
         dateStr = dateStr.substring(2, 14);
         String docType = "00111";
-        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", System.getProperty("sftp.remote-host"), dateStr, appRefNo, docType);
+        String letterOfConsentSFTPFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", sftpClientImp.getRemoteHost(), dateStr, appRefNo, docType);
+        logger.info("letterOfConsentSFTPFilePath: {}", letterOfConsentSFTPFilePath);
+        return letterOfConsentSFTPFilePath;
     }
 
     private ResponseApplication getApplicationInfo(long caID) throws ServiceException, RemoteException {
