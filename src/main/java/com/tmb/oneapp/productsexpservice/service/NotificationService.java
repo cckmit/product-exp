@@ -803,7 +803,7 @@ public class NotificationService {
 		processResultLog(sendEmailResponse, notificationRequest);
 	}
 
-	public TmbOneServiceResponse<NotificationResponse> sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) throws Exception {
+	public void sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) throws Exception {
 		NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
 				defaultChannelTh, null, wrapper.getProductName(), null,
 				wrapper.getCustomerName());
@@ -853,11 +853,9 @@ public class NotificationService {
 
 			processResultLog(sendEmailResponse, notificationRequest);
 
-			return sendEmailResponse;
-
+			if (!sendEmailResponse.getData().isSuccess()) {
+				throw new Exception("send notification error");
+			}
 		}
-
-		throw new Exception("send noti fail");
-
 	}
 }

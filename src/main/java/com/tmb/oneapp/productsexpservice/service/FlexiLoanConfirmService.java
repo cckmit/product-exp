@@ -14,7 +14,6 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.common.model.response.notification.NotificationResponse;
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -75,37 +74,35 @@ public class FlexiLoanConfirmService {
         String letterOfConsentFileName = getLetterOfConsentSFTPFilePath(appRefNo, applicationResp);
 
         List<String> notificationAttachments = new ArrayList<>();
+
 //        notificationAttachments.add(eAppFileName);
         notificationAttachments.add(letterOfConsentFileName);
         wrapper.setAttachments(notificationAttachments);
-
         wrapper.setEmail("oranuch@odds.team");
         sendNotification(requestHeaders, wrapper);
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
 
-    private ResponseInstantLoanSubmit submitApplication(BigDecimal caID) throws Exception {
-        try {
-            ResponseInstantLoanSubmit response = submitApplicationClient.submitApplication(caID, "Y");
-            if (!LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
-                throw new Exception("submit application fail");
-            }
-            return response;
-        } catch (Exception e) {
-            logger.error("submissionApplication error: {}", e);
-            throw e;
-        }
-    }
+
+//    private ResponseInstantLoanSubmit submitApplication(BigDecimal caID) throws Exception {
+//        try {
+//            ResponseInstantLoanSubmit response = submitApplicationClient.submitApplication(caID, "Y");
+//            if (!LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
+//                throw new Exception("submit application fail");
+//            }
+//            return response;
+//        } catch (Exception e) {
+//            logger.error("submissionApplication error: {}", e);
+//            throw e;
+//        }
+//    }
 
     private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) throws Exception {
         try {
-            TmbOneServiceResponse<NotificationResponse> notiResp = notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
+            notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
                     requestHeaders.get(ProductsExpServiceConstant.ACCOUNT_ID.toLowerCase()),
                     requestHeaders.get(ProductsExpServiceConstant.X_CRMID.toLowerCase()),
                     wrapper);
-            if (!notiResp.getData().isSuccess()) {
-                throw new Exception("send notification error");
-            }
         } catch (Exception e) {
             logger.error("sendNotifyFlexiLoanSubmission error: {}", e);
             throw e;
@@ -118,7 +115,7 @@ public class FlexiLoanConfirmService {
                                                                    CreditCard creditCardInfo,
                                                                    ResponseInstantLoanCalUW loanCalUWResponse) {
         FlexiLoanConfirmResponse response = new FlexiLoanConfirmResponse();
-        String underWriting = loanCalUWResponse.getBody().getUnderwritingResult()==null?"":loanCalUWResponse.getBody().getUnderwritingResult();
+        String underWriting = loanCalUWResponse.getBody().getUnderwritingResult() == null ? "" : loanCalUWResponse.getBody().getUnderwritingResult();
 
         if (underWriting.equals("APPROVE")) {
             SubmissionPaymentInfo paymentInfo = new SubmissionPaymentInfo();
@@ -149,12 +146,14 @@ public class FlexiLoanConfirmService {
         }
 
         SubmissionCustomerInfo customer = new SubmissionCustomerInfo();
-        customer.setName(customerInfo == null ? null : String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName()));
-        customer.setCitizenId(customerInfo == null ? null : customerInfo.getIdNo1());
+        if(customerInfo!=null) {
+            customer.setName(String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName()));
+            customer.setCitizenId(customerInfo.getIdNo1());
+        }
 
         SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
-        if (facilityInfo != null) {
+        if (facilityInfo != null && facilityInfo.getPricings()!=null) {
             for (Pricing p : facilityInfo.getPricings()) {
                 LoanCustomerPricing customerPricing = new LoanCustomerPricing();
                 customerPricing.setMonthFrom(p.getMonthFrom());
@@ -168,16 +167,22 @@ public class FlexiLoanConfirmService {
         }
 
         SubmissionPaymentInfo payment = new SubmissionPaymentInfo();
-        payment.setEStatement(customerInfo == null ? null : customerInfo.getEmail());
-        payment.setFeatureType(facilityInfo == null ? null : facilityInfo.getFeatureType());
-        payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
-        payment.setOtherBank(facilityInfo == null ? null : facilityInfo.getLoanWithOtherBank());
-        payment.setOtherBankInProgress(facilityInfo == null ? null : facilityInfo.getConsiderLoanWithOtherBank());
-
         SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
-        receiving.setOsLimit(facilityInfo == null ? null : facilityInfo.getOsLimit());
-        receiving.setHostAcfNo(facilityInfo == null ? null : facilityInfo.getHostAcfNo());
-        receiving.setDisburseAccount(facilityInfo == null ? null : String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
+
+        if(customerInfo!=null) {
+            payment.setEStatement(customerInfo.getEmail());
+        }
+
+        if(facilityInfo!=null) {
+            payment.setFeatureType(facilityInfo.getFeatureType());
+            payment.setOtherBank(facilityInfo.getLoanWithOtherBank());
+            payment.setOtherBankInProgress(facilityInfo.getConsiderLoanWithOtherBank());
+
+            receiving.setOsLimit(facilityInfo.getOsLimit());
+            receiving.setHostAcfNo(facilityInfo.getHostAcfNo());
+            receiving.setDisburseAccount(String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
+        }
+        payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
 
         response.setCustomerInfo(customer);
         response.setPricingInfo(pricingInfo);
@@ -239,9 +244,9 @@ public class FlexiLoanConfirmService {
 
     private void storeEAppFile(Map<String, String> requestHeaders, String appRefNo, String fileName) {
         String eAppFilePath = "./pdf/" + fileName;
-        storeFileOnSFTP("/users/mibuser", "u01/datafile/mib/mibshare/ApplyLoan/"+requestHeaders.get(ProductsExpServiceConstant.X_CRMID)+"/"+appRefNo, eAppFilePath);
-        storeFileOnSFTP("/users/mibuser","u01/datafile/mib/mibshare", eAppFilePath);
-        storeFileOnSFTP("/users/enotiftp/SIT/MIB","TempAttachments", eAppFilePath);
+        storeFileOnSFTP("/users/mibuser", "u01/datafile/mib/mibshare/ApplyLoan/" + requestHeaders.get(ProductsExpServiceConstant.X_CRMID) + "/" + appRefNo, eAppFilePath);
+        storeFileOnSFTP("/users/mibuser", "u01/datafile/mib/mibshare", eAppFilePath);
+        storeFileOnSFTP("/users/enotiftp/SIT/MIB", "TempAttachments", eAppFilePath);
     }
 
     private void storeFileOnSFTP(String rootPath, String dstDir, String srcFile) {
@@ -255,7 +260,7 @@ public class FlexiLoanConfirmService {
     }
 
     private FlexiLoanSubmissionWrapper parseFlexiLoanSubmissionWrapper(FlexiLoanConfirmRequest request, Facility facilityInfo, Individual customerInfo, CreditCard creditCardInfo, ResponseInstantLoanCalUW loanCalUWResponse, String appRefNo) {
-        ApprovalMemoFacility approvalMemoFacility = loanCalUWResponse.getBody().getApprovalMemoFacilities()==null?null:loanCalUWResponse.getBody().getApprovalMemoFacilities()[0];
+        ApprovalMemoFacility approvalMemoFacility = loanCalUWResponse.getBody().getApprovalMemoFacilities() == null ? null : loanCalUWResponse.getBody().getApprovalMemoFacilities()[0];
 
         FlexiLoanSubmissionWrapper wrapper = new FlexiLoanSubmissionWrapper();
         String customerName = String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName());
@@ -267,21 +272,26 @@ public class FlexiLoanConfirmService {
         wrapper.setIdCardNo(customerInfo.getIdNo1());
         wrapper.setFinalLoanAmount(facilityInfo.getAmountFinance());
         wrapper.setTenor(facilityInfo.getFeature().getTenure());
-        wrapper.setInterestRate(approvalMemoFacility.getInterestRate());
         wrapper.setRequestAmount(facilityInfo.getFeature().getRequestAmount());
-        wrapper.setApplyDate(facilityInfo.getContractDate() == null ? "-" : facilityInfo.getContractDate().toString());
-        wrapper.setPaymentMethod(ProductsExpServiceConstant.CREDIT_CARDS_CODE.contains(facilityInfo.getProductCode())?creditCardInfo.getPaymentMethod():facilityInfo.getPaymentMethod());
+        wrapper.setPaymentMethod(ProductsExpServiceConstant.CREDIT_CARDS_CODE.contains(facilityInfo.getProductCode()) ? creditCardInfo.getPaymentMethod() : facilityInfo.getPaymentMethod());
         wrapper.setEmail("oranuch@odds.team");
         wrapper.setBotAnswer1("-");
         wrapper.setBotAnswer2("-");
         wrapper.setDisburseAccountNo(facilityInfo.getDisburstAccountNo());
-//        wrapper.setConsentDate("");
-//        wrapper.setConsentTime("");
-//        wrapper.setNcbConsentFlag(true);
         wrapper.setDueDate(facilityInfo.getPaymentDueDate());
         wrapper.setFirstPaymentDueDate(facilityInfo.getFirstPaymentDueDate());
         wrapper.setNextPaymentDueDate(facilityInfo.getPaymentDueDate());
-        wrapper.setInstallment(approvalMemoFacility.getInstallmentAmount());
+        if(facilityInfo.getContractDate()!=null ) {
+            wrapper.setApplyDate(facilityInfo.getContractDate().toString());
+        }
+        if (approvalMemoFacility != null) {
+            wrapper.setInterestRate(approvalMemoFacility.getInterestRate());
+            wrapper.setInstallment(approvalMemoFacility.getInstallmentAmount());
+        }
+
+//        wrapper.setConsentDate("");
+//        wrapper.setConsentTime("");
+//        wrapper.setNcbConsentFlag(true);
 //        wrapper.setCashDisbursement();
 //        wrapper.setCurrentLoan();
 //        wrapper.setCurrentAccount();

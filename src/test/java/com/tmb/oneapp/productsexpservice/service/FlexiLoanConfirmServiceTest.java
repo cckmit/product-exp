@@ -22,6 +22,8 @@ import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
 import com.tmb.oneapp.productsexpservice.feignclients.SFTPClientImp;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.*;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
+import com.tmb.oneapp.productsexpservice.model.response.flexiloan.FlexiLoanConfirmResponse;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +75,7 @@ public class FlexiLoanConfirmServiceTest {
         doReturn(mockGetApplicationInfoSuccess()).when(getApplicationInfoClient).getApplicationInfo(anyLong());
         doReturn(mockGetInstantLoanCalUWSuccess()).when(instantLoanCalUWClient).getCalculateUnderwriting(any());
         doReturn(mockSubmitInstantLoanSubmission()).when(submitApplicationClient).submitApplication(any(), any());
-        doReturn(mockSendNotificationSuccess()).when(notificationService).sendNotifyFlexiLoanSubmission(anyString(), anyString(), anyString(), any());
+        doNothing().when(notificationService).sendNotifyFlexiLoanSubmission(anyString(), anyString(), anyString(), any());
         doNothing().when(fileGeneratorService).generateFlexiLoanSubmissionPdf(any(), anyString(), anyString());
 
     }
@@ -83,7 +85,8 @@ public class FlexiLoanConfirmServiceTest {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode());
         doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
-        flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        Assert.assertNotNull(response);
     }
 
     @Test
@@ -91,7 +94,8 @@ public class FlexiLoanConfirmServiceTest {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode());
         doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
-        flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        Assert.assertNotNull(response);
     }
 
     private Map<String, String> mockRequestHeaders() {
@@ -210,6 +214,7 @@ public class FlexiLoanConfirmServiceTest {
     private TmbOneServiceResponse<NotificationResponse> mockSendNotificationSuccess() {
         TmbOneServiceResponse<NotificationResponse> response = new TmbOneServiceResponse<>();
         NotificationResponse resp = new NotificationResponse();
+        resp.isSuccess();
         resp.setSuccess(true);
         response.setData(resp);
         return response;
