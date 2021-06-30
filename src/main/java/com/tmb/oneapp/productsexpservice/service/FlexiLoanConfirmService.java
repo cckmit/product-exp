@@ -60,7 +60,7 @@ public class FlexiLoanConfirmService {
         Facility facilityInfo = getFacility(request.getCaID());
         Individual customerInfo = getCustomer(request.getCaID());
         CreditCard creditCardInfo = getCreditCard(request.getCaID(), request.getProductCode());
-// TODO
+
 //        ResponseInstantLoanSubmit submitApplicationResp = submitApplication(BigDecimal.valueOf(request.getCaID()));
 
         ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
@@ -74,7 +74,7 @@ public class FlexiLoanConfirmService {
         String letterOfConsentFileName = getLetterOfConsentSFTPFilePath(appRefNo, applicationResp);
 
         List<String> notificationAttachments = new ArrayList<>();
-// TODO
+
 //        notificationAttachments.add(eAppFileName);
         notificationAttachments.add(letterOfConsentFileName);
         wrapper.setAttachments(notificationAttachments);
@@ -83,7 +83,7 @@ public class FlexiLoanConfirmService {
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
 
-// TODO
+
 //    private ResponseInstantLoanSubmit submitApplication(BigDecimal caID) throws Exception {
 //        try {
 //            ResponseInstantLoanSubmit response = submitApplicationClient.submitApplication(caID, "Y");
@@ -291,7 +291,7 @@ public class FlexiLoanConfirmService {
             wrapper.setInterestRate(approvalMemoFacility.getInterestRate());
             wrapper.setInstallment(approvalMemoFacility.getInstallmentAmount());
         }
-// TODO
+
 //        wrapper.setConsentDate("");
 //        wrapper.setConsentTime("");
 //        wrapper.setNcbConsentFlag(true);
