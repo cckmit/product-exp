@@ -89,7 +89,8 @@ public class PersonalLoanController {
 
         try {
             ApplyPersonalLoan productDataLoanList = personalLoanService.getProductsLoan();
-            getProductLoan(oneTmbOneServiceResponse, productDataLoanList);
+            oneTmbOneServiceResponse.setData(productDataLoanList);
+            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
@@ -99,6 +100,7 @@ public class PersonalLoanController {
         }
     }
 
+
     @GetMapping(value = "/get-product-credit-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get product credit list")
@@ -106,7 +108,8 @@ public class PersonalLoanController {
         TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
             List<ProductData> productDataCreditList = personalLoanService.getProductsCredit();
-            getProductCredit(oneTmbOneServiceResponse, productDataCreditList);
+            oneTmbOneServiceResponse.setData(productDataCreditList);
+            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
@@ -121,6 +124,7 @@ public class PersonalLoanController {
                 ResponseCode.FAILED.getService());
     }
 
+
     private TmbStatus getStatusSuccess() {
         return new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -131,14 +135,5 @@ public class PersonalLoanController {
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
     }
 
-    private void getProductLoan(TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse, ApplyPersonalLoan productDataLoanList) {
-        oneTmbOneServiceResponse.setData(productDataLoanList);
-        oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-    }
-
-    private void getProductCredit(TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse, List<ProductData> productDataCreditList) {
-        oneTmbOneServiceResponse.setData(productDataCreditList);
-        oneTmbOneServiceResponse.setStatus(getStatusSuccess());
-    }
 
 }
