@@ -76,8 +76,7 @@ public class FlexiLoanConfirmServiceTest {
         doReturn(mockGetInstantLoanCalUWSuccess()).when(instantLoanCalUWClient).getCalculateUnderwriting(any());
         doReturn(mockSubmitInstantLoanSubmission()).when(submitApplicationClient).submitApplication(any(), any());
         doNothing().when(notificationService).sendNotifyFlexiLoanSubmission(anyString(), anyString(), anyString(), any());
-        doNothing().when(fileGeneratorService).generateFlexiLoanSubmissionPdf(any(), anyString(), anyString());
-
+        doReturn("filePath").when(fileGeneratorService).generateFlexiLoanSubmissionPdf(any(), anyString(), anyString());
     }
 
     @Test
