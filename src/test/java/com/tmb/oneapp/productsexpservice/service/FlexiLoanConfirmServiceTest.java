@@ -75,7 +75,7 @@ public class FlexiLoanConfirmServiceTest {
         doReturn(mockGetApplicationInfoSuccess()).when(getApplicationInfoClient).getApplicationInfo(anyLong());
         doReturn(mockGetInstantLoanCalUWSuccess()).when(instantLoanCalUWClient).getCalculateUnderwriting(any());
         doReturn(mockSubmitInstantLoanSubmission()).when(submitApplicationClient).submitApplication(any(), any());
-        doReturn(mockSendNotificationSuccess()).when(notificationService).sendNotifyFlexiLoanSubmission(anyString(), anyString(), anyString(), any());
+        doNothing().when(notificationService).sendNotifyFlexiLoanSubmission(anyString(), anyString(), anyString(), any());
         doNothing().when(fileGeneratorService).generateFlexiLoanSubmissionPdf(any(), anyString(), anyString());
 
     }
@@ -214,6 +214,7 @@ public class FlexiLoanConfirmServiceTest {
     private TmbOneServiceResponse<NotificationResponse> mockSendNotificationSuccess() {
         TmbOneServiceResponse<NotificationResponse> response = new TmbOneServiceResponse<>();
         NotificationResponse resp = new NotificationResponse();
+        resp.isSuccess();
         resp.setSuccess(true);
         response.setData(resp);
         return response;

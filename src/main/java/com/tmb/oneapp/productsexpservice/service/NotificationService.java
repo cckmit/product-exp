@@ -803,7 +803,7 @@ public class NotificationService {
 		processResultLog(sendEmailResponse, notificationRequest);
 	}
 
-	public TmbOneServiceResponse<NotificationResponse> sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) throws Exception {
+	public void sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) {
 		NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
 				defaultChannelTh, null, wrapper.getProductName(), null,
 				wrapper.getCustomerName());
@@ -821,10 +821,6 @@ public class NotificationService {
 			EmailChannel emailChannel = new EmailChannel();
 			emailChannel.setEmailEndpoint(wrapper.getEmail());
 			emailChannel.setEmailSearch(false);
-
-			List<String> attachments = new ArrayList<>();
-			attachments.add("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/01_210622164232_001CC59047978_00111.pdf");
-			record.setAttachments(attachments);
 
 			record.setEmail(emailChannel);
 			record.setAccount(accountId);
@@ -852,12 +848,6 @@ public class NotificationService {
 					.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
 
 			processResultLog(sendEmailResponse, notificationRequest);
-
-			return sendEmailResponse;
-
 		}
-
-		throw new Exception("send noti fail");
-
 	}
 }

@@ -41,7 +41,7 @@ public class FileGeneratorService {
         try (OutputStream out = new FileOutputStream(pdfFile);
              BufferedOutputStream buffOut = new BufferedOutputStream(out)) {
 
-            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, userAgent, buffOut);
+            Fop fop = fopFactory.newFop("application/pdf", userAgent, buffOut);
             Transformer transformer = transformerFactory.newTransformer(new StreamSource(new File(template)));
             Result res = new SAXResult(fop.getDefaultHandler());
             transformer.transform(data, res);

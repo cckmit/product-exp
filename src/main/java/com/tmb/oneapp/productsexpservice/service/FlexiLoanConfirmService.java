@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -14,7 +13,6 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.common.model.response.notification.NotificationResponse;
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
@@ -56,12 +54,10 @@ public class FlexiLoanConfirmService {
 
     private static final String E_APP_TEMPLATE = "fop/e_app.xsl";
 
-    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws Exception {
+    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws ServiceException, RemoteException {
         Facility facilityInfo = getFacility(request.getCaID());
         Individual customerInfo = getCustomer(request.getCaID());
         CreditCard creditCardInfo = getCreditCard(request.getCaID(), request.getProductCode());
-// TODO
-//        ResponseInstantLoanSubmit submitApplicationResp = submitApplication(BigDecimal.valueOf(request.getCaID()));
 
         ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
         String appRefNo = applicationResp.getBody().getAppRefNo();
@@ -74,8 +70,7 @@ public class FlexiLoanConfirmService {
         String letterOfConsentFileName = getLetterOfConsentSFTPFilePath(appRefNo, applicationResp);
 
         List<String> notificationAttachments = new ArrayList<>();
-// TODO
-//        notificationAttachments.add(eAppFileName);
+
         notificationAttachments.add(letterOfConsentFileName);
         wrapper.setAttachments(notificationAttachments);
         wrapper.setEmail("oranuch@odds.team");
@@ -83,29 +78,12 @@ public class FlexiLoanConfirmService {
         return parseFlexiLoanConfirmResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo, loanCalUWResponse);
     }
 
-// TODO
-//    private ResponseInstantLoanSubmit submitApplication(BigDecimal caID) throws Exception {
-//        try {
-//            ResponseInstantLoanSubmit response = submitApplicationClient.submitApplication(caID, "Y");
-//            if (!LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
-//                throw new Exception("submit application fail");
-//            }
-//            return response;
-//        } catch (Exception e) {
-//            logger.error("submissionApplication error: {}", e);
-//            throw e;
-//        }
-//    }
-
-    private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) throws Exception {
+    private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) {
         try {
-            TmbOneServiceResponse<NotificationResponse> notiResp = notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
+            notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
                     requestHeaders.get(ProductsExpServiceConstant.ACCOUNT_ID.toLowerCase()),
                     requestHeaders.get(ProductsExpServiceConstant.X_CRMID.toLowerCase()),
                     wrapper);
-            if (!notiResp.getData().isSuccess()) {
-                throw new Exception("send notification error");
-            }
         } catch (Exception e) {
             logger.error("sendNotifyFlexiLoanSubmission error: {}", e);
             throw e;
@@ -242,7 +220,7 @@ public class FlexiLoanConfirmService {
     private String generateFlexiLoanConfirmReport(FlexiLoanSubmissionWrapper wrapper, String appRefNo) {
         String fileName = parseCompletePDFFileName(appRefNo);
         fileGeneratorService.generateFlexiLoanSubmissionPdf(wrapper, fileName, E_APP_TEMPLATE);
-        return String.format("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", fileName);
+        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", System.getProperty("sftp.remote-host"), fileName);
     }
 
     private void storeEAppFile(Map<String, String> requestHeaders, String appRefNo, String fileName) {
@@ -291,17 +269,6 @@ public class FlexiLoanConfirmService {
             wrapper.setInterestRate(approvalMemoFacility.getInterestRate());
             wrapper.setInstallment(approvalMemoFacility.getInstallmentAmount());
         }
-// TODO
-//        wrapper.setConsentDate("");
-//        wrapper.setConsentTime("");
-//        wrapper.setNcbConsentFlag(true);
-//        wrapper.setCashDisbursement();
-//        wrapper.setCurrentLoan();
-//        wrapper.setCurrentAccount();
-//        wrapper.setInterestRateDS();
-//        wrapper.setRateTypeValue();
-//        wrapper.setShowBOTFields();
-//        wrapper.setIsReject();
 
         return wrapper;
     }
@@ -321,7 +288,7 @@ public class FlexiLoanConfirmService {
         dateStr = dateStr.replaceAll("[-:T ]", "");
         dateStr = dateStr.substring(2, 14);
         String docType = "00111";
-        return String.format("sftp://10.200.125.110/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", dateStr, appRefNo, docType);
+        return String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", System.getProperty("sftp.remote-host"), dateStr, appRefNo, docType);
     }
 
     private ResponseApplication getApplicationInfo(long caID) throws ServiceException, RemoteException {
