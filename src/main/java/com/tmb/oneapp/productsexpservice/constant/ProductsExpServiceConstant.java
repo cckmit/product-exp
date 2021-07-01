@@ -186,4 +186,7 @@ public class ProductsExpServiceConstant {
             RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_INFINITE.getProductCode(),
             RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_SIGNATURE.getProductCode()
     );
+
+    //Service Customer Search
+    public static final String SEARCH_TYPE = "rm-id";
 }

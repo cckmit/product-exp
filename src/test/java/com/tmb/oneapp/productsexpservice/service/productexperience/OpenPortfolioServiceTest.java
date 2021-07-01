@@ -3,12 +3,16 @@ package com.tmb.oneapp.productsexpservice.service.productexperience;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInfoMapper;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponseBody;
@@ -25,20 +29,24 @@ import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.Portf
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.*;
+import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.service.ProductExpAsynService;
+import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.*;
@@ -47,6 +55,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OpenPortfolioServiceTest {
+
+    @InjectMocks
+    private OpenPortfolioService openPortfolioService;
 
     @Mock
     private TMBLogger<OpenPortfolioServiceTest> logger;
@@ -61,13 +72,54 @@ class OpenPortfolioServiceTest {
     private InvestmentAsyncService investmentAsyncService;
 
     @Mock
+    private CustomerServiceClient customerServiceClient;
+
+    @Mock
+    private ProductsExpService productsExpService;
+
+    @Mock
+    private AccountRequestClient accountRequestClient;
+
+    @Mock
+    private ProductExpAsynService productExpAsynService;
+
+    @Mock
+    private CustomerInfoMapper customerInfoMapper;
+
+    @Mock
     private OpenPortfolioMapper openPortfolioMapper;
 
-    @InjectMocks
-    private OpenPortfolioService openPortfolioService;
+    private void mockPassServiceHour(){
+        FundResponse fundResponse = new FundResponse();
+        fundResponse.setError(false);
+        when(productsExpService.isServiceHour(any(),any())).thenReturn(fundResponse);
+    }
+
+    private void mockCustomerResponse() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CustomerSearchResponse customerSearchResponse = objectMapper.readValue(Paths.get("src/test/resources/investment/customer/search_customer.json").toFile(),CustomerSearchResponse.class);
+        TmbOneServiceResponse<List<CustomerSearchResponse>> oneServiceResponse = new TmbOneServiceResponse<List<CustomerSearchResponse>>();
+        oneServiceResponse.setData(List.of(customerSearchResponse));
+        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response = new ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>(
+                oneServiceResponse, HttpStatus.OK);
+
+        CustomerInfo customerInfo = objectMapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),CustomerInfo.class);
+
+        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(response);
+        when(customerInfoMapper.map(any())).thenReturn(customerInfo);
+    }
+
+    private void mockAccountResponse() throws IOException, TMBCommonException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<CommonData> commonData = new ArrayList<>();
+        commonData.add(objectMapper.readValue(Paths.get("src/test/resources/investment/common/investment_config.json").toFile(),CommonData.class));
+        String accountList = "{\"status\":{\"code\":\"0000\",\"message\":\"success\",\"service\":\"accounts-service\",\"description\":{\"en\":\"success\",\"th\":\"success\"}},\"data\":[{\"product_name_Eng\":\"TMB All Free Account\",\"product_name_TH\":\"บัญชีออลล์ฟรี\",\"product_code\":\"225\",\"balance_currency\":\"THB\",\"current_balance\":\"1033583777.38\",\"account_number\":\"00001102416367\",\"relationship_code\":\"PRIIND\",\"account_status_code\":\"0\",\"account_status_text\":\"ACTIVE\",\"product_group_code\":\"SDA\",\"icon_id\":\"/product/logo/icon_01.png\",\"sort_order\":\"10001\",\"allow_transfer_from_account\":\"1\",\"allow_transfer_other_account\":\"1\",\"transfer_own_tmb\":[\"DDA\",\"SDA\",\"CDA\"],\"transfer_other_tmb\":[\"DDA\",\"SDA\"],\"personalized_acct_nickname_EN\":\"TMB All Free Account\",\"personalized_acct_nickname_TH\":\"บัญชีออลล์ฟรี\",\"account_name\":\"MIBITSIE01 LMIB1\",\"isRegisterPromptpay\":\"1\",\"account_number_display\":\"1102416367\",\"allow_transfer_to_promptpay\":\"1\",\"waive_fee_for_promptpay\":\"1\",\"waive_fee_for_promptpay_account\":\"1\"},{\"product_name_Eng\":\"No Fixed Account\",\"product_name_TH\":\"บัญชีโนฟิกซ์\",\"product_code\":\"221\",\"balance_currency\":\"THB\",\"current_balance\":\"922963.66\",\"account_number\":\"00001102416458\",\"relationship_code\":\"PRIIND\",\"account_status_code\":\"0\",\"account_status_text\":\"ACTIVE\",\"product_group_code\":\"SDA\",\"icon_id\":\"/product/logo/icon_03.png\",\"sort_order\":\"10023\",\"allow_transfer_from_account\":\"1\",\"allow_transfer_other_account\":\"0\",\"transfer_own_tmb\":[\"DDA\",\"SDA\",\"CDA\"],\"transfer_other_tmb\":[\"DDA\",\"SDA\"],\"personalized_acct_nickname_EN\":\"No Fixed Account\",\"personalized_acct_nickname_TH\":\"บัญชีโนฟิกซ์\",\"account_name\":\"นาย MIBITSIE01 LMIB1\",\"isRegisterPromptpay\":\"0\",\"account_number_display\":\"1102416458\",\"allow_transfer_to_promptpay\":\"1\",\"waive_fee_for_promptpay\":\"0\",\"waive_fee_for_promptpay_account\":\"0\"},{\"product_name_Eng\":\"Savings Care\",\"product_name_TH\":\"Savings Care\",\"product_code\":\"211\",\"balance_currency\":\"THB\",\"current_balance\":\"5000.00\",\"account_number\":\"00001102416524\",\"relationship_code\":\"PRIIND\",\"account_status_code\":\"0\",\"account_status_text\":\"ACTIVE\",\"product_group_code\":\"SDA\",\"icon_id\":\"/product/logo/icon_05.png\",\"sort_order\":\"10024\",\"allow_transfer_from_account\":\"1\",\"allow_transfer_other_account\":\"0\",\"transfer_own_tmb\":[\"DDA\",\"SDA\",\"CDA\"],\"transfer_other_tmb\":[\"DDA\",\"SDA\"],\"personalized_acct_nickname_EN\":\"Savings Care\",\"personalized_acct_nickname_TH\":\"Savings Care\",\"account_name\":\"นาย MIBITSIE01 LMIB1\",\"isRegisterPromptpay\":\"0\",\"account_number_display\":\"1102416524\",\"allow_transfer_to_promptpay\":\"0\",\"waive_fee_for_promptpay\":\"0\",\"waive_fee_for_promptpay_account\":\"0\"},{\"product_name_Eng\":\"Quick Interest Account 12 Months\",\"product_name_TH\":\"บัญชีดอกเบี้ยด่วน 12 เดือน\",\"product_code\":\"664\",\"balance_currency\":\"THB\",\"current_balance\":\"10000.00\",\"account_number\":\"1103318497\",\"relationship_code\":\"PRIIND\",\"account_status_code\":\"0\",\"account_status_text\":\"ACTIVE\",\"product_group_code\":\"CDA\",\"icon_id\":\"/product/logo/icon_06.png\",\"sort_order\":\"10027\",\"allow_transfer_from_account\":\"1\",\"allow_transfer_other_account\":\"0\",\"transfer_own_tmb\":[\"DDA\",\"SDA\"],\"transfer_other_tmb\":[],\"personalized_acct_nickname_EN\":\"Quick Interest Account 12 Months\",\"personalized_acct_nickname_TH\":\"บัญชีดอกเบี้ยด่วน 12 เดือน\",\"account_name\":\"นาย MIBITSIE01 LMIB1\",\"isRegisterPromptpay\":\"0\",\"account_number_display\":\"1103318497\",\"allow_transfer_to_promptpay\":\"0\",\"waive_fee_for_promptpay\":\"0\",\"waive_fee_for_promptpay_account\":\"0\"}]}";
+        when(productExpAsynService.fetchCommonConfigByModule(any(),any())).thenReturn(CompletableFuture.completedFuture(commonData));
+        when(accountRequestClient.callCustomerExpService(any(),any())).thenReturn(accountList);
+    }
 
     @Test
-    void should_return_status_0000_and_body_not_null_when_call_validation_give_correlation_id_and_open_portfolio_validation_request() throws IOException {
+    void should_return_status_0000_and_body_not_null_when_call_validation_give_correlation_id_and_open_portfolio_request_with_new_customer() throws IOException, TMBCommonException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         TermAndConditionResponse termAndConditionResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/validation.json").toFile(),
@@ -81,14 +133,48 @@ class OpenPortfolioServiceTest {
 
         when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
-        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").build();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(true).build();
+        mockPassServiceHour();
+        mockCustomerResponse();
+        mockAccountResponse();
 
         // When
-        ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> actual = openPortfolioService.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
 
         // Then
-        assertEquals("0000", actual.getBody().getStatus().getCode());
-        assertNotNull(actual.getBody());
+        assertEquals("0000", actual.getStatus().getCode());
+        assertNotNull(actual.getData().getCustomerInfo());
+        assertNotNull(actual.getData().getTermAndCondition());
+        assertNotNull(actual.getData().getDepositAccountList());
+    }
+
+    @Test
+    void should_return_status_0000_and_body_not_null_when_call_validation_give_correlation_id_and_open_portfolio_request_with_exist_customer() throws IOException, TMBCommonException {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        TermAndConditionResponse termAndConditionResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/validation.json").toFile(),
+                TermAndConditionResponse.class);
+
+        TmbOneServiceResponse<TermAndConditionResponseBody> oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setData(termAndConditionResponse.getData());
+        oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+        when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
+        mockPassServiceHour();
+        mockCustomerResponse();
+
+        // When
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+
+        // Then
+        assertEquals("0000", actual.getStatus().getCode());
+        assertNotNull(actual.getData().getCustomerInfo());
+        assertNotNull(actual.getData().getTermAndCondition());
+        assertNull(actual.getData().getDepositAccountList());
     }
 
     @Test

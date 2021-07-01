@@ -12,7 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.customer.SearchResponse;
+import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
@@ -209,9 +209,9 @@ public class ProductExpServiceCloseTest {
     private void mockGetFlatcaResponseFromCustomerSearch() {
         Map<String, String> response = new HashMap<>();
         response.put(ProductsExpServiceConstant.FATCA_FLAG,"0");
-        TmbOneServiceResponse<List<SearchResponse>> customerSearchResponse = new TmbOneServiceResponse<>();
-        customerSearchResponse.setData(List.of(SearchResponse.builder().fatcaFlag("0").build()));
-        ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
+        TmbOneServiceResponse<List<CustomerSearchResponse>> customerSearchResponse = new TmbOneServiceResponse<>();
+        customerSearchResponse.setData(List.of(CustomerSearchResponse.builder().fatcaFlag("0").build()));
+        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
         when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(mockResponse);
     }
 

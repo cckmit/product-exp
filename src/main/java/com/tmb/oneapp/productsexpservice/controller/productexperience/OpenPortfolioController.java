@@ -6,12 +6,12 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,18 +48,35 @@ public class OpenPortfolioController {
      * Description:- method validation to handle cases of open portfolio validation
      *
      * @param correlationId                  the correlation id
-     * @param openPortfolioValidationRequest the open portfolio request
+     * @param openPortfolioRequest the open portfolio request
      * @return return term and condition with status
      */
     @ApiOperation(value = "Get term and condition with open portfolio status")
-    @LogAround
     @PostMapping(value = "/open/portfolio", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> validateOpenPortfolio(
+    public ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> validateOpenPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioValidationRequest) {
-        return openPortfolioService.validateOpenPortfolio(correlationId, openPortfolioValidationRequest);
+            @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest)
+    {
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioService.validateOpenPortfolioService(correlationId, openPortfolioRequest);
+        if(!StringUtils.isEmpty(oneServiceResponse.getData())){
+            return ResponseEntity.ok(oneServiceResponse);
+        }else{
+            oneServiceResponse.setStatus(notFoundStatus());
+            return new ResponseEntity(oneServiceResponse,HttpStatus.NOT_FOUND);
+        }
+
     }
+
+    private TmbStatus notFoundStatus() {
+        TmbStatus status = new TmbStatus();
+        status.setCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
+        status.setDescription(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+        status.setMessage(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        return status;
+    }
+
 
     /**
      * Description:- method call to MF service to create customer for open portfolio

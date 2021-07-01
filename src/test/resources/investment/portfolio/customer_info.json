@@ -1,0 +1,22 @@
+{
+  "crmId": "001100000000000000000018592884",
+  "wealthCrmId": "D0000000988",
+  "phoneNumber": "0000000000",
+  "dateOfBirth": "1988-12-12",
+  "emailAddress": "TMBMEDEV@GMAIL.COM",
+  "maritalStatus": "U",
+  "residentGeoCode": "TH",
+  "taxNumber": "7347452143765",
+  "branchCode": "D0000000988",
+  "makerCode": "D0000000988",
+  "kycFlag": "",
+  "amloFlag": null,
+  "lastDateSync": "1625114444451",
+  "nationalDocumentExpireDate": "2022-05-05",
+  "nationalDocumentId": "7347452143765",
+  "nationalDocumentIdentificationType": "TMB_CITIZEN_ID",
+  "customerFirstNameEn": "MIBMIB",
+  "customerLastNameEn": "TESTMF",
+  "customerFirstNameTh": "เอ็มไอบีเอ็มไอบี",
+  "customerLastNameTh": "เทสเอ็มเอฟ"
+}

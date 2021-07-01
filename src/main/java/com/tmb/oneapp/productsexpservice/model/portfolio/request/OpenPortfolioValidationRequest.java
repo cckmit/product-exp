@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.portfolio.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,4 +15,6 @@ public class OpenPortfolioValidationRequest {
 
     @JsonProperty(value = "rmId")
     private String crmId;
+    @JsonAlias(value = "isExistingCustomer")
+    private boolean existingCustomer;
 }
