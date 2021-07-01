@@ -19,13 +19,16 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.address.SubDistrict;
+import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
 import com.tmb.common.model.legacy.rsl.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
+import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetEligibleProductClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
@@ -53,12 +56,16 @@ public class CustomerProfileService {
 
 	private LoanInstantGetCustomerInfoClient instanceCustomerInfoClient;
 
+	private LoanInstantGetEligibleProductClient instnceGetEligibleProductClient;
+
 	public CustomerProfileService(CommonServiceClient commonServiceClient, CustomerServiceClient customerServiceClient,
-								  LendingServiceClient lendingServiceClient, LoanInstantGetCustomerInfoClient instanceCustomerInfoClient) {
+			LendingServiceClient lendingServiceClient, LoanInstantGetCustomerInfoClient instanceCustomerInfoClient,
+			LoanInstantGetEligibleProductClient instnceGetEligibleProductClient) {
 		this.customerServiceClient = customerServiceClient;
 		this.commonServiceClient = commonServiceClient;
 		this.lendingServiceClient = lendingServiceClient;
 		this.instanceCustomerInfoClient = instanceCustomerInfoClient;
+		this.instnceGetEligibleProductClient = instnceGetEligibleProductClient;
 	}
 
 	/**
@@ -87,7 +94,7 @@ public class CustomerProfileService {
 
 			ResponseEntity<TmbOneServiceResponse<LovMaster>> lovMasterRes = commonServiceClient
 					.getLookupMasterModule(generalProfile.getNationality());
-			
+
 			individualProfile.setNationalityLabel(lovMasterRes.getBody().getData().getLovDesc());
 
 			CustAddressProfileInfo custAddressProfile = fillUpParamCurrentAddressInfo(provinceInfos, generalProfile);
@@ -161,7 +168,7 @@ public class CustomerProfileService {
 	 * @return
 	 */
 	private CustAddressProfileInfo fillUpParamCurrentAddressInfo(List<Province> provinceInfos,
-																 CustGeneralProfileResponse generalProfile) {
+			CustGeneralProfileResponse generalProfile) {
 		CustAddressProfileInfo profileInfo = new CustAddressProfileInfo();
 
 		profileInfo.setFloorNo(generalProfile.getCurrentAddrFloorNo());
@@ -276,7 +283,27 @@ public class CustomerProfileService {
 
 		createdIncomeCriteriaDependency(response, response.getIncomeBaseSalary());
 
+		createSourceOfData(response, crmId);
+
 		return response;
+	}
+
+	/**
+	 * Create source of data
+	 * 
+	 * @param response
+	 * @param crmId
+	 */
+	private void createSourceOfData(WorkingInfoResponse response, String crmId) {
+		try {
+			ResponseInstantLoanGetEligibleProduct responseInstantLoadGetEligibleProduct = instnceGetEligibleProductClient
+					.getEligibleProduct(crmId);
+
+			InstantCreditCard instamtCard = responseInstantLoadGetEligibleProduct.getBody().getInstantCreditCard()[0];
+			response.setSourceOfData(instamtCard.getSourceOfData());
+		} catch (RemoteException | ServiceException e) {
+			logger.error(e.toString(), e);
+		}
 	}
 
 	/**
@@ -306,7 +333,7 @@ public class CustomerProfileService {
 		entryLevelFour.setEntryName("100,000-199,999 THB");
 		entryLevelFour.setEntryCode("199999");
 		entry.add(entryLevelFour);
-		
+
 		CodeEntry entryLevelFive = new CodeEntry();
 		entryLevelFive.setEntryName(">=200,000 THB");
 		entryLevelFive.setEntryCode("200000");
@@ -352,7 +379,7 @@ public class CustomerProfileService {
 	 * @return
 	 */
 	private CustAddressProfileInfo fillUpParamWorkAddressInfo(List<Province> provinceInfos,
-															  CustGeneralProfileResponse profileResponse) {
+			CustGeneralProfileResponse profileResponse) {
 		CustAddressProfileInfo custAddressProfile = new CustAddressProfileInfo();
 		custAddressProfile.setDistrictNameTh(profileResponse.getWorkAddrdistrictNameTh());
 		custAddressProfile.setFloorNo(profileResponse.getWorkAddrFloorNo());
