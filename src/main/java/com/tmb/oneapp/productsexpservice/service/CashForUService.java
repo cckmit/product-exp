@@ -79,16 +79,11 @@ public class CashForUService {
 	 * @return
 	 */
 	private String formateDigit(String cashTransferVat) {
-		String returnFormate = cashTransferVat;
-		try {
-			BigDecimal number = new BigDecimal(cashTransferVat);
-			number.setScale(2);
-			returnFormate = number.toString();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
 
-		return returnFormate;
+		BigDecimal number = new BigDecimal(cashTransferVat);
+		number = number.setScale(2);
+
+		return number.toString();
 	}
 
 	/**
