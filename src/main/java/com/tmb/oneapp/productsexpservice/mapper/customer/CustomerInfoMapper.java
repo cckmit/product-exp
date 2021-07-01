@@ -1,8 +1,10 @@
 package com.tmb.oneapp.productsexpservice.mapper.customer;
 
+import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.CustomerInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -12,6 +14,7 @@ import java.util.Calendar;
 
 @Component
 public class CustomerInfoMapper {
+    private static final TMBLogger<CustomerInfoMapper> logger = new TMBLogger<>(CustomerInfoMapper.class);
 
     private String customerServiceDateFormat = "yyyy-MM-dd";
     private String openPortFolioDateFormat = "yyyy-MM-dd'T'HH:mm:ss";
@@ -42,7 +45,7 @@ public class CustomerInfoMapper {
                     .customerLastNameTh(customerResponse.getCustomerThaiLastName())
                     .build();
         }catch (ParseException ex){
-            ex.printStackTrace();
+            logger.info("Error ParseException");
         }
         return null;
     }
