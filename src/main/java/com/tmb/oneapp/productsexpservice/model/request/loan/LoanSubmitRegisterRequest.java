@@ -8,15 +8,23 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class LoanSubmitRegisterRequest {
+    private String appType;
     private BigDecimal requestCreditLimit;
     private String productCode;
     private BigDecimal limitApplied;
     private BigDecimal tenure;
+    private String mailPreference;
+    private String cardDeliveryAddress;
+    private String debitAccountName;
+    private String debitAccountNo;
     private String disburstBankName;
     private String disburstAccountName;
-    private BigDecimal paymentMethod;
-    private BigDecimal paymentAccountNo;
+    private String disburstAccountNo;
+    private String paymentMethod;
+    private String paymentAccountNo;
     private String paymentAccountName;
+    private String mailingPreference;
+    private String cardDelivery;
     private BigDecimal payMethodCriteria;
     private String loanWithOtherBank;
     private String considerLoanWithOtherBank;
@@ -33,8 +41,6 @@ public class LoanSubmitRegisterRequest {
     private String employmentFinalTotalIncome;
     private String natureOfRequest;
     private String saleChannel;
-
-
 
 
 }
