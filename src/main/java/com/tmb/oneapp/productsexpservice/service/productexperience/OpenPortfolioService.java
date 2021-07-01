@@ -6,6 +6,7 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
@@ -133,7 +134,12 @@ public class OpenPortfolioService {
             ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> termAndCondition = commonServiceClient.getTermAndConditionByServiceCodeAndChannel(
                     correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
             if (!termAndCondition.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(termAndCondition.getBody().getData())) {
-                throw new RuntimeException("========== failed get termandcondition service ==========");
+                throw new TMBCommonException(
+                        ResponseCode.FAILED.getCode(),
+                        "========== failed get termandcondition service ==========",
+                        ResponseCode.FAILED.getService(),
+                        HttpStatus.OK,
+                        null);
             }
 
             tmbOneServiceResponse.setStatus(successStatus());
@@ -157,12 +163,22 @@ public class OpenPortfolioService {
 
     private void validateCustomerService(ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfo) throws Exception {
         if (!customerInfo.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(customerInfo.getBody().getData()))
-            throw new RuntimeException("========== failed customer search service ==========");
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    "========== failed customer search service ==========",
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
     }
 
     private void validateAccountList(List<DepositAccount> depositAccountList) throws Exception {
         if (depositAccountList.isEmpty())
-            throw new RuntimeException("========== failed account return 0 in list ==========");
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    "========== failed account return 0 in list ==========",
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
     }
 
 
