@@ -23,7 +23,7 @@ import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerRespons
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
-import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsynService;
@@ -95,56 +95,56 @@ public class OpenPortfolioService {
      */
     public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, OpenPortfolioValidationRequest openPortfolioValidateRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
-            try{
-                String crmID = openPortfolioValidateRequest.getCrmId();
-                FundResponse fundResponse = new FundResponse();
-                fundResponse = productsExpService.isServiceHour(correlationId,fundResponse);
-                if(fundResponse.isError()){
-                    TmbStatus status = new TmbStatus();
-                    status.setCode(fundResponse.getErrorCode());
-                    status.setDescription(fundResponse.getErrorDesc());
-                    status.setMessage(fundResponse.getErrorMsg());
-                    status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-                    tmbOneServiceResponse.setStatus(status);
-                    return tmbOneServiceResponse;
-                }
-                CustomerSearchResponse customerInfo = null;
-                List<DepositAccount> depositAccountList = null;
-                if(openPortfolioValidateRequest.isExistingCustomer()){
-                    CompletableFuture<ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>> customerInfoFuture =
-                    CompletableFuture.completedFuture(customerServiceClient.customerSearch(crmID,correlationId,CrmSearchBody.builder()
-                                    .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build()));
-                    CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-                                    CompletableFuture<String> accountInfo =
-                            CompletableFuture.completedFuture(accountRequestClient.callCustomerExpService(UtilMap.createHeader(correlationId),crmID));
-                    CompletableFuture.allOf(customerInfoFuture,accountInfo);
-                    validateCustomerService(customerInfoFuture.get());
-                    customerInfo = customerInfoFuture.get().getBody().getData().get(0);
-                    UtilMap utilMap = new UtilMap();
-                    depositAccountList = utilMap.mappingAccount(fetchCommonConfigByModule.get(),accountInfo.get());
-                    validateAccountList(depositAccountList);
-                }else{
-                    ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoResponse = customerServiceClient.customerSearch(crmID,correlationId,CrmSearchBody.builder()
-                            .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build());
-                    validateCustomerService(customerInfoResponse);
-                    customerInfo  = customerInfoResponse.getBody().getData().get(0);
-                }
-
-                ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> termAndCondition = commonServiceClient.getTermAndConditionByServiceCodeAndChannel(
-                        correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
-                if(!termAndCondition.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(termAndCondition.getBody().getData())){
-                    throw new RuntimeException("========== failed get termandcondition service ==========");
-                }
-
-                tmbOneServiceResponse.setStatus(successStatus());
-                mappingResponseValidateOpenPortFolio(tmbOneServiceResponse,customerInfo,termAndCondition.getBody().getData(),depositAccountList);
-                return tmbOneServiceResponse;
-            }catch (Exception ex){
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-                tmbOneServiceResponse.setStatus(null);
-                tmbOneServiceResponse.setData(null);
+        try {
+            String crmID = openPortfolioValidateRequest.getCrmId();
+            FundResponse fundResponse = new FundResponse();
+            fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
+            if (fundResponse.isError()) {
+                TmbStatus status = new TmbStatus();
+                status.setCode(fundResponse.getErrorCode());
+                status.setDescription(fundResponse.getErrorDesc());
+                status.setMessage(fundResponse.getErrorMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                tmbOneServiceResponse.setStatus(status);
                 return tmbOneServiceResponse;
             }
+            CustomerSearchResponse customerInfo = null;
+            List<DepositAccount> depositAccountList = null;
+            if (openPortfolioValidateRequest.isExistingCustomer()) {
+                CompletableFuture<ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>> customerInfoFuture =
+                        CompletableFuture.completedFuture(customerServiceClient.customerSearch(crmID, correlationId, CrmSearchBody.builder()
+                                .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build()));
+                CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+                CompletableFuture<String> accountInfo =
+                        CompletableFuture.completedFuture(accountRequestClient.callCustomerExpService(UtilMap.createHeader(correlationId), crmID));
+                CompletableFuture.allOf(customerInfoFuture, accountInfo);
+                validateCustomerService(customerInfoFuture.get());
+                customerInfo = customerInfoFuture.get().getBody().getData().get(0);
+                UtilMap utilMap = new UtilMap();
+                depositAccountList = utilMap.mappingAccount(fetchCommonConfigByModule.get(), accountInfo.get());
+                validateAccountList(depositAccountList);
+            } else {
+                ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoResponse = customerServiceClient.customerSearch(crmID, correlationId, CrmSearchBody.builder()
+                        .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build());
+                validateCustomerService(customerInfoResponse);
+                customerInfo = customerInfoResponse.getBody().getData().get(0);
+            }
+
+            ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> termAndCondition = commonServiceClient.getTermAndConditionByServiceCodeAndChannel(
+                    correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+            if (!termAndCondition.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(termAndCondition.getBody().getData())) {
+                throw new RuntimeException("========== failed get termandcondition service ==========");
+            }
+
+            tmbOneServiceResponse.setStatus(successStatus());
+            mappingResponseValidateOpenPortFolio(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
+            return tmbOneServiceResponse;
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            tmbOneServiceResponse.setStatus(null);
+            tmbOneServiceResponse.setData(null);
+            return tmbOneServiceResponse;
+        }
     }
 
     private void mappingResponseValidateOpenPortFolio(TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse, CustomerSearchResponse customerInfo, TermAndConditionResponseBody termAndCondition, List<DepositAccount> depositAccountList) {
@@ -156,12 +156,12 @@ public class OpenPortfolioService {
     }
 
     private void validateCustomerService(ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfo) throws Exception {
-        if(!customerInfo.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(customerInfo.getBody().getData()))
+        if (!customerInfo.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(customerInfo.getBody().getData()))
             throw new RuntimeException("========== failed customer search service ==========");
     }
 
     private void validateAccountList(List<DepositAccount> depositAccountList) throws Exception {
-        if(depositAccountList.isEmpty())
+        if (depositAccountList.isEmpty())
             throw new RuntimeException("========== failed account return 0 in list ==========");
     }
 

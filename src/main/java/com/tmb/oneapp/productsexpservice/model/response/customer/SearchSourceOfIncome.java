@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 public class SearchSourceOfIncome {
 
     @JsonAlias({"ident_employment"})
-    public String identifierEmployment;
+    private String identifierEmployment;
 
     @JsonAlias({"src_of_inc_code"})
-    public String srcOfIncCode;
+    private String srcOfIncCode;
 }

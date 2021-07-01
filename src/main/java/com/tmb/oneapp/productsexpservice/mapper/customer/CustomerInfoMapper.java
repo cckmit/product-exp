@@ -2,7 +2,7 @@ package com.tmb.oneapp.productsexpservice.mapper.customer;
 
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.CustomerInfo;
-import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import org.springframework.stereotype.Component;
 
 @Component
