@@ -47,7 +47,7 @@ public class OpenPortfolioController {
     /**
      * Description:- method validation to handle cases of open portfolio validation
      *
-     * @param correlationId                  the correlation id
+     * @param correlationId        the correlation id
      * @param openPortfolioRequest the open portfolio request
      * @return return term and condition with status
      */
@@ -56,15 +56,14 @@ public class OpenPortfolioController {
     @PostMapping(value = "/open/portfolio", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> validateOpenPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest)
-    {
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+            @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioService.validateOpenPortfolioService(correlationId, openPortfolioRequest);
-        if(!StringUtils.isEmpty(oneServiceResponse.getData())){
+        if (!StringUtils.isEmpty(oneServiceResponse.getData())) {
             return ResponseEntity.ok(oneServiceResponse);
-        }else{
+        } else {
             oneServiceResponse.setStatus(notFoundStatus());
-            return new ResponseEntity(oneServiceResponse,HttpStatus.NOT_FOUND);
+            return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
 
     }
@@ -91,7 +90,7 @@ public class OpenPortfolioController {
     @PostMapping(value = "/info/openportfolio", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> createCustomer(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody CustomerRequest customerRequest) {
 
         TmbOneServiceResponse<OpenPortfolioValidationResponse> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -111,7 +110,7 @@ public class OpenPortfolioController {
     /**
      * Description:- method call to MF service to open portfolio
      *
-     * @param correlationId        the correlation id
+     * @param correlationId            the correlation id
      * @param openPortfolioRequestBody the open portfolio request
      * @return return open portfolio data and portfolio nickname
      */
@@ -120,7 +119,7 @@ public class OpenPortfolioController {
     @PostMapping(value = "/openportfolio", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> openPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody OpenPortfolioRequestBody openPortfolioRequestBody) {
 
         TmbOneServiceResponse<PortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();

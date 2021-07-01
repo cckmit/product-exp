@@ -16,9 +16,8 @@ public class ProductsExpServiceConstant {
     public static final String HEADER_TIMESTAMP = "Timestamp";
     public static final String CONTENT_TYPE = "content-type";
     public static final String EXCEPTION_OCCURED = "Exception occured : {}";
-    public static final String HEADER_CORRELATION_ID = "X-Correlation-ID";
     public static final String HEADER_CORRELATION_ID_DESC = "Correlation ID";
-    public static final String HEADER_CRM_ID = "crmId";
+    public static final String HEADER_CRM_ID = "x-crmid";
     public static final String X_COR_ID_DEFAULT = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";
