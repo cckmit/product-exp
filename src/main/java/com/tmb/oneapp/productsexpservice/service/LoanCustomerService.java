@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -46,17 +47,6 @@ public class LoanCustomerService {
 
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
-    private static final Double INTEREST = 0.16;
-    private static final BigDecimal PRICING_MONTH_FROM = BigDecimal.valueOf(1);
-    private static final BigDecimal PRICING_MONTH_TO = BigDecimal.valueOf(3);
-    private static final BigDecimal RATE_VARIANCE = BigDecimal.valueOf(1.73);
-    private static final BigDecimal PRICING_MONTH_FROM_4 = BigDecimal.valueOf(4);
-    private static final BigDecimal PRICING_MONTH_TO_5 = BigDecimal.valueOf(5);
-    private static final BigDecimal RATE_VARIANCE_1 = BigDecimal.valueOf(12.00);
-    private static final BigDecimal PRICING_MONTH_FROM_6 = BigDecimal.valueOf(6);
-    private static final BigDecimal PRICING_MONTH_TO_12 = BigDecimal.valueOf(12);
-    private static final BigDecimal RATE_VARIANCE_2 = BigDecimal.valueOf(23.00);
-    private static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(500000);
     private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
@@ -140,25 +130,16 @@ public class LoanCustomerService {
     private List<LoanCustomerPricing> getLoanCustomerPricings(Facility facility) {
         List<LoanCustomerPricing> pricings = new ArrayList<>();
         if (facility.getFeatureType().equals(FEATURE_TYPE_S)) {
-
-            LoanCustomerPricing pricing = new LoanCustomerPricing();
-
-            pricing.setMonthFrom(PRICING_MONTH_FROM);
-            pricing.setMonthTo(PRICING_MONTH_TO);
-            pricing.setRateVariance(RATE_VARIANCE);
-
-            LoanCustomerPricing pricing1 = new LoanCustomerPricing();
-            pricing1.setMonthFrom(PRICING_MONTH_FROM_4);
-            pricing1.setMonthTo(PRICING_MONTH_TO_5);
-            pricing1.setRateVariance(RATE_VARIANCE_1);
-
-            LoanCustomerPricing pricing2 = new LoanCustomerPricing();
-            pricing2.setMonthFrom(PRICING_MONTH_FROM_6);
-            pricing2.setMonthTo(PRICING_MONTH_TO_12);
-            pricing2.setRateVariance(RATE_VARIANCE_2);
-            pricings.add(pricing);
-            pricings.add(pricing1);
-            pricings.add(pricing2);
+            for (var item : facility.getPricings()) {
+                LoanCustomerPricing pricing = new LoanCustomerPricing();
+                pricing.setMonthFrom(item.getMonthFrom());
+                pricing.setMonthTo(item.getMonthTo());
+                pricing.setYearFrom(item.getYearFrom());
+                pricing.setYearTo(item.getYearTo());
+                pricing.setRate(String.valueOf(item.getCalculatedRate().floatValue() * 100));
+                pricing.setRateVariance(BigDecimal.valueOf(item.getRateVaraince().floatValue() * 100));
+                pricings.add(pricing);
+            }
         }
 
         return pricings;
@@ -212,9 +193,14 @@ public class LoanCustomerService {
     }
 
 
-    private AnnualInterest getAnnualInterest() {
+    private AnnualInterest getAnnualInterest(Facility facility) {
         AnnualInterest annualInterest = new AnnualInterest();
-        annualInterest.setInterest(INTEREST);
+        for (Pricing q : facility.getPricings()) {
+            if (q.getPricingType().equals("C")) {
+                annualInterest.setInterest(q.getCalculatedRate().doubleValue() * 100);
+                break;
+            }
+        }
         annualInterest.setVat(VAT);
         annualInterest.setCharge(CHARGE);
         return annualInterest;
@@ -230,11 +216,11 @@ public class LoanCustomerService {
 
         Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
 
-        AnnualInterest annualInterest = getAnnualInterest();
-        response.setAnnualInterest(annualInterest);
-
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityS);
         response.setPricings(pricings);
+
+        AnnualInterest annualInterest = getAnnualInterest(facility);
+        response.setAnnualInterest(annualInterest);
 
         List<LoanCustomerTenure> installments = getLoanCustomerTenure(facilityS);
         response.setInstallments(installments);
@@ -249,9 +235,9 @@ public class LoanCustomerService {
 
     private Facility getFacilityFeature(Facility f, Long caID, String featureType) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = f;
-        facility.getFeature().setDisbAcctName("0");
-        facility.getFeature().setDisbAcctNo("0");
-        facility.getFeature().setDisbBankCode("0");
+        facility.getFeature().setDisbAcctName(f.getFeature().getDisbAcctName());
+        facility.getFeature().setDisbAcctNo(f.getFeature().getDisbAcctNo());
+        facility.getFeature().setDisbBankCode(f.getFeature().getDisbBankCode());
         facility.getFeature().setRequestAmount(BigDecimal.ZERO);
         facility.getFeature().setTenure(1L);
         facility.setFeatureType(featureType);
@@ -265,7 +251,7 @@ public class LoanCustomerService {
         facilityFeature.setFeatureType(facility.getFeatureType());
         facilityFeature.setAmountMin(AMOUNT_MIN);
         facilityFeature.setAmountMax(facility.getLimitApplied());
-        facilityFeature.setLimitAmount(LIMIT_AMOUNT);
+        facilityFeature.setLimitAmount(facility.getLimitApplied());
         return facilityFeature;
     }
 
