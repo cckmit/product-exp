@@ -195,10 +195,12 @@ public class LoanCustomerService {
 
     private AnnualInterest getAnnualInterest(Facility facility) {
         AnnualInterest annualInterest = new AnnualInterest();
-        for (Pricing q : facility.getPricings()) {
-            if (q.getPricingType().equals("C")) {
-                annualInterest.setInterest(q.getCalculatedRate().doubleValue() * 100);
-                break;
+        if (facility.getPricings() != null) {
+            for (Pricing q : facility.getPricings()) {
+                if (q.getPricingType().equals("C")) {
+                    annualInterest.setInterest(q.getCalculatedRate().doubleValue() * 100);
+                    break;
+                }
             }
         }
         annualInterest.setVat(VAT);
@@ -212,9 +214,9 @@ public class LoanCustomerService {
         List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
         response.setDisburstAccounts(disburstAccounts);
 
-        Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
-
         Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
+
+        Facility facilityS = getFacilityFeature(facility, caID, FEATURE_TYPE_S);
 
         List<LoanCustomerPricing> pricings = getLoanCustomerPricings(facilityS);
         response.setPricings(pricings);
