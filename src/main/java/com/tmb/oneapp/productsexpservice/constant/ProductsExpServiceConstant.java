@@ -189,4 +189,5 @@ public class ProductsExpServiceConstant {
 
     //Service Customer Search
     public static final String SEARCH_TYPE = "rm-id";
+    public static final String MIB_CUSTOMER_STATIC_ID = "D0000000988";
 }

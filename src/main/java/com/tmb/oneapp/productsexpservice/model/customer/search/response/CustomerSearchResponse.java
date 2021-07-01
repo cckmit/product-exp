@@ -1,7 +1,8 @@
-package com.tmb.oneapp.productsexpservice.model.response.customer;
+package com.tmb.oneapp.productsexpservice.model.customer.search.response;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tmb.oneapp.productsexpservice.model.response.customer.SearchSourceOfIncome;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,152 +16,153 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerSearchResponse {
+
     @JsonAlias("rm_id")
-    public String crmId;
+    private String crmId;
 
     @JsonAlias({"id_no"})
-    public String idNumber;
+    private String idNumber;
 
     @JsonAlias({"customer_type"})
-    public String customerType;
+    private String customerType;
 
     @JsonAlias({"customer_name_en"})
-    public String customerEnglishName;
+    private String customerEnglishName;
 
     @JsonAlias({"customer_name_th"})
-    public String customerThaiName;
+    private String customerThaiName;
 
     @JsonAlias({"customer_first_name_en"})
-    public String customerEnglishFirstName;
+    private String customerEnglishFirstName;
 
     @JsonAlias({"customer_last_name_en"})
-    public String customerEnglishLastName;
+    private String customerEnglishLastName;
 
     @JsonAlias({"customer_first_name_th"})
-    public String customerThaiFirstName;
+    private String customerThaiFirstName;
 
     @JsonAlias({"customer_last_name_th"})
-    public String customerThaiLastName;
+    private String customerThaiLastName;
 
-    public String nationality;
+    private String nationality;
 
     @JsonAlias({"phone_no_full"})
-    public String phoneNumberFull;
+    private String phoneNumberFull;
 
-    public String gender;
+    private String gender;
 
     @JsonAlias({"marital_status"})
-    public String maritalStatus;
+    private String maritalStatus;
 
     @JsonAlias({"mobile_number"})
-    public String mobileNumber;
+    private String mobileNumber;
 
-    public String email;
+    private String email;
 
     @JsonAlias({"email_verify_status"})
-    public String emailVerifyStatus;
+    private String emailVerifyStatus;
 
     @JsonAlias({"email_type"})
-    public String emailType;
+    private String emailType;
 
     @JsonAlias({"birth_date"})
-    public String birthDate;
+    private String birthDate;
 
     @JsonAlias({"issue_date"})
-    public String issueDate;
+    private String issueDate;
 
     @JsonAlias({"expiry_date"})
-    public String expiryDate;
+    private String expiryDate;
 
     @JsonAlias({"contact_address"})
-    public String contactAddress;
+    private String contactAddress;
 
     @JsonAlias({"register_address"})
-    public String registerAddress;
+    private String registerAddress;
 
     @JsonAlias({"office_address"})
-    public String officeAddress;
+    private String officeAddress;
 
     @JsonAlias({"home_phone_no"})
-    public String homePhoneNumber;
+    private String homePhoneNumber;
 
     @JsonAlias({"office_phone_no"})
-    public String officePhoneNumber;
+    private String officePhoneNumber;
 
     @JsonAlias({"ekyc_flag"})
-    public String ekycFlag;
+    private String ekycFlag;
 
     @JsonAlias({"kyc_limited_flag"})
-    public String kycLimitedFlag;
+    private String kycLimitedFlag;
 
     @JsonAlias({"kyc_block_date"})
-    public String kycBlockDate;
+    private String kycBlockDate;
 
     @JsonAlias({"kyc_last_update_date"})
-    public String kycLastUpdateDate;
+    private String kycLastUpdateDate;
 
     @JsonAlias({"ekyc_identify_assurance_level"})
-    public String ekycIdentifyAssuranceLevel;
+    private String ekycIdentifyAssuranceLevel;
 
     @JsonAlias({"pdpa_flag"})
-    public String pdpaFlag;
+    private String pdpaFlag;
 
     @JsonAlias({"pdpa_accepted_version"})
-    public String pdpaAcceptedVersion;
+    private String pdpaAcceptedVersion;
 
     @JsonAlias({"pdpa_from_channel"})
-    public String pdpaFromChannel;
+    private String pdpaFromChannel;
 
     @JsonAlias({"pdpa_last_updated_date"})
-    public String pdpaLastUpdatedDate;
+    private String pdpaLastUpdatedDate;
 
     @JsonAlias({"data_analytic_flag"})
-    public String dataAnalyticFlag;
+    private String dataAnalyticFlag;
 
     @JsonAlias({"data_analytic_accepted_version"})
-    public String dataAnalyticAcceptedVersion;
+    private String dataAnalyticAcceptedVersion;
 
     @JsonAlias({"data_analytic_from_channel"})
-    public String dataAnalyticFromChannel;
+    private String dataAnalyticFromChannel;
 
     @JsonAlias({"data_analytic_last_updated_date"})
-    public String dataAnalyticLastUpdatedDate;
+    private String dataAnalyticLastUpdatedDate;
 
     @JsonAlias({"market_conduct_flag"})
-    public String marketConductFlag;
+    private String marketConductFlag;
 
     @JsonAlias({"market_conduct_accepted_version"})
-    public String marketConductAcceptedVersion;
+    private String marketConductAcceptedVersion;
 
     @JsonAlias({"market_conduct_from_channel"})
-    public String marketConductFromChannel;
+    private String marketConductFromChannel;
 
     @JsonAlias({"market_conduct_last_updated_date"})
-    public String marketConductLastUpdatedDate;
+    private String marketConductLastUpdatedDate;
 
     @JsonAlias({"occupation_code"})
-    public String occupationCode;
+    private String occupationCode;
 
     @JsonAlias({"business_type_desc"})
-    public String businessTypeDescription;
+    private String businessTypeDescription;
 
-    public Object salary;
+    private Object salary;
 
     @JsonAlias({"working_place"})
-    public String workingPlace;
+    private String workingPlace;
 
     @JsonAlias({"country_of_income"})
-    public String countryOfIncome;
+    private String countryOfIncome;
 
     @JsonAlias({"source_of_incomes"})
-    public List<SearchSourceOfIncome> sourceOfIncomes;
+    private List<SearchSourceOfIncome> sourceOfIncomes;
 
     @JsonAlias({"fatca_flag"})
-    public String fatcaFlag;
+    private String fatcaFlag;
 
     @JsonAlias("amloFlag")
-    public String amloFlag;
+    private String amloFlag;
 
     @JsonAlias("customer_risk_level")
-    public String customerRiskLevel;
+    private String customerRiskLevel;
 }

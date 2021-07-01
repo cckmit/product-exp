@@ -12,7 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
@@ -49,8 +49,6 @@ public class ProductExpServiceCloseTest {
 
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-    private final String topicName = "activity";
-
 
     @BeforeEach
     public void setUp() {
@@ -63,7 +61,7 @@ public class ProductExpServiceCloseTest {
         customerServiceClient = mock(CustomerServiceClient.class);
         mapper = mock(ObjectMapper.class);
         productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient,
-                productExpAsynService, topicName, customerExpServiceClient,customerServiceClient);
+                productExpAsynService, customerExpServiceClient, customerServiceClient);
 
     }
 
@@ -208,7 +206,7 @@ public class ProductExpServiceCloseTest {
 
     private void mockGetFlatcaResponseFromCustomerSearch() {
         Map<String, String> response = new HashMap<>();
-        response.put(ProductsExpServiceConstant.FATCA_FLAG,"0");
+        response.put(ProductsExpServiceConstant.FATCA_FLAG, "0");
         TmbOneServiceResponse<List<CustomerSearchResponse>> customerSearchResponse = new TmbOneServiceResponse<>();
         customerSearchResponse.setData(List.of(CustomerSearchResponse.builder().fatcaFlag("0").build()));
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
@@ -352,36 +350,36 @@ public class ProductExpServiceCloseTest {
                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
-        productsExpService.logactivity(activityLogs);
+        productsExpService.logActivity(activityLogs);
         Assert.assertNotNull(activityLogs);
 
     }
 
 
-       @Test
+    @Test
     void testCreateLogWithException() throws Exception {
-           FfsRequestBody ffsRequestBody = new FfsRequestBody();
-           ffsRequestBody.setProcessFlag("N");
-           ffsRequestBody.setLanguage("en");
-           ffsRequestBody.setFundCode("TMONEY");
-           ffsRequestBody.setCrmId("001100000000000000000012025950");
-           ffsRequestBody.setUnitHolderNo("PT000000000000587870");
+        FfsRequestBody ffsRequestBody = new FfsRequestBody();
+        ffsRequestBody.setProcessFlag("N");
+        ffsRequestBody.setLanguage("en");
+        ffsRequestBody.setFundCode("TMONEY");
+        ffsRequestBody.setCrmId("001100000000000000000012025950");
+        ffsRequestBody.setUnitHolderNo("PT000000000000587870");
 
-           AlternativeRq alternativeRq = new AlternativeRq();
-           alternativeRq.setCrmId(ffsRequestBody.getCrmId());
-           alternativeRq.setFundCode(ffsRequestBody.getFundCode());
-           alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
-           alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
-           alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+        AlternativeRq alternativeRq = new AlternativeRq();
+        alternativeRq.setCrmId(ffsRequestBody.getCrmId());
+        alternativeRq.setFundCode(ffsRequestBody.getFundCode());
+        alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
+        alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
+        alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
 
-           ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                   ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-                   ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
-           doNothing().when(kafkaProducerService).sendMessageAsync(anyString(), any());
-           when(mapper.writeValueAsString(anyString())).thenThrow(MockitoException.class);
+        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
+                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
+        doNothing().when(kafkaProducerService).sendMessageAsync(anyString(), any());
+        when(mapper.writeValueAsString(anyString())).thenThrow(MockitoException.class);
 
-           productsExpService.logactivity(activityLogs);
-           Assert.assertNotNull(activityLogs);
+        productsExpService.logActivity(activityLogs);
+        Assert.assertNotNull(activityLogs);
     }
 
     @Test
@@ -403,7 +401,7 @@ public class ProductExpServiceCloseTest {
                 ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
                 ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
-        productsExpService.logactivity(activityLogs);
+        productsExpService.logActivity(activityLogs);
         Assert.assertNotNull(activityLogs);
 
     }

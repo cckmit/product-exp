@@ -34,7 +34,7 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
@@ -74,14 +74,24 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ProductsExpService {
+
     private static final TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
+
     private final InvestmentRequestClient investmentRequestClient;
+
     private final AccountRequestClient accountRequestClient;
+
     private final CommonServiceClient commonServiceClient;
+
     private final ProductExpAsynService productExpAsynService;
+
     private final KafkaProducerService kafkaProducerService;
-    private final String topicName;
+
+    @Value("${com.tmb.oneapp.service.activity.topic.name}")
+    private String topicName;
+
     private final CustomerExpServiceClient customerExpServiceClient;
+
     private final CustomerServiceClient customerServiceClient;
 
 
@@ -91,7 +101,6 @@ public class ProductsExpService {
                               KafkaProducerService kafkaProducerService,
                               CommonServiceClient commonServiceClient,
                               ProductExpAsynService productExpAsynService,
-                              @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName,
                               CustomerExpServiceClient customerExpServiceClient,
                               CustomerServiceClient customerServiceClient) {
 
@@ -100,7 +109,6 @@ public class ProductsExpService {
         this.accountRequestClient = accountRequestClient;
         this.commonServiceClient = commonServiceClient;
         this.productExpAsynService = productExpAsynService;
-        this.topicName = topicName;
         this.customerExpServiceClient = customerExpServiceClient;
         this.customerServiceClient = customerServiceClient;
     }
@@ -314,13 +322,13 @@ public class ProductsExpService {
      * @return FfsRsAndValidation
      */
     @LogAround
-    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody)  {
+    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
             String fatcaFlag = getFatcaFlag(correlationId, ffsRequestBody.getCrmId());
-            ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation,fatcaFlag);
+            ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation, fatcaFlag);
 
         } else {
             errorData(ffsRsAndValidation, fundResponse);
@@ -350,7 +358,7 @@ public class ProductsExpService {
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq)  {
+    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq) {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
@@ -359,7 +367,7 @@ public class ProductsExpService {
             ffsRequestBody.setProcessFlag(alternativeRq.getProcessFlag());
             ffsRequestBody.setCrmId(alternativeRq.getCrmId());
             String fatcaFlag = getFatcaFlag(correlationId, ffsRequestBody.getCrmId());
-            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse,fatcaFlag);
+            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse, fatcaFlag);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
                 fundResponseSuccess(fundResponse);
             }
@@ -367,15 +375,14 @@ public class ProductsExpService {
         return fundResponse;
     }
 
-    private String getFatcaFlag(String correlationId,String crmId) {
+    private String getFatcaFlag(String correlationId, String crmId) {
         CrmSearchBody request = CrmSearchBody.builder()
                 .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
                 .searchValue(crmId)
                 .build();
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
-                customerServiceClient.customerSearch(crmId,correlationId,request);
-        String fatcaFlag = response.getBody().getData().get(0).getFatcaFlag();
-        return  fatcaFlag;
+                customerServiceClient.customerSearch(crmId, correlationId, request);
+        return response.getBody().getData().get(0).getFatcaFlag();
     }
 
     /**
@@ -399,7 +406,7 @@ public class ProductsExpService {
      */
     @LogAround
     public FfsRsAndValidation validationAlternativeFlow(String correlationId, FfsRequestBody ffsRequestBody,
-                                                        FfsRsAndValidation ffsRsAndValidation,String fatcaFlag) {
+                                                        FfsRsAndValidation ffsRsAndValidation, String fatcaFlag) {
         final boolean isNotValid = true;
         boolean isStoped = false;
         if (isCASADormant(correlationId, ffsRequestBody)) {
@@ -424,12 +431,12 @@ public class ProductsExpService {
             errorResponse(ffsRsAndValidation, isNotValid);
             isStoped = true;
         }
-        if(!isStoped && fatcaFlag.equalsIgnoreCase("0")){
+        if (!isStoped && fatcaFlag.equalsIgnoreCase("0")) {
             funResponseMapping(ffsRsAndValidation,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-        }else if(!isStoped &&!fatcaFlag.equalsIgnoreCase("N")){
+        } else if (!isStoped && !fatcaFlag.equalsIgnoreCase("N")) {
             funResponseMapping(ffsRsAndValidation,
                     FatcaErrorEnums.USNATIONAL.getCode(),
                     FatcaErrorEnums.USNATIONAL.getMsg(),
@@ -456,7 +463,7 @@ public class ProductsExpService {
      */
     @LogAround
     public FundResponse validationAlternativeSellAndSwitchFlow(String correlationId, FfsRequestBody ffsRequestBody,
-                                                               FundResponse fundResponse,String fatcaFlag) {
+                                                               FundResponse fundResponse, String fatcaFlag) {
         final boolean isNotValid = true;
         if (isSuitabilityExpired(correlationId, ffsRequestBody)) {
             fundResponse.setError(isNotValid);
@@ -470,12 +477,12 @@ public class ProductsExpService {
             return fundResponse;
         }
 
-        if(fatcaFlag.equalsIgnoreCase("0")){
+        if (fatcaFlag.equalsIgnoreCase("0")) {
             funResponseMapping(fundResponse,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-        }else if(!fatcaFlag.equalsIgnoreCase("N")){
+        } else if (!fatcaFlag.equalsIgnoreCase("N")) {
             funResponseMapping(fundResponse,
                     FatcaErrorEnums.USNATIONAL.getCode(),
                     FatcaErrorEnums.USNATIONAL.getMsg(),
@@ -485,7 +492,7 @@ public class ProductsExpService {
         return fundResponse;
     }
 
-    private void funResponseMapping(FundResponse fundResponse,String code,String msg,String desc) {
+    private void funResponseMapping(FundResponse fundResponse, String code, String msg, String desc) {
         fundResponse.setError(true);
         fundResponse.setErrorCode(code);
         fundResponse.setErrorMsg(msg);
@@ -738,13 +745,13 @@ public class ProductsExpService {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
         ArrayList<String> matchClassCode = new ArrayList<>();
         for (FundClass mutualFund : fundClass) {
-            if(mutualFund.getFundClassCode().equals("090")){
+            if (mutualFund.getFundClassCode().equals("090")) {
                 continue;
             }
             boolean isNotFound = true;
             for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
                 if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())
-                     ) {
+                ) {
                     matchClassCode.add(mutualFund.getFundClassCode());
                     mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                             .fundClassCode(mutualFund.getFundClassCode())
@@ -842,7 +849,7 @@ public class ProductsExpService {
      */
     @Async
     @LogAround
-    public void logactivity(ActivityLogs data) {
+    public void logActivity(ActivityLogs data) {
 
         try {
             ObjectMapper mapper = new ObjectMapper();

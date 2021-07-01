@@ -5,12 +5,13 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
-import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -78,20 +79,19 @@ public interface CustomerServiceClient {
 
 
     /**
-     * @param crmId                   getCustDetails method consume crmId from
-     *                                customers-service
+     * @param crmId getCustDetails method consume crmId from
+     *              customers-service
      */
     @GetMapping(value = "/apis/customers", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getCustomerProfile( @RequestHeader(name = X_CRMID) String crmId);
+    ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getCustomerProfile(@RequestHeader(name = X_CRMID) String crmId);
 
 
     /**
      * Post submit NCB customer case
      *
-     * @param crmId customer ID
+     * @param crmId         customer ID
      * @param correlationId correlationId
-     * @param requestBody CustomerCaseSubmitBody
-     *
+     * @param requestBody   CustomerCaseSubmitBody
      * @return Map<String, String>
      */
     @PostMapping(value = "/apis/customers/case/submit")
@@ -104,10 +104,9 @@ public interface CustomerServiceClient {
     /**
      * Post submit NCB customer case
      *
-     * @param crmId customer ID
+     * @param crmId         customer ID
      * @param correlationId correlationId
-     * @param requestBody CustomerCaseSubmitBody
-     *
+     * @param requestBody   CustomerCaseSubmitBody
      * @return Map<String, String>
      */
     @PostMapping(value = "/apis/customers/search")
