@@ -135,7 +135,6 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailRs.setFundRule(fundRule);
-//            List<DepositAccount> mappingAccount(responseCommon, responseCustomerExp, fundPaymentDetailRs);
             fundPaymentDetailRs.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp));
             return fundPaymentDetailRs;
         }

@@ -17,7 +17,6 @@ import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
 import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.request.OpenPortfolioRequest;
-import com.tmb.oneapp.productsexpservice.model.openportfolio.response.CustomerInfo;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
