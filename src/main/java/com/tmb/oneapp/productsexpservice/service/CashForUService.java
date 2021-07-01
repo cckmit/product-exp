@@ -37,6 +37,7 @@ public class CashForUService {
 
 	/**
 	 * calculate cash for your model
+	 * 
 	 * @param rateRequest
 	 * @param correlationId
 	 * @param requestBody
@@ -55,20 +56,39 @@ public class CashForUService {
 						.getCurrentCashForYouRate();
 				rateCashForUInfo = response.getBody().getData();
 			}
-			responseModelInfo.setCashVatRate(rateCashForUInfo.getCashTransferVat());
-			responseModelInfo.setCashFeeRate(rateCashForUInfo.getCashTransferFee());
+			responseModelInfo.setCashVatRate(formateDigit(rateCashForUInfo.getCashTransferVat()));
+			responseModelInfo.setCashFeeRate(formateDigit(rateCashForUInfo.getCashTransferFee()));
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
 			CardBalances cardBalances = fetchCardResponse.getBody().getCreditCard().getCardBalances();
 			String leadRate = fillterForRateCashTrasfer(installmentRateResponse);
-			responseModelInfo.setCashInterestRate(leadRate);
+			responseModelInfo.setCashInterestRate(formateDigit(leadRate));
 			responseModelInfo.setMaximumTransferAmt(
-					String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer()));
+					formateDigit(String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer())));
 		} else {
 			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody);
 		}
 		return responseModelInfo;
+	}
+
+	/**
+	 * Format with 2 digit
+	 * 
+	 * @param cashTransferVat
+	 * @return
+	 */
+	private String formateDigit(String cashTransferVat) {
+		String returnFormate = cashTransferVat;
+		try {
+			BigDecimal number = new BigDecimal(cashTransferVat);
+			number.setScale(2);
+			returnFormate = number.toString();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return returnFormate;
 	}
 
 	/**
