@@ -81,9 +81,8 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param openPortfolioRequest
      */
-    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolio(String correlationId, OpenPortfolioRequest openPortfolioRequest) {
+    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, OpenPortfolioRequest openPortfolioRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
-
             try{
                 String crmID = openPortfolioRequest.getCrmId();
                 // todo service hour
@@ -98,7 +97,6 @@ public class OpenPortfolioService {
                     tmbOneServiceResponse.setStatus(status);
                     return tmbOneServiceResponse;
                 }
-
                 CustomerSearchResponse customerInfo = new CustomerSearchResponse();
                 List<DepositAccount> depositAccountList = null;
                 if(openPortfolioRequest.isExistingCustomer()){

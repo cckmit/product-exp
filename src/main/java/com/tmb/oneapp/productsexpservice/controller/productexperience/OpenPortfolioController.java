@@ -6,13 +6,11 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.openportfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
-import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -57,7 +55,7 @@ public class OpenPortfolioController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody OpenPortfolioRequest openPortfolioRequest) {
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioService.validateOpenPortfolio(correlationId, openPortfolioRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioService.validateOpenPortfolioService(correlationId, openPortfolioRequest);
         if(!StringUtils.isEmpty(oneServiceResponse.getData())){
             return ResponseEntity.ok(oneServiceResponse);
         }else{
