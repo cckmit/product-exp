@@ -10,6 +10,9 @@ import java.util.Date;
 
 public class TimeUtil {
 
+    private TimeUtil() {
+    }
+
     private static final TMBLogger<TimeUtil> logger = new TMBLogger<>(TimeUtil.class);
 
     /**
