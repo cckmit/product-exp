@@ -1,16 +1,15 @@
 package com.tmb.oneapp.productsexpservice.model.customer.request;
 
 import com.tmb.oneapp.productsexpservice.model.customer.CustomerModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class CustomerRequest extends CustomerModel {
 
 }

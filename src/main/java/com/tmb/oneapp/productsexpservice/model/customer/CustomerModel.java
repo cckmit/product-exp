@@ -1,16 +1,16 @@
 package com.tmb.oneapp.productsexpservice.model.customer;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CustomerModel {
+
     private String crmId;
 
     private String wealthCrmId;
