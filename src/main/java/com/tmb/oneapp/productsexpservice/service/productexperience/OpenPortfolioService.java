@@ -21,21 +21,21 @@ import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.A
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
+import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
-import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsynService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
-import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,18 +112,23 @@ public class OpenPortfolioService {
             CustomerSearchResponse customerInfo = null;
             List<DepositAccount> depositAccountList = null;
             if (!openPortfolioValidateRequest.isExistingCustomer()) {
+
                 CompletableFuture<ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>> customerInfoFuture =
                         CompletableFuture.completedFuture(customerServiceClient.customerSearch(crmID, correlationId, CrmSearchBody.builder()
                                 .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build()));
+
                 CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+
                 CompletableFuture<String> accountInfo =
                         CompletableFuture.completedFuture(accountRequestClient.callCustomerExpService(UtilMap.createHeader(correlationId), crmID));
+
                 CompletableFuture.allOf(customerInfoFuture, accountInfo);
                 validateCustomerService(customerInfoFuture.get());
                 customerInfo = customerInfoFuture.get().getBody().getData().get(0);
                 UtilMap utilMap = new UtilMap();
                 depositAccountList = utilMap.mappingAccount(fetchCommonConfigByModule.get(), accountInfo.get());
                 validateAccountList(depositAccountList);
+
             } else {
                 ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoResponse = customerServiceClient.customerSearch(crmID, correlationId, CrmSearchBody.builder()
                         .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build());

@@ -44,8 +44,6 @@ class OpenPortfolioControllerTest {
     @Mock
     private OpenPortfolioService openPortfolioService;
 
-
-
     @Test
     void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_open_portfolio_request() throws IOException {
         // Given
