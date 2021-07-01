@@ -27,7 +27,7 @@ public class FileGeneratorService {
     private final FopFactory fopFactory;
     private final TransformerFactory transformerFactory;
 
-    private void generatePDFFile(String jsonData, String fileName, String template) throws IOException, FOPException, TransformerException {
+    private String generatePDFFile(String jsonData, String fileName, String template) throws IOException, FOPException, TransformerException {
         FOUserAgent userAgent = fopFactory.newFOUserAgent();
         String baseDir = System.getProperty("user.dir");
         userAgent.getRendererOptions().put(
@@ -41,12 +41,14 @@ public class FileGeneratorService {
         try (OutputStream out = new FileOutputStream(pdfFile);
              BufferedOutputStream buffOut = new BufferedOutputStream(out)) {
 
-            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, userAgent, buffOut);
+            Fop fop = fopFactory.newFop("application/pdf", userAgent, buffOut);
             Transformer transformer = transformerFactory.newTransformer(new StreamSource(new File(template)));
             Result res = new SAXResult(fop.getDefaultHandler());
             transformer.transform(data, res);
             logger.info("generated pdf success:{}", pdfFile.getAbsolutePath());
         }
+
+        return pdfFile.getAbsolutePath();
     }
 
     private String getXMLString(String jsonDataString) {
@@ -59,12 +61,13 @@ public class FileGeneratorService {
         return xmlString;
     }
 
-    public void generateFlexiLoanSubmissionPdf(FlexiLoanSubmissionWrapper request, String fileName, String template) {
+    public String generateFlexiLoanSubmissionPdf(FlexiLoanSubmissionWrapper request, String fileName, String template) throws FOPException, IOException, TransformerException {
         try {
             String jsonData = mapper.writeValueAsString(request);
-            generatePDFFile(jsonData, fileName, template);
+            return generatePDFFile(jsonData, fileName, template);
         } catch (IOException | FOPException | TransformerException e) {
             logger.error("generate flexi loan submission pdf got error:{}", e);
+            throw e;
         }
     }
 }

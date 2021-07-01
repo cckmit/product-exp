@@ -226,16 +226,16 @@
 
                             <xsl:if test="productCode='C2G01' or productCode='C2G02'">
 
-                            <fo:table-row>
-                                <fo:table-cell>
-                                    <fo:block>บัญชีรับเงิน :</fo:block>
-                                </fo:table-cell>
-                                <fo:table-cell text-align="right">
-                                    <fo:block>
-                                        <xsl:value-of select="disburseAccountNo"/>
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
+                                <fo:table-row>
+                                    <fo:table-cell>
+                                        <fo:block>บัญชีรับเงิน :</fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell text-align="right">
+                                        <fo:block>
+                                            <xsl:value-of select="disburseAccountNo"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                </fo:table-row>
 
                                 <fo:table-row>
                                     <fo:table-cell>

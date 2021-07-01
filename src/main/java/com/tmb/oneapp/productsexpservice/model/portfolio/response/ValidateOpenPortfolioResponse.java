@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.openportfolio.response;
+package com.tmb.oneapp.productsexpservice.model.portfolio.response;
 
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;

@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.openportfolio.request;
+package com.tmb.oneapp.productsexpservice.model.portfolio.request;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OpenPortfolioRequest {
+public class OpenPortfolioValidationRequest {
 
     @JsonProperty(value = "rmId")
     private String crmId;

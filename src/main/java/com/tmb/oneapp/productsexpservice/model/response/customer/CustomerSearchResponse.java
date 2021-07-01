@@ -16,150 +16,146 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerSearchResponse {
     @JsonAlias("rm_id")
-    public String rmId;
+    public String crmId;
 
-    @JsonAlias("id_no")
-    public String idNo;
+    @JsonAlias({"id_no"})
+    public String idNumber;
 
-    @JsonAlias("customer_type")
+    @JsonAlias({"customer_type"})
     public String customerType;
 
-    @JsonAlias("customer_name_en")
-    public String customerNameEn;
+    @JsonAlias({"customer_name_en"})
+    public String customerEnglishName;
 
-    @JsonAlias("customer_name_th")
-    public String customerNameTh;
+    @JsonAlias({"customer_name_th"})
+    public String customerThaiName;
 
-    @JsonAlias("customer_first_name_en")
-    public String customerFirstNameEn;
+    @JsonAlias({"customer_first_name_en"})
+    public String customerEnglishFirstName;
 
-    @JsonAlias("customer_last_name_en")
-    public String customerLastNameEn;
+    @JsonAlias({"customer_last_name_en"})
+    public String customerEnglishLastName;
 
-    @JsonAlias("customer_first_name_th")
-    public String customerFirstNameTh;
+    @JsonAlias({"customer_first_name_th"})
+    public String customerThaiFirstName;
 
-    @JsonAlias("customer_last_name_th")
-    public String customerLastNameTh;
+    @JsonAlias({"customer_last_name_th"})
+    public String customerThaiLastName;
 
-    @JsonAlias("nationality")
     public String nationality;
 
-    @JsonAlias("phone_no_full")
-    public String phoneNoFull;
+    @JsonAlias({"phone_no_full"})
+    public String phoneNumberFull;
 
-    @JsonAlias("gender")
     public String gender;
 
-    @JsonAlias("marital_status")
+    @JsonAlias({"marital_status"})
     public String maritalStatus;
 
-    @JsonAlias("mobile_number")
+    @JsonAlias({"mobile_number"})
     public String mobileNumber;
 
-    @JsonAlias("email")
     public String email;
 
-    @JsonAlias("email_verify_status")
+    @JsonAlias({"email_verify_status"})
     public String emailVerifyStatus;
 
-    @JsonAlias("email_type")
+    @JsonAlias({"email_type"})
     public String emailType;
 
-    @JsonAlias("birth_date")
+    @JsonAlias({"birth_date"})
     public String birthDate;
 
-    @JsonAlias("issue_date")
+    @JsonAlias({"issue_date"})
     public String issueDate;
 
-    @JsonAlias("expiry_date")
+    @JsonAlias({"expiry_date"})
     public String expiryDate;
 
-    @JsonAlias("contact_address")
+    @JsonAlias({"contact_address"})
     public String contactAddress;
 
-    @JsonAlias("register_address")
+    @JsonAlias({"register_address"})
     public String registerAddress;
 
-    @JsonAlias("office_address")
+    @JsonAlias({"office_address"})
     public String officeAddress;
 
-    @JsonAlias("home_phone_no")
-    public String homePhoneNo;
+    @JsonAlias({"home_phone_no"})
+    public String homePhoneNumber;
 
-    @JsonAlias("office_phone_no")
-    public String officePhoneNo;
+    @JsonAlias({"office_phone_no"})
+    public String officePhoneNumber;
 
-    @JsonAlias("ekyc_flag")
+    @JsonAlias({"ekyc_flag"})
     public String ekycFlag;
 
-    @JsonAlias("kyc_limited_flag")
+    @JsonAlias({"kyc_limited_flag"})
     public String kycLimitedFlag;
 
-    @JsonAlias("kyc_block_date")
+    @JsonAlias({"kyc_block_date"})
     public String kycBlockDate;
 
-    @JsonAlias("kyc_last_update_date")
+    @JsonAlias({"kyc_last_update_date"})
     public String kycLastUpdateDate;
 
-    @JsonAlias("ekyc_identify_assurance_level")
+    @JsonAlias({"ekyc_identify_assurance_level"})
     public String ekycIdentifyAssuranceLevel;
 
-    @JsonAlias("pdpa_flag")
+    @JsonAlias({"pdpa_flag"})
     public String pdpaFlag;
 
-    @JsonAlias("pdpa_accepted_version")
+    @JsonAlias({"pdpa_accepted_version"})
     public String pdpaAcceptedVersion;
 
-    @JsonAlias("pdpa_from_channel")
+    @JsonAlias({"pdpa_from_channel"})
     public String pdpaFromChannel;
 
-    @JsonAlias("pdpa_last_updated_date")
+    @JsonAlias({"pdpa_last_updated_date"})
     public String pdpaLastUpdatedDate;
 
-    @JsonAlias("data_analytic_flag")
+    @JsonAlias({"data_analytic_flag"})
     public String dataAnalyticFlag;
 
-    @JsonAlias("data_analytic_accepted_version")
+    @JsonAlias({"data_analytic_accepted_version"})
     public String dataAnalyticAcceptedVersion;
 
-    @JsonAlias("data_analytic_from_channel")
+    @JsonAlias({"data_analytic_from_channel"})
     public String dataAnalyticFromChannel;
 
-    @JsonAlias("data_analytic_last_updated_date")
+    @JsonAlias({"data_analytic_last_updated_date"})
     public String dataAnalyticLastUpdatedDate;
 
-    @JsonAlias("market_conduct_flag")
+    @JsonAlias({"market_conduct_flag"})
     public String marketConductFlag;
 
-    @JsonAlias("market_conduct_accepted_version")
+    @JsonAlias({"market_conduct_accepted_version"})
     public String marketConductAcceptedVersion;
 
-    @JsonAlias("market_conduct_from_channel")
+    @JsonAlias({"market_conduct_from_channel"})
     public String marketConductFromChannel;
 
-    @JsonAlias("market_conduct_last_updated_date")
+    @JsonAlias({"market_conduct_last_updated_date"})
     public String marketConductLastUpdatedDate;
 
-    @JsonAlias("occupation_code")
+    @JsonAlias({"occupation_code"})
     public String occupationCode;
 
-    @JsonAlias("business_type_desc")
-    public String businessTypeDesc;
+    @JsonAlias({"business_type_desc"})
+    public String businessTypeDescription;
 
-    @JsonAlias("salary")
     public Object salary;
 
-    @JsonAlias("working_place")
+    @JsonAlias({"working_place"})
     public String workingPlace;
 
-    @JsonAlias("country_of_income")
+    @JsonAlias({"country_of_income"})
     public String countryOfIncome;
 
-    @JsonAlias("source_of_incomes")
+    @JsonAlias({"source_of_incomes"})
     public List<SearchSourceOfIncome> sourceOfIncomes;
 
-    @JsonAlias("fatca_flag")
+    @JsonAlias({"fatca_flag"})
     public String fatcaFlag;
 
     @JsonAlias("amloFlag")

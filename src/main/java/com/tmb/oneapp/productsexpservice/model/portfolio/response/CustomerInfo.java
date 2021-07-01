@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.openportfolio.response;
+package com.tmb.oneapp.productsexpservice.model.portfolio.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.model.request.flexiloan;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -9,22 +10,31 @@ import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.mapper.CustomerInfoMapper;
+import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInfoMapper;
+import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
+import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequest;
+import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
-import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequestBody;
+import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
-import com.tmb.oneapp.productsexpservice.model.openportfolio.request.OpenPortfolioRequest;
-import com.tmb.oneapp.productsexpservice.model.openportfolio.response.OpenPortfolioResponse;
-import com.tmb.oneapp.productsexpservice.model.openportfolio.response.ValidateOpenPortfolioResponse;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsynService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +64,7 @@ public class OpenPortfolioService {
     private AccountRequestClient accountRequestClient;
     private ProductExpAsynService productExpAsynService;
     private CustomerInfoMapper customerInfoMapper;
+    private OpenPortfolioMapper openPortfolioMapper;
 
     @Autowired
     public OpenPortfolioService(CommonServiceClient commonServiceClient,
@@ -63,7 +74,8 @@ public class OpenPortfolioService {
                                 ProductsExpService productsExpService,
                                 AccountRequestClient accountRequestClient,
                                 ProductExpAsynService productExpAsynService,
-                                CustomerInfoMapper customerInfoMapper) {
+                                CustomerInfoMapper customerInfoMapper,
+                                OpenPortfolioMapper openPortfolioMapper) {
         this.commonServiceClient = commonServiceClient;
         this.investmentRequestClient = investmentRequestClient;
         this.investmentAsyncService = investmentAsyncService;
@@ -72,18 +84,19 @@ public class OpenPortfolioService {
         this.accountRequestClient = accountRequestClient;
         this.productExpAsynService = productExpAsynService;
         this.customerInfoMapper = customerInfoMapper;
+        this.openPortfolioMapper = openPortfolioMapper;
     }
 
     /**
      * Method validateOpenPortfolio
      *
      * @param correlationId
-     * @param openPortfolioRequest
+     * @param openPortfolioValidateRequest
      */
-    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, OpenPortfolioRequest openPortfolioRequest) {
+    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, OpenPortfolioValidationRequest openPortfolioValidateRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
             try{
-                String crmID = openPortfolioRequest.getCrmId();
+                String crmID = openPortfolioValidateRequest.getCrmId();
                 // todo service hour
                 FundResponse fundResponse = new FundResponse();
                 fundResponse = productsExpService.isServiceHour(correlationId,fundResponse);
@@ -98,7 +111,7 @@ public class OpenPortfolioService {
                 }
                 CustomerSearchResponse customerInfo = new CustomerSearchResponse();
                 List<DepositAccount> depositAccountList = null;
-                if(openPortfolioRequest.isExistingCustomer()){
+                if(openPortfolioValidateRequest.isExistingCustomer()){
                     CompletableFuture<ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>> customerInfoFuture =
                     CompletableFuture.completedFuture(customerServiceClient.customerSearch(crmID,correlationId,CrmSearchBody.builder()
                                     .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build()));
@@ -167,20 +180,20 @@ public class OpenPortfolioService {
      * Method createCustomer
      *
      * @param correlationId
-     * @param customerRequestBody
+     * @param customerRequest
      */
-    public OpenPortfolioResponse createCustomer(String correlationId, CustomerRequestBody customerRequestBody) {
+    public OpenPortfolioValidationResponse createCustomer(String correlationId, CustomerRequest customerRequest) {
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
-        ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, customerRequestBody);
+        ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, customerRequest);
         if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
             try {
-                AccountRedeemRequest accountRedeemRequest = AccountRedeemRequest.builder().crmId(customerRequestBody.getCrmId()).build();
+                AccountRedeemRequest accountRedeemRequest = AccountRedeemRequest.builder().crmId(customerRequest.getCrmId()).build();
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
                 CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, accountRedeemRequest);
                 CompletableFuture.allOf(fetchAccountPurpose, fetchAccountRedeem);
-                return OpenPortfolioResponse.builder()
-                        .accountPurposeResponseBody(fetchAccountPurpose.get())
-                        .accountRedeemResponseBody(fetchAccountRedeem.get())
+                return OpenPortfolioValidationResponse.builder()
+                        .accountPurposeResponse(fetchAccountPurpose.get())
+                        .accountRedeemResponse(fetchAccountRedeem.get())
                         .build();
             } catch (Exception ex) {
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
@@ -188,5 +201,36 @@ public class OpenPortfolioService {
             }
         }
         return null;
+    }
+
+    /**
+     * Method openPortfolio
+     *
+     * @param correlationId
+     * @param openPortfolioRequestBody
+     */
+    public PortfolioResponse openPortfolio(String correlationId, OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
+        Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
+        try {
+            RelationshipRequest relationshipRequest = openPortfolioMapper.openPortfolioRequestBodyToRelationshipRequest(openPortfolioRequestBody);
+            CompletableFuture<RelationshipResponseBody> relationship = investmentAsyncService.updateClientRelationship(investmentRequestHeader, relationshipRequest);
+
+            OpenPortfolioRequest openPortfolioRequest = openPortfolioMapper.openPortfolioRequestBodyToOpenPortfolioRequest(openPortfolioRequestBody);
+            CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
+
+            PortfolioNicknameRequest portfolioNicknameRequest = openPortfolioMapper.openPortfolioRequestBodyToPortfolioNicknameRequest(openPortfolioRequestBody);
+            CompletableFuture<PortfolioNicknameResponseBody> portfolioNickname = investmentAsyncService.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
+
+            CompletableFuture.allOf(relationship, openPortfolio, portfolioNickname);
+
+            return PortfolioResponse.builder()
+                    .relationshipResponse(relationship.get())
+                    .openPortfolioResponse(openPortfolio.get())
+                    .portfolioNicknameResponse(portfolioNickname.get())
+                    .build();
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            return null;
+        }
     }
 }
