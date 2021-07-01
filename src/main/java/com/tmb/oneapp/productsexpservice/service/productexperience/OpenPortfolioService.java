@@ -48,9 +48,9 @@ public class OpenPortfolioService {
     private static final TMBLogger<OpenPortfolioService> logger = new TMBLogger<>(OpenPortfolioService.class);
 
     private CommonServiceClient commonServiceClient;
-    private CustomerServiceClient customerServiceClient;
     private InvestmentRequestClient investmentRequestClient;
     private InvestmentAsyncService investmentAsyncService;
+    private CustomerServiceClient customerServiceClient;
     private ProductsExpService productsExpService;
     private AccountRequestClient accountRequestClient;
     private ProductExpAsynService productExpAsynService;
