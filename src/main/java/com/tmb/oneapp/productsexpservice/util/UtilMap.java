@@ -262,9 +262,6 @@ public class UtilMap {
             }
 
             if (currentTime.before(startTime)) {
-
-                System.out.println(" Time is Lesser ");
-
                 valid = false;
             } else {
 
@@ -273,16 +270,11 @@ public class UtilMap {
                     endTime = endCalendar.getTime();
 
                 }
-                System.out.println("Comparing , Start Time /n " + startTime);
-                System.out.println("Comparing , End Time /n " + endTime);
-                System.out
-                        .println("Comparing , Current Time /n " + currentTime);
+
                 if (currentTime.before(endTime)) {
-                    System.out.println("RESULT, Time lies b/w");
                     valid = true;
                 } else {
                     valid = false;
-                    System.out.println("RESULT, Time does not lies b/w");
                 }
 
             }
