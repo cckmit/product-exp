@@ -16,13 +16,16 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.address.SubDistrict;
+import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
 import com.tmb.common.model.legacy.rsl.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
+import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
+import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetEligibleProductClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.response.DependDefaultEntry;
 import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
@@ -50,12 +53,14 @@ public class CustomerProfileServiceTest {
 	LendingServiceClient lendingServiceClient;
 	@Mock
 	LoanInstantGetCustomerInfoClient instanceCustomerInfoClient;
+	@Mock
+	LoanInstantGetEligibleProductClient instnceGetEligibleProductClient;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient,
-				lendingServiceClient, instanceCustomerInfoClient);
+				lendingServiceClient, instanceCustomerInfoClient, instnceGetEligibleProductClient);
 	}
 
 	@Test
@@ -108,24 +113,24 @@ public class CustomerProfileServiceTest {
 		provincesRes.setData(mockProvice);
 		provincesRes.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-		
+
 		TmbOneServiceResponse<LovMaster> lovModule = new TmbOneServiceResponse<LovMaster>();
 		LovMaster lovMasterMock = new LovMaster();
 		lovModule.setData(lovMasterMock);
-		
-		
+
 		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(provincesRes));
 		when(commonServiceClient.getLookupMasterModule(any())).thenReturn(ResponseEntity.ok(lovModule));
-		
-		CustIndividualProfileInfo responseProfile = customerProfileService.getIndividualProfile("001100000000000000000018593707");
+
+		CustIndividualProfileInfo responseProfile = customerProfileService
+				.getIndividualProfile("001100000000000000000018593707");
 		Assert.assertEquals(profile.getCitizenId(), responseProfile.getCitizenId());
 	}
 
 	@Test
 	public void testCustomerWorkingProfileInfo() throws RemoteException, ServiceException {
 		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient,
-				lendingServiceClient, instanceCustomerInfoClient);
+				lendingServiceClient, instanceCustomerInfoClient,instnceGetEligibleProductClient);
 		TmbOneServiceResponse<CustGeneralProfileResponse> customerModuleResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
 		CustGeneralProfileResponse profile = new CustGeneralProfileResponse();
 		profile.setCitizenId("111115");
@@ -212,10 +217,23 @@ public class CustomerProfileServiceTest {
 		profileInfo.setWorkstatus(entry);
 
 		workProfileRes.setData(profileInfo);
+		ResponseInstantLoanGetEligibleProduct instanceGetEligibleProduct = new ResponseInstantLoanGetEligibleProduct();
+		com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body bodys = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
+		
+		List<InstantCreditCard> instantCreditCards = new ArrayList<>();
+		InstantCreditCard card = new InstantCreditCard();
+		card.setSourceOfData("1");
+		instantCreditCards.add(card);
+		bodys.setInstantCreditCard(instantCreditCards.toArray(new InstantCreditCard[0]));
+		
+		instanceGetEligibleProduct.setBody(bodys);
+		when(instnceGetEligibleProductClient.getEligibleProduct(any())).thenReturn(instanceGetEligibleProduct);
+		
 		when(lendingServiceClient.getWorkInformationWithProfile(any(), any(), any(), any()))
 				.thenReturn(ResponseEntity.ok(workProfileRes));
 		try {
-			WorkingInfoResponse responseWorkingProfile = customerProfileService.getWorkingInformation("001100000000000000000018593707", "dxsd");
+			WorkingInfoResponse responseWorkingProfile = customerProfileService
+					.getWorkingInformation("001100000000000000000018593707", "dxsd");
 		} catch (RemoteException | ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
