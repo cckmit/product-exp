@@ -135,7 +135,8 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailRs.setFundRule(fundRule);
-            fundPaymentDetailRs = mappingAccount(responseCommon, responseCustomerExp, fundPaymentDetailRs);
+//            List<DepositAccount> mappingAccount(responseCommon, responseCustomerExp, fundPaymentDetailRs);
+            fundPaymentDetailRs.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp));
             return fundPaymentDetailRs;
         }
     }
@@ -145,12 +146,11 @@ public class UtilMap {
      *
      * @param responseCommon
      * @param responseCustomerExp
-     * @param fundPaymentDetailRs
      * @return FundPaymentDetailRs
      */
-    public FundPaymentDetailRs mappingAccount(List<CommonData> responseCommon,
-                                              String responseCustomerExp,
-                                              FundPaymentDetailRs fundPaymentDetailRs) {
+    public List<DepositAccount> mappingAccount(List<CommonData> responseCommon,
+                                              String responseCustomerExp) {
+        List<DepositAccount> depositAccountList = new ArrayList<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = null;
@@ -159,7 +159,6 @@ public class UtilMap {
             int size = arrayNode.size();
             DepositAccount depositAccount = null;
             List<String> eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
-            List<DepositAccount> depositAccountList = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 JsonNode itr = arrayNode.get(i);
                 String accCode = itr.get("product_code").textValue();
@@ -178,11 +177,10 @@ public class UtilMap {
                     }
                 }
             }
-            fundPaymentDetailRs.setDepositAccountList(depositAccountList);
         } catch (JsonProcessingException e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }
-        return fundPaymentDetailRs;
+        return depositAccountList;
     }
 
 
