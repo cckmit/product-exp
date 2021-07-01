@@ -97,7 +97,6 @@ public class OpenPortfolioService {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
             try{
                 String crmID = openPortfolioValidateRequest.getCrmId();
-                // todo service hour
                 FundResponse fundResponse = new FundResponse();
                 fundResponse = productsExpService.isServiceHour(correlationId,fundResponse);
                 if(fundResponse.isError()){
@@ -109,7 +108,7 @@ public class OpenPortfolioService {
                     tmbOneServiceResponse.setStatus(status);
                     return tmbOneServiceResponse;
                 }
-                CustomerSearchResponse customerInfo = new CustomerSearchResponse();
+                CustomerSearchResponse customerInfo = null;
                 List<DepositAccount> depositAccountList = null;
                 if(openPortfolioValidateRequest.isExistingCustomer()){
                     CompletableFuture<ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>> customerInfoFuture =
@@ -134,7 +133,7 @@ public class OpenPortfolioService {
                 ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> termAndCondition = commonServiceClient.getTermAndConditionByServiceCodeAndChannel(
                         correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
                 if(!termAndCondition.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(termAndCondition.getBody().getData())){
-                    throw new Exception("========== failed get termandcondition service ==========");
+                    throw new RuntimeException("========== failed get termandcondition service ==========");
                 }
 
                 tmbOneServiceResponse.setStatus(successStatus());
@@ -158,12 +157,12 @@ public class OpenPortfolioService {
 
     private void validateCustomerService(ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfo) throws Exception {
         if(!customerInfo.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(customerInfo.getBody().getData()))
-            throw new Exception("========== failed customer search service ==========");
+            throw new RuntimeException("========== failed customer search service ==========");
     }
 
     private void validateAccountList(List<DepositAccount> depositAccountList) throws Exception {
-        if(depositAccountList.size() == 0)
-            throw new Exception("========== failed account return 0 in list ==========");
+        if(depositAccountList.isEmpty())
+            throw new RuntimeException("========== failed account return 0 in list ==========");
     }
 
 
