@@ -8,11 +8,13 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Re
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionInstantLoanCreateApplicationServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionInstantLoanCreateApplicationSoapBindingStub;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
+@Service
 public class LoanSubmissionCreateApplicationClient {
     @Value("${loan-submission-create-application.url}")
     private String createApplication;
