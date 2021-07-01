@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +12,6 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
@@ -37,7 +35,7 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.customer.SearchResponse;
+import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
@@ -372,10 +370,10 @@ public class ProductsExpService {
 
     private String getFatcaFlag(String correlationId,String crmId) {
         CrmSearchBody request = CrmSearchBody.builder()
-                .searchType("rm-id")
+                .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
                 .searchValue(crmId)
                 .build();
-        ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> response =
+        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
                 customerServiceClient.customerSearch(crmId,correlationId,request);
         String fatcaFlag = response.getBody().getData().get(0).getFatcaFlag();
         return  fatcaFlag;
