@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ValidateOpenPortfolioResponse {
-    private TermAndConditionResponseBody termAndCondition;
+    private TermAndConditionResponseBody termsConditions;
     private CustomerInfo customerInfo;
     private List<DepositAccount> depositAccountList;
 }

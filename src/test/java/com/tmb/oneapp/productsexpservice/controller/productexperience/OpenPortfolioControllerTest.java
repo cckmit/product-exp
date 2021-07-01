@@ -52,7 +52,7 @@ class OpenPortfolioControllerTest {
         ObjectMapper mapper = new ObjectMapper();
 
         ValidateOpenPortfolioResponse validateOpenPortfolioResponse = new ValidateOpenPortfolioResponse();
-        validateOpenPortfolioResponse.setTermAndCondition(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/termandcondition.json").toFile(),
+        validateOpenPortfolioResponse.setTermsConditions(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/termandcondition.json").toFile(),
                 TermAndConditionResponseBody.class));
         validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
                 CustomerInfo.class));

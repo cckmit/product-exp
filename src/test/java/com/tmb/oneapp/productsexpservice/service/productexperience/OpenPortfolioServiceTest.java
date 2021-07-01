@@ -144,7 +144,7 @@ class OpenPortfolioServiceTest {
         // Then
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInfo());
-        assertNotNull(actual.getData().getTermAndCondition());
+        assertNotNull(actual.getData().getTermsConditions());
         assertNotNull(actual.getData().getDepositAccountList());
     }
 
@@ -173,7 +173,7 @@ class OpenPortfolioServiceTest {
         // Then
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInfo());
-        assertNotNull(actual.getData().getTermAndCondition());
+        assertNotNull(actual.getData().getTermsConditions());
         assertNull(actual.getData().getDepositAccountList());
     }
 

@@ -155,7 +155,7 @@ public class OpenPortfolioService {
 
     private void mappingResponseValidateOpenPortFolio(TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse, CustomerSearchResponse customerInfo, TermAndConditionResponseBody termAndCondition, List<DepositAccount> depositAccountList) {
         tmbOneServiceResponse.setData(ValidateOpenPortfolioResponse.builder()
-                .termAndCondition(termAndCondition)
+                .termsConditions(termAndCondition)
                 .customerInfo(customerInfoMapper.map(customerInfo))
                 .depositAccountList(depositAccountList)
                 .build());
