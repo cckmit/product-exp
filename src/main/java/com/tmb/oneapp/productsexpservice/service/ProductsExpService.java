@@ -374,8 +374,7 @@ public class ProductsExpService {
                 .build();
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
                 customerServiceClient.customerSearch(crmId,correlationId,request);
-        String fatcaFlag = response.getBody().getData().get(0).getFatcaFlag();
-        return  fatcaFlag;
+        return  response.getBody().getData().get(0).getFatcaFlag();
     }
 
     /**
