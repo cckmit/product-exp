@@ -5,7 +5,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
-import com.tmb.oneapp.productsexpservice.model.response.customer.SearchResponse;
+import com.tmb.oneapp.productsexpservice.model.response.customer.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -111,7 +111,7 @@ public interface CustomerServiceClient {
      * @return Map<String, String>
      */
     @PostMapping(value = "/apis/customers/search")
-    ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> customerSearch(
+    ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerSearch(
             @RequestHeader(value = X_CRMID) String crmId,
             @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestBody CrmSearchBody requestBody
