@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchSourceOfIncome {
+
     @JsonProperty("ident_employment")
-    public String identEmployment;
+    public String identifierEmployment;
+
     @JsonProperty("src_of_inc_code")
     public String srcOfIncCode;
 }
