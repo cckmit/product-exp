@@ -111,7 +111,7 @@ public class OpenPortfolioService {
             }
             CustomerSearchResponse customerInfo = null;
             List<DepositAccount> depositAccountList = null;
-            if (openPortfolioValidateRequest.isExistingCustomer()) {
+            if (!openPortfolioValidateRequest.isExistingCustomer()) {
                 CompletableFuture<ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>> customerInfoFuture =
                         CompletableFuture.completedFuture(customerServiceClient.customerSearch(crmID, correlationId, CrmSearchBody.builder()
                                 .searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build()));
@@ -155,7 +155,7 @@ public class OpenPortfolioService {
 
     private void mappingResponseValidateOpenPortFolio(TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse, CustomerSearchResponse customerInfo, TermAndConditionResponseBody termAndCondition, List<DepositAccount> depositAccountList) {
         tmbOneServiceResponse.setData(ValidateOpenPortfolioResponse.builder()
-                .termAndCondition(termAndCondition)
+                .termsConditions(termAndCondition)
                 .customerInfo(customerInfoMapper.map(customerInfo))
                 .depositAccountList(depositAccountList)
                 .build());

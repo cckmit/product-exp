@@ -133,7 +133,7 @@ class OpenPortfolioServiceTest {
 
         when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
-        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(true).build();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
         mockPassServiceHour();
         mockCustomerResponse();
         mockAccountResponse();
@@ -144,7 +144,7 @@ class OpenPortfolioServiceTest {
         // Then
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInfo());
-        assertNotNull(actual.getData().getTermAndCondition());
+        assertNotNull(actual.getData().getTermsConditions());
         assertNotNull(actual.getData().getDepositAccountList());
     }
 
@@ -163,7 +163,7 @@ class OpenPortfolioServiceTest {
 
         when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
-        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(true).build();
         mockPassServiceHour();
         mockCustomerResponse();
 
@@ -173,7 +173,7 @@ class OpenPortfolioServiceTest {
         // Then
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInfo());
-        assertNotNull(actual.getData().getTermAndCondition());
+        assertNotNull(actual.getData().getTermsConditions());
         assertNull(actual.getData().getDepositAccountList());
     }
 
