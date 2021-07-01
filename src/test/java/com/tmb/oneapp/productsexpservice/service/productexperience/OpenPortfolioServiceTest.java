@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
@@ -37,11 +36,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.validation.constraints.Max;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -135,7 +132,7 @@ class OpenPortfolioServiceTest {
         mockAccountResponse();
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioService.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
 
         // Then
         assertEquals("0000", actual.getStatus().getCode());
@@ -164,7 +161,7 @@ class OpenPortfolioServiceTest {
         mockCustomerResponse();
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioService.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequest);
 
         // Then
         assertEquals("0000", actual.getStatus().getCode());
