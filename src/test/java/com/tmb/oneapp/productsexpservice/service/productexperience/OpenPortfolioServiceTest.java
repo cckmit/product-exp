@@ -32,6 +32,7 @@ import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioVa
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.*;
 import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsynService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
@@ -44,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,19 +71,19 @@ class OpenPortfolioServiceTest {
     private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    private InvestmentAsyncService investmentAsyncService;
-
-    @Mock
     private CustomerServiceClient customerServiceClient;
-
-    @Mock
-    private ProductsExpService productsExpService;
 
     @Mock
     private AccountRequestClient accountRequestClient;
 
     @Mock
+    private ProductsExpService productsExpService;
+
+    @Mock
     private ProductExpAsynService productExpAsynService;
+
+    @Mock
+    private InvestmentAsyncService investmentAsyncService;
 
     @Mock
     private CustomerInfoMapper customerInfoMapper;
@@ -229,13 +231,24 @@ class OpenPortfolioServiceTest {
                 .customerEnglishName("MR NUT")
                 .build();
 
+        mockAccountResponse();
+
         // When
         OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequest);
 
         // Then
+        DepositAccount depositAccount = new DepositAccount();
+        depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
+        depositAccount.setProductNameEN("TMB All Free Account");
+        depositAccount.setAccountNumber("1102416367");
+        depositAccount.setAccountStatus("ACTIVE");
+        depositAccount.setAccountType("S");
+        depositAccount.setAccountTypeShort("SDA");
+        depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
+
         OpenPortfolioValidationResponse expected = OpenPortfolioValidationResponse.builder()
                 .accountPurposeResponse(accountPurposeResponse.getData())
-                .accountRedeemResponse(accountRedeemResponse.getData())
+                .depositAccount(depositAccount)
                 .build();
 
         assertNotNull(actual);

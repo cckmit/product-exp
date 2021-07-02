@@ -55,7 +55,7 @@ class OpenPortfolioControllerTest {
         validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
                 CustomerInfo.class));
         List<DepositAccount> depositAccountList = new ArrayList<>();
-        depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(),DepositAccount.class));
+        depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(), DepositAccount.class));
         validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
 
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> responseService = new TmbOneServiceResponse<ValidateOpenPortfolioResponse>();
@@ -102,12 +102,11 @@ class OpenPortfolioControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         AccountPurposeResponse accountPurposeResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_purpose.json").toFile(),
                 AccountPurposeResponse.class);
-        AccountRedeemResponse accountRedeemResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_redeem.json").toFile(),
-                AccountRedeemResponse.class);
 
+        DepositAccount depositAccount = new DepositAccount();
         OpenPortfolioValidationResponse openPortfolioValidationResponse = OpenPortfolioValidationResponse.builder()
                 .accountPurposeResponse(accountPurposeResponse.getData())
-                .accountRedeemResponse(accountRedeemResponse.getData())
+                .depositAccount(depositAccount)
                 .build();
 
         when(openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequest)).thenReturn(openPortfolioValidationResponse);
