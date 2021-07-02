@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.util;
 
-import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 
 import java.text.ParseException;
@@ -12,8 +11,6 @@ public class TimeUtil {
 
     private TimeUtil() {
     }
-
-    private static final TMBLogger<TimeUtil> logger = new TMBLogger<>(TimeUtil.class);
 
     /**
      * Generic Method to validate available time for open portfolio
