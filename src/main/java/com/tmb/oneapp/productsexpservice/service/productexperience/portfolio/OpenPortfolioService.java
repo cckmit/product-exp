@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience;
+package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;

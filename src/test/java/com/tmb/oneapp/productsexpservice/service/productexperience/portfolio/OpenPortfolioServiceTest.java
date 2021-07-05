@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience;
+package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;

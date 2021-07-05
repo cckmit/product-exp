@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.controller.productexperience;
+package com.tmb.oneapp.productsexpservice.controller.productexperience.portfolio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
@@ -8,14 +8,13 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponse;
-import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.portfolio.OpenPortfolioService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
