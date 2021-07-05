@@ -163,6 +163,6 @@ public class CustomerSearchResponse {
     @JsonAlias("amloFlag")
     private String amloFlag;
 
-    @JsonAlias("customer_risk_level")
+    @JsonAlias("customerRiskLevel")
     private String customerRiskLevel;
 }
