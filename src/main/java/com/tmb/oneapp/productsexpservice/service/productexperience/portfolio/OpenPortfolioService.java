@@ -192,15 +192,17 @@ public class OpenPortfolioService {
             OpenPortfolioRequest openPortfolioRequest = openPortfolioMapper.openPortfolioRequestBodyToOpenPortfolioRequest(openPortfolioRequestBody);
             CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
 
-            PortfolioNicknameRequest portfolioNicknameRequest = openPortfolioMapper.openPortfolioRequestBodyToPortfolioNicknameRequest(openPortfolioRequestBody);
-            CompletableFuture<PortfolioNicknameResponseBody> portfolioNickname = investmentAsyncService.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
+            CompletableFuture.allOf(relationship, openPortfolio);
 
-            CompletableFuture.allOf(relationship, openPortfolio, portfolioNickname);
+            OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
+            PortfolioNicknameRequest portfolioNicknameRequest = openPortfolioMapper.openPortfolioRequestBodyToPortfolioNicknameRequest(openPortfolioRequestBody);
+            portfolioNicknameRequest.setPortfolioNumber(openPortfolioResponseBody.getPortfolioNumber());
+            ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> portfolioNickname = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
 
             return PortfolioResponse.builder()
                     .relationshipResponse(relationship.get())
                     .openPortfolioResponse(openPortfolio.get())
-                    .portfolioNicknameResponse(portfolioNickname.get())
+                    .portfolioNicknameResponse(portfolioNickname.getBody().getData())
                     .build();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);

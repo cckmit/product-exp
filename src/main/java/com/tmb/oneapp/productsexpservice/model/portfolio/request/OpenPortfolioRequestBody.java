@@ -11,14 +11,11 @@ import lombok.experimental.SuperBuilder;
 public class OpenPortfolioRequestBody extends CustomerClientModel {
 
     /* open.portfolio */
-    private String riskProfile;
+    private String suitabilityScore;
 
     private String portfolioType;
 
     private String purposeTypeCode;
-
-    /* open.portfolio.nickname */
-    private String portfolioNumber;
 
     private String portfolioNickName;
 }

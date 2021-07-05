@@ -132,10 +132,9 @@ class OpenPortfolioControllerTest {
                 .withHoldingTaxPreference("TaxWithheld")
                 .preferredAddressType("Contact")
                 .status("Active")
-                .riskProfile("5")
+                .suitabilityScore("5")
                 .portfolioType("TMB_ADVTYPE_10_ADVISORY")
                 .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
-                .portfolioNumber("PT000000000000108261")
                 .portfolioNickName("อนาคตเพื่อการศึกษ")
                 .build();
 
