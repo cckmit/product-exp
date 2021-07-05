@@ -58,17 +58,17 @@ public class OpenPortfolioService {
 
     private static final TMBLogger<OpenPortfolioService> logger = new TMBLogger<>(OpenPortfolioService.class);
 
+    private AccountRequestClient accountRequestClient;
+
+    private CustomerServiceClient customerServiceClient;
+
     private CommonServiceClient commonServiceClient;
 
     private InvestmentRequestClient investmentRequestClient;
 
-    private InvestmentAsyncService investmentAsyncService;
-
-    private CustomerServiceClient customerServiceClient;
-
     private ProductsExpService productsExpService;
 
-    private AccountRequestClient accountRequestClient;
+    private InvestmentAsyncService investmentAsyncService;
 
     private ProductExpAsynService productExpAsynService;
 
@@ -77,13 +77,13 @@ public class OpenPortfolioService {
     private OpenPortfolioMapper openPortfolioMapper;
 
     @Autowired
-    public OpenPortfolioService(CommonServiceClient commonServiceClient, InvestmentRequestClient investmentRequestClient, InvestmentAsyncService investmentAsyncService, CustomerServiceClient customerServiceClient, ProductsExpService productsExpService, AccountRequestClient accountRequestClient, ProductExpAsynService productExpAsynService, CustomerInfoMapper customerInfoMapper, OpenPortfolioMapper openPortfolioMapper) {
+    public OpenPortfolioService(AccountRequestClient accountRequestClient, CustomerServiceClient customerServiceClient, CommonServiceClient commonServiceClient, InvestmentRequestClient investmentRequestClient, ProductsExpService productsExpService, InvestmentAsyncService investmentAsyncService, ProductExpAsynService productExpAsynService, CustomerInfoMapper customerInfoMapper, OpenPortfolioMapper openPortfolioMapper) {
+        this.accountRequestClient = accountRequestClient;
+        this.customerServiceClient = customerServiceClient;
         this.commonServiceClient = commonServiceClient;
         this.investmentRequestClient = investmentRequestClient;
-        this.investmentAsyncService = investmentAsyncService;
-        this.customerServiceClient = customerServiceClient;
         this.productsExpService = productsExpService;
-        this.accountRequestClient = accountRequestClient;
+        this.investmentAsyncService = investmentAsyncService;
         this.productExpAsynService = productExpAsynService;
         this.customerInfoMapper = customerInfoMapper;
         this.openPortfolioMapper = openPortfolioMapper;
@@ -129,7 +129,7 @@ public class OpenPortfolioService {
             }
 
             tmbOneServiceResponse.setStatus(successStatus());
-            mappingResponseValidateOpenPortFolio(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
+            mappingOpenPortFolioValidationResponse(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
             return tmbOneServiceResponse;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
@@ -221,7 +221,7 @@ public class OpenPortfolioService {
         return depositAccountList;
     }
 
-    private void mappingResponseValidateOpenPortFolio(TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse, CustomerSearchResponse customerInfo, TermAndConditionResponseBody termAndCondition, List<DepositAccount> depositAccountList) {
+    private void mappingOpenPortFolioValidationResponse(TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse, CustomerSearchResponse customerInfo, TermAndConditionResponseBody termAndCondition, List<DepositAccount> depositAccountList) {
         tmbOneServiceResponse.setData(ValidateOpenPortfolioResponse.builder()
                 .termsConditions(termAndCondition)
                 .customerInfo(customerInfoMapper.map(customerInfo))
