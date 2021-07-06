@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.tmb.oneapp.productsexpservice.util.ExceptionUtil.throwTmbException;
 
 @Service
@@ -45,7 +46,7 @@ public class EligibleDepositAccountService {
             return depositAccountList;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-            return null;
+            return newArrayList();
         }
     }
 

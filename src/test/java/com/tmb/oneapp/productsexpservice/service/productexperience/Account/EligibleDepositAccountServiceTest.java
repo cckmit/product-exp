@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +68,6 @@ class EligibleDepositAccountServiceTest {
         List<DepositAccount> actual = eligibleDepositAccountService.getEligibleDepositAccounts("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000000002914");
 
         // Then
-        assertNull(actual);
+        assertTrue(actual.isEmpty());
     }
 }
