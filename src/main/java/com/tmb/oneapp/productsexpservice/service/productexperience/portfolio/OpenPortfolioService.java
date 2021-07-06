@@ -20,7 +20,7 @@ import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioR
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.productexperience.Account.EligibleDepositAccountService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience.Account;
+package com.tmb.oneapp.productsexpservice.service.productexperience.account;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;

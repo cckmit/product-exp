@@ -18,7 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.portfolio.response.ValidateOpenPo
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
-import com.tmb.oneapp.productsexpservice.service.productexperience.Account.EligibleDepositAccountService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
