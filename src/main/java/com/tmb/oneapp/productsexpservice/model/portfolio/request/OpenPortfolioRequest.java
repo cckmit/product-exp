@@ -13,7 +13,7 @@ public class OpenPortfolioRequest {
 
     private String crmId;
 
-    private String riskProfile;
+    private String suitabilityScore;
 
     private String portfolioType;
 
