@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -105,7 +104,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param openPortfolioRequestBody
      */
-    public PortfolioResponse openPortfolio(String correlationId, OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
+    public PortfolioResponse openPortfolio(String correlationId, OpenPortfolioRequestBody openPortfolioRequestBody) {
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
         try {
             RelationshipRequest relationshipRequest = openPortfolioMapper.openPortfolioRequestBodyToRelationshipRequest(openPortfolioRequestBody);
@@ -129,12 +128,6 @@ public class OpenPortfolioService {
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
-        }
-    }
-
-    private void validateAccountList(List<DepositAccount> depositAccountList) throws Exception {
-        if (depositAccountList.isEmpty()) {
-            throwTmbException("========== failed account return 0 in list ==========");
         }
     }
 }

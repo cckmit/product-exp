@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.Account;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -48,7 +49,7 @@ public class EligibleDepositAccountService {
         }
     }
 
-    private void validateAccountList(List<DepositAccount> depositAccountList) throws Exception {
+    private void validateAccountList(List<DepositAccount> depositAccountList) throws TMBCommonException {
         if (depositAccountList.isEmpty()) {
             throwTmbException("========== failed account return 0 in list ==========");
         }
