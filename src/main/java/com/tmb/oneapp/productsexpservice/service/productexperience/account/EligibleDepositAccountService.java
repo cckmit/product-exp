@@ -32,7 +32,7 @@ public class EligibleDepositAccountService {
         this.accountRequestClient = accountRequestClient;
     }
 
-    public List<DepositAccount> getEligibleDepositAccounts(String correlationId, String crmId) throws Exception {
+    public List<DepositAccount> getEligibleDepositAccounts(String correlationId, String crmId) {
         List<DepositAccount> depositAccountList;
         try {
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
