@@ -312,7 +312,7 @@ class InvestmentAsyncServiceTest {
 
         OpenPortfolioRequest openPortfolioRequest = OpenPortfolioRequest.builder()
                 .crmId("00000000002914")
-                .riskProfile("5")
+                .suitabilityScore("5")
                 .portfolioType("TMB_ADVTYPE_10_ADVISORY")
                 .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
                 .build();
