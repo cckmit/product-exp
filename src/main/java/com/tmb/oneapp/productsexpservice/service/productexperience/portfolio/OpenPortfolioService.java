@@ -88,7 +88,7 @@ public class OpenPortfolioService {
 
                 return OpenPortfolioValidationResponse.builder()
                         .accountPurposeResponse(fetchAccountPurpose.get())
-                        .depositAccount(account.get())
+                        .depositAccount(account.isPresent() ? account.get() : null)
                         .build();
             } catch (Exception ex) {
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
