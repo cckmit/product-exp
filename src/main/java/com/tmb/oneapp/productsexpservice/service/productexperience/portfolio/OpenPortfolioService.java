@@ -116,8 +116,10 @@ public class OpenPortfolioService {
             CompletableFuture.allOf(relationship, openPortfolio);
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
-            PortfolioNicknameRequest portfolioNicknameRequest = openPortfolioMapper.openPortfolioRequestBodyToPortfolioNicknameRequest(openPortfolioRequestBody);
-            portfolioNicknameRequest.setPortfolioNumber(openPortfolioResponseBody.getPortfolioNumber());
+            PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
+                    .portfolioNumber(openPortfolioResponseBody.getPortfolioNumber())
+                    .portfolioNickName(openPortfolioRequestBody.getPortfolioNickName())
+                    .build();
             ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> portfolioNickname = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
 
             return PortfolioResponse.builder()
