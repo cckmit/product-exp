@@ -42,6 +42,10 @@ public class CustomerInfoMapper {
                     .customerFirstNameTh(customerResponse.getCustomerThaiFirstName())
                     .customerLastNameEn(customerResponse.getCustomerEnglishLastName())
                     .customerLastNameTh(customerResponse.getCustomerThaiLastName())
+                    .customerRiskLevel(customerResponse.getCustomerRiskLevel())
+                    .registerAddress(customerResponse.getRegisterAddress())
+                    .contactAddress(customerResponse.getContactAddress())
+                    .officeAddress(customerResponse.getOfficeAddress())
                     .build();
         }catch (ParseException ex){
             logger.info("Error ParseException");

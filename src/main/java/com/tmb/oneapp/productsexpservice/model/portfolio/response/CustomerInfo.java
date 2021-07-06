@@ -16,4 +16,12 @@ public class CustomerInfo extends CustomerModel {
     private String customerFirstNameTh;
 
     private String customerLastNameTh;
+
+    private String customerRiskLevel;
+
+    private String contactAddress;
+
+    private String registerAddress;
+
+    private String officeAddress;
 }

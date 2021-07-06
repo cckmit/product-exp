@@ -748,7 +748,7 @@ public class ProductsExpService {
             if (mutualFund.getFundClassCode().equals("090")) {
                 continue;
             }
-            boolean isNotFound = true;
+            boolean isNotMatchMutualFundAndSuggestAllocation = true;
             for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
                 if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())
                 ) {
@@ -768,16 +768,16 @@ public class ProductsExpService {
                                     .collect(Collectors.toList()))
                             .build()
                     );
-                    isNotFound = false;
+                    isNotMatchMutualFundAndSuggestAllocation = false;
                 }
             }
-            if (isNotFound) {
+            if (isNotMatchMutualFundAndSuggestAllocation) {
                 mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
                         .fundClassCode(mutualFund.getFundClassCode())
                         .fundClassNameTh(mutualFund.getFundClassNameTH())
                         .fundClassNameEn(mutualFund.getFundClassNameEN())
                         .fundClassPercent(mutualFund.getFundClassPercent())
-                        .recommendedPercent("0")
+                        .recommendedPercent("-")
                         .fundSuggestionList(null)
                         .build()
                 );
@@ -790,7 +790,7 @@ public class ProductsExpService {
                         .fundClassCode(fl.getFundClassCode())
                         .fundClassNameEn(fl.getFundClassNameEn())
                         .fundClassNameTh(fl.getFundClassNameTh())
-                        .fundClassPercent("0")
+                        .fundClassPercent("-")
                         .recommendedPercent(fl.getRecommendedPercent())
                         .fundSuggestionList(fl.getFundList().stream()
                                 .map(fle -> SubFundSuggestion.builder()
