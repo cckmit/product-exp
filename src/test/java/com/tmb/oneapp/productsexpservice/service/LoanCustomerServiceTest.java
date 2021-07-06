@@ -127,7 +127,8 @@ public class LoanCustomerServiceTest {
 
     @Test
     public void testGetCustomerProfileService() throws Exception {
-        Facility[] facilities = {mockFacility()};
+        Facility[] facilities = new Facility[1];
+        facilities[0] = mockFacility();
         ResponseFacility respFacility = new ResponseFacility();
         Body body = new Body();
         body.setFacilities(facilities);
@@ -167,8 +168,9 @@ public class LoanCustomerServiceTest {
         facility.setFeature(feature);
 
         p.setRateVaraince(BigDecimal.TEN);
-        Pricing[] pricings = new Pricing[1];
+        Pricing[] pricings = new Pricing[2];
         pricings[0] = p;
+        pricings[1] = p;
 
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
         pricings[0].setMonthTo(BigDecimal.ONE);
@@ -176,8 +178,18 @@ public class LoanCustomerServiceTest {
         pricings[0].setRateVaraince(BigDecimal.ONE);
         pricings[0].setYearFrom(BigDecimal.ONE);
         pricings[0].setYearTo(BigDecimal.ONE);
-        pricings[0].setPricingType("S");
+        pricings[0].setPricingType("C");
+        pricings[0].setCalculatedRate(new BigDecimal(1));
 
+        pricings[1].setMonthTo(BigDecimal.ONE);
+        pricings[1].setMonthFrom(BigDecimal.ONE);
+        pricings[1].setRateVaraince(BigDecimal.ONE);
+        pricings[1].setYearFrom(BigDecimal.ONE);
+        pricings[1].setYearTo(BigDecimal.ONE);
+        pricings[1].setPricingType("S");
+        pricings[1].setCalculatedRate(new BigDecimal(1));
+
+        facility.setPricings(pricings);
         LoanCustomerPricing customerPricing = new LoanCustomerPricing();
         customerPricing.setYearFrom(BigDecimal.ONE);
         customerPricing.setYearTo(BigDecimal.ONE);
@@ -187,6 +199,8 @@ public class LoanCustomerServiceTest {
         customerPricing.setRateVariance(BigDecimal.ONE);
         pricingList.add(customerPricing);
         loanCustomerResponse.setPricings(pricingList);
+
+        facility.setFeatureType("S");
 
         return facility;
     }

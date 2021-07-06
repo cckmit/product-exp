@@ -1,15 +1,12 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience;
+package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
 import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponseBody;
-import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
@@ -17,12 +14,13 @@ import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
+import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +28,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import static com.tmb.oneapp.productsexpservice.util.ExceptionUtil.throwTmbException;
+
 
 /**
  * OpenPortfolioService class will get data from api services, and handle business criteria
@@ -41,30 +44,20 @@ public class OpenPortfolioService {
 
     private static final TMBLogger<OpenPortfolioService> logger = new TMBLogger<>(OpenPortfolioService.class);
 
-    private CommonServiceClient commonServiceClient;
-
     private InvestmentRequestClient investmentRequestClient;
+
+    private EligibleDepositAccountService eligibleDepositAccountService;
 
     private InvestmentAsyncService investmentAsyncService;
 
     private OpenPortfolioMapper openPortfolioMapper;
 
     @Autowired
-    public OpenPortfolioService(CommonServiceClient commonServiceClient, InvestmentRequestClient investmentRequestClient, InvestmentAsyncService investmentAsyncService, OpenPortfolioMapper openPortfolioMapper) {
-        this.commonServiceClient = commonServiceClient;
+    public OpenPortfolioService(InvestmentRequestClient investmentRequestClient, EligibleDepositAccountService eligibleDepositAccountService, InvestmentAsyncService investmentAsyncService, OpenPortfolioMapper openPortfolioMapper) {
         this.investmentRequestClient = investmentRequestClient;
+        this.eligibleDepositAccountService = eligibleDepositAccountService;
         this.investmentAsyncService = investmentAsyncService;
         this.openPortfolioMapper = openPortfolioMapper;
-    }
-
-    /**
-     * Method validateOpenPortfolio
-     *
-     * @param correlationId
-     * @param openPortfolioValidationRequest
-     */
-    public ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> validateOpenPortfolio(String correlationId, OpenPortfolioValidationRequest openPortfolioValidationRequest) {
-        return commonServiceClient.getTermAndConditionByServiceCodeAndChannel(correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
     }
 
     /**
@@ -82,9 +75,20 @@ public class OpenPortfolioService {
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
                 CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, accountRedeemRequest);
                 CompletableFuture.allOf(fetchAccountPurpose, fetchAccountRedeem);
+
+                AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.get();
+                List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId());
+                Optional<DepositAccount> account = eligibleDepositAccounts.stream()
+                        .filter(depositAccount -> accountRedeem.getAccountRedeem().equals(depositAccount.getAccountNumber()))
+                        .findFirst();
+
+                if (account.isEmpty()) {
+                    throwTmbException("========== failed account return 0 in list ==========");
+                }
+
                 return OpenPortfolioValidationResponse.builder()
                         .accountPurposeResponse(fetchAccountPurpose.get())
-                        .accountRedeemResponse(fetchAccountRedeem.get())
+                        .depositAccount(account.isPresent() ? account.get() : null)
                         .build();
             } catch (Exception ex) {
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
@@ -100,7 +104,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param openPortfolioRequestBody
      */
-    public PortfolioResponse openPortfolio(String correlationId, OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
+    public PortfolioResponse openPortfolio(String correlationId, OpenPortfolioRequestBody openPortfolioRequestBody) {
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
         try {
             RelationshipRequest relationshipRequest = openPortfolioMapper.openPortfolioRequestBodyToRelationshipRequest(openPortfolioRequestBody);
@@ -109,15 +113,19 @@ public class OpenPortfolioService {
             OpenPortfolioRequest openPortfolioRequest = openPortfolioMapper.openPortfolioRequestBodyToOpenPortfolioRequest(openPortfolioRequestBody);
             CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
 
-            PortfolioNicknameRequest portfolioNicknameRequest = openPortfolioMapper.openPortfolioRequestBodyToPortfolioNicknameRequest(openPortfolioRequestBody);
-            CompletableFuture<PortfolioNicknameResponseBody> portfolioNickname = investmentAsyncService.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
+            CompletableFuture.allOf(relationship, openPortfolio);
 
-            CompletableFuture.allOf(relationship, openPortfolio, portfolioNickname);
+            OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
+            PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
+                    .portfolioNumber(openPortfolioResponseBody.getPortfolioNumber())
+                    .portfolioNickName(openPortfolioRequestBody.getPortfolioNickName())
+                    .build();
+            ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> portfolioNickname = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
 
             return PortfolioResponse.builder()
                     .relationshipResponse(relationship.get())
                     .openPortfolioResponse(openPortfolio.get())
-                    .portfolioNicknameResponse(portfolioNickname.get())
+                    .portfolioNicknameResponse(portfolioNickname.getBody().getData())
                     .build();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
