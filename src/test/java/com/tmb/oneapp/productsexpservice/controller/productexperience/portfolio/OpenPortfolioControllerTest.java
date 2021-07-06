@@ -15,6 +15,7 @@ import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioVa
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.productexperience.portfolio.OpenPortfolioService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.portfolio.OpenPortfolioValidationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,6 +44,9 @@ class OpenPortfolioControllerTest {
     @Mock
     private OpenPortfolioService openPortfolioService;
 
+    @Mock
+    private OpenPortfolioValidationService openPortfolioValidationService;
+
     @Test
     void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_open_portfolio_request() throws IOException {
         // Given
@@ -64,7 +68,7 @@ class OpenPortfolioControllerTest {
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
         request.setCrmId("23423423423423");
-        when(openPortfolioService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request))
                 .thenReturn(responseService);
 
         // When
