@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.controller.productexperience;
+package com.tmb.oneapp.productsexpservice.controller.productexperience.portfolio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
@@ -8,14 +8,14 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponse;
-import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponse;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
 import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.productexperience.OpenPortfolioService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.portfolio.OpenPortfolioService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.portfolio.OpenPortfolioValidationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,6 +44,9 @@ class OpenPortfolioControllerTest {
     @Mock
     private OpenPortfolioService openPortfolioService;
 
+    @Mock
+    private OpenPortfolioValidationService openPortfolioValidationService;
+
     @Test
     void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_open_portfolio_request() throws IOException {
         // Given
@@ -55,7 +58,7 @@ class OpenPortfolioControllerTest {
         validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
                 CustomerInfo.class));
         List<DepositAccount> depositAccountList = new ArrayList<>();
-        depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(),DepositAccount.class));
+        depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(), DepositAccount.class));
         validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
 
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> responseService = new TmbOneServiceResponse<ValidateOpenPortfolioResponse>();
@@ -65,7 +68,7 @@ class OpenPortfolioControllerTest {
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
         request.setCrmId("23423423423423");
-        when(openPortfolioService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request))
                 .thenReturn(responseService);
 
         // When
@@ -102,12 +105,11 @@ class OpenPortfolioControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         AccountPurposeResponse accountPurposeResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_purpose.json").toFile(),
                 AccountPurposeResponse.class);
-        AccountRedeemResponse accountRedeemResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_redeem.json").toFile(),
-                AccountRedeemResponse.class);
 
+        DepositAccount depositAccount = new DepositAccount();
         OpenPortfolioValidationResponse openPortfolioValidationResponse = OpenPortfolioValidationResponse.builder()
                 .accountPurposeResponse(accountPurposeResponse.getData())
-                .accountRedeemResponse(accountRedeemResponse.getData())
+                .depositAccount(depositAccount)
                 .build();
 
         when(openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequest)).thenReturn(openPortfolioValidationResponse);
@@ -134,10 +136,9 @@ class OpenPortfolioControllerTest {
                 .withHoldingTaxPreference("TaxWithheld")
                 .preferredAddressType("Contact")
                 .status("Active")
-                .riskProfile("5")
+                .suitabilityScore("5")
                 .portfolioType("TMB_ADVTYPE_10_ADVISORY")
                 .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
-                .portfolioNumber("PT000000000000108261")
                 .portfolioNickName("อนาคตเพื่อการศึกษ")
                 .build();
 

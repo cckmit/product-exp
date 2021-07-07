@@ -85,13 +85,13 @@
         "fundClassNameTh": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
         "fundClassNameEn": "FIF Equity",
         "fundClassPercent": "5.66",
-        "recommendedPercent": "0"
+        "recommendedPercent": "-"
       },
       {
         "fundClassCode": "800",
         "fundClassNameTh": "Super Savings Fund(SSF)/LTF",
         "fundClassNameEn": "Super Savings Fund(SSF)/LTF",
-        "fundClassPercent": "0",
+        "fundClassPercent": "-",
         "recommendedPercent": "33.00",
         "fundSuggestionList": [
           {
@@ -108,7 +108,7 @@
         "fundClassCode": "900",
         "fundClassNameTh": "กองทุนรวมเพื่อการเลี้ยงชีพ",
         "fundClassNameEn": "Retirement Mutual Fund",
-        "fundClassPercent": "0",
+        "fundClassPercent": "-",
         "recommendedPercent": "40.00",
         "fundSuggestionList": [
           {
