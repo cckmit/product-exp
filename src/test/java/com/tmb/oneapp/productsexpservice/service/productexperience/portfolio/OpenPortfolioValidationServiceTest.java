@@ -6,6 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInfoMapper;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -38,6 +41,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class OpenPortfolioValidationServiceTest {
 
     @Mock
@@ -67,7 +71,13 @@ class OpenPortfolioValidationServiceTest {
         when(productsExpService.isServiceHour(any(), any())).thenReturn(fundResponse);
     }
 
-    private void mockCustomerResponse() throws IOException {
+    private void mockNotPassServiceHour() {
+        FundResponse fundResponse = new FundResponse();
+        fundResponse.setError(true);
+        when(productsExpService.isServiceHour(any(), any())).thenReturn(fundResponse);
+    }
+
+    private void mockCustomerResponse(String errorCode) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         CustomerSearchResponse customerSearchResponse = objectMapper.readValue(Paths.get("src/test/resources/investment/customer/search_customer.json").toFile(), CustomerSearchResponse.class);
         TmbOneServiceResponse<List<CustomerSearchResponse>> oneServiceResponse = new TmbOneServiceResponse<List<CustomerSearchResponse>>();
@@ -75,9 +85,25 @@ class OpenPortfolioValidationServiceTest {
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response = new ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>(
                 oneServiceResponse, HttpStatus.OK);
 
-        CustomerInfo customerInfo = objectMapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(), CustomerInfo.class);
+        switch (errorCode){
+            case "2000025":
+                response.getBody().getData().get(0).setBirthDate("2001-07-08");
+                break;
+            case "2000018":
+                response.getBody().getData().get(0).setCustomerRiskLevel("3");
+                break;
+            case "2000034":
+                response.getBody().getData().get(0).setFatcaFlag("0");
+                break;
+            case "2000022":
+                response.getBody().getData().get(0).setKycLimitedFlag("");
+                response.getBody().getData().get(0).setExpiryDate("2021-07-08");
+                response.getBody().getData().get(0).setEkycIdentifyAssuranceLevel("");
+                break;
+        }
 
-        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(response);
+        CustomerInfo customerInfo = objectMapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(), CustomerInfo.class);
+                when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(response);
         when(customerInfoMapper.map(any())).thenReturn(customerInfo);
     }
 
@@ -108,7 +134,7 @@ class OpenPortfolioValidationServiceTest {
 
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
         mockPassServiceHour();
-        mockCustomerResponse();
+        mockCustomerResponse("0000");
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
@@ -137,7 +163,7 @@ class OpenPortfolioValidationServiceTest {
 
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(true).build();
         mockPassServiceHour();
-        mockCustomerResponse();
+        mockCustomerResponse("0000");
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
@@ -147,5 +173,149 @@ class OpenPortfolioValidationServiceTest {
         assertNotNull(actual.getData().getCustomerInfo());
         assertNotNull(actual.getData().getTermsConditions());
         assertNull(actual.getData().getDepositAccountList());
+    }
+
+    @Test
+    void should_return_status_code_2000001_when_call_validateOpenPortfolioService_validate_service_hour() throws Exception {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(true).build();
+        mockNotPassServiceHour();
+        mockCustomerResponse("0000");
+
+        // When
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+
+        // Then
+        assertEquals(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getStatus().getCode());
+        assertNull(actual.getData());
+    }
+
+    @Test
+    void should_return_status_code_2000025_when_call_validateOpenPortfolioService_validate_age_is_not_over_twenty() throws Exception {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(true).build();
+        mockPassServiceHour();
+        mockCustomerResponse("2000025");
+
+        // When
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+
+        // Then
+        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getStatus().getCode());
+        assertNull(actual.getData());
+    }
+
+    @Test
+    void should_return_status_code_2000019_when_call_validateOpenPortfolioService_validate_no_casa_active() throws Exception {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
+        mockPassServiceHour();
+        mockCustomerResponse("0000");
+
+        DepositAccount depositAccount = new DepositAccount();
+        depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
+        depositAccount.setProductNameEN("TMB All Free Account");
+        depositAccount.setAccountNumber("1102416367");
+        depositAccount.setAccountStatus("ACTIVE");
+        depositAccount.setAccountType("S");
+        depositAccount.setAccountTypeShort("SDA");
+        depositAccount.setAccountStatusCode(ProductsExpServiceConstant.DORMANT_STATUS_CODE);
+        depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
+
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+
+        // When
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+
+        // Then
+        assertEquals(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(), actual.getStatus().getCode());
+        assertNull(actual.getData());
+    }
+
+    @Test
+    void should_return_status_code_2000018_when_call_validateOpenPortfolioService_validate_risk_level_not_equal_four() throws Exception {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
+        mockPassServiceHour();
+        mockCustomerResponse("2000018");
+
+        DepositAccount depositAccount = new DepositAccount();
+        depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
+        depositAccount.setProductNameEN("TMB All Free Account");
+        depositAccount.setAccountNumber("1102416367");
+        depositAccount.setAccountStatus("ACTIVE");
+        depositAccount.setAccountType("S");
+        depositAccount.setAccountTypeShort("SDA");
+        depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
+        depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
+
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+
+        // When
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+
+        // Then
+        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_NOT_IN_LEVEL_FOUR.getCode(), actual.getStatus().getCode());
+        assertNull(actual.getData());
+    }
+
+    @Test
+    void should_return_status_code_2000034_when_call_validateOpenPortfolioService_validate_customer_not_fill_fatca_form() throws Exception {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
+        mockPassServiceHour();
+        mockCustomerResponse("2000034");
+
+        DepositAccount depositAccount = new DepositAccount();
+        depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
+        depositAccount.setProductNameEN("TMB All Free Account");
+        depositAccount.setAccountNumber("1102416367");
+        depositAccount.setAccountStatus("ACTIVE");
+        depositAccount.setAccountType("S");
+        depositAccount.setAccountTypeShort("SDA");
+        depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
+        depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
+
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+
+        // When
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+
+        // Then
+        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getStatus().getCode());
+        assertNull(actual.getData());
+    }
+
+    @Test
+    void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired() throws Exception {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().crmId("001100000000000000000012035644").existingCustomer(false).build();
+        mockPassServiceHour();
+        mockCustomerResponse("2000022");
+
+        DepositAccount depositAccount = new DepositAccount();
+        depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
+        depositAccount.setProductNameEN("TMB All Free Account");
+        depositAccount.setAccountNumber("1102416367");
+        depositAccount.setAccountStatus("ACTIVE");
+        depositAccount.setAccountType("S");
+        depositAccount.setAccountTypeShort("SDA");
+        depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
+        depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
+
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+
+        // When
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+
+        // Then
+        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
+        assertNull(actual.getData());
     }
 }
