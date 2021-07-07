@@ -24,9 +24,9 @@ import lombok.ToString;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class ApplyEStatementResponse {
-
-	private Status status;
-	private Customer customer;
-	
+public class Status {
+	private String code;
+    private String message;
+    private String service;
+    private String description;
 }

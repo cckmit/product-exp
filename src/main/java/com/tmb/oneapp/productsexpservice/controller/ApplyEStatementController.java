@@ -61,6 +61,7 @@ public class ApplyEStatementController {
 
 		try {
 			ApplyEStatementResponse applyEStatementResponse = applyEStatementService.getEStatement(crmId, correlationId);
+			logger.info("ApplyEStatementResponse while getting e-statement: {}", applyEStatementResponse.toString());
 			oneServiceResponse.setData(applyEStatementResponse);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
@@ -69,9 +70,7 @@ public class ApplyEStatementController {
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService()));
 		}
-
 		return ResponseEntity.ok(oneServiceResponse);
-
 	}
 
 }
