@@ -46,6 +46,9 @@ public class CustomerSearchResponse {
 
     private String nationality;
 
+    @JsonAlias({"nationality_2"})
+    private String nationalitySecond;
+
     @JsonAlias({"phone_no_full"})
     private String phoneNumberFull;
 
