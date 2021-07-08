@@ -29,6 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -82,7 +83,9 @@ public class OpenPortfolioValidationService {
             }
 
             tmbOneServiceResponse = validateAlternativeCase(correlationId,customerInfo,depositAccountList,tmbOneServiceResponse);
-            if (tmbOneServiceResponse != null) return tmbOneServiceResponse;
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+                return tmbOneServiceResponse;
+            }
 
             ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> termAndCondition = commonServiceClient.getTermAndConditionByServiceCodeAndChannel(
                     correlationId, ProductsExpServiceConstant.SERVICE_CODE_OPEN_PORTFOLIO, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
@@ -90,7 +93,7 @@ public class OpenPortfolioValidationService {
                 throwTmbException("========== failed get termandcondition service ==========");
             }
 
-            tmbOneServiceResponse.setStatus(successStatus());
+
             mappingOpenPortFolioValidationResponse(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
             return tmbOneServiceResponse;
         } catch (Exception ex) {
@@ -128,50 +131,90 @@ public class OpenPortfolioValidationService {
         }
 
         // validate account active only once
-        boolean isAccountActiveOnce = false;
-        for (DepositAccount depositAccount:
-             depositAccountList) {
-            if(depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)){
-                isAccountActiveOnce = true;
+        if(depositAccountList != null) {
+            boolean isAccountActiveOnce = false;
+            for (DepositAccount depositAccount :
+                    depositAccountList) {
+                if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
+                    isAccountActiveOnce = true;
+                }
+            }
+            if (!isAccountActiveOnce || depositAccountList.size() == 0) {
+                status.setCode(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
+                status.setDescription(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc());
+                status.setMessage(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                tmbOneServiceResponse.setStatus(status);
+                return tmbOneServiceResponse;
             }
         }
-        if(!isAccountActiveOnce || depositAccountList.size() == 0){
-            status.setCode(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
-            status.setDescription(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc());
-            status.setMessage(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg());
+        // validate customer pass kyc (U,Blank) allow  and id card has not expired
+        String kycLimitFalg = customerInfo.getKycLimitedFlag();
+        String expireDate = customerInfo.getExpiryDate();
+        boolean isKycAndIdCardExpiredValid = false;
+        if(kycLimitFalg != null && expireDate != null){
+            if(kycLimitFalg.equalsIgnoreCase("U") || kycLimitFalg.isBlank()){
+                if(isExpiredDateOccurAfterCurrentDate(expireDate)){
+                    isKycAndIdCardExpiredValid = true;
+                }
+            }
+        }
+
+        if(!isKycAndIdCardExpiredValid){
+            status.setCode(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode());
+            status.setDescription(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc());
+            status.setMessage(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             tmbOneServiceResponse.setStatus(status);
             return tmbOneServiceResponse;
         }
 
-        // validate customer risk level <> 4
-        boolean validateCustomerRiskLevelNotEqualFlour = false;
-        if(!StringUtils.isEmpty(customerInfo.getCustomerRiskLevel())){
-            if(!customerInfo.getCustomerRiskLevel().equals("4")){
-                validateCustomerRiskLevelNotEqualFlour = true;
+        // validate customer assurange level
+        boolean isAssuranceLevelValid = false;
+        String ekycIdentifyAssuranceLevel = customerInfo.getEkycIdentifyAssuranceLevel();
+        if(ekycIdentifyAssuranceLevel != null) {
+            if (validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
+                isAssuranceLevelValid = true;
             }
         }
-        if(validateCustomerRiskLevelNotEqualFlour) {
-            status.setCode(OpenPortfolioErrorEnums.CUSTOMER_NOT_IN_LEVEL_FOUR.getCode());
-            status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_NOT_IN_LEVEL_FOUR.getDesc());
-            status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_NOT_IN_LEVEL_FOUR.getMsg());
+
+        if(!isAssuranceLevelValid ){
+            status.setCode(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
+            status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc());
+            status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             tmbOneServiceResponse.setStatus(status);
             return tmbOneServiceResponse;
         }
 
         // validate customer not us and not restriced in 30 nationality
-        customerInfo.getNationality();
-
-        // validate complete flatca form
-        boolean validateCustomerNotFillFatca = false;
-        if(!StringUtils.isEmpty(customerInfo.getFatcaFlag())){
-            if(customerInfo.getFatcaFlag().equals("0")){
-                validateCustomerNotFillFatca = true;
+        boolean isNationalValid = false;
+        String mainNationality = customerInfo.getNationality();
+        String secondNationality = customerInfo.getNationalitySecond();
+        if(!StringUtils.isEmpty(customerInfo.getNationality())){
+            if(validateNationality(correlationId,mainNationality,secondNationality)){
+                isNationalValid = true;
             }
         }
 
-        if(validateCustomerNotFillFatca){
+        if(!isNationalValid ){
+            status.setCode(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode());
+            status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc());
+            status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            tmbOneServiceResponse.setStatus(status);
+            return tmbOneServiceResponse;
+        }
+
+        // validate complete flatca form
+        boolean isFatcaFlagNotValid = false;
+        if(!StringUtils.isEmpty(customerInfo.getFatcaFlag())){
+            if(customerInfo.getFatcaFlag().equals("0")){
+                isFatcaFlagNotValid = true;
+            }
+        }
+
+        if(isFatcaFlagNotValid){
             status.setCode(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
             status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
             status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
@@ -180,30 +223,43 @@ public class OpenPortfolioValidationService {
             return tmbOneServiceResponse;
         }
 
-        // validate customer pass kyc (U,Blank) allow  and id card has not expired
-        String kycLimitFalg = customerInfo.getKycLimitedFlag();
-        String expireDate = customerInfo.getExpiryDate();
-        String ekycIdentifyAssuranceLevel = customerInfo.getEkycIdentifyAssuranceLevel();
-        boolean validateCheckKycAndIdCardExpired = false;
-        if(kycLimitFalg != null &&
-                expireDate != null &&
-                ekycIdentifyAssuranceLevel != null){
-            if(kycLimitFalg.equalsIgnoreCase("U") || kycLimitFalg.isBlank()){
-                if(isExpiredDateOccurAfterCurrentDate(expireDate) && validateAssuranceLevel(ekycIdentifyAssuranceLevel)){
-                    validateCheckKycAndIdCardExpired = true;
-                }
+        // validate customer risk level <> {"C3","B3"}
+        boolean isCustomerRiskLevelNotValid = false;
+        if(!StringUtils.isEmpty(customerInfo.getCustomerRiskLevel())){
+            String[] values = {"C3","B3"};
+            if(Arrays.stream(values).anyMatch(customerInfo.getCustomerRiskLevel()::equals)){
+                isCustomerRiskLevelNotValid = true;
             }
         }
 
-        if(!validateCheckKycAndIdCardExpired){
-            status.setCode(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode());
-            status.setDescription(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc());
-            status.setMessage(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg());
+        if(isCustomerRiskLevelNotValid) {
+            status.setCode(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
+            status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
+            status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             tmbOneServiceResponse.setStatus(status);
             return tmbOneServiceResponse;
         }
-        return null;
+        tmbOneServiceResponse.setStatus(successStatus());
+        return tmbOneServiceResponse;
+    }
+
+    private boolean validateNationality(String correlationId,String mainNationality, String secondNationality) {
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
+                commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+        List<CommonData> commonDataList = commonConfig.getBody().getData();
+        List<String> blackList = commonDataList.get(0).getNationalBlackList();
+        if(blackList.stream().anyMatch(mainNationality::equals)){
+            return false;
+        }
+
+        if(!StringUtils.isEmpty(secondNationality)) {
+            if (blackList.stream().anyMatch(secondNationality::equals)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private boolean validateAssuranceLevel(String ekycIdentifyAssuranceLevel) {
