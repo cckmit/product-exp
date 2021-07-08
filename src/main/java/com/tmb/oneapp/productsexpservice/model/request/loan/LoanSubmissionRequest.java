@@ -9,5 +9,5 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class LoanSubmissionRequest {
     @NotNull
-    private Long caID;
+    private Long caId;
 }

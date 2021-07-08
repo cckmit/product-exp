@@ -12,14 +12,14 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanSubmissionResponse {
     private String statusWorking;
-    private BigDecimal monthlyIncome;
+    private String monthlyIncome;
     private String accountNo;
     private String accountName;
-    private BigDecimal minAmount;
-    private BigDecimal maxAmount;
+    private int minAmount;
+    private int maxAmount;
     private BigDecimal tenure;
-    private BigDecimal requestAmount;
-    private BigDecimal interestRate;
+    private int requestAmount;
+    private int interestRate;
     private BigDecimal payAmount;
 
 }
