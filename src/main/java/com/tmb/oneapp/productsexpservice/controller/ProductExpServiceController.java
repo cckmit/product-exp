@@ -200,7 +200,7 @@ public class ProductExpServiceController {
             if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
                 ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
                 if (ffsRsAndValidation.isError()) {
-                    productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                    productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                             ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
                             trackingStatus, alternativeRq));
 
@@ -210,7 +210,7 @@ public class ProductExpServiceController {
                     oneServiceResponse.setData(null);
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
                 } else {
-                    productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                    productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                             ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeRq));
 
                     FfsResponse ffsResponse = new FfsResponse();
@@ -222,7 +222,7 @@ public class ProductExpServiceController {
                     return ResponseEntity.status(HttpStatus.OK).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
                 }
             } else {
-                productsExpService.logactivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                         ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeRq));
 
                 oneServiceResponse.setData(null);

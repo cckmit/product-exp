@@ -15,6 +15,7 @@ import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDet
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundOrderHistory;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
@@ -144,13 +145,14 @@ public class UtilMapTest {
     public void testMappingAccount() {
         CommonData data = new CommonData();
         data.setChannel("1234");
-        FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
         FundRuleInfoList list = new FundRuleInfoList();
         list.setFundHouseCode("1234");
+        FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
         fundPaymentDetailRs.setFundRule(list);
+        List<DepositAccount> depositAccountList = utilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp");
+        fundPaymentDetailRs.setDepositAccountList(depositAccountList);
         data.setAccount290Url("1234");
-        FundPaymentDetailRs result = utilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp", fundPaymentDetailRs);
-        assertNotEquals(data.getAccount290Url(), result);
+        assertNotEquals(data.getAccount290Url(), depositAccountList);
     }
 
     @Test
