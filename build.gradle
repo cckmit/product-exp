@@ -79,7 +79,7 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'com.tmb.common:tmb_common_utility:0.0.162'
+    implementation 'com.tmb.common:tmb_common_utility:0.0.174'
     implementation 'org.springframework.kafka:spring-kafka'
     testCompile("junit:junit:4.12")
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -148,7 +148,7 @@ sonarqube {
         }
     }
     properties {
-        property 'sonar.coverage.exclusions', '**/config/*, **/constant/*, **/dto/**, **/model/**, **/ProductsExpServiceApplication.java, **/feignclients/**'
+        property 'sonar.coverage.exclusions', '**/enums/*', '**/config/*, **/constant/*, **/dto/**, **/model/**, **/ProductsExpServiceApplication.java, **/feignclients/**'
     }
     properties {
         property 'sonar.exclusions', '**/config/*'
