@@ -1,0 +1,13 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "portfolioNumber": "PT000000000000108261",
+    "portfolioNickName": "อนาคตเพื่อการศึกษา",
+    "oldPortNickName": "อนาคตเพื่อการศึกษา"
+  }
+}

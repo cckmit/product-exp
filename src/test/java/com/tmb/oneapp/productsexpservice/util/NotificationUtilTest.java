@@ -1,6 +1,8 @@
 package com.tmb.oneapp.productsexpservice.util;
 
-import com.tmb.oneapp.productsexpservice.model.request.notification.NotifyCommon;
+import com.tmb.common.model.request.notification.NotifyCommon;
+import com.tmb.common.util.NotificationUtil;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

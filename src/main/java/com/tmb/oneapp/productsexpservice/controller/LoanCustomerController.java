@@ -34,7 +34,8 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@Valid @RequestHeader(name = "X-CRMID") String crmId,
+                                                                                              @Valid @RequestHeader(name = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
                                                                                               @Valid LoanCustomerRequest request) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -42,7 +43,7 @@ public class LoanCustomerController {
         TmbOneServiceResponse<LoanCustomerResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request);
+            LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request,crmId);
             oneTmbOneServiceResponse.setData(loanCustomerResponse);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -62,7 +63,7 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Submission customer profile")
     @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
                                                                                                      @Valid @RequestBody LoanCustomerSubmissionRequest request) {
 
         HttpHeaders responseHeaders = new HttpHeaders();

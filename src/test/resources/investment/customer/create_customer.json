@@ -1,0 +1,28 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "crmId": "00000007924129",
+    "wealthCrmId": "D0000000988",
+    "phoneNumber": "0948096953",
+    "dateOfBirth": "2019-04-03T00:00:00",
+    "emailAddress": "test@tmbbank.com",
+    "maritalStatus": "M",
+    "residentGeoCode": "TH",
+    "taxNumber": "",
+    "branchCode": "D0000000988",
+    "makerCode": "D0000000988",
+    "kycFlag": "Y",
+    "amloFlag": "N",
+    "lastDateSync": "2019-04-03T09:23:45",
+    "nationalDocumentExpireDate": "2019-04-03T00:00:00",
+    "nationalDocumentId": null,
+    "nationalDocumentIdentificationType": null,
+    "customerThaiName": "นาย นัท",
+    "customerEnglishName": "MR NUT"
+  }
+}

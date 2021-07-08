@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 public class LoanCustomerPricing {
     private BigDecimal monthFrom;
     private BigDecimal monthTo;
+    private BigDecimal yearFrom;
+    private BigDecimal yearTo;
     private BigDecimal rateVariance;
     private String rate;
 }

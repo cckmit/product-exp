@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.creditcard.CardInstallment;
 import com.tmb.oneapp.productsexpservice.constant.NotificationConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -16,13 +17,13 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallment;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
-import com.tmb.oneapp.productsexpservice.model.request.notification.*;
-import com.tmb.oneapp.productsexpservice.model.response.notification.NotificationResponse;
-import com.tmb.oneapp.productsexpservice.util.NotificationUtil;
+import com.tmb.common.model.request.notification.*;
+import com.tmb.common.model.response.notification.NotificationResponse;
+import com.tmb.common.util.NotificationUtil;
+import com.tmb.oneapp.productsexpservice.model.request.notification.FlexiLoanSubmissionWrapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -395,7 +396,7 @@ public class NotificationService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param moneyString
 	 * @return
 	 */
@@ -412,7 +413,7 @@ public class NotificationService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param money
 	 * @return
 	 */
@@ -802,4 +803,51 @@ public class NotificationService {
 		processResultLog(sendEmailResponse, notificationRequest);
 	}
 
+	public void sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId, FlexiLoanSubmissionWrapper wrapper) {
+		NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
+				defaultChannelTh, null, wrapper.getProductName(), null,
+				wrapper.getCustomerName());
+		String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HTML_DATE_FORMAT));
+		String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HH_MM));
+
+		notifyCommon.setAccountId(accountId);
+		notifyCommon.setCrmId(crmId);
+
+		if (StringUtils.isNotBlank(wrapper.getEmail())) {
+			NotificationRequest notificationRequest = new NotificationRequest();
+			List<NotificationRecord> notificationRecords = new ArrayList<>();
+			NotificationRecord record = new NotificationRecord();
+
+			EmailChannel emailChannel = new EmailChannel();
+			emailChannel.setEmailEndpoint(wrapper.getEmail());
+			emailChannel.setEmailSearch(false);
+
+			record.setEmail(emailChannel);
+			record.setAccount(accountId);
+
+			Map<String, Object> params = new HashMap<>();
+			params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.FLEXI_LOAN_SUBMISSION_VALUE);
+			params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
+			params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+			params.put(NotificationConstant.TRAN_DATE, tranDate);
+			params.put(NotificationConstant.TRAN_TIME, tranTime);
+			params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
+
+			record.setParams(params);
+			record.setCrmId(notifyCommon.getCrmId());
+			record.setLanguage(NotificationConstant.LOCALE_TH);
+
+			record.setAttachments(wrapper.getAttachments());
+
+			setRequestForEmailAndSms(wrapper.getEmail(), null, record);
+
+			notificationRecords.add(record);
+			notificationRequest.setRecords(notificationRecords);
+
+			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
+					.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
+
+			processResultLog(sendEmailResponse, notificationRequest);
+		}
+	}
 }

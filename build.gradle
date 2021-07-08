@@ -1,23 +1,23 @@
 buildscript {
-	ext {
-		springBootVersion = '2.3.3.RELEASE'
-		gradleDockerVersion = '1.2'
-	}
-	repositories {
-		maven {
-			url 'https://nexus.tmbbank.local:8081/repository/oneapp'
-			credentials {
-				username = 'oneapp_lib'
-				password = 'ad123Tmb*'
-			}
-		}
-	}
+    ext {
+        springBootVersion = '2.3.3.RELEASE'
+        gradleDockerVersion = '1.2'
+    }
+    repositories {
+        maven {
+            url 'https://nexus.tmbbank.local:8081/repository/oneapp'
+            credentials {
+                username = 'oneapp_lib'
+                password = 'ad123Tmb*'
+            }
+        }
+    }
 
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath("se.transmode.gradle:gradle-docker:${gradleDockerVersion}")
-		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0"
-	}
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("se.transmode.gradle:gradle-docker:${gradleDockerVersion}")
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0"
+    }
 }
 
 apply plugin: 'java'
@@ -32,115 +32,126 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 if (project.hasProperty('projVersion')) {
-	project.version = project.projVersion
+    project.version = project.projVersion
 } else {
-	project.version = '0.0.1'
+    project.version = '2.1.0'
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	maven {
-		url 'https://nexus.tmbbank.local:8081/repository/oneapp'
-		credentials {
-			username = 'oneapp_lib'
-			password = 'ad123Tmb*'
-		}
-	}
+    maven {
+        url 'https://nexus.tmbbank.local:8081/repository/oneapp'
+        credentials {
+            username = 'oneapp_lib'
+            password = 'ad123Tmb*'
+        }
+    }
 
 }
 
 springBoot {
-	buildInfo()
+    buildInfo()
 }
 
 ext {
-	set('springCloudVersion', "Hoxton.SR6")
+    set('springCloudVersion', "Hoxton.SR6")
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-	compile 'org.json:json:20171018'
-	compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
-	compile("io.springfox:springfox-swagger2:2.9.2")
-	compile("io.springfox:springfox-swagger-ui:2.9.2")
-	implementation group: 'commons-codec', name: 'commons-codec', version: '1.9'
-	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-	testCompile("junit:junit:4.12")
-	compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.7.RELEASE'
-	compile 'org.json:json:20171018'
-	compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'com.tmb.common:tmb_common_utility:0.0.139'
-	implementation 'org.springframework.kafka:spring-kafka'
-	testCompile("junit:junit:4.12")
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	implementation group: 'redis.clients', name: 'jedis', version: '3.5.1'
-	implementation group: 'org.thymeleaf', name: 'thymeleaf-spring5', version: '3.0.11.RELEASE'
-	implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
-	implementation group: 'org.apache.axis', name: 'axis', version: '1.4'
-	implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
-	implementation group: 'commons-discovery', name: 'commons-discovery', version: '0.5'
-	implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
-	implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
-	testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    compile 'org.json:json:20171018'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+    compile("io.springfox:springfox-swagger2:2.9.2")
+    compile("io.springfox:springfox-swagger-ui:2.9.2")
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.9'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    testCompile("junit:junit:4.12")
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.7.RELEASE'
+    compile 'org.json:json:20171018'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'com.tmb.common:tmb_common_utility:0.0.162'
+    implementation 'org.springframework.kafka:spring-kafka'
+    testCompile("junit:junit:4.12")
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    implementation group: 'redis.clients', name: 'jedis', version: '3.5.1'
+    implementation group: 'org.thymeleaf', name: 'thymeleaf-spring5', version: '3.0.11.RELEASE'
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    implementation group: 'org.apache.axis', name: 'axis', version: '1.4'
+    implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
+    implementation group: 'commons-discovery', name: 'commons-discovery', version: '0.5'
+    implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
+    implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
+    testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+    implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:2.1.0')
+    implementation 'org.apache.commons:commons-vfs2:2.8.0'
+    implementation 'com.jcraft:jsch:0.1.55'
+    compile('org.apache.xmlgraphics:fop:2.6') {
+        exclude group: 'xml-apis'
+    }
+
+    //MapStruct
+    compile "org.mapstruct:mapstruct:1.4.2.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 task buildDocker(type: Docker, dependsOn: build) {
-	push = false
-	applicationName = project.name
-	dockerfile = file('Dockerfile')
-	doFirst {
-		copy {
-			from jar
-			into stageDir
-		}
-	}
+    push = false
+    applicationName = project.name
+    dockerfile = file('Dockerfile')
+    doFirst {
+        copy {
+            from jar
+            into stageDir
+        }
+    }
 }
 
 jacoco {
-	toolVersion = "0.8.2"
+    toolVersion = "0.8.2"
 }
 
 jacocoTestReport {
-	reports {
-		html.enabled = true
-		xml.enabled = true
-		csv.enabled = true
-	}
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = true
+    }
 }
 
 sonarqube {
-	if (System.getProperty("sonar.host.url").equals(null)){
-		properties {
-			System.setProperty('sonar.host.url', 'http://localhost:9000')
-		}
-	}
-	properties {
-		property 'sonar.coverage.exclusions', '**/config/*, **/constant/*, **/dto/**, **/model/**, **/ProductsExpServiceApplication.java, **/feignclients/**'
-	}
-	properties {
-		property 'sonar.exclusions', '**/config/*'
-	}
+    if (System.getProperty("sonar.host.url").equals(null)) {
+        properties {
+            System.setProperty('sonar.host.url', 'http://localhost:9000')
+        }
+    }
+    properties {
+        property 'sonar.coverage.exclusions', '**/config/*, **/constant/*, **/dto/**, **/model/**, **/ProductsExpServiceApplication.java, **/feignclients/**'
+    }
+    properties {
+        property 'sonar.exclusions', '**/config/*'
+    }
 }
 test.finalizedBy jacocoTestReport

@@ -1,0 +1,32 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "jointType": "Single",
+    "preferredRedemptionAccountCode": "3552283826",
+    "preferredRedemptionAccountName": "",
+    "preferredSubscriptionAccountCode": "3552283826",
+    "preferredSubscriptionAccountName": "",
+    "registeredForVat": "No",
+    "vatEstablishmentBranchCode": "",
+    "withHoldingTaxPreference": "None",
+    "status": "Active",
+    "preferredAddressType": "Contact",
+    "crmId": "00000000002914",
+    "code": "RI000000000000000281",
+    "nature": "Standard",
+    "typeCode": "TMB_CLIENTRLS",
+    "mgtBegin": null,
+    "branchReference": "B0000000377",
+    "customerType": "Individual",
+    "financialAdvanceReference": "U22103",
+    "riskProfile": "",
+    "roboStatus": "None",
+    "ownerShipRule": "Primary",
+    "portfolioAdvanceTypeCode": ""
+  }
+}

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -12,6 +13,8 @@ import javax.validation.constraints.NotNull;
 public class SubmissionInfoRequest {
 
     @NotNull
-    private Long caID;
+    private Long caId;
+    @NotEmpty
+    private String productCode;
 
 }

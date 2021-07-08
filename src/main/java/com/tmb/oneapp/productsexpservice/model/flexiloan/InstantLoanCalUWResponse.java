@@ -16,8 +16,8 @@ import java.util.List;
 public class InstantLoanCalUWResponse {
     private String status;
     private String product;
-    private BigDecimal topUpAmount;
-    private BigDecimal loanAmount;
+    private BigDecimal outStandingBalance;
+    private BigDecimal requestAmount;
     private BigDecimal installmentAmount;
     private BigDecimal tenor;
     private BigDecimal interestRate;
@@ -27,5 +27,8 @@ public class InstantLoanCalUWResponse {
     private List<LoanCustomerPricing> pricings;
     private Calendar loanContractDate;
     private String firstPaymentDueDate;
+    private String rateType;
+    private BigDecimal rateTypePercent;
+
 
 }

@@ -1,0 +1,125 @@
+{
+    "mutualFund": [
+      {
+        "fundClassCode": "300",
+        "fundClassNameTH": "กองทุนผสม",
+        "fundClassNameEN": "Balanced",
+        "fundClassPercent": "5.91"
+      },
+      {
+        "fundClassCode": "400",
+        "fundClassNameTH": "กองทุนหุ้น",
+        "fundClassNameEN": "Equity",
+        "fundClassPercent": "63.03"
+      },
+      {
+        "fundClassCode": "500",
+        "fundClassNameTH": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
+        "fundClassNameEN": "FIF Equity",
+        "fundClassPercent": "5.66"
+      }
+    ],
+    "fundSuggestedAllocation": {
+      "suitabilityScore": "2 ",
+      "modelNumber": "2 ",
+      "fundSuggestionList": [
+        {
+          "fundClassCode": "300",
+          "fundClassNameTh": "กองทุนผสม",
+          "fundClassNameEn": "Balanced",
+          "recommendedPercent": "5.00"
+        },
+        {
+          "fundClassCode": "400",
+          "fundClassNameTh": "กองทุนหุ้น",
+          "fundClassNameEn": "Equity",
+          "recommendedPercent": "22.00"
+        },
+        {
+          "fundClassCode": "800",
+          "fundClassNameTh": "Super Savings Fund(SSF)/LTF",
+          "fundClassNameEn": "Super Savings Fund(SSF)/LTF",
+          "recommendedPercent": "33.00"
+        },
+        {
+          "fundClassCode": "900",
+          "fundClassNameTh": "กองทุนรวมเพื่อการเลี้ยงชีพ",
+          "fundClassNameEn": "Retirement Mutual Fund",
+          "recommendedPercent": "40.00"
+        }
+      ]
+    },
+    "mutualFundWithFundSuggestedAllocation": [
+      {
+        "fundClassCode": "300",
+        "fundClassNameTh": "กองทุนผสม",
+        "fundClassNameEn": "Balanced",
+        "fundClassPercent": "5.91",
+        "recommendedPercent": "5.00",
+        "fundSuggestionList": [
+          {
+            "fundCode": "TMBINCOME",
+            "fundShortName": "TMBINCOME"
+          }
+        ]
+      },
+      {
+        "fundClassCode": "400",
+        "fundClassNameTh": "กองทุนหุ้น",
+        "fundClassNameEn": "Equity",
+        "fundClassPercent": "63.03",
+        "recommendedPercent": "22.00",
+        "fundSuggestionList": [
+          {
+            "fundCode": "JB25",
+            "fundShortName": "JB25"
+          },
+          {
+            "fundCode": "TISCOHD",
+            "fundShortName": "TISCOHD"
+          }
+        ]
+      },
+      {
+        "fundClassCode": "500",
+        "fundClassNameTh": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
+        "fundClassNameEn": "FIF Equity",
+        "fundClassPercent": "5.66",
+        "recommendedPercent": "0"
+      },
+      {
+        "fundClassCode": "800",
+        "fundClassNameTh": "Super Savings Fund(SSF)/LTF",
+        "fundClassNameEn": "Super Savings Fund(SSF)/LTF",
+        "fundClassPercent": "0",
+        "recommendedPercent": "33.00",
+        "fundSuggestionList": [
+          {
+            "fundCode": "JB25LTF",
+            "fundShortName": "JB25 LTF"
+          },
+          {
+            "fundCode": "JBPLTF",
+            "fundShortName": "JBP LTF"
+          }
+        ]
+      },
+      {
+        "fundClassCode": "900",
+        "fundClassNameTh": "กองทุนรวมเพื่อการเลี้ยงชีพ",
+        "fundClassNameEn": "Retirement Mutual Fund",
+        "fundClassPercent": "0",
+        "recommendedPercent": "40.00",
+        "fundSuggestionList": [
+          {
+            "fundCode": "ABSIRMF",
+            "fundShortName": "ABSI-RMF"
+          },
+          {
+            "fundCode": "JB25RMF",
+            "fundShortName": "JB25RMF"
+          }
+        ]
+      }
+    ]
+}

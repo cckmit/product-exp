@@ -10,6 +10,8 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.InstallmentPromotion;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,7 +19,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,8 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -61,39 +64,33 @@ public class EligibleLeadController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<EligibleLeadResponse> serviceResponse = new TmbOneServiceResponse<>();
-
+		EligibleLeadResponse loanDetails = null;
 		try {
-
 			String groupAccountId = requestBody.getGroupAccountId();
 			String disbursementDate = requestBody.getDisbursementDate();
 
 			if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate)) {
 				ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> loanResponse = creditCardClient
 						.getEligibleLeads(correlationId, requestBody);
-				int statusCodeValue = loanResponse.getStatusCodeValue();
-				HttpStatus statusCode = loanResponse.getStatusCode();
+				loanDetails = loanResponse.getBody().getData();
 
-				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
-
-					EligibleLeadResponse loanDetails = loanResponse.getBody().getData();
-
-					serviceResponse
-							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-					serviceResponse.setData(loanDetails);
-					return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
-				} else {
-					return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
-
-				}
-			} else {
-				return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
+				serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+						ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+				serviceResponse.setData(loanDetails);
+				return ResponseEntity.ok().headers(responseHeaders).body(serviceResponse);
 			}
-
 		} catch (Exception e) {
-			return getFailedResponse(responseHeaders, serviceResponse, e);
+			loanDetails = new EligibleLeadResponse();
+			InstallmentPromotion promotionInfo = new InstallmentPromotion();
+			promotionInfo.setCashChillChillFlagAllow("N");
+			promotionInfo.setCashTransferFlagAllow("N");
+			promotionInfo.setGroupAccountId(requestBody.getGroupAccountId());
+			List<InstallmentPromotion> handleNoneLeadList = new ArrayList<>();
+			handleNoneLeadList.add(promotionInfo);
+			loanDetails.setInstallmentPromotions(handleNoneLeadList);
+			serviceResponse.setData(loanDetails);
 		}
-
+		return getTmbOneServiceResponseResponseEntity(responseHeaders, serviceResponse);
 	}
 
 	ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> getFailedResponse(HttpHeaders responseHeaders,

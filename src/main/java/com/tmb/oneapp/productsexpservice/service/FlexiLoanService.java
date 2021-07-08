@@ -33,15 +33,18 @@ public class FlexiLoanService {
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     private final LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
 
+    private static final List<String> CREDIT_CARD_CODE_LIST = List.of("VJ", "VP", "VM", "VH", "VI", "VB");
+
     public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException {
 
-        Facility facilityInfo = getFacility(request.getCaID());
-        Individual customerInfo = getCustomer(request.getCaID());
-        CreditCard creditCardInfo = getCreditCard(request.getCaID());
-        return parseSubmissionInfoResponse(facilityInfo, customerInfo, creditCardInfo);
+        Facility facilityInfo = getFacility(request.getCaId());
+        Individual customerInfo = getCustomer(request.getCaId());
+        CreditCard creditCardInfo = getCreditCard(request.getCaId());
+        return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
     }
 
-    private SubmissionInfoResponse parseSubmissionInfoResponse(Facility facilityInfo,
+    private SubmissionInfoResponse parseSubmissionInfoResponse(String productCode,
+                                                               Facility facilityInfo,
                                                                Individual customerInfo,
                                                                CreditCard creditCardInfo) {
         SubmissionInfoResponse response = new SubmissionInfoResponse();
@@ -50,41 +53,43 @@ public class FlexiLoanService {
         customer.setName(customerInfo == null ? null : String.format("%s %s", customerInfo.getThaiName(), customerInfo.getThaiSurName()));
         customer.setCitizenId(customerInfo == null ? null : customerInfo.getIdNo1());
 
-        response.setPaymentMethod(facilityInfo == null ? null : facilityInfo.getPaymentMethod());
-
+        SubmissionPaymentInfo payment = new SubmissionPaymentInfo();
+        SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
         SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
         if (facilityInfo != null) {
+            LoanCustomerPricing customerPricing = new LoanCustomerPricing();
             for (Pricing p : facilityInfo.getPricings()) {
-                LoanCustomerPricing customerPricing = new LoanCustomerPricing();
-                customerPricing.setMonthFrom(p.getMonthFrom());
-                customerPricing.setMonthTo(p.getMonthTo());
-                customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
-                customerPricing.setRate(parseRate(p));
-
-                pricingList.add(customerPricing);
+                if (p.getPricingType().equals("S")) {
+                    customerPricing.setMonthFrom(p.getMonthFrom());
+                    customerPricing.setMonthTo(p.getMonthTo());
+                    customerPricing.setRateVariance(p.getRateVaraince().multiply(BigDecimal.valueOf(100)));
+                    customerPricing.setRate(parseRate(p));
+                    customerPricing.setYearTo(p.getYearTo());
+                    customerPricing.setYearFrom(p.getYearFrom());
+                    pricingList.add(customerPricing);
+                }
             }
             pricingInfo.setPricing(pricingList);
+            payment.setFeatureType(facilityInfo.getFeatureType());
+            payment.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
+            payment.setOtherBank(facilityInfo.getLoanWithOtherBank());
+            payment.setOtherBankInProgress(facilityInfo.getConsiderLoanWithOtherBank());
+
+            receiving.setOsLimit(facilityInfo.getOsLimit());
+            receiving.setHostAcfNo(facilityInfo.getHostAcfNo());
+            receiving.setDisburseAccount(String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
+
+            response.setTenure(facilityInfo.getTenure());
         }
 
-        SubmissionCreditCardInfo creditCard = new SubmissionCreditCardInfo();
-        creditCard.setEStatement(customerInfo == null ? null : customerInfo.getEmail());
-        creditCard.setFeatureType(facilityInfo == null ? null : facilityInfo.getFeatureType());
-        creditCard.setPaymentMethod(facilityInfo == null ? null : facilityInfo.getPaymentMethod());
-
-        if (creditCardInfo != null) {
-            logger.info("credit card id: " + creditCardInfo.getId());
-        }
-
-        SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
-        receiving.setOsLimit(facilityInfo == null ? null : facilityInfo.getOsLimit());
-        receiving.setHostAcfNo(facilityInfo == null ? null : facilityInfo.getHostAcfNo());
-        receiving.setDisburseAccount(facilityInfo == null ? null : String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
+        payment.setEStatement(customerInfo == null ? null : customerInfo.getEmail());
 
         response.setCustomerInfo(customer);
         response.setPricingInfo(pricingInfo);
         response.setReceivingInfo(receiving);
-        response.setCreditCardInfo(creditCard);
+        response.setSubmissionInfo(payment);
+
         return response;
     }
 
@@ -110,6 +115,13 @@ public class FlexiLoanService {
             return String.format("%s %s %.2f", pricing.getRateType(), pricing.getPercentSign(), pricing.getRateVaraince().multiply(BigDecimal.valueOf(100)));
         }
 
+    }
+
+    private String setPaymentMethod(String productCode, Facility facilityInfo, CreditCard creditCardInfo) {
+        if(CREDIT_CARD_CODE_LIST.contains(productCode)) {
+            return creditCardInfo == null ? null : creditCardInfo.getPaymentMethod();
+        }
+        return facilityInfo == null ? null : facilityInfo.getPaymentMethod();
     }
 
 

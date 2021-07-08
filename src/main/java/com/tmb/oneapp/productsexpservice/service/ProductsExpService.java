@@ -1,9 +1,9 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -12,18 +12,18 @@ import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.dto.fund.InformationDto;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
+import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
-import com.tmb.oneapp.productsexpservice.model.request.fund.FundCodeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
+import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
@@ -34,8 +34,10 @@ import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPo
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
-import com.tmb.oneapp.productsexpservice.model.response.fund.dailynav.DailyNavBody;
-import com.tmb.oneapp.productsexpservice.model.response.fund.information.InformationBody;
+import com.tmb.oneapp.productsexpservice.model.response.customer.SearchResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
+import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
@@ -80,6 +82,7 @@ public class ProductsExpService {
     private final KafkaProducerService kafkaProducerService;
     private final String topicName;
     private final CustomerExpServiceClient customerExpServiceClient;
+    private final CustomerServiceClient customerServiceClient;
 
 
     @Autowired
@@ -89,7 +92,8 @@ public class ProductsExpService {
                               CommonServiceClient commonServiceClient,
                               ProductExpAsynService productExpAsynService,
                               @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName,
-                              CustomerExpServiceClient customerExpServiceClient) {
+                              CustomerExpServiceClient customerExpServiceClient,
+                              CustomerServiceClient customerServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
@@ -98,6 +102,7 @@ public class ProductsExpService {
         this.productExpAsynService = productExpAsynService;
         this.topicName = topicName;
         this.customerExpServiceClient = customerExpServiceClient;
+        this.customerServiceClient = customerServiceClient;
     }
 
 
@@ -145,63 +150,69 @@ public class ProductsExpService {
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, FundSummaryRq rq) {
         FundSummaryBody result = new FundSummaryBody();
-
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData = null;
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse = null;
-
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = null;
         try {
-            List<String> ports = new ArrayList<>();
-            List<String> ptestPortList = new ArrayList<>();
-            PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
-            ptesBodyRequest.setRmNumber(rq.getCrmId());
-            String portData = customerExpServiceClient.getAccountSaving(correlationId, rq.getCrmId());
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
-                    investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
-
-
-            Optional<List<PtesDetail>> ptesDetailList =
-                    Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
-                            .map(TmbOneServiceResponse::getData);
-
-
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
-            if (!StringUtils.isEmpty(portData)) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readValue(portData, JsonNode.class);
-                JsonNode dataNode = node.get("data");
-                JsonNode portList = dataNode.get("mutual_fund_accounts");
-                ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
-                });
-            }
-            if (ptesDetailList.isPresent()) {
-                ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
-                        .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
-
-            }
-            ports.addAll(ptestPortList);
+            String crmId = rq.getCrmId();
+            List<String> ports = getPortList(crmId, invHeaderReqParameter);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
-            summaryByPortResponse = investmentRequestClient
-                    .callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
+            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
+            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(invHeaderReqParameter,
+                    CountToBeProcessOrderRequestBody.builder().serviceType("1").rm(crmId).build());
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummaryData);
+
             if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
                 var body = fundSummaryData.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
                 this.setFundSummaryBody(result, ports, body, summaryByPort);
             }
+
+            result.setCountProcessedOrder("0");
+            if (HttpStatus.OK.value() == countOrderProcessingResponse.getStatusCode().value()) {
+                result.setCountProcessedOrder(countOrderProcessingResponse.getBody().getData().getCountProcessOrder());
+            }
+
             return result;
-
-
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
+        }
+    }
+
+    private List<String> getPortList(String crmId, Map<String, String> invHeaderReqParameter) throws com.fasterxml.jackson.core.JsonProcessingException {
+        List<String> ports = new ArrayList<>();
+        List<String> ptestPortList = new ArrayList<>();
+        PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
+        ptesBodyRequest.setRmNumber(crmId);
+        String portData = customerExpServiceClient.getAccountSaving(invHeaderReqParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID), crmId);
+        ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
+                investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
+
+        Optional<List<PtesDetail>> ptesDetailList =
+                Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
+                        .map(TmbOneServiceResponse::getData);
+
+        logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
+        if (!StringUtils.isEmpty(portData)) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readValue(portData, JsonNode.class);
+            JsonNode dataNode = node.get("data");
+            JsonNode portList = dataNode.get("mutual_fund_accounts");
+            ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
+            });
+        }
+        if (ptesDetailList.isPresent()) {
+            ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
+                    .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
 
         }
-
-
+        ports.addAll(ptestPortList);
+        return ports;
     }
 
     /***
@@ -303,12 +314,13 @@ public class ProductsExpService {
      * @return FfsRsAndValidation
      */
     @LogAround
-    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) {
+    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody)  {
         FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
-            ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation);
+            String fatcaFlag = getFatcaFlag(correlationId, ffsRequestBody.getCrmId());
+            ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation,fatcaFlag);
 
         } else {
             errorData(ffsRsAndValidation, fundResponse);
@@ -338,7 +350,7 @@ public class ProductsExpService {
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq) {
+    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq)  {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
@@ -346,12 +358,24 @@ public class ProductsExpService {
             ffsRequestBody.setUnitHolderNo(alternativeRq.getUnitHolderNo());
             ffsRequestBody.setProcessFlag(alternativeRq.getProcessFlag());
             ffsRequestBody.setCrmId(alternativeRq.getCrmId());
-            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse);
+            String fatcaFlag = getFatcaFlag(correlationId, ffsRequestBody.getCrmId());
+            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse,fatcaFlag);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
                 fundResponseSuccess(fundResponse);
             }
         }
         return fundResponse;
+    }
+
+    private String getFatcaFlag(String correlationId,String crmId) {
+        CrmSearchBody request = CrmSearchBody.builder()
+                .searchType("rm-id")
+                .searchValue(crmId)
+                .build();
+        ResponseEntity<TmbOneServiceResponse<List<SearchResponse>>> response =
+                customerServiceClient.customerSearch(crmId,correlationId,request);
+        String fatcaFlag = response.getBody().getData().get(0).getFatcaFlag();
+        return  fatcaFlag;
     }
 
     /**
@@ -375,7 +399,7 @@ public class ProductsExpService {
      */
     @LogAround
     public FfsRsAndValidation validationAlternativeFlow(String correlationId, FfsRequestBody ffsRequestBody,
-                                                        FfsRsAndValidation ffsRsAndValidation) {
+                                                        FfsRsAndValidation ffsRsAndValidation,String fatcaFlag) {
         final boolean isNotValid = true;
         boolean isStoped = false;
         if (isCASADormant(correlationId, ffsRequestBody)) {
@@ -390,6 +414,7 @@ public class ProductsExpService {
             ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
             ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
             ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
+            isStoped = true;
         }
         if (!isStoped && isCustIDExpired(ffsRequestBody)) {
             fundResponseError(ffsRsAndValidation, isNotValid);
@@ -397,6 +422,18 @@ public class ProductsExpService {
         }
         if (!isStoped && isBusinessClose(correlationId, ffsRequestBody)) {
             errorResponse(ffsRsAndValidation, isNotValid);
+            isStoped = true;
+        }
+        if(!isStoped && fatcaFlag.equalsIgnoreCase("0")){
+            funResponseMapping(ffsRsAndValidation,
+                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
+                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
+                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
+        }else if(!isStoped &&!fatcaFlag.equalsIgnoreCase("N")){
+            funResponseMapping(ffsRsAndValidation,
+                    FatcaErrorEnums.USNATIONAL.getCode(),
+                    FatcaErrorEnums.USNATIONAL.getMsg(),
+                    FatcaErrorEnums.USNATIONAL.getDesc());
         }
         return ffsRsAndValidation;
     }
@@ -419,20 +456,40 @@ public class ProductsExpService {
      */
     @LogAround
     public FundResponse validationAlternativeSellAndSwitchFlow(String correlationId, FfsRequestBody ffsRequestBody,
-                                                               FundResponse fundResponse) {
+                                                               FundResponse fundResponse,String fatcaFlag) {
         final boolean isNotValid = true;
-        boolean isStoped = false;
         if (isSuitabilityExpired(correlationId, ffsRequestBody)) {
             fundResponse.setError(isNotValid);
             fundResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
             fundResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
             fundResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
-            isStoped = true;
+            return fundResponse;
         }
-        if (!isStoped && isCustIDExpired(ffsRequestBody)) {
+        if (isCustIDExpired(ffsRequestBody)) {
             fundResponseError(fundResponse, isNotValid);
+            return fundResponse;
         }
+
+        if(fatcaFlag.equalsIgnoreCase("0")){
+            funResponseMapping(fundResponse,
+                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
+                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
+                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
+        }else if(!fatcaFlag.equalsIgnoreCase("N")){
+            funResponseMapping(fundResponse,
+                    FatcaErrorEnums.USNATIONAL.getCode(),
+                    FatcaErrorEnums.USNATIONAL.getMsg(),
+                    FatcaErrorEnums.USNATIONAL.getDesc());
+        }
+
         return fundResponse;
+    }
+
+    private void funResponseMapping(FundResponse fundResponse,String code,String msg,String desc) {
+        fundResponse.setError(true);
+        fundResponse.setErrorCode(code);
+        fundResponse.setErrorMsg(msg);
+        fundResponse.setErrorDesc(desc);
     }
 
     /**
@@ -614,20 +671,131 @@ public class ProductsExpService {
         }
     }
 
-    public InformationDto getFundInformation(String correlationId, FundCodeRequestBody fundCodeRequestBody) {
-        Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
+    @LogAround
+    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmID) {
+        UnitHolder unitHolder = new UnitHolder();
+        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            CompletableFuture<InformationBody> fetchFundInformation = productExpAsynService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);
-            CompletableFuture<DailyNavBody> fetchFundDailyNav = productExpAsynService.fetchFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
-            CompletableFuture.allOf(fetchFundInformation, fetchFundDailyNav);
-            return InformationDto.builder()
-                    .information(fetchFundInformation.get())
-                    .dailyNav(fetchFundDailyNav.get())
-                    .build();
+            List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
+            unitHolder.setUnitHolderNo(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter, unitHolder);
+            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsynService.suitabilityInquiry(invHeaderReqParameter, crmID);
+            CompletableFuture.allOf(fundSummary, suitabilityInfo);
+            String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
+            ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(invHeaderReqParameter, FundAllocationRequestBody.builder().suitabilityScore(suitabilityScore).build());
+            return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
+    }
+
+    private List<String> getPortListForFundSummary(Map<String, String> invHeaderReqParameter, String crmID) throws com.fasterxml.jackson.core.JsonProcessingException {
+        List<String> portList = new ArrayList<>();
+        String portListStr = accountRequestClient.getPortList(invHeaderReqParameter, crmID);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readValue(portListStr, JsonNode.class);
+        JsonNode dataNode = node.get("data");
+        ArrayNode arrayNode = (ArrayNode) dataNode.get("mutual_fund_accounts");
+        for (int i = 0; i < arrayNode.size(); i++) {
+            JsonNode itr = arrayNode.get(i);
+            portList.add(itr.get("acct_nbr").textValue());
+        }
+        return portList;
+    }
+
+    private SuggestAllocationDTO mappingSuggestAllocationDto(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
+        List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocations = mergeMutualFundWithSuggestAllocation(fundClass, fundAllocationResponse);
+        return SuggestAllocationDTO.builder()
+                .mutualFund(
+                        fundClass.stream()
+                                .filter(f -> !f.getFundClassCode().equals("090"))
+                                .map(f -> MutualFund.builder()
+                                        .fundClassCode(f.getFundClassCode())
+                                        .fundClassNameEN(f.getFundClassNameEN())
+                                        .fundClassNameTH(f.getFundClassNameTH())
+                                        .fundClassPercent(f.getFundClassPercent())
+                                        .build())
+                                .collect(Collectors.toList()))
+                .fundSuggestedAllocation(FundSuggestedAllocation.builder()
+                        .modelNumber(fundAllocationResponse.getModelNumber())
+                        .suitabilityScore(fundAllocationResponse.getSuitabilityScore())
+
+                        .fundSuggestionList(fundAllocationResponse.getFundSuggestAllocationList().stream()
+                                .map(fl -> FundSuggestion.builder()
+                                        .fundClassCode(fl.getFundClassCode())
+                                        .fundClassNameEn(fl.getFundClassNameEn())
+                                        .fundClassNameTh(fl.getFundClassNameTh())
+                                        .recommendedPercent(fl.getRecommendedPercent())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .mutualFundWithFundSuggestedAllocation(mutualFundWithFundSuggestedAllocations)
+                .build();
+    }
+
+    private List<MutualFundWithFundSuggestedAllocation> mergeMutualFundWithSuggestAllocation(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
+        List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
+        ArrayList<String> matchClassCode = new ArrayList<>();
+        for (FundClass mutualFund : fundClass) {
+            if(mutualFund.getFundClassCode().equals("090")){
+                continue;
+            }
+            boolean isNotFound = true;
+            for (FundSuggestAllocationList suggestFundList : fundAllocationResponse.getFundSuggestAllocationList()) {
+                if (mutualFund.getFundClassCode().equals(suggestFundList.getFundClassCode())
+                     ) {
+                    matchClassCode.add(mutualFund.getFundClassCode());
+                    mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
+                            .fundClassCode(mutualFund.getFundClassCode())
+                            .fundClassNameTh(mutualFund.getFundClassNameTH())
+                            .fundClassNameEn(mutualFund.getFundClassNameEN())
+                            .fundClassPercent(mutualFund.getFundClassPercent())
+                            .recommendedPercent(suggestFundList.getRecommendedPercent())
+                            .fundSuggestionList(suggestFundList.getFundList().stream()
+                                    .map(fl -> SubFundSuggestion.builder()
+                                            .fundShortName(fl.getFundShortName())
+                                            .fundCode(fl.getFundCode())
+                                            .fundPercent(fl.getFundPercent())
+                                            .build())
+                                    .collect(Collectors.toList()))
+                            .build()
+                    );
+                    isNotFound = false;
+                }
+            }
+            if (isNotFound) {
+                mutualFundWithFundSuggestedAllocationList.add(MutualFundWithFundSuggestedAllocation.builder()
+                        .fundClassCode(mutualFund.getFundClassCode())
+                        .fundClassNameTh(mutualFund.getFundClassNameTH())
+                        .fundClassNameEn(mutualFund.getFundClassNameEN())
+                        .fundClassPercent(mutualFund.getFundClassPercent())
+                        .recommendedPercent("0")
+                        .fundSuggestionList(null)
+                        .build()
+                );
+            }
+        }
+
+        mutualFundWithFundSuggestedAllocationList.addAll(fundAllocationResponse.getFundSuggestAllocationList().stream()
+                .filter(fl -> !matchClassCode.contains(fl.getFundClassCode()))
+                .map(fl -> MutualFundWithFundSuggestedAllocation.builder()
+                        .fundClassCode(fl.getFundClassCode())
+                        .fundClassNameEn(fl.getFundClassNameEn())
+                        .fundClassNameTh(fl.getFundClassNameTh())
+                        .fundClassPercent("0")
+                        .recommendedPercent(fl.getRecommendedPercent())
+                        .fundSuggestionList(fl.getFundList().stream()
+                                .map(fle -> SubFundSuggestion.builder()
+                                        .fundShortName(fle.getFundShortName())
+                                        .fundCode(fle.getFundCode())
+                                        .fundPercent(fle.getFundPercent())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList()));
+
+        return mutualFundWithFundSuggestedAllocationList;
     }
 
     /**
@@ -668,6 +836,7 @@ public class ProductsExpService {
 
     /**
      * Method logactivity
+     * suitabilityScore
      *
      * @param data
      */

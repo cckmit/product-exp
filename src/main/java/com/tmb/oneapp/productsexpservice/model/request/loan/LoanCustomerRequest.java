@@ -10,7 +10,5 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class LoanCustomerRequest {
     @NotNull
-    private Long caID;
-    @NotNull
-    private String crmId;
+    private Long caId;
 }

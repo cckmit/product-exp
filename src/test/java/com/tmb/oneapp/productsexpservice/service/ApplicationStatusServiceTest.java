@@ -9,6 +9,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.LoanDetails;
+import com.tmb.oneapp.productsexpservice.model.request.ApplicationStatusRequest;
 import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
@@ -143,11 +144,184 @@ class ApplicationStatusServiceTest {
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
 
-        ApplicationStatusResponse response = applicationStatusService.getApplicationStatus(header, "AST");
+        ApplicationStatusResponse response = applicationStatusService.getApplicationStatus(header, "AST", null);
 
         assertEquals(true, response.getFirstUsageExperience());
         assertEquals("HP", response.getCompleted().get(0).getProductCode());
         assertEquals("Toyota Camry", response.getCompleted().get(0).getProductDetailEn());
+
+    }
+
+    @Test
+    void getApplicationStatus_prospective() throws TMBCommonException {
+
+        //roadMap
+        TmbOneServiceResponse<List<NodeDetails>> mockGetProductApplicationRoadMap
+                = new TmbOneServiceResponse<>();
+        mockGetProductApplicationRoadMap.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        mockGetProductApplicationRoadMap.setData(Arrays.asList(
+                new NodeDetails()
+                        .setLoanSystem("HP")
+                        .setNodeEn(Arrays.asList("HP", "HP"))
+                        .setNodeTh(Arrays.asList("HPth", "HPth")),
+                new NodeDetails()
+                        .setLoanSystem("RSL")
+                        .setNodeEn(Arrays.asList("RSL", "RSL"))
+                        .setNodeTh(Arrays.asList("RSL", "RSL"))
+        ));
+
+        when(commonServiceClient.getProductApplicationRoadMap())
+                .thenReturn(ResponseEntity.status(HttpStatus.OK)
+                        .body(mockGetProductApplicationRoadMap));
+
+        //HP
+        when(asyncApplicationStatusService.getHpData(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        Arrays.asList(new LoanDetails()
+                                        .setHPAPStatus("PRE")
+                                        .setStatusDate("16/10/2020 17:08:49")
+                                        .setCarBrand("Toyota")
+                                        .setCarFamily("Camry"),
+                                new LoanDetails()
+                                        .setHPAPStatus("CC3+N")
+                                        .setStatusDate("19/10/2020 17:08:49")
+                                        .setCarBrand("Toyota")
+                                        .setCarFamily("Camry")
+                        ))
+                );
+
+        //RSL
+        when(asyncApplicationStatusService.getRSLData(anyString(), anyString(), anyString()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        Arrays.asList(new LendingRslStatusResponse()
+                                        .setAppType("CC")
+                                        .setStatus("in_progress")
+                                        .setProductCode("MO")
+                                        .setLastUpdateDate("2020-07-17T09:39:25")
+                                        .setCurrentNode("2")
+                                        .setIsApproved("N")
+                                        .setIsRejected("Y"),
+                                new LendingRslStatusResponse()
+                                        .setAppType("SM")
+                                        .setStatus("in_progress")
+                                        .setProductCode("PL")
+                                        .setCurrentNode("1")
+                                        .setApplicationDate("2020-07-16T09:39:25")
+                        ))
+                );
+
+
+        //GET /apis/customers/firstTimeUsage
+        TmbOneServiceResponse<CustomerFirstUsage> mockGetFirstTimeUsageResponse
+                = new TmbOneServiceResponse<>();
+        mockGetFirstTimeUsageResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        mockGetFirstTimeUsageResponse.setData(null);
+
+        when(customerServiceClient.getFirstTimeUsage(anyString(), anyString(), eq("AST")))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK)
+                        .body(mockGetFirstTimeUsageResponse));
+
+        //POST /apis/customers/firstTimeUsage
+        TmbOneServiceResponse<String> mockPostFirstTimeUsageResponse
+                = new TmbOneServiceResponse<>();
+        mockPostFirstTimeUsageResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        mockPostFirstTimeUsageResponse.setData("1");
+
+        when(customerServiceClient.postFirstTimeUsage(anyString(), anyString(), eq("AST")))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK)
+                        .body(mockPostFirstTimeUsageResponse));
+
+        Map<String, String> header = new HashMap<>();
+        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(X_CRMID, "crmId");
+        header.put(DEVICE_ID, "deviceId");
+        header.put(ACCEPT_LANGUAGE, "en");
+        header.put(HEADER_PROSPECTIVE, "true");
+
+
+        ApplicationStatusResponse response = applicationStatusService.getApplicationStatus(header, "AST",
+                new ApplicationStatusRequest()
+            .setCitizenId("123")
+            .setMobileNo("1234"));
+
+        assertEquals(true, response.getFirstUsageExperience());
+        assertEquals("HP", response.getCompleted().get(0).getProductCode());
+        assertEquals("Toyota Camry", response.getCompleted().get(0).getProductDetailEn());
+
+    }
+
+    @Test
+    void getApplicationStatus_prospective_noBody() throws TMBCommonException {
+
+        //roadMap
+        TmbOneServiceResponse<List<NodeDetails>> mockGetProductApplicationRoadMap
+                = new TmbOneServiceResponse<>();
+        mockGetProductApplicationRoadMap.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+        mockGetProductApplicationRoadMap.setData(Arrays.asList(
+                new NodeDetails()
+                        .setLoanSystem("HP")
+                        .setNodeEn(Arrays.asList("HP", "HP"))
+                        .setNodeTh(Arrays.asList("HPth", "HPth")),
+                new NodeDetails()
+                        .setLoanSystem("RSL")
+                        .setNodeEn(Arrays.asList("RSL", "RSL"))
+                        .setNodeTh(Arrays.asList("RSL", "RSL"))
+        ));
+
+        when(commonServiceClient.getProductApplicationRoadMap())
+                .thenReturn(ResponseEntity.status(HttpStatus.OK)
+                        .body(mockGetProductApplicationRoadMap));
+
+        //HP
+        when(asyncApplicationStatusService.getHpData(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        Arrays.asList(new LoanDetails()
+                                        .setHPAPStatus("PRE")
+                                        .setStatusDate("16/10/2020 17:08:49")
+                                        .setCarBrand("Toyota")
+                                        .setCarFamily("Camry"),
+                                new LoanDetails()
+                                        .setHPAPStatus("CC3+N")
+                                        .setStatusDate("19/10/2020 17:08:49")
+                                        .setCarBrand("Toyota")
+                                        .setCarFamily("Camry")
+                        ))
+                );
+
+        //RSL
+        when(asyncApplicationStatusService.getRSLData(anyString(), anyString(), anyString()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        Arrays.asList(new LendingRslStatusResponse()
+                                        .setAppType("CC")
+                                        .setStatus("in_progress")
+                                        .setProductCode("MO")
+                                        .setLastUpdateDate("2020-07-17T09:39:25")
+                                        .setCurrentNode("2")
+                                        .setIsApproved("N")
+                                        .setIsRejected("Y"),
+                                new LendingRslStatusResponse()
+                                        .setAppType("SM")
+                                        .setStatus("in_progress")
+                                        .setProductCode("PL")
+                                        .setCurrentNode("1")
+                                        .setApplicationDate("2020-07-16T09:39:25")
+                        ))
+                );
+
+        Map<String, String> header = new HashMap<>();
+        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(X_CRMID, "crmId");
+        header.put(DEVICE_ID, "deviceId");
+        header.put(ACCEPT_LANGUAGE, "en");
+        header.put(HEADER_PROSPECTIVE, "true");
+
+        assertThrows(TMBCommonException.class, () ->
+                applicationStatusService.getApplicationStatus(header, "AST", null)
+        );
 
     }
 
@@ -248,7 +422,7 @@ class ApplicationStatusServiceTest {
         header.put(ACCEPT_LANGUAGE, "en");
 
         assertThrows(TMBCommonException.class, () ->
-                applicationStatusService.getApplicationStatus(header, "AST")
+                applicationStatusService.getApplicationStatus(header, "AST", null)
         );
 
     }
@@ -320,7 +494,7 @@ class ApplicationStatusServiceTest {
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
 
-        ApplicationStatusResponse response = applicationStatusService.getApplicationStatus(header, "AST");
+        ApplicationStatusResponse response = applicationStatusService.getApplicationStatus(header, "AST", null);
 
         assertTrue(response.getInProgress().isEmpty());
         assertTrue(response.getInProgress().isEmpty());
@@ -375,7 +549,7 @@ class ApplicationStatusServiceTest {
         header.put(ACCEPT_LANGUAGE, "en");
 
         assertThrows(TMBCommonException.class, () ->
-                applicationStatusService.getApplicationStatus(header, "AST"));
+                applicationStatusService.getApplicationStatus(header, "AST", null));
 
     }
 
@@ -427,7 +601,7 @@ class ApplicationStatusServiceTest {
         header.put(ACCEPT_LANGUAGE, "en");
 
         assertThrows(TMBCommonException.class, () ->
-                applicationStatusService.getApplicationStatus(header, "AST"));
+                applicationStatusService.getApplicationStatus(header, "AST", null));
 
 
     }

@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class SubmissionReceivingInfo {
-    private BigDecimal requestAmount;
     private BigDecimal osLimit;
     private String hostAcfNo;
     private String disburseAccount;
