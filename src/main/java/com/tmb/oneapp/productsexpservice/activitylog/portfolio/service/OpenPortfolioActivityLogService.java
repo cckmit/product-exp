@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.activitylog.portfolio.service;
 
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.request.OpenPortfolioActivityLog;
+import com.tmb.oneapp.productsexpservice.activitylog.portfolio.request.OpenPortfolioActivityLogRequest;
 import com.tmb.oneapp.productsexpservice.activitylog.service.LogActivityService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -27,6 +28,16 @@ public class OpenPortfolioActivityLogService {
     public void acceptTermAndCondition(String correlationId, String crmId, String value) {
         OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
         activityData.setValue(value);
+        logActivityService.createLog(activityData);
+    }
+
+    public void clickConfirm(String correlationId, String crmId, OpenPortfolioActivityLogRequest openPortfolioActivityLogRequest) {
+        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_CLICK_CONFIRM);
+        activityData.setScoreValue(openPortfolioActivityLogRequest.getScoreValue());
+        activityData.setNickname(openPortfolioActivityLogRequest.getNickname());
+        activityData.setPurposeOfInvestment(openPortfolioActivityLogRequest.getPurposeOfInvestment());
+        activityData.setReceivingAccount(openPortfolioActivityLogRequest.getReceivingAccount());
+        activityData.setAddress(openPortfolioActivityLogRequest.getAddress());
         logActivityService.createLog(activityData);
     }
 

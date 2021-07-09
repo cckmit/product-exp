@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.activitylog.portfolio.service;
 
+import com.tmb.oneapp.productsexpservice.activitylog.portfolio.request.OpenPortfolioActivityLogRequest;
 import com.tmb.oneapp.productsexpservice.activitylog.service.LogActivityService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,23 @@ class OpenPortfolioActivityLogServiceTest {
         // Given
         // When
         openPortfolioActivityLogService.acceptTermAndCondition("1234567890", "00000018592884", "Yes");
+
+        // Then
+        verify(logActivityService).createLog(any());
+    }
+
+    @Test
+    void should_call_create_log_when_call_click_confirm_given_correlation_id_and_crm_id_and_open_portfolio_activity_log_request() {
+        // Given
+        // When
+        OpenPortfolioActivityLogRequest openPortfolioActivityLogRequest = OpenPortfolioActivityLogRequest.builder()
+                .scoreValue("")
+                .nickname("")
+                .purposeOfInvestment("")
+                .receivingAccount("")
+                .address("")
+                .build();
+        openPortfolioActivityLogService.clickConfirm("1234567890", "00000018592884", openPortfolioActivityLogRequest);
 
         // Then
         verify(logActivityService).createLog(any());

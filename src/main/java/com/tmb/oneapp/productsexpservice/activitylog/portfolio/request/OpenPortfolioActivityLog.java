@@ -21,6 +21,20 @@ public class OpenPortfolioActivityLog extends ActivityLogs {
     /* Accept term and condition */
     private String value;
 
+    /* Click confirm */
+    @JsonProperty(value = "score_value")
+    private String scoreValue;
+
+    private String nickname;
+
+    @JsonProperty(value = "purpose_of_investment")
+    private String purposeOfInvestment;
+
+    @JsonProperty(value = "receiving_account")
+    private String receivingAccount;
+
+    private String address;
+
     public OpenPortfolioActivityLog(String correlationId, String activityDate, String activityTypeId) {
         super(correlationId, activityDate, activityTypeId);
     }
