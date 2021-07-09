@@ -65,7 +65,7 @@ public class OpenPortfolioController {
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, openPortfolioRequest);
-        if (!StringUtils.isEmpty(oneServiceResponse.getData())) {
+        if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             return ResponseEntity.ok(oneServiceResponse);
         } else {
             oneServiceResponse.setStatus(notFoundStatus());
