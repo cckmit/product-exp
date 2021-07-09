@@ -20,4 +20,10 @@ public class AdditionalStatus {
     private String severity;
     @JsonProperty("status_desc")
     private String statusDesc;
+    @JsonProperty("code")
+    private String code;
+    @JsonProperty("message")
+    private String message;
+    @JsonProperty("namespace")
+    private String namespace;
 }
