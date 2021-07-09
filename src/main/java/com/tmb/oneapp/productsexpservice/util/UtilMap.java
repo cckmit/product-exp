@@ -63,9 +63,7 @@ public class UtilMap {
             return null;
         } else {
             FundAccountRs fundAccountRs = new FundAccountRs();
-            UtilMap utilMap = new UtilMap();
-            FundAccountDetail fundAccountDetail = utilMap.mappingResponse(accDetailBody,
-                    fundRuleBody, statementRs);
+            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accDetailBody, fundRuleBody, statementRs);
             fundAccountRs.setDetails(fundAccountDetail);
             return fundAccountRs;
         }
