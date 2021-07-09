@@ -83,8 +83,8 @@ public class OpenPortfolioValidationService {
                 depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmID);
             }
 
-            validateAlternativeCase(correlationId,customerInfo,depositAccountList,tmbOneServiceResponse);
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+            validateAlternativeCase(correlationId, customerInfo, depositAccountList, tmbOneServiceResponse);
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }
 
@@ -93,7 +93,6 @@ public class OpenPortfolioValidationService {
             if (!termAndCondition.getStatusCode().equals(HttpStatus.OK) || StringUtils.isEmpty(termAndCondition.getBody().getData())) {
                 throwTmbException("========== failed get termandcondition service ==========");
             }
-
 
             mappingOpenPortFolioValidationResponse(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
             return tmbOneServiceResponse;
@@ -114,74 +113,71 @@ public class OpenPortfolioValidationService {
         TmbStatus status = TmbStatusUtil.successStatus();
         tmbOneServiceResponse.setStatus(successStatus());
         // validate service hour
-        tmbOneServiceResponse.setStatus(validateServiceHour(correlationId,status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
-             return tmbOneServiceResponse;
-        }
-
-
-        // validate age should > 20
-        tmbOneServiceResponse.setStatus(validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+        tmbOneServiceResponse.setStatus(validateServiceHour(correlationId, status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
 
+        // validate age should > 20
+        tmbOneServiceResponse.setStatus(validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            return tmbOneServiceResponse;
+        }
 
         // validate account active only once
-        tmbOneServiceResponse.setStatus(validateCasaAccountActiveOnce(depositAccountList,status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+        tmbOneServiceResponse.setStatus(validateCasaAccountActiveOnce(depositAccountList, status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
 
         // validate customer pass kyc (U,Blank) allow  and id card has not expired
         String kycLimitFlag = customerInfo.getKycLimitedFlag();
         String expireDate = customerInfo.getExpiryDate();
-        tmbOneServiceResponse.setStatus(validateKycAndIdCardExpire(kycLimitFlag,expireDate,status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+        tmbOneServiceResponse.setStatus(validateKycAndIdCardExpire(kycLimitFlag, expireDate, status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
 
         // validate customer assurange level
         String ekycIdentifyAssuranceLevel = customerInfo.getEkycIdentifyAssuranceLevel();
-        tmbOneServiceResponse.setStatus(validateIdentityAssuranceLevel(ekycIdentifyAssuranceLevel,status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+        tmbOneServiceResponse.setStatus(validateIdentityAssuranceLevel(ekycIdentifyAssuranceLevel, status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
 
         // validate customer not us and not restriced in 30 nationality
         String mainNationality = customerInfo.getNationality();
         String secondNationality = customerInfo.getNationalitySecond();
-        tmbOneServiceResponse.setStatus(validateNationality(correlationId,mainNationality,secondNationality,status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+        tmbOneServiceResponse.setStatus(validateNationality(correlationId, mainNationality, secondNationality, status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
 
         // validate complete flatca form
-        tmbOneServiceResponse.setStatus(validateFatcaFlagNotValid(customerInfo.getFatcaFlag(),status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+        tmbOneServiceResponse.setStatus(validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
 
         // validate customer risk level
         String customerRiskLevel = customerInfo.getCustomerRiskLevel();
-        tmbOneServiceResponse.setStatus(validateCustomerRiskLevel(customerRiskLevel,status));
-        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+        tmbOneServiceResponse.setStatus(validateCustomerRiskLevel(customerRiskLevel, status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
-
         return tmbOneServiceResponse;
     }
 
     private TmbStatus validateCustomerRiskLevel(String customerRiskLevel, TmbStatus status) {
         boolean isCustomerRiskLevelNotValid = false;
-        if(!StringUtils.isEmpty(customerRiskLevel)){
-            String[] values = {"C3","B3"};
-            if(Arrays.stream(values).anyMatch(customerRiskLevel::equals)){
+        if (!StringUtils.isEmpty(customerRiskLevel)) {
+            String[] values = {"C3", "B3"};
+            if (Arrays.stream(values).anyMatch(customerRiskLevel::equals)) {
                 isCustomerRiskLevelNotValid = true;
             }
         }
 
-        if(isCustomerRiskLevelNotValid) {
+        if (isCustomerRiskLevelNotValid) {
             status.setCode(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
             status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
             status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
@@ -193,29 +189,28 @@ public class OpenPortfolioValidationService {
 
     private TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status) {
         boolean isFatcaFlagValid = false;
-        if(!StringUtils.isEmpty(fatcaFlag) && !fatcaFlag.equals("0")){
+        if (!StringUtils.isEmpty(fatcaFlag) && !fatcaFlag.equals("0")) {
             isFatcaFlagValid = true;
         }
 
-        if(!isFatcaFlagValid){
+        if (!isFatcaFlagValid) {
             status.setCode(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
             status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
             status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
-
         return status;
     }
 
     private TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status) {
         boolean isAssuranceLevelValid = false;
 
-        if(ekycIdentifyAssuranceLevel != null && validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
+        if (ekycIdentifyAssuranceLevel != null && validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
             isAssuranceLevelValid = true;
         }
 
-        if(!isAssuranceLevelValid ){
+        if (!isAssuranceLevelValid) {
             status.setCode(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
             status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc());
             status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg());
@@ -227,13 +222,13 @@ public class OpenPortfolioValidationService {
 
     private TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String expireDate, TmbStatus status) {
         boolean isKycAndIdCardExpiredValid = false;
-        if((kycLimitFlag != null && expireDate != null) &&
+        if ((kycLimitFlag != null && expireDate != null) &&
                 (kycLimitFlag.equalsIgnoreCase("U") ||
-                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)){
-                isKycAndIdCardExpiredValid = true;
+                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)) {
+            isKycAndIdCardExpiredValid = true;
         }
 
-        if(!isKycAndIdCardExpiredValid){
+        if (!isKycAndIdCardExpiredValid) {
             status.setCode(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode());
             status.setDescription(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc());
             status.setMessage(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg());
@@ -243,8 +238,8 @@ public class OpenPortfolioValidationService {
         return status;
     }
 
-    private TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList,TmbStatus status) {
-        if(depositAccountList != null) {
+    private TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList, TmbStatus status) {
+        if (depositAccountList != null) {
             boolean isAccountActiveOnce = false;
             for (DepositAccount depositAccount :
                     depositAccountList) {
@@ -263,7 +258,7 @@ public class OpenPortfolioValidationService {
         return status;
     }
 
-    private TmbStatus validateServiceHour(String correlationId,TmbStatus status) {
+    private TmbStatus validateServiceHour(String correlationId, TmbStatus status) {
         FundResponse fundResponse = new FundResponse();
         fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
         if (fundResponse.isError()) {
@@ -276,23 +271,22 @@ public class OpenPortfolioValidationService {
         return status;
     }
 
-    private TmbStatus validateNationality(String correlationId,String mainNationality, String secondNationality,TmbStatus status) {
+    private TmbStatus validateNationality(String correlationId, String mainNationality, String secondNationality, TmbStatus status) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
                 commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
         List<CommonData> commonDataList = commonConfig.getBody().getData();
         List<String> blackList = commonDataList.get(0).getNationalBlackList();
 
-        if(StringUtils.isEmpty(mainNationality) ||
+        if (StringUtils.isEmpty(mainNationality) ||
                 blackList.stream().anyMatch(mainNationality::equals) ||
-                !StringUtils.isEmpty(secondNationality) && blackList.stream().anyMatch(secondNationality::equals)){
+                !StringUtils.isEmpty(secondNationality) && blackList.stream().anyMatch(secondNationality::equals)) {
             status.setCode(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode());
             status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc());
             status.setMessage(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
-
         return status;
     }
 
@@ -300,17 +294,17 @@ public class OpenPortfolioValidationService {
         try {
             int ekycIdentifyAssuranceLevelInt = Integer.parseInt(ekycIdentifyAssuranceLevel);
             return ekycIdentifyAssuranceLevelInt >= 210;
-        }catch (NumberFormatException ex){
-            logger.info("ekycIdentifyAssuranceLevel is not number : "+ekycIdentifyAssuranceLevel);
+        } catch (NumberFormatException ex) {
+            logger.info("ekycIdentifyAssuranceLevel is not number : " + ekycIdentifyAssuranceLevel);
             return false;
         }
     }
 
     private TmbStatus validateDateNotOverTwentyYearOld(
             String birthDate,
-            TmbStatus status){
+            TmbStatus status) {
 
-        try{
+        try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date d = sdf.parse(birthDate);
             Calendar c = Calendar.getInstance();
@@ -321,7 +315,7 @@ public class OpenPortfolioValidationService {
             LocalDate birthDateLocalDate = LocalDate.of(year, month, date);
             LocalDate now = LocalDate.now();
             Period diff = Period.between(birthDateLocalDate, now);
-            if(diff.getYears() < 20){
+            if (diff.getYears() < 20) {
                 status.setCode(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
                 status.setDescription(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
                 status.setMessage(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg());
@@ -329,22 +323,21 @@ public class OpenPortfolioValidationService {
                 return status;
             }
             return status;
-        }catch (ParseException ex){
+        } catch (ParseException ex) {
             logger.info("birthdate is invalid format");
             return TmbStatusUtil.notFoundStatus();
         }
-
     }
 
     private boolean isExpiredDateOccurAfterCurrentDate(String expireDate) {
-        try{
+        try {
             SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
             Date d1 = sdformat.parse(expireDate);
             Date d2 = Calendar.getInstance().getTime();
-            if(d1.compareTo(d2) > 0) {
+            if (d1.compareTo(d2) > 0) {
                 return true;
             }
-        }catch (ParseException ex){
+        } catch (ParseException ex) {
             logger.info("isExpiredDateOccurAfterCurrentDate :: Error ParseException");
         }
         return false;
