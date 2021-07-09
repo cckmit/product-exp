@@ -82,7 +82,7 @@ public class OpenPortfolioValidationService {
                 depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmID);
             }
 
-            tmbOneServiceResponse = validateAlternativeCase(correlationId,customerInfo,depositAccountList,tmbOneServiceResponse);
+            validateAlternativeCase(correlationId,customerInfo,depositAccountList,tmbOneServiceResponse);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
                 return tmbOneServiceResponse;
             }
@@ -111,17 +111,14 @@ public class OpenPortfolioValidationService {
             TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse) throws ParseException {
 
         TmbStatus status = new TmbStatus();
+        tmbOneServiceResponse.setStatus(successStatus());
         // validate service hour
-        FundResponse fundResponse = new FundResponse();
-        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
-        if (fundResponse.isError()) {
-            status.setCode(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-            status.setDescription(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-            status.setMessage(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
-            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        validateServiceHour(correlationId,status);
+        if(!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
             tmbOneServiceResponse.setStatus(status);
             return tmbOneServiceResponse;
         }
+
 
         // validate age should > 20
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateAgeNotOverTwentyResponse =
@@ -139,7 +136,7 @@ public class OpenPortfolioValidationService {
                     isAccountActiveOnce = true;
                 }
             }
-            if (!isAccountActiveOnce || depositAccountList.size() == 0) {
+            if (!isAccountActiveOnce || depositAccountList.isEmpty()) {
                 status.setCode(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
                 status.setDescription(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc());
                 status.setMessage(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg());
@@ -153,10 +150,10 @@ public class OpenPortfolioValidationService {
         String expireDate = customerInfo.getExpiryDate();
         boolean isKycAndIdCardExpiredValid = false;
         if(kycLimitFalg != null && expireDate != null){
-            if(kycLimitFalg.equalsIgnoreCase("U") || kycLimitFalg.isBlank()){
-                if(isExpiredDateOccurAfterCurrentDate(expireDate)){
-                    isKycAndIdCardExpiredValid = true;
-                }
+            if((kycLimitFalg.equalsIgnoreCase("U") ||
+                    kycLimitFalg.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)){
+                isKycAndIdCardExpiredValid = true;
+
             }
         }
 
@@ -172,10 +169,8 @@ public class OpenPortfolioValidationService {
         // validate customer assurange level
         boolean isAssuranceLevelValid = false;
         String ekycIdentifyAssuranceLevel = customerInfo.getEkycIdentifyAssuranceLevel();
-        if(ekycIdentifyAssuranceLevel != null) {
-            if (validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
-                isAssuranceLevelValid = true;
-            }
+        if(ekycIdentifyAssuranceLevel != null && validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
+            isAssuranceLevelValid = true;
         }
 
         if(!isAssuranceLevelValid ){
@@ -191,10 +186,10 @@ public class OpenPortfolioValidationService {
         boolean isNationalValid = false;
         String mainNationality = customerInfo.getNationality();
         String secondNationality = customerInfo.getNationalitySecond();
-        if(!StringUtils.isEmpty(customerInfo.getNationality())){
-            if(validateNationality(correlationId,mainNationality,secondNationality)){
-                isNationalValid = true;
-            }
+        if(!StringUtils.isEmpty(customerInfo.getNationality()) &&
+                validateNationality(correlationId,mainNationality,secondNationality)){
+            isNationalValid = true;
+
         }
 
         if(!isNationalValid ){
@@ -208,10 +203,8 @@ public class OpenPortfolioValidationService {
 
         // validate complete flatca form
         boolean isFatcaFlagNotValid = false;
-        if(!StringUtils.isEmpty(customerInfo.getFatcaFlag())){
-            if(customerInfo.getFatcaFlag().equals("0")){
-                isFatcaFlagNotValid = true;
-            }
+        if(!StringUtils.isEmpty(customerInfo.getFatcaFlag()) && customerInfo.getFatcaFlag().equals("0")){
+            isFatcaFlagNotValid = true;
         }
 
         if(isFatcaFlagNotValid){
@@ -223,7 +216,6 @@ public class OpenPortfolioValidationService {
             return tmbOneServiceResponse;
         }
 
-        // validate customer risk level <> {"C3","B3"}
         boolean isCustomerRiskLevelNotValid = false;
         if(!StringUtils.isEmpty(customerInfo.getCustomerRiskLevel())){
             String[] values = {"C3","B3"};
@@ -240,8 +232,21 @@ public class OpenPortfolioValidationService {
             tmbOneServiceResponse.setStatus(status);
             return tmbOneServiceResponse;
         }
-        tmbOneServiceResponse.setStatus(successStatus());
+
         return tmbOneServiceResponse;
+    }
+
+    private TmbStatus validateServiceHour(String correlationId,TmbStatus status) {
+        FundResponse fundResponse = new FundResponse();
+        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
+        if (fundResponse.isError()) {
+            status.setCode(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+            status.setDescription(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+            status.setMessage(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            return status;
+        }
+        return null;
     }
 
     private boolean validateNationality(String correlationId,String mainNationality, String secondNationality) {
@@ -253,12 +258,9 @@ public class OpenPortfolioValidationService {
             return false;
         }
 
-        if(!StringUtils.isEmpty(secondNationality)) {
-            if (blackList.stream().anyMatch(secondNationality::equals)) {
-                return false;
-            }
+        if(!StringUtils.isEmpty(secondNationality) && blackList.stream().anyMatch(secondNationality::equals)) {
+            return false;
         }
-
         return true;
     }
 
@@ -312,7 +314,7 @@ public class OpenPortfolioValidationService {
                 return true;
             }
         }catch (ParseException ex){
-
+            logger.info("isExpiredDateOccurAfterCurrentDate :: Error ParseException");
         }
         return false;
     }
