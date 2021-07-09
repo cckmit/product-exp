@@ -237,9 +237,10 @@ class OpenPortfolioServiceTest {
                 .build();
 
         // When
-        PortfolioResponse actual = openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody);
+        PortfolioResponse actual = openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual);
+        verify(openPortfolioActivityLogService).enterCorrectPin(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 }

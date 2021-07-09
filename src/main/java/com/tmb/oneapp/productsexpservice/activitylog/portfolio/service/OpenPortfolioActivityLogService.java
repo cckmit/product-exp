@@ -41,6 +41,14 @@ public class OpenPortfolioActivityLogService {
         logActivityService.createLog(activityData);
     }
 
+    public void enterCorrectPin(String correlationId, String crmId, String status, String portfolioNumber, String portfolioNickname) {
+        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ENTER_CORRECT_PIN);
+        activityData.setStatus(status);
+        activityData.setPortfolioNumber(portfolioNumber);
+        activityData.setPortfolioNickname(portfolioNickname);
+        logActivityService.createLog(activityData);
+    }
+
     private OpenPortfolioActivityLog initialActivityLogData(String correlationId, String crmId, String activityTypeId) {
         OpenPortfolioActivityLog activityData = new OpenPortfolioActivityLog(correlationId, String.valueOf(System.currentTimeMillis()), activityTypeId);
         activityData.setActivityStatus(ProductsExpServiceConstant.SUCCESS);

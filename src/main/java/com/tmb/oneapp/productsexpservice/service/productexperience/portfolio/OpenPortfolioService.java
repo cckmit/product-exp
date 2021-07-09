@@ -114,7 +114,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param openPortfolioRequestBody
      */
-    public PortfolioResponse openPortfolio(String correlationId, OpenPortfolioRequestBody openPortfolioRequestBody) {
+    public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
         try {
             RelationshipRequest relationshipRequest = openPortfolioMapper.openPortfolioRequestBodyToRelationshipRequest(openPortfolioRequestBody);
@@ -124,6 +124,7 @@ public class OpenPortfolioService {
             CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
 
             CompletableFuture.allOf(relationship, openPortfolio);
+            openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
             PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
@@ -139,6 +140,7 @@ public class OpenPortfolioService {
                     .build();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
             return null;
         }
     }

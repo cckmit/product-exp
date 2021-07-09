@@ -117,11 +117,12 @@ public class OpenPortfolioController {
     public ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> openPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CRM_ID) String crmId,
             @Valid @RequestBody OpenPortfolioRequestBody openPortfolioRequestBody) {
 
         TmbOneServiceResponse<PortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, openPortfolioRequestBody);
+            PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, crmId, openPortfolioRequestBody);
             if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
                 return getTmbOneServiceResponseEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
             } else {

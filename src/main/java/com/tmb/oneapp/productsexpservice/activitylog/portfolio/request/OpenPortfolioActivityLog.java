@@ -35,6 +35,15 @@ public class OpenPortfolioActivityLog extends ActivityLogs {
 
     private String address;
 
+    /* Enter correct pin */
+    private String status;
+
+    @JsonProperty(value = "portfolio_number")
+    private String portfolioNumber;
+
+    @JsonProperty(value = "portfolio_nickname")
+    private String portfolioNickname;
+
     public OpenPortfolioActivityLog(String correlationId, String activityDate, String activityTypeId) {
         super(correlationId, activityDate, activityTypeId);
     }

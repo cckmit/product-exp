@@ -81,7 +81,6 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
     public static final String ACTIVITY_LOG_CHANNEL = "mb";
     public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
-    public static final String ACTIVITY_LOG_SUCCESS = "Success";
     public static final String ACTIVITY_LOG_FAILURE = "Off business hour";
 
     public static final String ACTIVE_STATUS_CODE = "0";
@@ -96,6 +95,7 @@ public class ProductsExpServiceConstant {
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "00700700";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
     public static final String SUCCESS = "Success";
+    public static final String FAILED = "Failed";
     public static final String FAILURE = "Failure";
     public static final String X_FORWARD_FOR = "x-forward-for";
     public static final String OS_VERSION = "os-version";
@@ -152,7 +152,6 @@ public class ProductsExpServiceConstant {
     public static final String INTERNAL_SERVER = "Internal Server Error";
     public static final String UTF_8 = "utf-8";
     public static final String SET_PIN_ACTIVITY_LOG = "00700302";
-    public static final String FAILED = "Failed";
 
     public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
     public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
@@ -192,6 +191,7 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO = "101000701";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "101000702";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_CLICK_CONFIRM = "101000703";
+    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ENTER_CORRECT_PIN = "101000704";
 
     /* ACTIVITY LOG MESSAGE */
     public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_YES = "Yes";

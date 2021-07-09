@@ -158,10 +158,10 @@ class OpenPortfolioControllerTest {
                 .portfolioNicknameResponse(portfolioNicknameResponse.getData())
                 .build();
 
-        when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody)).thenReturn(portfolioResponse);
+        when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody)).thenReturn(portfolioResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody);
+        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual.getBody());
