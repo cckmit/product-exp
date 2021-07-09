@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
@@ -50,13 +51,21 @@ public class OpenPortfolioService {
 
     private InvestmentAsyncService investmentAsyncService;
 
+    private OpenPortfolioActivityLogService openPortfolioActivityLogService;
+
     private OpenPortfolioMapper openPortfolioMapper;
 
     @Autowired
-    public OpenPortfolioService(InvestmentRequestClient investmentRequestClient, EligibleDepositAccountService eligibleDepositAccountService, InvestmentAsyncService investmentAsyncService, OpenPortfolioMapper openPortfolioMapper) {
+    public OpenPortfolioService(
+            InvestmentRequestClient investmentRequestClient,
+            EligibleDepositAccountService eligibleDepositAccountService,
+            InvestmentAsyncService investmentAsyncService,
+            OpenPortfolioActivityLogService openPortfolioActivityLogService,
+            OpenPortfolioMapper openPortfolioMapper) {
         this.investmentRequestClient = investmentRequestClient;
         this.eligibleDepositAccountService = eligibleDepositAccountService;
         this.investmentAsyncService = investmentAsyncService;
+        this.openPortfolioActivityLogService = openPortfolioActivityLogService;
         this.openPortfolioMapper = openPortfolioMapper;
     }
 
@@ -66,11 +75,13 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param customerRequest
      */
-    public OpenPortfolioValidationResponse createCustomer(String correlationId, CustomerRequest customerRequest) {
-        Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
-        ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, customerRequest);
-        if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
-            try {
+    public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) {
+        try {
+            openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
+
+            Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
+            ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, customerRequest);
+            if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
                 AccountRedeemRequest accountRedeemRequest = AccountRedeemRequest.builder().crmId(customerRequest.getCrmId()).build();
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
                 CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, accountRedeemRequest);
@@ -90,10 +101,9 @@ public class OpenPortfolioService {
                         .accountPurposeResponse(fetchAccountPurpose.get())
                         .depositAccount(account.isPresent() ? account.get() : null)
                         .build();
-            } catch (Exception ex) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-                return null;
             }
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return null;
     }

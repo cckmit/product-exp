@@ -6,6 +6,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -43,6 +45,8 @@ import java.util.concurrent.CompletableFuture;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,13 +65,16 @@ class OpenPortfolioServiceTest {
     private InvestmentAsyncService investmentAsyncService;
 
     @Mock
+    private OpenPortfolioActivityLogService openPortfolioActivityLogService;
+
+    @Mock
     private OpenPortfolioMapper openPortfolioMapper;
 
     @InjectMocks
     private OpenPortfolioService openPortfolioService;
 
     @Test
-    void should_return_status_0000_and_body_not_null_when_call_create_customer_given_correlation_id_and_customer_request() throws Exception {
+    void should_return_status_0000_and_body_not_null_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         CustomerResponse customerResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/create_customer.json").toFile(),
@@ -130,10 +137,9 @@ class OpenPortfolioServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequest);
+        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
 
         // Then
-
         OpenPortfolioValidationResponse expected = OpenPortfolioValidationResponse.builder()
                 .accountPurposeResponse(accountPurposeResponse.getData())
                 .depositAccount(depositAccount)
@@ -141,6 +147,7 @@ class OpenPortfolioServiceTest {
 
         assertNotNull(actual);
         assertEquals(expected, actual);
+        verify(openPortfolioActivityLogService).acceptTermAndCondition(anyString(), anyString(), anyString());
     }
 
     @Test
@@ -148,7 +155,7 @@ class OpenPortfolioServiceTest {
         // Given
         TmbOneServiceResponse<CustomerResponseBody> oneServiceCustomerResponse = new TmbOneServiceResponse<>();
         oneServiceCustomerResponse.setData(null);
-        when(investmentRequestClient.createCustomer(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
+        when(investmentRequestClient.createCustomer(any(), any())).thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
 
         CustomerRequest customerRequest = CustomerRequest.builder()
                 .crmId("00000007924129")
@@ -172,10 +179,11 @@ class OpenPortfolioServiceTest {
                 .build();
 
         // When
-        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequest);
+        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
 
         // Then
         assertNull(actual);
+        verify(openPortfolioActivityLogService).acceptTermAndCondition(anyString(), anyString(), anyString());
     }
 
     @Test

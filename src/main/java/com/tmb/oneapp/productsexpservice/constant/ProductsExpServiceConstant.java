@@ -190,10 +190,12 @@ public class ProductsExpServiceConstant {
     public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO = "101000701";
+    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "101000702";
 
     /* ACTIVITY LOG MESSAGE */
     public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_YES = "Yes";
     public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO = "No";
+    public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "Yes";
 
     /* CRM Format */
     public static final String CRM_ID_PREFIX = "0011000000000000";

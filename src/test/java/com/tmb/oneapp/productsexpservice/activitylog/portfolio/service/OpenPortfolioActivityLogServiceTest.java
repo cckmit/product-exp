@@ -28,4 +28,14 @@ class OpenPortfolioActivityLogServiceTest {
         // Then
         verify(logActivityService).createLog(any());
     }
+
+    @Test
+    void should_call_create_log_when_call_accept_term_and_condition_given_correlation_id_and_crm_id_and_initial_portfolio_and_value() {
+        // Given
+        // When
+        openPortfolioActivityLogService.acceptTermAndCondition("1234567890", "00000018592884", "Yes");
+
+        // Then
+        verify(logActivityService).createLog(any());
+    }
 }

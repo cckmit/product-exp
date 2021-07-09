@@ -24,6 +24,12 @@ public class OpenPortfolioActivityLogService {
         logActivityService.createLog(activityData);
     }
 
+    public void acceptTermAndCondition(String correlationId, String crmId, String value) {
+        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
+        activityData.setValue(value);
+        logActivityService.createLog(activityData);
+    }
+
     private OpenPortfolioActivityLog initialActivityLogData(String correlationId, String crmId, String activityTypeId) {
         OpenPortfolioActivityLog activityData = new OpenPortfolioActivityLog(correlationId, String.valueOf(System.currentTimeMillis()), activityTypeId);
         activityData.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
