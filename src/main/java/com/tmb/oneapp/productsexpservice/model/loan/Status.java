@@ -17,4 +17,10 @@ public class Status {
     private String accountStatus;
     @JsonProperty("contract_date")
     private String contractDate;
+    @JsonProperty("code")
+    private String code;
+    @JsonProperty("description")
+    private String description;
+    @JsonProperty("message")
+    private String message;
 }
