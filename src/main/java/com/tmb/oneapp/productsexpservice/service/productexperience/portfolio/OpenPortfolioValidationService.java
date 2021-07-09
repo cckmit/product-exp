@@ -13,7 +13,6 @@ import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioVa
 import com.tmb.oneapp.productsexpservice.model.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,17 +34,14 @@ public class OpenPortfolioValidationService {
 
     private CommonServiceClient commonServiceClient;
 
-    private ProductsExpService productsExpService;
-
     private EligibleDepositAccountService eligibleDepositAccountService;
 
     private CustomerInfoMapper customerInfoMapper;
 
     @Autowired
-    public OpenPortfolioValidationService(CustomerServiceClient customerServiceClient, CommonServiceClient commonServiceClient, ProductsExpService productsExpService, EligibleDepositAccountService eligibleDepositAccountService, CustomerInfoMapper customerInfoMapper) {
+    public OpenPortfolioValidationService(CustomerServiceClient customerServiceClient, CommonServiceClient commonServiceClient, EligibleDepositAccountService eligibleDepositAccountService, CustomerInfoMapper customerInfoMapper) {
         this.customerServiceClient = customerServiceClient;
         this.commonServiceClient = commonServiceClient;
-        this.productsExpService = productsExpService;
         this.eligibleDepositAccountService = eligibleDepositAccountService;
         this.customerInfoMapper = customerInfoMapper;
     }
