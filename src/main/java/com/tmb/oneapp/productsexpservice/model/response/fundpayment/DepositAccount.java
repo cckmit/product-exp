@@ -20,6 +20,8 @@ public class DepositAccount {
 
     private String accountStatus;
 
+    private String accountStatusCode;
+
     private String accountType;
 
     private String accountTypeShort;
