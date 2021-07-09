@@ -128,15 +128,15 @@ public class CashForUService {
 			if (feeAmt.compareTo(cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt()) > 0) {
 				summaryFeee = feeAmt;
 			}
-			responseModelInfo.setCashFeeRate(String.valueOf(summaryFeee));
+			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(summaryFeee)));
 		} else if ("2".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
 			BigDecimal totalFee = feeAmt.add(summaryFeee);
-			responseModelInfo.setCashFeeRate(String.valueOf(totalFee));
+			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(totalFee)));
 		} else {
-			responseModelInfo.setCashFeeRate(String.valueOf(feeAmt));
+			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(feeAmt)));
 		}
-		responseModelInfo.setCashInterestRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate()));
-		responseModelInfo.setCashVatRate(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate()));
+		responseModelInfo.setCashInterestRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
+		responseModelInfo.setCashVatRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
 
 	}
 
