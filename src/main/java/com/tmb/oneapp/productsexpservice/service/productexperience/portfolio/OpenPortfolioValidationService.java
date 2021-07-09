@@ -109,7 +109,7 @@ public class OpenPortfolioValidationService {
             String correlationId,
             CustomerSearchResponse customerInfo,
             List<DepositAccount> depositAccountList,
-            TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse) throws ParseException {
+            TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse) {
 
         TmbStatus status = TmbStatusUtil.successStatus();
         tmbOneServiceResponse.setStatus(successStatus());
@@ -227,11 +227,10 @@ public class OpenPortfolioValidationService {
 
     private TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String expireDate, TmbStatus status) {
         boolean isKycAndIdCardExpiredValid = false;
-        if(kycLimitFlag != null && expireDate != null){
-            if((kycLimitFlag.equalsIgnoreCase("U") ||
-                    kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)){
+        if((kycLimitFlag != null && expireDate != null) &&
+                (kycLimitFlag.equalsIgnoreCase("U") ||
+                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)){
                 isKycAndIdCardExpiredValid = true;
-            }
         }
 
         if(!isKycAndIdCardExpiredValid){
@@ -261,7 +260,7 @@ public class OpenPortfolioValidationService {
                 return status;
             }
         }
-        return TmbStatusUtil.notFoundStatus();
+        return status;
     }
 
     private TmbStatus validateServiceHour(String correlationId,TmbStatus status) {
@@ -280,14 +279,12 @@ public class OpenPortfolioValidationService {
     private TmbStatus validateNationality(String correlationId,String mainNationality, String secondNationality,TmbStatus status) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
                 commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-        if(StringUtils.isEmpty(mainNationality)){
-            return TmbStatusUtil.notFoundStatus();
-        }
 
         List<CommonData> commonDataList = commonConfig.getBody().getData();
         List<String> blackList = commonDataList.get(0).getNationalBlackList();
 
-        if(blackList.stream().anyMatch(mainNationality::equals) ||
+        if(StringUtils.isEmpty(mainNationality) ||
+                blackList.stream().anyMatch(mainNationality::equals) ||
                 !StringUtils.isEmpty(secondNationality) && blackList.stream().anyMatch(secondNationality::equals)){
             status.setCode(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode());
             status.setDescription(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc());
@@ -314,11 +311,6 @@ public class OpenPortfolioValidationService {
             TmbStatus status){
 
         try{
-            if(StringUtils.isEmpty(birthDate)){
-                logger.info("birthdate is null or empty");
-                return TmbStatusUtil.notFoundStatus();
-            }
-
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date d = sdf.parse(birthDate);
             Calendar c = Calendar.getInstance();
