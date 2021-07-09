@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -51,14 +52,24 @@ public class OpenPortfolioValidationService {
 
     private EligibleDepositAccountService eligibleDepositAccountService;
 
+    private OpenPortfolioActivityLogService openPortfolioActivityLogService;
+
     private CustomerInfoMapper customerInfoMapper;
 
     @Autowired
-    public OpenPortfolioValidationService(CustomerServiceClient customerServiceClient, CommonServiceClient commonServiceClient, ProductsExpService productsExpService, EligibleDepositAccountService eligibleDepositAccountService, CustomerInfoMapper customerInfoMapper) {
+    public OpenPortfolioValidationService(
+            CustomerServiceClient customerServiceClient,
+            CommonServiceClient commonServiceClient,
+            ProductsExpService productsExpService,
+            EligibleDepositAccountService eligibleDepositAccountService,
+            OpenPortfolioActivityLogService openPortfolioActivityLogService,
+            CustomerInfoMapper customerInfoMapper) {
+
         this.customerServiceClient = customerServiceClient;
         this.commonServiceClient = commonServiceClient;
         this.productsExpService = productsExpService;
         this.eligibleDepositAccountService = eligibleDepositAccountService;
+        this.openPortfolioActivityLogService = openPortfolioActivityLogService;
         this.customerInfoMapper = customerInfoMapper;
     }
 
@@ -68,22 +79,20 @@ public class OpenPortfolioValidationService {
      * @param correlationId
      * @param openPortfolioValidateRequest
      */
-    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, OpenPortfolioValidationRequest openPortfolioValidateRequest) {
+    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, String crmId, OpenPortfolioValidationRequest openPortfolioValidateRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
-            String crmID = openPortfolioValidateRequest.getCrmId();
-
             ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoFuture =
-                    customerServiceClient.customerSearch(crmID, correlationId, CrmSearchBody.builder().searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmID).build());
+                    customerServiceClient.customerSearch(crmId, correlationId, CrmSearchBody.builder().searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmId).build());
             validateCustomerService(customerInfoFuture);
             CustomerSearchResponse customerInfo = customerInfoFuture.getBody().getData().get(0);
 
             List<DepositAccount> depositAccountList = null;
             if (!openPortfolioValidateRequest.isExistingCustomer()) {
-                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmID);
+                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId);
             }
 
-            validateAlternativeCase(correlationId, customerInfo, depositAccountList, tmbOneServiceResponse);
+            validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }
@@ -106,65 +115,71 @@ public class OpenPortfolioValidationService {
 
     private TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateAlternativeCase(
             String correlationId,
+            String crmId,
             CustomerSearchResponse customerInfo,
             List<DepositAccount> depositAccountList,
             TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse) {
 
         TmbStatus status = TmbStatusUtil.successStatus();
         tmbOneServiceResponse.setStatus(successStatus());
+
         // validate service hour
         tmbOneServiceResponse.setStatus(validateServiceHour(correlationId, status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
             return tmbOneServiceResponse;
         }
 
         // validate age should > 20
         tmbOneServiceResponse.setStatus(validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg());
             return tmbOneServiceResponse;
         }
 
         // validate account active only once
         tmbOneServiceResponse.setStatus(validateCasaAccountActiveOnce(depositAccountList, status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg());
             return tmbOneServiceResponse;
         }
 
         // validate customer pass kyc (U,Blank) allow  and id card has not expired
-        String kycLimitFlag = customerInfo.getKycLimitedFlag();
-        String expireDate = customerInfo.getExpiryDate();
-        tmbOneServiceResponse.setStatus(validateKycAndIdCardExpire(kycLimitFlag, expireDate, status));
+        tmbOneServiceResponse.setStatus(validateKycAndIdCardExpire(customerInfo.getKycLimitedFlag(), customerInfo.getExpiryDate(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg());
             return tmbOneServiceResponse;
         }
 
         // validate customer assurange level
-        String ekycIdentifyAssuranceLevel = customerInfo.getEkycIdentifyAssuranceLevel();
-        tmbOneServiceResponse.setStatus(validateIdentityAssuranceLevel(ekycIdentifyAssuranceLevel, status));
+        tmbOneServiceResponse.setStatus(validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg());
             return tmbOneServiceResponse;
         }
 
         // validate customer not us and not restriced in 30 nationality
-        String mainNationality = customerInfo.getNationality();
-        String secondNationality = customerInfo.getNationalitySecond();
-        tmbOneServiceResponse.setStatus(validateNationality(correlationId, mainNationality, secondNationality, status));
+        tmbOneServiceResponse.setStatus(validateNationality(correlationId, customerInfo.getNationality(), customerInfo.getNationalitySecond(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
             return tmbOneServiceResponse;
         }
 
         // validate complete flatca form
         tmbOneServiceResponse.setStatus(validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
             return tmbOneServiceResponse;
         }
 
         // validate customer risk level
-        String customerRiskLevel = customerInfo.getCustomerRiskLevel();
-        tmbOneServiceResponse.setStatus(validateCustomerRiskLevel(customerRiskLevel, status));
+        tmbOneServiceResponse.setStatus(validateCustomerRiskLevel(customerInfo.getCustomerRiskLevel(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
             return tmbOneServiceResponse;
         }
+
+        openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_YES, "");
         return tmbOneServiceResponse;
     }
 

@@ -144,11 +144,6 @@ public class ProductsExpServiceConstant {
     public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String HP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
-    /* ACTIVITY IDs */
-    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
-    public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
-    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO = "101000701";
-
     /* Case Status Screen Names */
     public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";
 
@@ -190,6 +185,15 @@ public class ProductsExpServiceConstant {
     /* Service Customer Search */
     public static final String SEARCH_TYPE = "rm-id";
     public static final String MIB_CUSTOMER_STATIC_ID = "D0000000988";
+
+    /* ACTIVITY IDs */
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
+    public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
+    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO = "101000701";
+
+    /* ACTIVITY LOG MESSAGE */
+    public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_YES = "Yes";
+    public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO = "No";
 
     /* CRM Format */
     public static final String CRM_ID_PREFIX = "0011000000000000";

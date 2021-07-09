@@ -70,11 +70,11 @@ class OpenPortfolioControllerTest {
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
         request.setCrmId("23423423423423");
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
                 .thenReturn(responseService);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request);
+        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request);
 
         // Then
         assertNotNull(actual.getBody());
