@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,7 +83,7 @@ public class ApplyEStatementController {
 			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000012004011", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getUpdateEStatement(
-			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers,UpdateEStatmentRequest updateEstatementReq) {
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers,@RequestBody UpdateEStatmentRequest updateEstatementReq) {
 		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		HttpHeaders responseHeaders = new HttpHeaders();
