@@ -3,17 +3,22 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.google.common.base.Strings;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.EStatementDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
+import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -28,7 +33,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
@@ -46,6 +50,8 @@ public class FetchCardDetailsController {
 	private final CreditCardClient creditCardClient;
 	private final CommonServiceClient commonServiceClient;
 	private final CreditCardLogService creditCardLogService;
+	private final CustomerServiceClient customerServiceClient;
+	private final ApplyEStatementService applyEStatementService;
 	private static final TMBLogger<FetchCardDetailsController> logger = new TMBLogger<>(
 			FetchCardDetailsController.class);
 
@@ -57,11 +63,14 @@ public class FetchCardDetailsController {
 	 */
 	@Autowired
 	public FetchCardDetailsController(CreditCardClient creditCardClient, CommonServiceClient commonServiceClient,
-			CreditCardLogService creditCardLogService) {
+			CreditCardLogService creditCardLogService, CustomerServiceClient customerServiceClient,
+			ApplyEStatementService applyEStatementService) {
 		super();
 		this.creditCardClient = creditCardClient;
 		this.commonServiceClient = commonServiceClient;
 		this.creditCardLogService = creditCardLogService;
+		this.customerServiceClient = customerServiceClient;
+		this.applyEStatementService = applyEStatementService;
 	}
 
 	/**
@@ -84,6 +93,7 @@ public class FetchCardDetailsController {
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<FetchCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		String activityDate = Long.toString(System.currentTimeMillis());
 		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_LOAD_CARD_DETAILS;
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
@@ -108,6 +118,10 @@ public class FetchCardDetailsController {
 						productCodeData.setIconId(productConfig.getIconId());
 						fetchCardResponse.setProductCodeData(productCodeData);
 					}
+
+					EStatementDetail eStatementDetail = getEStatementDetail(crmId, correlationId);
+					fetchCardResponse.setEStatementDetail(eStatementDetail);
+
 					creditCardEvent = creditCardLogService.loadCardDetailsEvent(creditCardEvent,
 							requestHeadersParameter, fetchCardResponse);
 					creditCardLogService.logActivity(creditCardEvent);
@@ -139,6 +153,22 @@ public class FetchCardDetailsController {
 			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 		}
 
+	}
+
+	private EStatementDetail getEStatementDetail(String crmId, String correlationId) {
+		EStatementDetail result = new EStatementDetail();
+		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
+				.getCustomerProfile(crmId);
+		CustGeneralProfileResponse profileResponse = responseWorkingProfileInfo.getBody().getData();
+		if (profileResponse != null) {
+			result.setEmailAddress(profileResponse.getEmailAddress());
+			result.setEmailVerifyFlag(profileResponse.getEmailVerifyFlag());
+		}
+		ApplyEStatementResponse applyEStatementResponse = applyEStatementService.getEStatement(crmId, correlationId);
+		if (applyEStatementResponse != null) {
+			result.setStatementFlag(applyEStatementResponse.getCustomer().getStatementFlag());
+		}
+		return result;
 	}
 
 }
