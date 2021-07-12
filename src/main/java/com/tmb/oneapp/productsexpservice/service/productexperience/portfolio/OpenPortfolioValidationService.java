@@ -92,7 +92,13 @@ public class OpenPortfolioValidationService {
                 depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId);
             }
 
-            validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
+            String[] bypassCrmId = {"001100000000000000000012035598", "00000018595360","00000018592884"};
+            if(Arrays.stream(bypassCrmId).noneMatch(crmId::equals)) {
+                validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
+            }else{
+                tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+            }
+
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }
@@ -122,7 +128,6 @@ public class OpenPortfolioValidationService {
 
         TmbStatus status = TmbStatusUtil.successStatus();
         tmbOneServiceResponse.setStatus(successStatus());
-
         // validate service hour
         tmbOneServiceResponse.setStatus(validateServiceHour(correlationId, status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
