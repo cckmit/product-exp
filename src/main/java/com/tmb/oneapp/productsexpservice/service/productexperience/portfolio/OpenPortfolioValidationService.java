@@ -93,7 +93,7 @@ public class OpenPortfolioValidationService {
             }
 
             String[] bypassCrmId = {"001100000000000000000012035598", "00000018595360","00000018592884"};
-            if(!Arrays.stream(bypassCrmId).anyMatch(crmId::equals)) {
+            if(Arrays.stream(bypassCrmId).noneMatch(crmId::equals)) {
                 validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
             }else{
                 tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
