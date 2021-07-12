@@ -65,7 +65,7 @@ public class OpenPortfolioController {
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CRM_ID) String crmId,
             @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest) {
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, openPortfolioRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, openPortfolioRequest.getCrmId(), openPortfolioRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if(!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
                 return ResponseEntity.badRequest().body(oneServiceResponse);
