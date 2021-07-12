@@ -111,7 +111,7 @@ class OpenPortfolioControllerTest {
         ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request);
 
         // Then
-        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
         assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getBody().getStatus().getCode());
         assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getBody().getStatus().getMessage());
         assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getBody().getStatus().getDescription());
