@@ -20,7 +20,7 @@ import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.address.SubDistrict;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
-import com.tmb.common.model.legacy.rsl.ob.individual.InstantIndividual;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -270,7 +270,7 @@ public class CustomerProfileService {
 
 		String profile = crmId.substring(16, crmId.length());
 		ResponseInstantLoanGetCustInfo responeInfo = instanceCustomerInfoClient.getInstantCustomerInfo(profile);
-		InstantIndividual[] indi = responeInfo.getBody().getInstantIndividual();
+		InstantIndividual[] indi = responeInfo.getBody().getInstantIndividual();;
 		InstantIndividual instandIndividual = indi[0];
 		response.setProfessionalCode(instandIndividual.getProfessionalCode());
 		if ("01".equals(instandIndividual.getEmploymentStatus())) {
