@@ -28,7 +28,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayC
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementList;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -53,32 +53,32 @@ public class UtilMap {
     /**
      * Generic Method to validateTMBResponse
      *
-     * @param accDetailBody
+     * @param accountDetailBody
      * @param fundRuleBody
      * @param statementRs
      * @return FundAccountRs
      */
-    public static FundAccountRs validateTMBResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementRs) {
-        if ((StringUtils.isEmpty(accDetailBody) && StringUtils.isEmpty(fundRuleBody))) {
+    public static FundAccountResponse validateTMBResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody, StatementResponse statementRs) {
+        if ((StringUtils.isEmpty(accountDetailBody) && StringUtils.isEmpty(fundRuleBody))) {
             return null;
         } else {
-            FundAccountRs fundAccountRs = new FundAccountRs();
-            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accDetailBody, fundRuleBody, statementRs);
-            fundAccountRs.setDetails(fundAccountDetail);
-            return fundAccountRs;
+            FundAccountResponse fundAccountResponse = new FundAccountResponse();
+            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accountDetailBody, fundRuleBody, statementRs);
+            fundAccountResponse.setDetails(fundAccountDetail);
+            return fundAccountResponse;
         }
     }
 
     /**
      * Generic Method to mappingResponse
      *
-     * @param accDetailBody
+     * @param accountDetailBody
      * @param fundRuleBody
      * @return FundAccountDetail
      */
-    public static FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse) {
+    public static FundAccountDetail mappingResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse) {
         AccountDetail accountDetail = new AccountDetail();
-        BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
+        BeanUtils.copyProperties(accountDetailBody.getFundDetail(), accountDetail);
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
         List<StatementList> statementList = statementResponse.getStatementList();
         FundOrderHistory order = null;

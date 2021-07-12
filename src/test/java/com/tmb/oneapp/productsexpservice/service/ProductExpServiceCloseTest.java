@@ -11,7 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
@@ -409,8 +409,8 @@ public class ProductExpServiceCloseTest {
     @Test
     public void validateTMBResponse() throws Exception {
         UtilMap utilMap = new UtilMap();
-        FundAccountRs fundAccountRs = UtilMap.validateTMBResponse(null, null, null);
-        Assert.assertNull(fundAccountRs);
+        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(null, null, null);
+        Assert.assertNull(fundAccountResponse);
     }
 
     @Test

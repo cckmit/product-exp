@@ -12,7 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
-import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundOrderHistory;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
@@ -20,8 +20,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayC
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
-import com.tmb.oneapp.productsexpservice.model.response.investment.DetailFund;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.FundDetail;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementList;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
@@ -48,13 +47,13 @@ public class UtilMapTest {
 
     @Test
     public void testValidateTMBResponse() {
-        AccDetailBody body = new AccDetailBody();
-        DetailFund detailFund = new DetailFund();
-        detailFund.setFundHouseCode("1234");
-        detailFund.setCost("1234");
-        detailFund.setFundNameEN("card");
-        detailFund.setInvestmentValue("12345");
-        body.setDetailFund(detailFund);
+        AccountDetailBody body = new AccountDetailBody();
+        FundDetail fundDetail = new FundDetail();
+        fundDetail.setFundHouseCode("1234");
+        fundDetail.setCost("1234");
+        fundDetail.setFundEnglishName("card");
+        fundDetail.setInvestmentValue("12345");
+        body.setFundDetail(fundDetail);
         FundRuleBody fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
@@ -72,20 +71,20 @@ public class UtilMapTest {
             list.add(statementList);
         }
         statementResponse.setStatementList(list);
-        FundAccountRs result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse);
+        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse);
         List<FundOrderHistory> ordersHistories = result.getDetails().getAccountDetail().getOrdersHistories();
         Assert.assertEquals(true, ordersHistories.isEmpty());
     }
 
     @Test
     public void testMappingResponse() {
-        AccDetailBody body = new AccDetailBody();
-        DetailFund detailFund = new DetailFund();
-        detailFund.setFundHouseCode("1234");
-        detailFund.setCost("1234");
-        detailFund.setFundNameEN("card");
-        detailFund.setInvestmentValue("12345");
-        body.setDetailFund(detailFund);
+        AccountDetailBody body = new AccountDetailBody();
+        FundDetail fundDetail = new FundDetail();
+        fundDetail.setFundHouseCode("1234");
+        fundDetail.setCost("1234");
+        fundDetail.setFundEnglishName("card");
+        fundDetail.setInvestmentValue("12345");
+        body.setFundDetail(fundDetail);
         FundRuleBody fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
@@ -287,4 +286,3 @@ public class UtilMapTest {
         assertEquals("001100000000000000000000002914", actual);
     }
 }
-

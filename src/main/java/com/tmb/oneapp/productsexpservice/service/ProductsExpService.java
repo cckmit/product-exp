@@ -33,7 +33,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyReque
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
@@ -49,7 +49,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentD
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -94,7 +94,6 @@ public class ProductsExpService {
 
     private final CustomerServiceClient customerServiceClient;
 
-
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
@@ -113,7 +112,6 @@ public class ProductsExpService {
         this.customerServiceClient = customerServiceClient;
     }
 
-
     /**
      * Generic Method to call MF Service getFundAccDetail
      *
@@ -122,31 +120,30 @@ public class ProductsExpService {
      * @return
      */
     @LogAround
-    public FundAccountRs getFundAccountDetail(String correlationId, FundAccountRq fundAccountRq) {
-        FundAccountRs fundAccountRs = null;
+    public FundAccountResponse getFundAccountDetail(String correlationId, FundAccountRq fundAccountRq) {
+        FundAccountResponse fundAccountResponse;
         FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAcc(fundAccountRq);
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRq);
         OrderStmtByPortRq orderStmtByPortRq = UtilMap.mappingRequestStmtByPort(fundAccountRq, ProductsExpServiceConstant.FIXED_START_PAGE,
                 ProductsExpServiceConstant.FIXED_END_PAGE);
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            CompletableFuture<AccDetailBody> fetchFundAccDetail = productExpAsynService.fetchFundAccDetail(invHeaderReqParameter, fundAccountRequestBody);
+            CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsynService.fetchFundAccountDetail(invHeaderReqParameter, fundAccountRequestBody);
             CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
-            CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStmtByPort(invHeaderReqParameter, orderStmtByPortRq);
-            CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
+            CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStatementByPort(invHeaderReqParameter, orderStmtByPortRq);
+            CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort);
 
-            AccDetailBody accDetailBody = fetchFundAccDetail.get();
+            AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
             FundRuleBody fundRuleBody = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
 
-            fundAccountRs = UtilMap.validateTMBResponse(accDetailBody, fundRuleBody, statementResponse);
+            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
-        return fundAccountRs;
+        return fundAccountResponse;
     }
-
 
     /**
      * Get fund summary fund summary response.
@@ -184,7 +181,6 @@ public class ProductsExpService {
             if (HttpStatus.OK.value() == countOrderProcessingResponse.getStatusCode().value()) {
                 result.setCountProcessedOrder(countOrderProcessingResponse.getBody().getData().getCountProcessOrder());
             }
-
             return result;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
@@ -292,7 +288,6 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailRs fundPaymentDetailRs = null;
         try {
-
             CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
             CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
             CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
@@ -312,7 +307,6 @@ public class ProductsExpService {
         }
         return fundPaymentDetailRs;
     }
-
 
     /**
      * Generic Method to call MF Service getFundFFSAndValidation
@@ -342,7 +336,6 @@ public class ProductsExpService {
         ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
         ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
     }
-
 
     void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
         FfsData ffsData = new FfsData();
@@ -394,7 +387,6 @@ public class ProductsExpService {
         fundResponse.setErrorMsg(ProductsExpServiceConstant.SUCCESS_MESSAGE);
         fundResponse.setErrorDesc(ProductsExpServiceConstant.SUCCESS);
     }
-
 
     /**
      * To validate Alternative case and verify expire-citizen id
@@ -452,7 +444,6 @@ public class ProductsExpService {
         ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
     }
 
-
     /**
      * To validate Alternative case and verify expire-citizen id
      *
@@ -488,7 +479,6 @@ public class ProductsExpService {
                     FatcaErrorEnums.USNATIONAL.getMsg(),
                     FatcaErrorEnums.USNATIONAL.getDesc());
         }
-
         return fundResponse;
     }
 
@@ -551,7 +541,6 @@ public class ProductsExpService {
         fundResponse.setErrorDesc(noneServiceHour.getEnd());
     }
 
-
     /**
      * Method isBusinessClose for check cut of time from fundRule
      *
@@ -582,7 +571,6 @@ public class ProductsExpService {
         }
         return false;
     }
-
 
     /**
      * Method isCASADormant get Customer account and check dormant status
@@ -820,7 +808,6 @@ public class ProductsExpService {
         String failReason = alternativeRq.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
                 ProductsExpServiceConstant.SUCCESS_MESSAGE : ProductsExpServiceConstant.FAILED_MESSAGE;
 
-
         ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()), trackingStatus);
         activityData.setActivityStatus(failReason);
         activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_CHANNEL);
@@ -840,7 +827,6 @@ public class ProductsExpService {
         return activityData;
     }
 
-
     /**
      * Method logactivity
      * suitabilityScore
@@ -850,7 +836,6 @@ public class ProductsExpService {
     @Async
     @LogAround
     public void logActivity(ActivityLogs data) {
-
         try {
             ObjectMapper mapper = new ObjectMapper();
             String output = mapper.writeValueAsString(data);
@@ -862,8 +847,4 @@ public class ProductsExpService {
             logger.info("Unable to log the activity request : {}", e.toString());
         }
     }
-
-
 }
-
-

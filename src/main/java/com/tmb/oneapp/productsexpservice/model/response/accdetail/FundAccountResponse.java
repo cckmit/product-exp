@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FundAccountRs {
+public class FundAccountResponse {
+
     private FundAccountDetail details;
 }
