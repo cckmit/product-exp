@@ -6,6 +6,7 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -40,6 +41,8 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,6 +63,9 @@ class OpenPortfolioValidationServiceTest {
 
     @Mock
     private EligibleDepositAccountService eligibleDepositAccountService;
+
+    @Mock
+    private OpenPortfolioActivityLogService openPortfolioActivityLogService;
 
     @Mock
     private CustomerInfoMapper customerInfoMapper;
@@ -96,7 +102,7 @@ class OpenPortfolioValidationServiceTest {
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response = new ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>>(
                 oneServiceResponse, HttpStatus.OK);
 
-        if(openPortfolioErrorEnums != null) {
+        if (openPortfolioErrorEnums != null) {
             response.getBody().getData().get(0).setEkycIdentifyAssuranceLevel("300");
             switch (openPortfolioErrorEnums.getCode()) {
                 case "2000025":
@@ -104,15 +110,11 @@ class OpenPortfolioValidationServiceTest {
                     break;
                 case "2000018":
 
-                    if(openPortfolioErrorEnums.getMsg().equals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg())){
+                    if (openPortfolioErrorEnums.getMsg().equals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg())) {
                         response.getBody().getData().get(0).setCustomerRiskLevel("B3");
-                    }
-
-                    else if(openPortfolioErrorEnums.getMsg().equals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg())){
+                    } else if (openPortfolioErrorEnums.getMsg().equals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg())) {
                         response.getBody().getData().get(0).setEkycIdentifyAssuranceLevel("100");
-                    }
-
-                    else if(openPortfolioErrorEnums.getMsg().equals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg())){
+                    } else if (openPortfolioErrorEnums.getMsg().equals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg())) {
                         response.getBody().getData().get(0).setNationality("TH");
                         response.getBody().getData().get(0).setNationalitySecond("US");
                     }
@@ -129,14 +131,14 @@ class OpenPortfolioValidationServiceTest {
                     break;
 
             }
-        }else{
+        } else {
             response.getBody().getData().get(0).setExpiryDate("2025-07-08");
             response.getBody().getData().get(0).setEkycIdentifyAssuranceLevel("220");
             response.getBody().getData().get(0).setKycLimitedFlag("U");
         }
 
         CustomerInfo customerInfo = objectMapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(), CustomerInfo.class);
-                when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(response);
+        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(response);
         when(customerInfoMapper.map(any())).thenReturn(customerInfo);
     }
 
@@ -172,13 +174,14 @@ class OpenPortfolioValidationServiceTest {
         mockCustomerResponse(null);
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInfo());
         assertNotNull(actual.getData().getTermsConditions());
         assertNotNull(actual.getData().getDepositAccountList());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -202,13 +205,14 @@ class OpenPortfolioValidationServiceTest {
         mockCommonConfig();
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInfo());
         assertNotNull(actual.getData().getTermsConditions());
         assertNull(actual.getData().getDepositAccountList());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -220,11 +224,12 @@ class OpenPortfolioValidationServiceTest {
         mockCustomerResponse(null);
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getStatus().getCode());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -236,11 +241,12 @@ class OpenPortfolioValidationServiceTest {
         mockCustomerResponse(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY);
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getStatus().getCode());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -264,11 +270,12 @@ class OpenPortfolioValidationServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(), actual.getStatus().getCode());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -293,12 +300,13 @@ class OpenPortfolioValidationServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getStatus().getCode());
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getStatus().getMessage());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -323,12 +331,13 @@ class OpenPortfolioValidationServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getStatus().getCode());
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(), actual.getStatus().getMessage());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -353,12 +362,13 @@ class OpenPortfolioValidationServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getStatus().getCode());
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(), actual.getStatus().getMessage());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -383,11 +393,13 @@ class OpenPortfolioValidationServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getStatus().getCode());
+        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(), actual.getStatus().getMessage());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -411,12 +423,13 @@ class OpenPortfolioValidationServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
-        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc(), actual.getStatus().getDescription());
+        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getStatus().getMessage());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -440,11 +453,12 @@ class OpenPortfolioValidationServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioValidationRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
-        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc(), actual.getStatus().getDescription());
+        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getStatus().getMessage());
         assertNull(actual.getData());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 }
