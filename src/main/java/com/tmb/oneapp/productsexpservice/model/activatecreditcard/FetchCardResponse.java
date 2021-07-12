@@ -16,4 +16,5 @@ public class FetchCardResponse {
 	private SilverlakeStatus status;
 	private CreditCardDetail creditCard;
 	private ProductCodeData  productCodeData;
+	private EStatementDetail eStatementDetail;
 }
