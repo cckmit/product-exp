@@ -9,7 +9,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,18 +32,15 @@ import static org.mockito.Mockito.when;
 public class InvestmentRequestClientTest {
 
     @Mock
-    InvestmentRequestClient investmentRequestClient;
+    private InvestmentRequestClient investmentRequestClient;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
+    private AccountDetailBody accountDetailBody = null;
 
-    private final String success_code = "0000";
-    private final String notfund_code = "0009";
-    private AccDetailBody accDetailBody = null;
-    private final FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     private Map<String, String> createHeader(String correlationId) {
@@ -54,26 +51,24 @@ public class InvestmentRequestClientTest {
     }
 
     @Test
-    public void testGetFundAccdetailInvestment() throws Exception {
-
+    public void testGetFundAccountDetailInvestment() {
         FundAccountRq fundAccountRequest = new FundAccountRq();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
         fundAccountRequest.setUnitHolderNo("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
-        ResponseEntity<TmbOneServiceResponse<AccDetailBody>> responseEntity = null;
+        ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setUnitHolderNo("PT000000001");
         fundAccountRq.setServiceType("1");
-        TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
-
+        TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            accDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccDetailBody.class);
+            accountDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccountDetailBody.class);
 
-            oneServiceResponse.setData(accDetailBody);
+            oneServiceResponse.setData(accountDetailBody);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -83,14 +78,15 @@ public class InvestmentRequestClientTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
         Assert.assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
-        Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
-        Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
+        Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getFundDetail().getFundHouseCode());
+        Assert.assertNotNull(responseEntity.getBody().getData().getFundDetail());
     }
 
     @Test
-    public void testGetFundAccdetailInvestmentNull() throws Exception {
+    public void testGetFundAccountDetailInvestmentNull() {
 
         FundAccountRq fundAccountRequest = new FundAccountRq();
         fundAccountRequest.setFundCode("EEEEEE");
@@ -98,18 +94,17 @@ public class InvestmentRequestClientTest {
         fundAccountRequest.setUnitHolderNo("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
-        ResponseEntity<TmbOneServiceResponse<AccDetailBody>> responseEntity = null;
+        ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setUnitHolderNo("PT000000001");
         fundAccountRq.setServiceType("1");
-        TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
-
+        TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            accDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccDetailBody.class);
+            accountDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccountDetailBody.class);
 
-            oneServiceResponse.setData(accDetailBody);
+            oneServiceResponse.setData(accountDetailBody);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -119,14 +114,8 @@ public class InvestmentRequestClientTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), responseEntity.getStatusCodeValue());
-     /*
-         Assert.assertEquals("FFFFF",responseEntity.getBody().getData().getDetailFund().getFundHouseCode());
-        Assert.assertEquals(2,responseEntity.getBody().getData().getOrderToBeProcess().getOrder()
-                 .size());
-        Assert.assertNotNull(responseEntity.getBody().getData().getDetailFund());
-      */
     }
-
 }

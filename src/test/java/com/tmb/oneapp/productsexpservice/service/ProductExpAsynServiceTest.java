@@ -15,7 +15,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayB
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,14 +42,21 @@ import static org.mockito.Mockito.when;
 
 
 public class ProductExpAsynServiceTest {
-    InvestmentRequestClient investmentRequestClient;
-    AccountRequestClient accountRequestClient;
-    CustomerServiceClient customerServiceClient;
-    CommonServiceClient commonServiceClient;
-    ProductExpAsynService productExpAsynService;
-    CacheServiceClient cacheServiceClient;
 
-    private AccDetailBody accDetailBody = null;
+    private InvestmentRequestClient investmentRequestClient;
+
+    private AccountRequestClient accountRequestClient;
+
+    private CustomerServiceClient customerServiceClient;
+
+    private CommonServiceClient commonServiceClient;
+
+    private ProductExpAsynService productExpAsynService;
+
+    private CacheServiceClient cacheServiceClient;
+
+    private AccountDetailBody accountDetailBody = null;
+
     private FundRuleBody fundRuleBody = null;
 
     @JsonProperty("Project")
@@ -58,7 +65,6 @@ public class ProductExpAsynServiceTest {
 
     @BeforeEach
     public void setUp() {
-
         investmentRequestClient = mock(InvestmentRequestClient.class);
         accountRequestClient = mock(AccountRequestClient.class);
         commonServiceClient = mock(CommonServiceClient.class);
@@ -69,12 +75,13 @@ public class ProductExpAsynServiceTest {
 
     @Test
     public void fetchFundAccDetail() throws Exception {
-        TmbOneServiceResponse<AccDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
+
         try {
             ObjectMapper mapper = new ObjectMapper();
-            accDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccDetailBody.class);
+            accountDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccountDetailBody.class);
 
-            oneServiceResponse.setData(accDetailBody);
+            oneServiceResponse.setData(accountDetailBody);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -84,25 +91,24 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        CompletableFuture<AccDetailBody> response = productExpAsynService.fetchFundAccDetail(any(), any());
+
+        CompletableFuture<AccountDetailBody> response = productExpAsynService.fetchFundAccountDetail(any(), any());
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void fetchFundAccDetailWithException() throws Exception {
+    public void fetchFundAccDetailWithException() {
         try {
             when(investmentRequestClient.callInvestmentFundAccDetailService(any(), any())).thenThrow(MockitoException.class);
-            CompletableFuture<AccDetailBody> response = productExpAsynService.fetchFundAccDetail(any(), any());
+            CompletableFuture<AccountDetailBody> response = productExpAsynService.fetchFundAccountDetail(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Test
     public void fetchFundRule() throws Exception {
-
         TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
 
         try {
@@ -116,17 +122,16 @@ public class ProductExpAsynServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         CompletableFuture<FundRuleBody> response = productExpAsynService.fetchFundRule(any(), any());
         Assert.assertNotNull(response);
-
     }
 
     @Test
-    public void fetchFundRuleWithException() throws Exception {
+    public void fetchFundRuleWithException() {
         try {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<FundRuleBody> response = productExpAsynService.fetchFundRule(any(), any());
@@ -134,13 +139,12 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Test
     public void fetchStmtByPort() throws Exception {
         try {
-            StatementResponse statementResponse = null;
+            StatementResponse statementResponse;
             TmbOneServiceResponse<StatementResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -151,30 +155,30 @@ public class ProductExpAsynServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentStmtByPortService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+            when(investmentRequestClient.callInvestmentStatementByPortService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        CompletableFuture<StatementResponse> response = productExpAsynService.fetchStmtByPort(any(), any());
+
+        CompletableFuture<StatementResponse> response = productExpAsynService.fetchStatementByPort(any(), any());
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void fetchStmtByPortWithException() throws Exception {
+    public void fetchStmtByPortWithException() {
         try {
-            when(investmentRequestClient.callInvestmentStmtByPortService(any(), any())).thenThrow(MockitoException.class);
-            CompletableFuture<StatementResponse> response = productExpAsynService.fetchStmtByPort(any(), any());
+            when(investmentRequestClient.callInvestmentStatementByPortService(any(), any())).thenThrow(MockitoException.class);
+            CompletableFuture<StatementResponse> response = productExpAsynService.fetchStatementByPort(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Test
     public void fetchFundHoliday() throws Exception {
         try {
-            FundHolidayBody fundHolidayBody = null;
+            FundHolidayBody fundHolidayBody;
             TmbOneServiceResponse<FundHolidayBody> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -189,12 +193,13 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         CompletableFuture<FundHolidayBody> response = productExpAsynService.fetchFundHoliday(any(), any());
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void fetchFundHolidayWithException() throws Exception {
+    public void fetchFundHolidayWithException() {
         try {
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<FundHolidayBody> response = productExpAsynService.fetchFundHoliday(any(), any());
@@ -202,24 +207,24 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Test
     public void fetchCustomerExp() throws Exception {
         try {
-            String responseCustomerExp = null;
+            String responseCustomerExp;
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         CompletableFuture<String> response = productExpAsynService.fetchCustomerExp(any(), any());
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void fetchCustomerExpWithException() throws Exception {
+    public void fetchCustomerExpWithException() {
         try {
             when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<String> response = productExpAsynService.fetchCustomerExp(any(), any());
@@ -227,7 +232,6 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Test
@@ -237,6 +241,7 @@ public class ProductExpAsynServiceTest {
         CommonData commonData = new CommonData();
         CommonTime commonTime = new CommonTime();
         List<CommonData> commonDataList = new ArrayList<>();
+
         try {
             commonTime.setStart("06:00");
             commonTime.setEnd("23:00");
@@ -255,11 +260,10 @@ public class ProductExpAsynServiceTest {
 
         CompletableFuture<List<CommonData>> response = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
         Assert.assertNotNull(response);
-
     }
 
     @Test
-    public void getCommonConfigByModuleWithException() throws Exception {
+    public void getCommonConfigByModuleWithException() {
         try {
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenThrow(MockitoException.class);
             CompletableFuture<List<CommonData>> response = productExpAsynService.fetchCommonConfigByModule(any(), any());
@@ -267,13 +271,12 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Test
     public void fetchCustomerProfile() throws Exception {
         try {
-            CustGeneralProfileResponse fundHolidayBody = null;
+            CustGeneralProfileResponse fundHolidayBody;
             TmbOneServiceResponse<CustGeneralProfileResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -288,13 +291,13 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile(anyString());
         Assert.assertNotNull(response);
     }
 
-
     @Test
-    public void fetchCustomerProfileWithException() throws Exception {
+    public void fetchCustomerProfileWithException() {
         try {
             when(customerServiceClient.getCustomerProfile(anyString())).thenThrow(MockitoException.class);
             CompletableFuture<CustGeneralProfileResponse> response = productExpAsynService.fetchCustomerProfile(anyString());
@@ -302,12 +305,10 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
-
     @Test
-    public void fetchFundListInfoWithException() throws Exception {
+    public void fetchFundListInfoWithException() {
         try {
             when(cacheServiceClient.getCacheByKey(anyString(), anyString())).thenThrow(MockitoException.class);
             CompletableFuture<List<FundClassListInfo>> response = productExpAsynService.fetchFundListInfo(any(), anyString(), anyString());
@@ -315,9 +316,7 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
-
 
     @Test
     public void fetchFundSummary() throws Exception {
@@ -337,12 +336,13 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         CompletableFuture<FundSummaryResponse> response = productExpAsynService.fetchFundSummary(any(), any());
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void fetchFundSummaryWithException() throws Exception {
+    public void fetchFundSummaryWithException() {
         try {
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<FundSummaryResponse> response = productExpAsynService.fetchFundSummary(any(), any());
@@ -350,12 +350,10 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
-
     @Test
-    public void fetchFundFavoriteWitchException() throws Exception {
+    public void fetchFundFavoriteWitchException() {
         try {
             Map<String, String> invHeaderReqParameter = new HashMap<>();
             when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenThrow(MockitoException.class);
@@ -364,9 +362,7 @@ public class ProductExpAsynServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
-
 
     @Test
     public void fetchFundFavorite() {
@@ -396,7 +392,6 @@ public class ProductExpAsynServiceTest {
             ex.printStackTrace();
         }
     }
-
 
     @Test
     void testGetListCompletableFuture() throws JsonProcessingException {
@@ -473,7 +468,6 @@ public class ProductExpAsynServiceTest {
         ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
         when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
         productExpAsynService.getFundClassListInfos(mapper, cacheResponse);
-
 
         assertNotNull(response);
     }
