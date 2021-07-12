@@ -5,6 +5,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponse;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +50,7 @@ class OpenPortfolioControllerTest {
     private OpenPortfolioValidationService openPortfolioValidationService;
 
     @Test
-    void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_open_portfolio_request() throws IOException {
+    void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -68,18 +70,56 @@ class OpenPortfolioControllerTest {
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
         request.setCrmId("23423423423423");
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
                 .thenReturn(responseService);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request);
+        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request);
 
         // Then
         assertNotNull(actual.getBody());
     }
 
     @Test
-    void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_customer_request() throws IOException {
+    void should_return_error_code_with_null_body_when_call_validate_open_portfolio_given_correlation_id_and_and_crm_id_open_portfolio_request() throws IOException {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+
+        ValidateOpenPortfolioResponse validateOpenPortfolioResponse = new ValidateOpenPortfolioResponse();
+        validateOpenPortfolioResponse.setTermsConditions(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/termandcondition.json").toFile(),
+                TermAndConditionResponseBody.class));
+        validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
+                CustomerInfo.class));
+        List<DepositAccount> depositAccountList = new ArrayList<>();
+        depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(), DepositAccount.class));
+        validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
+
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> responseService = new TmbOneServiceResponse<ValidateOpenPortfolioResponse>();
+        responseService.setStatus(new TmbStatus(
+                OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
+                OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
+                SERVICE_NAME,
+                OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc()));
+
+        OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
+        request.setExistingCustomer(true);
+        request.setCrmId("23423423423423");
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
+                .thenReturn(responseService);
+
+        // When
+        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getBody().getStatus().getCode());
+        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getBody().getStatus().getMessage());
+        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getBody().getStatus().getDescription());
+        assertNull(actual.getBody().getData());
+    }
+
+    @Test
+    void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws IOException {
         // Given
         CustomerRequest customerRequest = CustomerRequest.builder()
                 .crmId("00000007924129")
@@ -112,17 +152,17 @@ class OpenPortfolioControllerTest {
                 .depositAccount(depositAccount)
                 .build();
 
-        when(openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequest)).thenReturn(openPortfolioValidationResponse);
+        when(openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest)).thenReturn(openPortfolioValidationResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> actual = openPortfolioController.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", customerRequest);
+        ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> actual = openPortfolioController.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
 
         // Then
         assertNotNull(actual.getBody());
     }
 
     @Test
-    void should_return_portfolio_response_when_call_open_portfolio_given_correlation_id_and_open_portfolio_request() throws IOException, TMBCommonException {
+    void should_return_portfolio_response_when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
         // Given
         OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
                 .crmId("00000000002914")
@@ -156,10 +196,10 @@ class OpenPortfolioControllerTest {
                 .portfolioNicknameResponse(portfolioNicknameResponse.getData())
                 .build();
 
-        when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody)).thenReturn(portfolioResponse);
+        when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody)).thenReturn(portfolioResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", openPortfolioRequestBody);
+        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual.getBody());

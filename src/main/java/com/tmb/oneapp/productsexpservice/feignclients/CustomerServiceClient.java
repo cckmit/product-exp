@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
@@ -115,4 +116,17 @@ public interface CustomerServiceClient {
             @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestBody CrmSearchBody requestBody
     );
+    
+	/**
+	 * Get e-statement
+	 *
+	 * @param crmId         customer ID
+	 * @param correlationId correlationId
+	 * @return
+	 */
+	@GetMapping(value = "/apis/customers/profile/get-e-statement")
+	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getCustomerEStatement(
+			@RequestHeader(value = X_CRMID) String crmId,
+			@RequestHeader(value = X_CORRELATION_ID) String correlationId);
+
 }

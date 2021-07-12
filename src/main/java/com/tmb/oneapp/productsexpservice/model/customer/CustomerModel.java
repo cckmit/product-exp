@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.customer;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,11 @@ public class CustomerModel {
     private String nationalDocumentId;
 
     private String nationalDocumentIdentificationType;
+
+    private String nationality;
+
+    @JsonAlias({"nationality_2"})
+    private String nationalitySecond;
 
     private String customerThaiName;
 

@@ -53,7 +53,6 @@ public class CaseService {
      * @return CaseStatusResponse all case statuses belonging to customer Id
      */
     public CaseStatusResponse getCaseStatus(Map<String, String> requestHeaders, String serviceTypeId) throws TMBCommonException {
-
         try {
             String correlationId = requestHeaders.get(X_CORRELATION_ID);
             String crmId = requestHeaders.get(X_CRMID);
@@ -89,7 +88,7 @@ public class CaseService {
                                 CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
                         requestHeaders,
-                        ACTIVITY_LOG_SUCCESS,
+                        SUCCESS,
                         "");
             }
 
@@ -103,14 +102,12 @@ public class CaseService {
                     .setFirstUsageExperience(customerFirstUsage == null)
                     .setInProgress(inProgress)
                     .setCompleted(completed);
-
         } catch (Exception e) {
             logger.error("Error calling GET /case/status : {}", e);
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
         }
-
     }
 
     /**
@@ -195,7 +192,6 @@ public class CaseService {
             logger.error("Async call to insert first time usage failed. " +
                     "crmId: {}, deviceId: {}, error: {}", crmId, deviceId, e);
         }
-
     }
 
     /**
@@ -290,6 +286,4 @@ public class CaseService {
             logger.info("Unable to log the activity request : {}", e.toString());
         }
     }
-
 }
-

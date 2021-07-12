@@ -160,9 +160,13 @@ public class CustomerSearchResponse {
     @JsonAlias({"fatca_flag"})
     private String fatcaFlag;
 
-    @JsonAlias("amloFlag")
+    @JsonAlias("amlo_refuse_flag")
     private String amloFlag;
 
-    @JsonAlias("customerRiskLevel")
+    @JsonAlias("customer_level")
     private String customerRiskLevel;
+
+    @JsonAlias({"nationality_2"})
+    private String nationalitySecond;
+
 }

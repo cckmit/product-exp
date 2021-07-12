@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,9 +63,7 @@ public class UtilMap {
             return null;
         } else {
             FundAccountRs fundAccountRs = new FundAccountRs();
-            UtilMap utilMap = new UtilMap();
-            FundAccountDetail fundAccountDetail = utilMap.mappingResponse(accDetailBody,
-                    fundRuleBody, statementRs);
+            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accDetailBody, fundRuleBody, statementRs);
             fundAccountRs.setDetails(fundAccountDetail);
             return fundAccountRs;
         }
@@ -77,8 +76,7 @@ public class UtilMap {
      * @param fundRuleBody
      * @return FundAccountDetail
      */
-    public FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse) {
-
+    public static FundAccountDetail mappingResponse(AccDetailBody accDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse) {
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accDetailBody.getDetailFund(), accountDetail);
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
@@ -148,8 +146,7 @@ public class UtilMap {
      * @param responseCustomerExp
      * @return FundPaymentDetailRs
      */
-    public List<DepositAccount> mappingAccount(List<CommonData> responseCommon,
-                                               String responseCustomerExp) {
+    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp) {
         List<DepositAccount> depositAccountList = new ArrayList<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -173,6 +170,8 @@ public class UtilMap {
                         depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
                         depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
                         depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
+                        String accStatusCode = itr.get("account_status_code").textValue();
+                        depositAccount.setAccountStatusCode(accStatusCode);
                         depositAccountList.add(depositAccount);
                     }
                 }
@@ -182,7 +181,6 @@ public class UtilMap {
         }
         return depositAccountList;
     }
-
 
     /**
      * Generic Method to convert Account Type form 3 digits to 1 digit
@@ -257,7 +255,6 @@ public class UtilMap {
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
     }
-
 
     /**
      * Method to check suitability is expire from MF service
@@ -433,7 +430,6 @@ public class UtilMap {
         return fundAccountRequestBody;
     }
 
-
     /**
      * Generic Method to mappingRequestFundRule
      *
@@ -455,7 +451,6 @@ public class UtilMap {
         }
         return fundRuleRequestBody;
     }
-
 
     /**
      * Generic Method to mappingRequestStmtByPort
@@ -504,7 +499,6 @@ public class UtilMap {
             return null;
         }
     }
-
 
     /**
      * Generic Method to mappingCache
@@ -594,5 +588,12 @@ public class UtilMap {
         return fundClass;
     }
 
-
+    /**
+     * @param crmId
+     * @return
+     */
+    public static String fillUpCrmIdFormat(String crmId) {
+        DecimalFormat decimalFormat = new DecimalFormat(ProductsExpServiceConstant.CRM_ID_FORMAT);
+        return ProductsExpServiceConstant.CRM_ID_PREFIX.concat(decimalFormat.format(Double.parseDouble(crmId)));
+    }
 }
