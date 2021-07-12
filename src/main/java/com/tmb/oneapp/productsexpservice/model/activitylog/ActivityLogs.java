@@ -11,19 +11,25 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityLogs extends BaseEvent {
-    public ActivityLogs(String correlationId, String activityDate, String activityTypeId) {
-        super(correlationId, activityDate, activityTypeId);
-    }
+
     @JsonProperty("activity_type")
     private String activityType;
+
     private String reason;
+
     @JsonProperty("verify_flag")
     private String verifyFlag;
+
     @JsonProperty("fund_name")
     private String fundCode;
+
     @JsonProperty("unit_holder")
     private String unitHolderNo;
+
     @JsonProperty("fund_class")
     private String fundClass;
 
+    public ActivityLogs(String correlationId, String activityDate, String activityTypeId) {
+        super(correlationId, activityDate, activityTypeId);
+    }
 }

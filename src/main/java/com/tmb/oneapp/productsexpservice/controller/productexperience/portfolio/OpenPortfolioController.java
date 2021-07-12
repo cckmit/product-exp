@@ -34,8 +34,8 @@ import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatu
 /**
  * OpenPortfolioController will handle to call apis for open portfolio validation
  */
-@RestController
 @Api(tags = "Get portfolio data than return it back")
+@RestController
 public class OpenPortfolioController {
 
     private static final TMBLogger<OpenPortfolioController> logger = new TMBLogger<>(OpenPortfolioController.class);
@@ -63,8 +63,9 @@ public class OpenPortfolioController {
     public ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> validateOpenPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CRM_ID) String crmId,
             @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest) {
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, openPortfolioRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, openPortfolioRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             return ResponseEntity.ok(oneServiceResponse);
         } else {
@@ -86,11 +87,12 @@ public class OpenPortfolioController {
     public ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> createCustomer(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CRM_ID) String crmId,
             @Valid @RequestBody CustomerRequest customerRequest) {
 
         TmbOneServiceResponse<OpenPortfolioValidationResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            OpenPortfolioValidationResponse openPortfolioValidationResponse = openPortfolioService.createCustomer(correlationId, customerRequest);
+            OpenPortfolioValidationResponse openPortfolioValidationResponse = openPortfolioService.createCustomer(correlationId, crmId, customerRequest);
             if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
                 return getTmbOneServiceResponseValidationEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
             } else {
@@ -115,11 +117,12 @@ public class OpenPortfolioController {
     public ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> openPortfolio(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CRM_ID) String crmId,
             @Valid @RequestBody OpenPortfolioRequestBody openPortfolioRequestBody) {
 
         TmbOneServiceResponse<PortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, openPortfolioRequestBody);
+            PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, crmId, openPortfolioRequestBody);
             if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
                 return getTmbOneServiceResponseEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
             } else {

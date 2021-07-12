@@ -40,8 +40,7 @@ public class EligibleDepositAccountService {
                     CompletableFuture.completedFuture(accountRequestClient.callCustomerExpService(UtilMap.createHeader(correlationId), crmId));
             CompletableFuture.allOf(fetchCommonConfigByModule, accountInfo);
 
-            UtilMap utilMap = new UtilMap();
-            depositAccountList = utilMap.mappingAccount(fetchCommonConfigByModule.get(), accountInfo.get());
+            depositAccountList = UtilMap.mappingAccount(fetchCommonConfigByModule.get(), accountInfo.get());
             validateAccountList(depositAccountList);
             return depositAccountList;
         } catch (Exception ex) {

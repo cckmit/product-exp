@@ -35,13 +35,11 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @RunWith(JUnit4.class)
 public class UtilMapTest {
-
-    @InjectMocks
-    UtilMap utilMap;
 
     @BeforeEach
     public void setUp() {
@@ -105,7 +103,7 @@ public class UtilMapTest {
             list.add(statementList);
         }
         statementResponse.setStatementList(list);
-        FundAccountDetail result = utilMap.mappingResponse(body, fundRuleBody, statementResponse);
+        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse);
         List<FundRuleInfoList> fundRuleInfoList = result.getFundRuleInfoList();
         Assert.assertEquals(true, fundRuleInfoList.isEmpty());
     }
@@ -149,7 +147,7 @@ public class UtilMapTest {
         list.setFundHouseCode("1234");
         FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
         fundPaymentDetailRs.setFundRule(list);
-        List<DepositAccount> depositAccountList = utilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp");
+        List<DepositAccount> depositAccountList = UtilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp");
         fundPaymentDetailRs.setDepositAccountList(depositAccountList);
         data.setAccount290Url("1234");
         assertNotEquals(data.getAccount290Url(), depositAccountList);
@@ -279,6 +277,14 @@ public class UtilMapTest {
         Assert.assertEquals(null, result);
     }
 
+    @Test
+    void should_return_full_format_of_crm_id_when_call_fill_up_crm_id_format_given_crm_id() {
+        // Given
+        // When
+        String actual = UtilMap.fillUpCrmIdFormat("00000000002914");
 
+        // Then
+        assertEquals("001100000000000000000000002914", actual);
+    }
 }
 
