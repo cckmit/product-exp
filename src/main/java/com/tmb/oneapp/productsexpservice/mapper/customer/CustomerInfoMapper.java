@@ -19,7 +19,7 @@ public class CustomerInfoMapper {
     private String openPortFolioDateFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
     public CustomerInfo map(CustomerSearchResponse customerResponse) {
-        try{
+        try {
             SimpleDateFormat openPortFormat = new SimpleDateFormat(openPortFolioDateFormat);
             return CustomerInfo.builder()
                     .crmId(customerResponse.getCrmId())
@@ -49,7 +49,7 @@ public class CustomerInfoMapper {
                     .nationality(customerResponse.getNationality())
                     .nationalitySecond(customerResponse.getNationalitySecond())
                     .build();
-        }catch (ParseException ex){
+        } catch (ParseException ex) {
             logger.info("Error ParseException");
         }
         return null;
@@ -58,9 +58,9 @@ public class CustomerInfoMapper {
     private String formatDateForOpenPortFolio(String customerDateString) throws ParseException {
         SimpleDateFormat customerFormat = new SimpleDateFormat(customerServiceDateFormat);
         SimpleDateFormat openPortFormat = new SimpleDateFormat(openPortFolioDateFormat);
-        return !StringUtils.isEmpty(customerDateString)?
-                openPortFormat.format(customerFormat.parse(customerDateString)):"";
-     }
+        return !StringUtils.isEmpty(customerDateString) ?
+                openPortFormat.format(customerFormat.parse(customerDateString)) : "";
+    }
 }
 
 

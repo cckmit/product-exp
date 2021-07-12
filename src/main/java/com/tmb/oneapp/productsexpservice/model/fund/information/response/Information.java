@@ -14,6 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Information {
 
+    private String fundHouseCode;
+
     private String thaiClassName;
 
     private String englishClassName;
