@@ -75,7 +75,10 @@ public class ApplyEStatementService {
 	
 	private void rollBackSilverlake(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq) {
 		logger.info("### ROLL BACK SILVERLAKE FOR {} ### ",crmId);
-		
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
+		creditCardClient.cancelEnableEStatement(headers);
 	}
 
 	/**

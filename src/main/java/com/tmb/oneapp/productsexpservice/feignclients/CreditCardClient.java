@@ -18,7 +18,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,11 +103,13 @@ public interface CreditCardClient {
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/update-e-statement")
 	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEmailEStatement(
-			@RequestHeader Map<String, String> headers,
-			UpdateEStatmentRequest updateEstatementReq);
-	
+			@RequestHeader Map<String, String> headers, UpdateEStatmentRequest updateEstatementReq);
+
 	@PostMapping(value = "/apis/creditcard/creditcard-details/enable-e-statement")
 	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEnableEStatement(
-			@RequestHeader Map<String, String> headers,
-			UpdateEStatmentRequest updateEstatementReq);
+			@RequestHeader Map<String, String> headers, UpdateEStatmentRequest updateEstatementReq);
+
+	@PostMapping(value = "/apis/creditcard/creditcard-details/cancel-e-statement")
+	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> cancelEnableEStatement(
+			@RequestHeader Map<String, String> headers);
 }
