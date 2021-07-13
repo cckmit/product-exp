@@ -17,7 +17,7 @@ import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.address.SubDistrict;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
-import com.tmb.common.model.legacy.rsl.ob.individual.InstantIndividual;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
