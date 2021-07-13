@@ -10,9 +10,11 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmitRegisterRequest;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
-import io.swagger.annotations.*;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -31,10 +33,10 @@ public class LoanSubmissionOnlineController {
     private final LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
-
-    @GetMapping("/GetIncomeInfo")
+    @GetMapping("/getIncomeInfo")
     @LogAround
     @ApiOperation(value = "get income info")
+
     public ResponseEntity<TmbOneServiceResponse<IncomeInfo>> getIncomeInfo(@ApiParam(value = "CRMID", defaultValue = "001100000000000000000001184383", required = true) @RequestHeader(name = "X-CRMID", required = false) String crmId) {
         TmbOneServiceResponse<IncomeInfo> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
