@@ -26,9 +26,9 @@ import java.time.Instant;
 /**
  * InformationController request will handle to call apis for combining the data from info and daily nav of investment
  */
+@Api(tags = "Get fund detail and fund rule than return to front-end")
 @RequestMapping("/funds")
 @RestController
-@Api(tags = "Get fund detail and fund rule than return to front-end")
 public class InformationController {
 
     private static final TMBLogger<InformationController> logger = new TMBLogger<>(InformationController.class);

@@ -52,7 +52,6 @@ public class ProductsExpServiceConstant {
     public static final String SERVICE_OUR_CLOSE_MESSAGE = "NOT ALLOW TO PROCESSING";
     public static final String SERVICE_OUR_CLOSE_DESC = "Error";
 
-
     /* SUITABILITY EXPIRED */
     public static final String SUITABILITY_EXPIRED_CODE = "msg_alt_04";
     public static final String SUITABILITY_EXPIRED_MESSAGE = "SUITABILITY EXPIRED";
@@ -82,9 +81,7 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
     public static final String ACTIVITY_LOG_CHANNEL = "mb";
     public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
-    public static final String ACTIVITY_LOG_SUCCESS = "Success";
     public static final String ACTIVITY_LOG_FAILURE = "Off business hour";
-
 
     public static final String ACTIVE_STATUS_CODE = "0";
     public static final String INACTIVE_STATUS_CODE = "1";
@@ -98,6 +95,7 @@ public class ProductsExpServiceConstant {
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "00700700";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
     public static final String SUCCESS = "Success";
+    public static final String FAILED = "Failed";
     public static final String FAILURE = "Failure";
     public static final String X_FORWARD_FOR = "x-forward-for";
     public static final String OS_VERSION = "os-version";
@@ -120,15 +118,17 @@ public class ProductsExpServiceConstant {
     public static final String CASE_STATUS_IN_PROGRESS = "In Progress";
     public static final String CASE_STATUS_CLOSED = "Closed";
 
-    //Application Status Tracking
+    /* Application Status Tracking */
     public static final String SERVICE_TYPE_ID_AST = "AST";
     public static final String HIRE_PURCHASE_EN = "Hire-purchase";
     public static final String HIRE_PURCHASE_TH = "สินเชื่อเช่าซื้อ";
     public static final String HIRE_PURCHASE_HP = "HP";
     public static final String HIRE_PURCHASE_DATA_NOT_FOUND = "100902102";
-    //In progress
+
+    /* In Progress*/
     public static final String APPLICATION_STATUS_IN_PROGRESS = "in_progress";
-    //Completed
+
+    /* Completed */
     public static final String APPLICATION_STATUS_REJECTED = "rejected";
     public static final String APPLICATION_STATUS_COMPLETED = "completed";
     public static final String APPLICATION_STATUS_INCOMPLETE = "incomplete";
@@ -144,11 +144,7 @@ public class ProductsExpServiceConstant {
     public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String HP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
-    //ACTIVITY IDs
-    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
-    public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
-
-    //Case status screen names
+    /* Case Status Screen Names */
     public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";
 
     public static final String FIXED_START_PAGE = "1";
@@ -156,7 +152,6 @@ public class ProductsExpServiceConstant {
     public static final String INTERNAL_SERVER = "Internal Server Error";
     public static final String UTF_8 = "utf-8";
     public static final String SET_PIN_ACTIVITY_LOG = "00700302";
-    public static final String FAILED = "Failed";
 
     public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
     public static final long INVESTMENT_CACHE_TIME_EXPIRE = 43200;
@@ -171,10 +166,10 @@ public class ProductsExpServiceConstant {
 
     public static final String FATCA_FLAG = "fatca_flag";
 
-    //Channel
+    /* Channel */
     public static final String CHANNEL_MOBILE_BANKING = "mb";
 
-    //Service code
+    /* Service Code */
     public static final String SERVICE_CODE_OPEN_PORTFOLIO = "INVT_OPENPT";
 
     public static final List<String> CREDIT_CARDS_CODE = List.of(
@@ -186,7 +181,24 @@ public class ProductsExpServiceConstant {
             RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_SIGNATURE.getProductCode()
     );
 
-    //Service Customer Search
+    /* Service Customer Search */
     public static final String SEARCH_TYPE = "rm-id";
     public static final String MIB_CUSTOMER_STATIC_ID = "D0000000988";
+
+    /* ACTIVITY IDs */
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
+    public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
+    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO = "101000701";
+    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "101000702";
+    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_CLICK_CONFIRM = "101000703";
+    public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING_OPEN_PORTFOLIO_ENTER_CORRECT_PIN = "101000704";
+
+    /* ACTIVITY LOG MESSAGE */
+    public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_YES = "Yes";
+    public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_NO = "No";
+    public static final String ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "Yes";
+
+    /* CRM Format */
+    public static final String CRM_ID_PREFIX = "0011000000000000";
+    public static final String CRM_ID_FORMAT = "00000000000000";
 }

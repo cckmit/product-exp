@@ -65,7 +65,6 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     compile 'org.json:json:20171018'
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
@@ -79,7 +78,7 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'com.tmb.common:tmb_common_utility:0.0.162'
+    implementation 'com.tmb.common:tmb_common_utility:0.0.176'
     implementation 'org.springframework.kafka:spring-kafka'
     testCompile("junit:junit:4.12")
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -148,7 +147,7 @@ sonarqube {
         }
     }
     properties {
-        property 'sonar.coverage.exclusions', '**/config/*, **/constant/*, **/dto/**, **/model/**, **/ProductsExpServiceApplication.java, **/feignclients/**'
+        property 'sonar.coverage.exclusions', '**/config/*, **/constant/*, **/dto/**, **/model/**, **/ProductsExpServiceApplication.java, **/feignclients/** ,**/enums/**, **/util/ExceptionUtil.java'
     }
     properties {
         property 'sonar.exclusions', '**/config/*'

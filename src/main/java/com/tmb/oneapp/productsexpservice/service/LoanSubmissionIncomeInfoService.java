@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
-import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 @Service
@@ -26,7 +25,7 @@ public class LoanSubmissionIncomeInfoService {
             incomeInfo.setIncomeAmount(responseIncomeModel.getBody().getIncomeModelAmt());
             return incomeInfo;
         } catch (Exception e) {
-            logger.error("calculateUnderwriting got exception:{}", e);
+            logger.error("getIncomeInfoByRmId got exception:{}", e);
             throw e;
         }
     }
