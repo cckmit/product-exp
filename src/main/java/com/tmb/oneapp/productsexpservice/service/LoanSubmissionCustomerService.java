@@ -6,14 +6,17 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionCreateApplicationClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
+import com.tmb.oneapp.productsexpservice.model.loan.InterestRate;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanSubmissionResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.RangeIncome;
+import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerDisburstAccount;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,42 +26,71 @@ import java.util.List;
 public class LoanSubmissionCustomerService {
 
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
-    private final LoanSubmissionCreateApplicationClient createApplicationClient;
     private final CommonServiceClient commonServiceClient;
 
-
-    public List<LoanSubmissionResponse> getCustomerInfo(Long caId) throws ServiceException, RemoteException {
-        LoanSubmissionResponse response = new LoanSubmissionResponse();
-        List<LoanSubmissionResponse> responseList = new ArrayList<>();
-
-        Facility facilityInfo = getFacility(caId);
+    public LoanSubmissionResponse getCustomerInfo(Long caId) throws ServiceException, RemoteException {
+        Facility[] facilityInfo = getFacility(caId);
         TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
 
-        response.setAccountNo(facilityInfo.getDisburstAccountNo());
-        response.setAccountName(facilityInfo.getAccountName());
-        response.setTenure(facilityInfo.getTenure());
-
-
-        response.setMonthlyIncome(interestRateAll.getData().get(0).getSalary());
-        response.setMaxAmount(rangeIncomeAll.getData().get(0).getRangeIncomeMaz());
-        response.setMinAmount(rangeIncomeAll.getData().get(0).getRangeIncomeMin());
-
-
-
-        //response.setInterestRate(applyProductData.getData().get(0).getApplyCreditCards());
-
-        responseList.add(response);
-        return responseList;
+        return parseResponse(facilityInfo, interestRateAll.getData(), rangeIncomeAll.getData());
 
     }
 
+    private LoanSubmissionResponse parseResponse(Facility[] facilityInfo,
+                                                       List<LoanOnlineInterestRate> interestRateAll,
+                                                       List<LoanOnlineRangeIncome> rangeIncomeAll) {
+        LoanSubmissionResponse response = new LoanSubmissionResponse();
+        List<LoanCustomerDisburstAccount> accountList = new ArrayList<>();
+        List<RangeIncome> rangeIncomeList = new ArrayList<>();
+        List<InterestRate> interestRateList = new ArrayList<>();
+
+        RangeIncome rangeIncome = new RangeIncome();
+        InterestRate interestRate = new InterestRate();
+        LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
+
+        response.setTenure(facilityInfo[0].getTenure());
+        response.setPayAmount(BigDecimal.valueOf(25));
+
+        for (var itemFacility : facilityInfo) {
+            account.setAccountNo(itemFacility.getDisburstAccountNo());
+            account.setAccountName(itemFacility.getAccountName());
+            accountList.add(account);
+        }
+
+        for (var itemRangeIncome : rangeIncomeAll) {
+            rangeIncome.setProductCode(itemRangeIncome.getProductCode());
+            rangeIncome.setMaxAmount(itemRangeIncome.getRangeIncomeMaz());
+            rangeIncome.setMinAmount(itemRangeIncome.getRangeIncomeMin());
+            rangeIncome.setStatusWorking(itemRangeIncome.getEmploymentStatus());
+            rangeIncome.setRevenueMultiple(itemRangeIncome.getRevenueMultiple());
+            rangeIncome.setProductNameEng(itemRangeIncome.getProductNameEng());
+            rangeIncome.setProductNameTh(itemRangeIncome.getProductNameTh());
+            rangeIncomeList.add(rangeIncome);
+        }
+
+        for (var itemInterestRate : interestRateAll) {
+            interestRate.setInterestRate(itemInterestRate.getInterestRate());
+            interestRate.setProductCode(itemInterestRate.getProductCode());
+            interestRate.setMaxAmount(itemInterestRate.getRangeIncomeMax());
+            interestRate.setMinAmount(itemInterestRate.getRangeIncomeMin());
+            interestRate.setStatusWorking(itemInterestRate.getEmploymentStatus());
+            interestRateList.add(interestRate);
+        }
+
+        response.setRangeIncomeList(rangeIncomeList);
+        response.setInterestRateList(interestRateList);
+        response.setAccounts(accountList);
 
 
-    private Facility getFacility(Long caID) throws ServiceException, RemoteException {
+        return response;
+    }
+
+
+    private Facility[] getFacility(Long caID) throws ServiceException, RemoteException {
         try {
             ResponseFacility getFacilityResp = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
-            return getFacilityResp.getBody().getFacilities()[0];
+            return getFacilityResp.getBody().getFacilities();
         } catch (Exception e) {
             throw e;
         }
@@ -92,3 +124,4 @@ public class LoanSubmissionCustomerService {
         return oneTmbOneServiceResponse;
     }
 }
+

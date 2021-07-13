@@ -32,11 +32,11 @@ public class LoanSubmissionCustomerControllerTest {
     }
 
     @Test
-    public void testGetFacilitySuccess() throws ServiceException, RemoteException{
+    public void testGetFacilitySuccess() throws ServiceException, RemoteException {
         LoanSubmissionRequest request = new LoanSubmissionRequest();
-        request.setCaID(2021053104186868L);
+        request.setCaId(2021053104186868L);
         LoanSubmissionResponse response = new LoanSubmissionResponse();
-        when(loanSubmissionCustomerService.getCustomerInfo(request.getCaID())).thenReturn(response);
+        when(loanSubmissionCustomerService.getCustomerInfo(request.getCaId())).thenReturn(response);
         assertNotNull(response);
 
     }

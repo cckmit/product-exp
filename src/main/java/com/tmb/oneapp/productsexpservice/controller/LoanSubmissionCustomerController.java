@@ -16,13 +16,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.Instant;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,15 +36,14 @@ public class LoanSubmissionCustomerController {
     @GetMapping(value = "/getIncomeInfo", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get customer info")
-    public ResponseEntity<TmbOneServiceResponse<List<LoanSubmissionResponse>>> getIncomeInfo(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CORRELATION_ID) String correlationId,
-                                                                                             @Valid LoanSubmissionRequest request) {
-        TmbOneServiceResponse<List<LoanSubmissionResponse>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> getIncomeInfo(@Valid LoanSubmissionRequest request) {
+        TmbOneServiceResponse<LoanSubmissionResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
         try {
 
-            List<LoanSubmissionResponse> loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo(request.getCaId());
+            LoanSubmissionResponse loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo(request.getCaId());
             oneTmbOneServiceResponse.setData(loanSubmissionResponse);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
