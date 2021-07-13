@@ -1,6 +1,9 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.RslCode;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -16,6 +19,8 @@ import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Response
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.SFTPClientImp;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.*;
 import com.tmb.oneapp.productsexpservice.model.SFTPStoreFileInfo;
@@ -27,6 +32,7 @@ import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fop.apps.FOPException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -52,36 +58,39 @@ public class FlexiLoanConfirmService {
     private final LoanSubmissionInstantLoanCalUWClient instantLoanCalUWClient;
     private final NotificationService notificationService;
     private final LoanSubmissionInstantLoanSubmitApplicationClient submitApplicationClient;
+    private final CommonServiceClient commonServiceClient;
     private final FileGeneratorService fileGeneratorService;
     private final SFTPClientImp sftpClientImp;
 
     private static final String E_APP_TEMPLATE = "fop/e_app.xsl";
 
-    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws ServiceException, IOException, FOPException, TransformerException, ParseException {
+    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws Exception {
 
-//        ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
-//        String appRefNo = applicationResp.getBody().getAppRefNo();
-//
-//        FlexiLoanConfirmResponse response = parseFlexiLoanConfirmResponse(request.getCaID(), request.getProductCode());
-//        FlexiLoanSubmissionWrapper wrapper = parseFlexiLoanSubmissionWrapper(response, request, appRefNo);
+        ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
+        String appRefNo = applicationResp.getBody().getAppRefNo();
 
-        String appRefNo = "xxx";
-        FlexiLoanConfirmResponse response = new FlexiLoanConfirmResponse();
-        FlexiLoanSubmissionWrapper wrapper = new FlexiLoanSubmissionWrapper();
+        FlexiLoanConfirmResponse response = parseFlexiLoanConfirmResponse(request.getCaID(), request.getProductCode());
+        FlexiLoanSubmissionWrapper wrapper = parseFlexiLoanSubmissionWrapper(response, request, appRefNo);
+
         String fileName = parseCompletePDFFileName(appRefNo);
         String filePath = generateFlexiLoanConfirmReport(wrapper, fileName);
-//        storeEAppFile(requestHeaders, appRefNo, filePath);
-//
-//        String letterOfConsentAttachments = getLetterOfConsentSFTPFilePath(appRefNo, applicationResp);
-//
-//        String eAppAttachments = String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", sftpClientImp.getRemoteHost(), fileName);
-//
-//        List<String> notificationAttachments = new ArrayList<>();
-//        notificationAttachments.add(eAppAttachments);
-//        notificationAttachments.add(letterOfConsentAttachments);
-//
-//        wrapper.setEmail("oranuch@odds.team");
-//        sendNotification(requestHeaders, wrapper);
+        storeEAppFile(requestHeaders, appRefNo, filePath);
+
+        List<RslCode> rslConfigs = getRslConfig(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID));
+        String letterOfConsentAttachments = getLetterOfConsentFilePath(appRefNo, applicationResp);
+        String saleSheetAttachments = getSaleSheetFilePath(rslConfigs, request.getProductCode());
+        String termAndConditionAttachments = getTermAndConditionFilePath(rslConfigs, request.getProductCode());
+
+        String eAppAttachments = String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", sftpClientImp.getRemoteHost(), fileName);
+
+        List<String> notificationAttachments = new ArrayList<>();
+        notificationAttachments.add(eAppAttachments);
+        notificationAttachments.add(letterOfConsentAttachments);
+        notificationAttachments.add(saleSheetAttachments);
+        notificationAttachments.add(termAndConditionAttachments);
+
+        wrapper.setEmail("oranuch@odds.team");
+        sendNotification(requestHeaders, wrapper);
 
         return response;
     }
@@ -135,7 +144,7 @@ public class FlexiLoanConfirmService {
         }
     }
 
-    private String setPaymentMethod(String productCode, Facility facilityInfo, CreditCard creditCardInfo) {
+    private String setPaymentMethod(Facility facilityInfo, CreditCard creditCardInfo) {
         return ProductsExpServiceConstant.CREDIT_CARDS_CODE.contains(facilityInfo.getProductCode()) ? creditCardInfo.getPaymentMethod() : facilityInfo.getPaymentMethod();
     }
 
@@ -163,9 +172,9 @@ public class FlexiLoanConfirmService {
         Individual individualInfo = getCustomer(caId);
         Facility facilityInfo = getFacility(caId);
         CreditCard creditCardInfo = getCreditCard(caId, productCode);
-        individualInfo.setThaiName("พรพรรษา");
-        individualInfo.setThaiSurName("บุญลือ");
-        ResponseInstantLoanCalUW loanCalUWResponse = getInstantLoanCalUW(BigDecimal.valueOf(caId));
+        individualInfo.setThaiName(individualInfo.getThaiName());
+        individualInfo.setThaiSurName(individualInfo.getThaiSurName());
+        ResponseInstantLoanCalUW loanCalUWResponse = getInstantLoanCalUW(BigDecimal.valueOf(caId), "N");
 
         SubmissionPaymentInfo paymentInfo = parseSubmissionPaymentInfo(facilityInfo, individualInfo, creditCardInfo, loanCalUWResponse, productCode);
         SubmissionPricingInfo pricingInfo = parseSubmissionPricingInfo(facilityInfo);
@@ -226,14 +235,28 @@ public class FlexiLoanConfirmService {
         return String.format("01_%s_%s_%s", dateStr, appRefNo, docType);
     }
 
-    private String getLetterOfConsentSFTPFilePath(String appRefNo, ResponseApplication application) {
+    private String getLetterOfConsentFilePath(String appRefNo, ResponseApplication application) {
         String dateStr = application.getBody().getApplicationDate();
         dateStr = dateStr.replaceAll("[-:T ]", "");
         dateStr = dateStr.substring(2, 14);
         String docType = "00111";
-        String letterOfConsentSFTPFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", sftpClientImp.getRemoteHost(), dateStr, appRefNo, docType);
-        logger.info("letterOfConsentSFTPFilePath: {}", letterOfConsentSFTPFilePath);
-        return letterOfConsentSFTPFilePath;
+        String letterOfConsentFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/01_%s_%s_%s.JPG", sftpClientImp.getRemoteHost(), dateStr, appRefNo, docType);
+        logger.info("letterOfConsentFilePath: {}", letterOfConsentFilePath);
+        return letterOfConsentFilePath;
+    }
+
+    private String getSaleSheetFilePath(List<RslCode> rslConfigs, String productCode) {
+        String saleSheetFile = rslConfigs.stream().filter(p -> productCode.equals(p.getPdCode())).findFirst().get().getSalesheetName();
+        String saleSheetFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/%s", sftpClientImp.getRemoteHost(), saleSheetFile);
+        logger.info("saleSheetFilePath: {}", saleSheetFilePath);
+        return saleSheetFilePath;
+    }
+
+    private String getTermAndConditionFilePath(List<RslCode> rslConfigs, String productCode) {
+        String tncFile = rslConfigs.stream().filter(p -> productCode.equals(p.getPdCode())).findFirst().get().getTncName();
+        String tncFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/%s", sftpClientImp.getRemoteHost(), tncFile);
+        logger.info("tncFilePath: {}", tncFilePath);
+        return tncFilePath;
     }
 
     private ResponseApplication getApplicationInfo(long caID) throws ServiceException, RemoteException {
@@ -244,11 +267,11 @@ public class FlexiLoanConfirmService {
         throw new ExportException("get application info fail");
     }
 
-    private ResponseInstantLoanCalUW getInstantLoanCalUW(BigDecimal caID) throws RemoteException, ServiceException {
+    private ResponseInstantLoanCalUW getInstantLoanCalUW(BigDecimal caID, String triggerFlag) throws RemoteException, ServiceException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
         Body body = new Body();
         body.setCaId(caID);
-        body.setTriggerFlag("N");
+        body.setTriggerFlag(triggerFlag);
         request.setBody(body);
 
         ResponseInstantLoanCalUW response = instantLoanCalUWClient.getCalculateUnderwriting(request);
@@ -312,8 +335,8 @@ public class FlexiLoanConfirmService {
             paymentInfo.setFeatureType(facilityInfo.getFeatureType());
             paymentInfo.setOtherBank(facilityInfo.getLoanWithOtherBank());
             paymentInfo.setOtherBankInProgress(facilityInfo.getConsiderLoanWithOtherBank());
+            paymentInfo.setPaymentMethod(setPaymentMethod(facilityInfo, creditCardInfo));
         }
-        paymentInfo.setPaymentMethod(setPaymentMethod(productCode, facilityInfo, creditCardInfo));
 
         return paymentInfo;
     }
@@ -357,5 +380,13 @@ public class FlexiLoanConfirmService {
         }
 
         return submissionCustomerInfo;
+    }
+
+    private List<RslCode> getRslConfig(String correlationId) throws Exception {
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> config = commonServiceClient.getCommonConfigByModule(correlationId, "lending_module");
+        if(ResponseCode.SUCESS.getCode().equals(config.getBody().getStatus().getCode())) {
+            return config.getBody().getData().get(0).getDefaultRslCode();
+        }
+        throw new Exception("get rsl config fail");
     }
 }
