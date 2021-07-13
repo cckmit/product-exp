@@ -40,10 +40,10 @@ public interface CommonServiceClient {
 	@GetMapping(value = "/apis/common/internal/lovmaster/config")
 	ResponseEntity<TmbOneServiceResponse<LovMaster>> getLookupMasterModule(@RequestParam("code") String code);
 
-	@GetMapping(value = "/apis/common/internal/get-interest-rate")
+	@GetMapping(value = "/apis/common/get-interest-rate")
 	ResponseEntity<TmbOneServiceResponse<List<LoanOnlineInterestRate>>> getInterestRateAll();
 
-	@GetMapping(value = "/apis/common/internal/get-range-income")
+	@GetMapping(value = "/apis/common/get-range-income")
 	ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> getRangeIncomeAll();
 
 	/**

@@ -3,7 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.model.legacy.rsl.common.ob.application.InstantApplication;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.InstantFacility;
-import com.tmb.common.model.legacy.rsl.ob.individual.InstantIndividual;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionCreateApplicationClient;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmitRegisterRequest;

@@ -1,15 +1,18 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionRequest;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCustomerService;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
@@ -37,7 +40,8 @@ public class LoanSubmissionCustomerControllerTest {
         request.setCaId(2021053104186868L);
         LoanSubmissionResponse response = new LoanSubmissionResponse();
         when(loanSubmissionCustomerService.getCustomerInfo(request.getCaId())).thenReturn(response);
-        assertNotNull(response);
+        ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> result =loanSubmissionCustomerController.getIncomeInfo(request);
+        Assert.assertNotEquals(200, result);
 
     }
 }
