@@ -16,6 +16,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 
@@ -26,11 +27,12 @@ public class ApplyEStatementServiceTest {
 	private CustomerServiceClient customerServiceClient;
 
 	ApplyEStatementService applyEStatementService;
+	CreditCardClient creditCardClient;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		applyEStatementService = new ApplyEStatementService(customerServiceClient);
+		applyEStatementService = new ApplyEStatementService(customerServiceClient,creditCardClient);
 	}
 
 	@Test

@@ -129,4 +129,15 @@ public interface CustomerServiceClient {
 			@RequestHeader(value = X_CRMID) String crmId,
 			@RequestHeader(value = X_CORRELATION_ID) String correlationId);
 
+	/**
+	 * Update email statment
+	 * 
+	 * @param crmId
+	 * @param correlationId
+	 * @return
+	 */
+	@PostMapping(value = "/apis/customers/profile/update-e-statement")
+	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
+			@RequestHeader Map<String, String> requestHeaders);
+
 }
