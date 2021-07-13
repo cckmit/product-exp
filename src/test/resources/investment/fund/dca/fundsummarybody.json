@@ -1,0 +1,858 @@
+{
+  "fundClassList": {
+    "fundClass": [
+      {
+        "fundClassCode": "100",
+        "fundClassNameEN": "Fixed Income",
+        "fundClassNameTH": "กองทุนตราสารหนี้",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "UOBAMTH",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000133542",
+                  "fundCode": "TCMF",
+                  "fundNameEN": "Thai Cash Management Fund",
+                  "fundNameTH": "กองทุนเปิด ไทย แคช แมเนจเม้นท์ ชนิดเพื่อผู้ลงทุนทั่วไป",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TCMF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "TCMF",
+                  "fundNameEN": "Thai Cash Management Fund",
+                  "fundNameTH": "กองทุนเปิด ไทย แคช แมเนจเม้นท์ ชนิดเพื่อผู้ลงทุนทั่วไป",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TCMF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBABF",
+                  "fundNameEN": "TMB Aggregate Bond Fund",
+                  "fundNameTH": "กองทุนเปิดทหารไทย ธนไพบูลย์",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBABF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000085259",
+                  "fundCode": "TMBABF",
+                  "fundNameEN": "TMB Aggregate Bond Fund",
+                  "fundNameTH": "กองทุนเปิดทหารไทย ธนไพบูลย์",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBABF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBBF",
+                  "fundNameEN": "TMB Bond Fund",
+                  "fundNameTH": "กองทุนเปิดทหารไทย ธนไพศาล",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBBF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBMF",
+                  "fundNameEN": "TMB MONEY FUND",
+                  "fundNameTH": "กองทุนเปิดทหารไทยธนบดี",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBMF",
+                  "unrealizedProfit": 0.83,
+                  "marketValue": "600.83",
+                  "unrealizedProfitPercent": 0.14,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBTHANAPLUS",
+                  "fundNameEN": "TMB THANAPLUS FUND",
+                  "fundNameTH": "กองทุนเปิดทหารไทยธนพลัส",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBTHANAPLUS",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045854",
+                  "fundCode": "TMBTHANAPLUS",
+                  "fundNameEN": "TMB THANAPLUS FUND",
+                  "fundNameTH": "กองทุนเปิดทหารไทยธนพลัส",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBTHANAPLUS",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000085259",
+                  "fundCode": "TMBTHANAPLUS",
+                  "fundNameEN": "TMB THANAPLUS FUND",
+                  "fundNameTH": "กองทุนเปิดทหารไทยธนพลัส",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBTHANAPLUS",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBUSB",
+                  "fundNameEN": "TMB Ultra - Short Bond Fund",
+                  "fundNameTH": "ทหารไทย ธนเพิ่มพูน",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBUSB",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBUSB",
+                  "fundNameEN": "TMB Ultra - Short Bond Fund",
+                  "fundNameTH": "ทหารไทย ธนเพิ่มพูน",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBUSB",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "0.00"
+      },
+      {
+        "fundClassCode": "200",
+        "fundClassNameEN": "FIF Fixed Income",
+        "fundClassNameTH": "กองทุนตราสารหนี้ที่ลงทุนต่างประเทศ",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "UOBAMTH",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "ADRD",
+                  "fundNameEN": "Asian Debt Regional Bond - Dividend Fund",
+                  "fundNameTH": "กองทุนเปิด เอเชียน เดบท์ รีจินอล บอนด์ ปันผล",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "ADR-D",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "UDBN",
+                  "fundNameEN": "United Global Dynamic Bond Fund - N",
+                  "fundNameTH": "กองทุนเปิด ยูไนเต็ด โกลบอล ไดนามิค บอนด์ ฟันด์ - หน่วยลงทุนชนิดรับซื้อคืนหน่วยลง",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "UDB-N",
+                  "unrealizedProfit": 27951.84,
+                  "marketValue": "10027951.84",
+                  "unrealizedProfitPercent": 0.28,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "USHY",
+                  "fundNameEN": "US High Yield Fund",
+                  "fundNameTH": "กองทุนเปิด ยูเอส ไฮ ยิลด์ ฟันด์ - ชนิดรับซื้อคืนแบบปกติ",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "USHY",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "USHYA",
+                  "fundNameEN": "US High Yield Fund - A",
+                  "fundNameTH": "กองทุนเปิด ยูเอส ไฮ ยิลด์ ฟันด์ - ชนิดรับซื้อคืนอัตโนมัติ",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "USHY-A",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBESGSBOND",
+                  "fundNameEN": "TMB-ES Global Smart Bond",
+                  "fundNameTH": "TMB-ES Global Smart Bond",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMB-ES-GSBOND",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBGF",
+                  "fundNameEN": "TMB Global Bond Fund",
+                  "fundNameTH": "ทหารไทย Global Bond Fund",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBGF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBGINCOME",
+                  "fundNameEN": "TMB Global Income Fund",
+                  "fundNameTH": "ทหารไทย Global Income",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBGINCOME",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBGINCOME",
+                  "fundNameEN": "TMB Global Income Fund",
+                  "fundNameTH": "ทหารไทย Global Income",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBGINCOME",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "32.61"
+      },
+      {
+        "fundClassCode": "300",
+        "fundClassNameEN": "Balanced",
+        "fundClassNameTH": "กองทุนผสม",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "TISCOASSET",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TINCA",
+                  "fundNameEN": "TISCO INCOME PLUS FUND (CLASS A)",
+                  "fundNameTH": "กองทุนเปิด ทิสโก้ อินคัม พลัส ชนิดหน่วยลงทุน A",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TINC-A",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBAALF",
+                  "fundNameEN": "Asset Allocation Long Term",
+                  "fundNameTH": "ทหารไทยจัดทัพลงทุน ระยะยาว",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBAALF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBAALF",
+                  "fundNameEN": "Asset Allocation Long Term",
+                  "fundNameTH": "ทหารไทยจัดทัพลงทุน ระยะยาว",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBAALF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "0.00"
+      },
+      {
+        "fundClassCode": "400",
+        "fundClassNameEN": "Equity",
+        "fundClassNameTH": "กองทุนหุ้น",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "TISCOASSET",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "TISCOHD",
+                  "fundNameEN": "TISCO High Dividend Equity Fund",
+                  "fundNameTH": "กองทุนเปิด ทิสโก้ ไฮ ดิวิเดนด์ หุ้นทุน",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TISCOHD",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "UOBAMTH",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "VFOCUSD",
+                  "fundNameEN": "Thai Value Focus Equity-Dividend Fund",
+                  "fundNameTH": "กองทุนเปิด ไทย แวลู โฟกัส อิควิตี้ ปันผล",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "VFOCUS-D",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "0.00"
+      },
+      {
+        "fundClassCode": "500",
+        "fundClassNameEN": "FIF Equity",
+        "fundClassNameTH": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "UOBAMTH",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "JSM",
+                  "fundNameEN": "Japan Small And Mid Cap Fund",
+                  "fundNameTH": "กองทุนเปิด เจแปน สมอล แอนด์ มิด แคป ฟันด์",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "JSM",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "UGSE",
+                  "fundNameEN": "United Global Security Equities Fund",
+                  "fundNameTH": "กองทุนเปิด ยูไนเต็ด โกลบอล ซีเคียวริตี้ อิควิตี้ ฟันด์",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "UGSE",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "TFUND",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TESGTech",
+                  "fundNameEN": "Thanachart Eastspring Global Technology Fund",
+                  "fundNameTH": "กองทุนเปิดธนชาต อีสท์สปริง โกลบอล เทคโนโลยี",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "T-ES-GTech",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBAGLF",
+                  "fundNameEN": "TMB-ES Asia Active Equity",
+                  "fundNameTH": "TMB-ES Asia Active Equity",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBAGLF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBCOF",
+                  "fundNameEN": "TMB China Opportunity Fund",
+                  "fundNameTH": "ทหารไทย China Opportunity",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBCOF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBEAE",
+                  "fundNameEN": "TMB Emerging Active Equity",
+                  "fundNameTH": "ทีเอ็มบี Emerging Active",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBEAE",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBESCHINAA",
+                  "fundNameEN": "TMB-ES China A Active",
+                  "fundNameTH": "TMB-ES China A Active",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMB-ES-CHINA-A",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBESGCORE",
+                  "fundNameEN": "TMB-ES Global Core Equity",
+                  "fundNameTH": "TMB-ES Global Core Equity",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMB-ES-GCORE",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBGQG",
+                  "fundNameEN": "TMB Global Quality Growth",
+                  "fundNameTH": "ทหารไทย Global Quality Growth",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBGQG",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBGQG",
+                  "fundNameEN": "TMB Global Quality Growth",
+                  "fundNameTH": "ทหารไทย Global Quality Growth",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBGQG",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBJE",
+                  "fundNameEN": "TMB Japan Equity Fund",
+                  "fundNameTH": "ทหารไทย Japan Equity",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBJE",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "0.00"
+      },
+      {
+        "fundClassCode": "600",
+        "fundClassNameEN": "Others",
+        "fundClassNameTH": "อื่นๆ",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBESAPPF",
+                  "fundNameEN": "TMB-ES Asia Pacific Prop Flex",
+                  "fundNameTH": "TMB-ES Asia Pacific Prop Flex",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMB-ES-APPF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBGPROP",
+                  "fundNameEN": "TMB Global Property Fund",
+                  "fundNameTH": "ทีเอ็มบี Global Property",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBGPROP",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBPIPF",
+                  "fundNameEN": "Property-Infra Income Flex",
+                  "fundNameTH": "Property-Infra Income Flex",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBPIPF",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBPIPF",
+                  "fundNameEN": "Property-Infra Income Flex",
+                  "fundNameTH": "Property-Infra Income Flex",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBPIPF",
+                  "unrealizedProfit": -3764284.38,
+                  "marketValue": "16235715.62",
+                  "unrealizedProfitPercent": -18.82,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "UOBAMTH",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000140070",
+                  "fundCode": "UFINA",
+                  "fundNameEN": "United Flexible Income Fund - A",
+                  "fundNameTH": "กองทุนเปิด ยูไนเต็ด เฟล็กซิเบิ้ล อินคัม ฟันด์-หน่วยลงทุนชนิดรับซื้อคืนหน่วยลงทุน",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "UFIN-A",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "52.80"
+      },
+      {
+        "fundClassCode": "700",
+        "fundClassNameEN": "FIF Balanced",
+        "fundClassNameTH": "กองทุนผสมที่ลงทุนในต่างประเทศ",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "KASSET",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "KGT5YA",
+                  "fundNameEN": "K Guaranteed 5 Years A Fund",
+                  "fundNameTH": "กองทุนเปิดเค การันตี 5 ปี A",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "KGT5YA",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                },
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "KGT5YB",
+                  "fundNameEN": "K Guaranteed 5 Years B Fund",
+                  "fundNameTH": "กองทุนเปิดเค การันตี 5 ปี B",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "KGT5YB",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "ONEAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "ONECOMPLEX3Y1",
+                  "fundNameEN": "ONE COMPLEX RETURN 3Y1 FUND NOT FOR RETAIL INVESTORS",
+                  "fundNameTH": "กองทุนเปิด วรรณ คอมเพล็กซ์ รีเทิร์น 3Y1 ห้ามขายผู้ลงทุนรายย่อย",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "ONE-COMPLEX3Y1",
+                  "unrealizedProfit": -69518.61,
+                  "marketValue": "930481.39",
+                  "unrealizedProfitPercent": -6.95,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          },
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000839840",
+                  "fundCode": "TMBESIALLO",
+                  "fundNameEN": "TMB-ES Income Allocation",
+                  "fundNameTH": "TMB-ES Income Allocation",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMB-ES-IALLO",
+                  "unrealizedProfit": 0,
+                  "marketValue": "0.00",
+                  "unrealizedProfitPercent": 0,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "3.03"
+      },
+      {
+        "fundClassCode": "800",
+        "fundClassNameEN": "Super Savings Fund(SSF)/LTF",
+        "fundClassNameTH": "Super Savings Fund(SSF)/LTF",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "JBPLTF",
+                  "fundNameEN": "JUMBO PLUS Dividend LTF",
+                  "fundNameTH": "จัมโบ้พลัส ปันผล หุ้นระยะยาว",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "JBP LTF",
+                  "unrealizedProfit": -86206.63,
+                  "marketValue": "1613793.37",
+                  "unrealizedProfitPercent": -5.07,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "5.25"
+      },
+      {
+        "fundClassCode": "900",
+        "fundClassNameEN": "Retirement Mutual Fund",
+        "fundClassNameTH": "กองทุนรวมเพื่อการเลี้ยงชีพ",
+        "fundHouseList": [
+          {
+            "fundHouseCode": "TMBAM",
+            "fundList": {
+              "fund": [
+                {
+                  "portfolioNumber": "PT000000000000045543",
+                  "fundCode": "TMBMRMF",
+                  "fundNameEN": "TMB Money RMF",
+                  "fundNameTH": "ทหารไทยธนบดี เพื่อการเลี้ยงชีพ",
+                  "fundNickNameEN": null,
+                  "fundNickNameTH": null,
+                  "fundShortName": "TMBMRMF",
+                  "unrealizedProfit": 43776.06,
+                  "marketValue": "1943770.81",
+                  "unrealizedProfitPercent": 2.3,
+                  "accruedFee": null,
+                  "nickName": ""
+                }
+              ]
+            }
+          }
+        ],
+        "fundClassPercent": "6.32"
+      }
+    ]
+  },
+  "feeAsOfDate": null,
+  "sumAccruedFee": null,
+  "percentOfFundType": null,
+  "unrealizedProfitPercent": null,
+  "summaryMarketValue": "30752313.86",
+  "summaryUnrealizedProfit": "-3848280.89",
+  "summaryUnrealizedProfitPercent": "-28.12",
+  "summarySmartPortMarketValue": "0.00",
+  "summarySmartPortUnrealizedProfit": "0.00",
+  "summarySmartPortUnrealizedProfitPercent": "0.00"
+}
