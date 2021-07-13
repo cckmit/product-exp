@@ -6,10 +6,12 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
@@ -45,17 +47,37 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @throws TMBCommonException 
 	 */
-	public void updateEstatement(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq) {
+	public void updateEstatement(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException {
 		ApplyEStatementResponse currentEstatementResponse = getEStatement(crmId, correlationId);
 		if ("Y".equals(currentEstatementResponse.getCustomer().getStatementFlag().getECreditcardStatementFlag())) {
 			logger.info("This rm already apply e statment completed");
 			return;
 		}
 		updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
-
+		
+		try {
+			Map<String, String> requestHeaders = new HashMap<String, String>();
+			requestHeaders.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+			requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
+			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
+					.updateEStatement(requestHeaders);
+			if(!ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+				throw new TMBCommonException("Fail on update EC system");
+			}
+		} catch (Exception e) {
+			logger.error(e.toString(),e);
+			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
+			throw new TMBCommonException(e.getMessage());
+		}
 	}
 	
+	private void rollBackSilverlake(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq) {
+		logger.info("### ROLL BACK SILVERLAKE FOR {} ### ",crmId);
+		
+	}
+
 	/**
 	 * Update e statment on silverlake
 	 * @param crmId

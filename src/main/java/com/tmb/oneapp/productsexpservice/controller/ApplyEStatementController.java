@@ -71,7 +71,7 @@ public class ApplyEStatementController {
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService()));
+					ResponseCode.FAILED.getService(),e.toString()));
 		}
 		return ResponseEntity.ok(oneServiceResponse);
 	}
@@ -83,7 +83,8 @@ public class ApplyEStatementController {
 			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000012004011", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getUpdateEStatement(
-			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers,@RequestBody UpdateEStatmentRequest updateEstatementReq) {
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers,
+			@RequestBody UpdateEStatmentRequest updateEstatementReq) {
 		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -91,13 +92,14 @@ public class ApplyEStatementController {
 		TmbOneServiceResponse<ApplyEStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
 			logger.info("Enable ApplyEStatementResponse for : {}", crmId);
-			applyEStatementService.updateEstatement(crmId, correlationId,updateEstatementReq);
+			applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService()));
+					ResponseCode.FAILED.getService(),e.toString()));
 		}
 		return ResponseEntity.ok(oneServiceResponse);
 	}
