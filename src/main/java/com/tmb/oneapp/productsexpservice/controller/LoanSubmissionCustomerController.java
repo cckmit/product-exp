@@ -33,7 +33,7 @@ public class LoanSubmissionCustomerController {
             new TMBLogger<>(LoanSubmissionCustomerController.class);
 
 
-    @GetMapping(value = "/getIncomeInfo", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/get-data-income-info", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get customer info")
     public ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> getIncomeInfo(@Valid LoanSubmissionRequest request) {
