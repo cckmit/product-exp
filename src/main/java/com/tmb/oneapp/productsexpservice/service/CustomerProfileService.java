@@ -270,7 +270,7 @@ public class CustomerProfileService {
 
 		String profile = crmId.substring(16, crmId.length());
 		ResponseInstantLoanGetCustInfo responeInfo = instanceCustomerInfoClient.getInstantCustomerInfo(profile);
-		InstantIndividual[] indi = responeInfo.getBody().getInstantIndividual();;
+		InstantIndividual[] indi = responeInfo.getBody().getInstantIndividual();
 		InstantIndividual instandIndividual = indi[0];
 		response.setProfessionalCode(instandIndividual.getProfessionalCode());
 		if ("01".equals(instandIndividual.getEmploymentStatus())) {
