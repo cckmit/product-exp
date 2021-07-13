@@ -9,6 +9,8 @@ import java.util.List;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatementResponse {
-    private List<StatementList> statementList;
+
     private String totalRecord;
+
+    private List<StatementList> statementList;
 }

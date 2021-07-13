@@ -10,5 +10,6 @@ import java.util.List;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundRuleBody {
+
     private List<FundRuleInfoList> fundRuleInfoList;
 }

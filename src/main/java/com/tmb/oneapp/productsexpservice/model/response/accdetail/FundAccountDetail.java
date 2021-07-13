@@ -12,6 +12,8 @@ import java.util.List;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundAccountDetail {
-    private List<FundRuleInfoList> fundRuleInfoList;
+
     private AccountDetail accountDetail;
+
+    private List<FundRuleInfoList> fundRuleInfoList;
 }

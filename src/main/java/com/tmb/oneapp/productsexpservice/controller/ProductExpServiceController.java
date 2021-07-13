@@ -16,7 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
-import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountRs;
+import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
@@ -70,21 +70,21 @@ public class ProductExpServiceController {
      * @param fundAccountRq the fund account rq
      * @return return account full details
      */
-    @ApiOperation(value = "Fetch Fund Detail based on Unit Holder No, Fund House Code And FundCode")
     @LogAround
+    @ApiOperation(value = "Fetch Fund Detail based on Unit Holder No, Fund House Code And FundCode")
     @PostMapping(value = "/account/detail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<FundAccountRs>> getFundAccountDetail(
+    public ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> getFundAccountDetail(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FundAccountRq fundAccountRq) {
 
-        TmbOneServiceResponse<FundAccountRs> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundAccountResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundAccountRs fundAccountRs = productsExpService.getFundAccountDetail(correlationId, fundAccountRq);
-        if (!StringUtils.isEmpty(fundAccountRs)) {
-            oneServiceResponse.setData(fundAccountRs);
+        FundAccountResponse fundAccountResponse = productsExpService.getFundAccountDetail(correlationId, fundAccountRq);
+        if (!StringUtils.isEmpty(fundAccountResponse)) {
+            oneServiceResponse.setData(fundAccountResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));

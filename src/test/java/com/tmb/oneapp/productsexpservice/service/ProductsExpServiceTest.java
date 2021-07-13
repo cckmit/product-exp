@@ -8,7 +8,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -39,29 +38,23 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class ProductsExpServiceTest {
-    @Mock
-    TMBLogger<ProductsExpService> logger;
 
     @Mock
-    InvestmentRequestClient investmentRequestClient;
+    private TMBLogger<ProductsExpServiceTest> logger;
 
     @Mock
-    AccountRequestClient accountRequestClient;
+    private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    CustomerExpServiceClient customerExpServiceClient;
-
-    @Mock
-    private ProductExpAsynService productExpAsynService;
+    private CustomerExpServiceClient customerExpServiceClient;
 
     @InjectMocks
-    ProductsExpService productsExpService;
+    private ProductsExpService productsExpService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
-
 
     @Test
     public void testGetFundSummary() throws Exception {
@@ -121,11 +114,10 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
@@ -136,7 +128,7 @@ public class ProductsExpServiceTest {
     }
 
     @Test
-    public void testGetFundSummaryWithSmartPort() throws Exception {
+    public void testGetFundSummaryWithSmartPort() {
 
         FundSummaryRq rq = new FundSummaryRq();
         rq.setCrmId("test");
@@ -145,10 +137,9 @@ public class ProductsExpServiceTest {
         FundSummaryByPortResponse fundSummaryByPortResponse;
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
-        List<PtesDetail> ptesDetailList = null;
+        List<PtesDetail> ptesDetailList;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
-
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
@@ -194,23 +185,20 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE, result.getIsPtes());
         Assert.assertEquals(2, result.getSmartPortList().size());
         Assert.assertEquals(Boolean.TRUE, result.getIsPt());
-
     }
 
-
     @Test
-    public void testGetFundSummaryWithNoSummaryByPort() throws Exception {
+    public void testGetFundSummaryWithNoSummaryByPort() {
 
         FundSummaryRq rq = new FundSummaryRq();
         rq.setCrmId("test");
@@ -252,10 +240,10 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
@@ -288,13 +276,11 @@ public class ProductsExpServiceTest {
     @Test
     void testFundResponseData() {
         FundResponse fundResponse = getFundResponse();
-        ;
         CommonTime noneServiceHour = new CommonTime();
         noneServiceHour.setStart("00:00");
         noneServiceHour.setEnd("12:00");
         productsExpService.fundResponseData(fundResponse, noneServiceHour);
         assertNotNull(noneServiceHour);
-
     }
 
     @Test
@@ -330,4 +316,3 @@ public class ProductsExpServiceTest {
         assertNotNull(fundResponse);
     }
 }
-

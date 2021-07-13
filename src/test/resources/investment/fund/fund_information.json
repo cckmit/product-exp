@@ -8,6 +8,7 @@
   "data": {
     "fund": {
       "fundHouseCode": "TMBAM",
+      "fundClassCode": "500",
       "thaiClassName": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
       "englishClassName": "FIF Equity",
       "categoryName": "China Equity",

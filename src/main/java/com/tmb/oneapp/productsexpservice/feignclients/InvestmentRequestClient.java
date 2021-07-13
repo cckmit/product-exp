@@ -34,7 +34,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayB
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -57,7 +57,7 @@ public interface InvestmentRequestClient {
      * @param fundRuleRequestBody the fund rule request body
      * @return response entity
      */
-    @PostMapping(value = "${investment.service.fundrule.url}")
+    @PostMapping(value = "${investment.service.fund.rule.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundRuleBody>> callInvestmentFundRuleService(@RequestHeader Map<String, String> headers, @RequestBody FundRuleRequestBody fundRuleRequestBody);
 
@@ -68,9 +68,9 @@ public interface InvestmentRequestClient {
      * @param fundAccountRq the fund account rq
      * @return response entity
      */
-    @PostMapping(value = "${investment.service.accountdetail.url}")
+    @PostMapping(value = "${investment.service.account.detail.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<AccDetailBody>> callInvestmentFundAccDetailService(@RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRq);
+    ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> callInvestmentFundAccDetailService(@RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRq);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -159,9 +159,9 @@ public interface InvestmentRequestClient {
      * @param orderStmtByPortRq the rmID
      * @return the Suitability response
      */
-    @PostMapping(value = "${investment.service.fund.stmtbyport.url}")
+    @PostMapping(value = "${investment.service.fund.statement.by.port.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<StatementResponse>> callInvestmentStmtByPortService(@RequestHeader Map<String, String> headers
+    ResponseEntity<TmbOneServiceResponse<StatementResponse>> callInvestmentStatementByPortService(@RequestHeader Map<String, String> headers
             , @RequestBody OrderStmtByPortRq orderStmtByPortRq);
 
 
@@ -254,7 +254,7 @@ public interface InvestmentRequestClient {
     /**
      * Call investment client relationship service to update client relationship.
      *
-     * @param header                  the headers
+     * @param header              the headers
      * @param relationshipRequest the relationshipRequest
      * @return the client relationship response
      */
@@ -265,7 +265,7 @@ public interface InvestmentRequestClient {
     /**
      * Call investment open portfolio service to open portfolio.
      *
-     * @param header                   the headers
+     * @param header               the headers
      * @param openPortfolioRequest the openPortfolioRequest
      * @return the open portfolio response
      */
@@ -276,7 +276,7 @@ public interface InvestmentRequestClient {
     /**
      * Call investment portfolio nickname service to create or update portfolio nickname.
      *
-     * @param header                       the headers
+     * @param header                   the headers
      * @param portfolioNicknameRequest the portfolioNicknameRequest
      * @return the portfolio nickname response
      */

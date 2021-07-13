@@ -16,6 +16,8 @@ public class Information {
 
     private String fundHouseCode;
 
+    private String fundClassCode;
+
     private String thaiClassName;
 
     private String englishClassName;
