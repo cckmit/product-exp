@@ -6,7 +6,6 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.accountsaving.AccountSavingResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
@@ -46,9 +45,8 @@ public class DcaInformationService {
 
         TmbOneServiceResponse<DcaInformationDto> dcaInformationDto = new TmbOneServiceResponse<>();
         try{
-
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            List<String> portList = productsExpService.getPortList(crmId,invHeaderReqParameter);
+            List<String> portList = productsExpService.getPortList(crmId,invHeaderReqParameter,false);
             UnitHolder unitHolder = new UnitHolder();
             unitHolder.setUnitHolderNo(portList.stream().collect(Collectors.joining(",")));
             ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter,
@@ -69,7 +67,6 @@ public class DcaInformationService {
         List<FundHouse> fundHouseList = fundClass.stream()
                 .map(x -> x.getFundHouseList())
                 .flatMap(x -> x.stream()).collect(Collectors.toList());
-//        Integer counter = fundHouseList.stream().map(f -> f.getFundList().getFund().size()).reduce(0,Integer::sum);
         List<Fund> fundList = fundHouseList.stream().map(t -> t.getFundList().getFund()).flatMap(t -> t.stream()).collect(Collectors.toList());
         List<FundClassListInfo> fundClassListInfos = fundListBody.getBody().getData().getFundClassList();
         List<FundClassListInfo> dcaList = fundClassListInfos.stream().filter(
