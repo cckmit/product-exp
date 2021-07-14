@@ -162,7 +162,7 @@ public class ProductsExpService {
         ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = null;
         try {
             String crmId = rq.getCrmId();
-            List<String> ports = getPortList(crmId, invHeaderReqParameter);
+            List<String> ports = getPortList(crmId, invHeaderReqParameter,true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
@@ -188,18 +188,13 @@ public class ProductsExpService {
         }
     }
 
-    private List<String> getPortList(String crmId, Map<String, String> invHeaderReqParameter) throws com.fasterxml.jackson.core.JsonProcessingException {
+    public List<String> getPortList(String crmId, Map<String, String> invHeaderReqParameter,boolean isIncludePtesPortfolio) throws com.fasterxml.jackson.core.JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
         PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
         ptesBodyRequest.setRmNumber(crmId);
         String portData = customerExpServiceClient.getAccountSaving(invHeaderReqParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID), crmId);
-        ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
-                investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
 
-        Optional<List<PtesDetail>> ptesDetailList =
-                Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
-                        .map(TmbOneServiceResponse::getData);
 
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
         if (!StringUtils.isEmpty(portData)) {
@@ -210,10 +205,18 @@ public class ProductsExpService {
             ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
             });
         }
-        if (ptesDetailList.isPresent()) {
-            ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
-                    .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
+        if(isIncludePtesPortfolio) {
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult =
+                    investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
 
+            Optional<List<PtesDetail>> ptesDetailList =
+                    Optional.ofNullable(ptestDetailResult).map(ResponseEntity::getBody)
+                            .map(TmbOneServiceResponse::getData);
+            if (ptesDetailList.isPresent()) {
+                ptestPortList = ptesDetailList.get().stream().filter(ptesDetail -> ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG.equalsIgnoreCase(ptesDetail.getPortfolioFlag()))
+                        .map(PtesDetail::getPortfolioNumber).collect(Collectors.toList());
+
+            }
         }
         ports.addAll(ptestPortList);
         return ports;
