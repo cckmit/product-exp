@@ -93,8 +93,8 @@ public class LoanSubmissionCustomerService {
         try {
             ResponseFacility getFacilityResp = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
             return getFacilityResp.getBody().getFacilities();
-        } catch (Exception e) {
-            throw e;
+        } catch (Exception exception) {
+            throw exception;
         }
     }
 
@@ -106,8 +106,8 @@ public class LoanSubmissionCustomerService {
             oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
             return oneTmbOneServiceResponse;
 
-        } catch (Exception e) {
-            throw e;
+        } catch (Exception ex) {
+            throw ex;
         }
 
     }
