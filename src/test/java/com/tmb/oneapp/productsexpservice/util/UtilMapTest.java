@@ -6,7 +6,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundClass;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -232,9 +232,9 @@ public class UtilMapTest {
 
     @Test
     public void testMappingRequestFundAcc() {
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundCode("1234");
-        FundAccountRequestBody result = UtilMap.mappingRequestFundAcc(fundAccountRq);
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundCode("1234");
+        FundAccountRequestBody result = UtilMap.mappingRequestFundAcc(fundAccountRequest);
         FundAccountRequestBody requestBody = new FundAccountRequestBody();
         requestBody.setFundCode("1234");
         Assert.assertEquals(requestBody.getFundCode(), result.getFundCode());
@@ -242,9 +242,9 @@ public class UtilMapTest {
 
     @Test
     public void testMappingRequestFundRule() {
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundCode("1234");
-        FundRuleRequestBody result = UtilMap.mappingRequestFundRule(fundAccountRq);
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundCode("1234");
+        FundRuleRequestBody result = UtilMap.mappingRequestFundRule(fundAccountRequest);
         FundRuleRequestBody requestBody = new FundRuleRequestBody();
         requestBody.setFundCode("1234");
         Assert.assertEquals(requestBody.getFundCode(), result.getFundCode());
@@ -252,9 +252,9 @@ public class UtilMapTest {
 
     @Test
     public void testMappingRequestStmtByPort() {
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundCode("1234");
-        OrderStmtByPortRq result = UtilMap.mappingRequestStmtByPort(fundAccountRq, "startPage", "endPage");
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundCode("1234");
+        OrderStmtByPortRq result = UtilMap.mappingRequestStmtByPort(fundAccountRequest, "startPage", "endPage");
         OrderStmtByPortRq portRq = new OrderStmtByPortRq();
         portRq.setFundCode("1234");
         Assert.assertEquals(portRq.getFundCode(), result.getFundCode());

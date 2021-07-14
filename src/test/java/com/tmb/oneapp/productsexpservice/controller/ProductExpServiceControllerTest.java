@@ -6,7 +6,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
@@ -141,21 +141,21 @@ public class ProductExpServiceControllerTest {
     @Test
     public void testGetFundAccountDetailFullReturn() {
         initSuccessResponseAccountDetail();
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundCode("EEEEEEE");
-        fundAccountRq.setFundHouseCode("TTTTTTT");
-        fundAccountRq.setServiceType("1");
-        fundAccountRq.setUnitHolderNo("PT00000001111");
-        fundAccountRq.setTranType("All");
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundCode("EEEEEEE");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setTranType("All");
 
         try {
-            when(productsExpService.getFundAccountDetail(corrID, fundAccountRq)).thenReturn(fundAccountResponse);
+            when(productsExpService.getFundAccountDetail(corrID, fundAccountRequest)).thenReturn(fundAccountResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(corrID, fundAccountRq);
+                .getFundAccountDetail(corrID, fundAccountRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         assertEquals(success_code, actualResult.getBody().getStatus().getCode());
 
@@ -167,21 +167,21 @@ public class ProductExpServiceControllerTest {
 
     @Test
     public void testGetFundAccountDetailNotFound() {
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundCode("EEEEEEE");
-        fundAccountRq.setFundHouseCode("TTTTTTT");
-        fundAccountRq.setServiceType("1");
-        fundAccountRq.setUnitHolderNo("PT00000001111");
-        fundAccountRq.setTranType("All");
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundCode("EEEEEEE");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setTranType("All");
 
         try {
-            when(productsExpService.getFundAccountDetail(corrID, fundAccountRq)).thenReturn(null);
+            when(productsExpService.getFundAccountDetail(corrID, fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(corrID, fundAccountRq);
+                .getFundAccountDetail(corrID, fundAccountRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
@@ -191,12 +191,12 @@ public class ProductExpServiceControllerTest {
         initFundRuleBody();
 
         FundAccountResponse fundAccountResponse = null;
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundCode("EEEEEEE");
-        fundAccountRq.setFundHouseCode("TTTTTTT");
-        fundAccountRq.setServiceType("1");
-        fundAccountRq.setUnitHolderNo("PT00000001111");
-        fundAccountRq.setTranType("All");
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundCode("EEEEEEE");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setTranType("All");
 
         AccountDetailBody accountDetailBody = null;
         FundRuleBody fundRuleBody = null;
@@ -206,14 +206,14 @@ public class ProductExpServiceControllerTest {
 
             FundAccountDetail fundAccountDetail = mappingResponse(accountDetailBody, fundRuleBody);
             fundAccountResponse.setDetails(fundAccountDetail);
-            when(productsExpService.getFundAccountDetail(corrID, fundAccountRq)).thenReturn(fundAccountResponse);
+            when(productsExpService.getFundAccountDetail(corrID, fundAccountRequest)).thenReturn(fundAccountResponse);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(corrID, fundAccountRq);
+                .getFundAccountDetail(corrID, fundAccountRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
     }
@@ -251,12 +251,12 @@ public class ProductExpServiceControllerTest {
         initFundRuleBody();
 
         FundAccountResponse fundAccountResponse;
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundCode("EEEEEEE");
-        fundAccountRq.setFundHouseCode("TTTTTTT");
-        fundAccountRq.setServiceType("1");
-        fundAccountRq.setUnitHolderNo("PT00000001111");
-        fundAccountRq.setTranType("All");
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundCode("EEEEEEE");
+        fundAccountRequest.setFundHouseCode("TTTTTTT");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setTranType("All");
 
         AccountDetailBody accountDetailBody = null;
         FundRuleBody fundRuleBody = null;
@@ -266,13 +266,13 @@ public class ProductExpServiceControllerTest {
 
             FundAccountDetail fundAccountDetail = mappingResponse(accountDetailBody, fundRuleBody);
             fundAccountResponse.setDetails(fundAccountDetail);
-            when(productsExpService.getFundAccountDetail(corrID, fundAccountRq)).thenReturn(null);
+            when(productsExpService.getFundAccountDetail(corrID, fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(corrID, fundAccountRq);
+                .getFundAccountDetail(corrID, fundAccountRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 

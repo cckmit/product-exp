@@ -12,7 +12,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -419,14 +419,14 @@ public class UtilMap {
     /**
      * Generic Method to mappingRequestFundAcc
      *
-     * @param fundAccountRq
+     * @param fundAccountRequest
      * @return FundAccountRequestBody
      */
-    public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRq fundAccountRq) {
+    public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRequest fundAccountRequest) {
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
-        fundAccountRequestBody.setFundCode(fundAccountRq.getFundCode());
-        fundAccountRequestBody.setServiceType(fundAccountRq.getServiceType());
-        fundAccountRequestBody.setUnitHolderNo(fundAccountRq.getUnitHolderNo());
+        fundAccountRequestBody.setFundCode(fundAccountRequest.getFundCode());
+        fundAccountRequestBody.setServiceType(fundAccountRequest.getServiceType());
+        fundAccountRequestBody.setUnitHolderNo(fundAccountRequest.getUnitHolderNumber());
         return fundAccountRequestBody;
     }
 
@@ -438,8 +438,8 @@ public class UtilMap {
      */
     public static FundRuleRequestBody mappingRequestFundRule(Object fundAccountRq) {
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        if (fundAccountRq instanceof FundAccountRq) {
-            FundAccountRq fundAccount = (FundAccountRq) fundAccountRq;
+        if (fundAccountRq instanceof FundAccountRequest) {
+            FundAccountRequest fundAccount = (FundAccountRequest) fundAccountRq;
             fundRuleRequestBody.setFundCode(fundAccount.getFundCode());
             fundRuleRequestBody.setFundHouseCode(fundAccount.getFundHouseCode());
             fundRuleRequestBody.setTranType(fundAccount.getTranType());
@@ -455,13 +455,13 @@ public class UtilMap {
     /**
      * Generic Method to mappingRequestStmtByPort
      *
-     * @param fundAccountRq
+     * @param fundAccountRequest
      * @return OrderStmtByPortRq
      */
-    public static OrderStmtByPortRq mappingRequestStmtByPort(FundAccountRq fundAccountRq, String startPage, String endPage) {
+    public static OrderStmtByPortRq mappingRequestStmtByPort(FundAccountRequest fundAccountRequest, String startPage, String endPage) {
         OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
-        orderStmtByPortRq.setPortfolioNumber(fundAccountRq.getUnitHolderNo());
-        orderStmtByPortRq.setFundCode(fundAccountRq.getFundCode());
+        orderStmtByPortRq.setPortfolioNumber(fundAccountRequest.getUnitHolderNumber());
+        orderStmtByPortRq.setFundCode(fundAccountRequest.getFundCode());
         orderStmtByPortRq.setRowStart(startPage);
         orderStmtByPortRq.setRowEnd(endPage);
         return orderStmtByPortRq;

@@ -12,7 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
@@ -137,12 +137,12 @@ public class ProductExpServiceTest {
     @Test
     public void testGetFundAccountDetailAndFundRule() throws Exception {
         StatementResponse statementResponse = null;
-        FundAccountRq fundAccountRq = new FundAccountRq();
-        fundAccountRq.setFundHouseCode("ABCC");
-        fundAccountRq.setTranType("2");
-        fundAccountRq.setFundCode("ABCC");
-        fundAccountRq.setServiceType("1");
-        fundAccountRq.setUnitHolderNo("PT0000000000123");
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setFundHouseCode("ABCC");
+        fundAccountRequest.setTranType("2");
+        fundAccountRequest.setFundCode("ABCC");
+        fundAccountRequest.setServiceType("1");
+        fundAccountRequest.setUnitHolderNumber("PT0000000000123");
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -171,16 +171,16 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(fundAccountResponse);
         Assert.assertNotNull(accountDetailBody);
         Assert.assertNotNull(statementRs);
-        FundAccountResponse result = productsExpService.getFundAccountDetail(corrID, fundAccountRq);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
         Assert.assertNotNull(result);
     }
 
     @Test
     public void testGetFundAccountDetail() {
-        FundAccountRq fundAccountRequest = new FundAccountRq();
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setUnitHolderNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity = null;
@@ -254,10 +254,10 @@ public class ProductExpServiceTest {
     public void testGetFundAccountDetailNull() {
         initAccDetailBody();
         initFundRuleBody();
-        FundAccountRq fundAccountRequest = new FundAccountRq();
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setUnitHolderNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
@@ -319,10 +319,10 @@ public class ProductExpServiceTest {
     public void testGetFundAccountDetailServiceNull() {
         initAccDetailBody();
         initFundRuleBody();
-        FundAccountRq fundAccountRequest = new FundAccountRq();
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setUnitHolderNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
@@ -598,10 +598,10 @@ public class ProductExpServiceTest {
 
     @Test
     public void testGetFundAccountDetailException() {
-        FundAccountRq fundAccountRequest = new FundAccountRq();
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setUnitHolderNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         try {

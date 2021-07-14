@@ -7,8 +7,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRq;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,10 +51,10 @@ public class InvestmentRequestClientTest {
 
     @Test
     public void testGetFundAccountDetailInvestment() {
-        FundAccountRq fundAccountRequest = new FundAccountRq();
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setUnitHolderNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
@@ -88,10 +87,10 @@ public class InvestmentRequestClientTest {
     @Test
     public void testGetFundAccountDetailInvestmentNull() {
 
-        FundAccountRq fundAccountRequest = new FundAccountRq();
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNo("PT000001111");
+        fundAccountRequest.setUnitHolderNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
