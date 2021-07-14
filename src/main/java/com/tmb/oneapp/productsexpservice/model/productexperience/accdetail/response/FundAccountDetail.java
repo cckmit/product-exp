@@ -11,7 +11,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundAccountDetail {
 
     private AccountDetail accountDetail;

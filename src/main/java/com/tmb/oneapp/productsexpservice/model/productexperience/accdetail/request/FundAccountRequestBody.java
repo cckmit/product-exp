@@ -11,10 +11,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundAccountRequestBody {
 
-    @JsonProperty(value = "unitHolderNo")
-    private String unitHolderNumber;
+    private String portfolioNumber;
 
     private String fundCode;
-
-    private String serviceType;
 }

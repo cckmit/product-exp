@@ -135,13 +135,17 @@ public class ProductsExpService {
             CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(header, fundAccountRequestBody);
             CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(header, fundRuleRequestBody);
             CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(header, orderStmtByPortRequest);
-            CompletableFuture<ViewAipResponseBody> viewAipBody = productExpAsyncService.fetchViewAip(header, viewAipRequest);
-            CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort, viewAipBody);
+            CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort);
+
+            ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity = getTmbOneServiceResponseResponseEntity(viewAipRequest, header);
 
             AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
             FundRuleBody fundRuleBody = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
-            ViewAipResponseBody viewAipResponseBody = viewAipBody.get();
+            ViewAipResponseBody viewAipResponseBody = null;
+            if(!StringUtils.isEmpty(responseResponseEntity)){
+                viewAipResponseBody = responseResponseEntity.getBody().getData();
+            }
 
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
         } catch (Exception ex) {
@@ -149,6 +153,19 @@ public class ProductsExpService {
             return null;
         }
         return fundAccountResponse;
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> getTmbOneServiceResponseResponseEntity(ViewAipRequest viewAipRequest, Map<String, String> header) {
+        try {
+            header.put(ProductsExpServiceConstant.HEADER_X_CRM_ID,viewAipRequest.getCrmId());
+            ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity =
+                    investmentRequestClient.getViewAipPlans(header, viewAipRequest);
+            return responseResponseEntity;
+        }catch (Exception ex){
+            return null;
+        }
+
+
     }
 
     /**

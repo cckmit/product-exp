@@ -261,7 +261,7 @@ public class ProductExpAsyncService {
     @Async
     public CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
         try {
-            invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CRM_ID, crmId);
+            invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
             ResponseEntity<TmbOneServiceResponse<List<CustomerFavoriteFundData>>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
@@ -304,6 +304,7 @@ public class ProductExpAsyncService {
     @Async
     public CompletableFuture<ViewAipResponseBody> fetchViewAip(Map<String, String> header, ViewAipRequest viewAipRequest) throws TMBCommonException {
         try {
+            header.put(ProductsExpServiceConstant.HEADER_X_CRM_ID,viewAipRequest.getCrmId());
             ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity =
                     investmentRequestClient.getViewAipPlans(header, viewAipRequest);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());

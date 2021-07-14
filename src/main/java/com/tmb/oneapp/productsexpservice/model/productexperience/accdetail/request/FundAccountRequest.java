@@ -16,14 +16,13 @@ public class FundAccountRequest {
     private String crmId;
 
     @NotNull
-    @JsonProperty(value = "unitHolderNo")
-    private String unitHolderNumber;
-
-    @NotNull
-    private String fundHouseCode;
+    private String portfolioNumber;
 
     @NotNull
     private String fundCode;
+
+    @NotNull
+    private String fundHouseCode;
 
     @NotNull
     private String tranType;

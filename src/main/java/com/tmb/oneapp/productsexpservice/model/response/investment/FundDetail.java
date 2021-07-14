@@ -11,9 +11,6 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundDetail {
 
-    @JsonProperty(value = "unitHolderNo")
-    private String unitHolderNumber;
-
     private String fundHouseCode;
 
     @JsonProperty(value = "fundNameEN")
@@ -42,4 +39,10 @@ public class FundDetail {
 
     @JsonProperty(value = "nickName")
     private String nickname;
+
+    private String unitSmartPort;
+
+    private String fundType;
+
+    private String unitHolderNumber;
 }
