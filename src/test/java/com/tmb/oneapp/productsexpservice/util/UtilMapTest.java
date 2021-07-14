@@ -328,4 +328,14 @@ public class UtilMapTest {
         // Then
         assertEquals("001100000000000000000000002914", actual);
     }
+
+    @Test
+    void should_return_full_format_of_crm_id_when_call_fill_up_crm_id_format_given_full_format_of_crm_id() {
+        // Given
+        // When
+        String actual = UtilMap.fillUpCrmIdFormat("001100000000000000000000002914");
+
+        // Then
+        assertEquals("001100000000000000000000002914", actual);
+    }
 }
