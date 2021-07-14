@@ -236,7 +236,6 @@ public class ProductExpAsyncServiceTest {
 
     @Test
     public void getCommonConfigByModule() throws Exception {
-
         TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         CommonData commonData = new CommonData();
         CommonTime commonTime = new CommonTime();
