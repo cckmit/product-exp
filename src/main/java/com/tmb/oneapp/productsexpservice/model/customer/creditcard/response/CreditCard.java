@@ -17,57 +17,57 @@ import java.util.List;
 public class CreditCard {
 
     @JsonAlias("card_no")
-    public String cardNo;
+    private String cardNo;
 
     @JsonAlias("account_id")
-    public String accountId;
+    private String accountId;
 
     @JsonAlias("card_image_android")
-    public String cardImage_android;
+    private String cardImageAndroid;
 
     @JsonAlias("card_image_ios")
-    public String cardImage_ios;
+    private String cardImageIos;
 
     @JsonAlias("product_name_en")
-    public String productName_en;
+    private String productNameEN;
 
     @JsonAlias("product_name_th")
-    public String productName_th;
+    private String productNameTH;
 
     @JsonAlias("product_nickname")
-    public Object productNickname;
+    private String productNickname;
 
     @JsonAlias("due_date")
-    public Object dueDate;
+    private String dueDate;
 
     @JsonAlias("card_type")
-    public String cardType;
+    private String cardType;
 
     @JsonAlias("card_name")
-    public String cardName;
+    private String cardName;
 
     @JsonAlias("updated_date")
-    public String updatedDate;
+    private String updatedDate;
 
-    public String compcode;
+    private String compcode;
 
     @JsonAlias("due_amount")
-    public Object dueAmount;
+    private String dueAmount;
 
     @JsonAlias("credit_spend")
-    public String creditSpend;
+    private String creditSpend;
 
     @JsonAlias("credit_remain")
-    public String creditRemain;
+    private String creditRemain;
 
-    public List<Shortcut> shortcuts;
+    private List<Shortcut> shortcuts;
 
     @JsonAlias("account_status")
-    public String accountStatus;
+    private String accountStatus;
 
     @JsonAlias("product_order")
-    public String productOrder;
+    private String productOrder;
 
     @JsonAlias("supplementary_infos")
-    public List<SupplementaryInfo> supplementaryInfos;
+    private List<SupplementaryInfo> supplementaryInfos;
 }

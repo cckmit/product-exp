@@ -17,10 +17,10 @@ import java.util.List;
 public class CreditcardInformationResponse {
 
     @JsonAlias("credit_cards")
-    public List<CreditCard> creditCards;
+    private List<CreditCard> creditCards;
 
     @JsonAlias("flash_cards")
-    public List<CreditCard> flashCards;
+    private List<CreditCard> flashCards;
 
 }
 
