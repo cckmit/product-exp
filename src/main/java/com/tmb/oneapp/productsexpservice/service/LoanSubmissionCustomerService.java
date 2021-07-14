@@ -38,8 +38,8 @@ public class LoanSubmissionCustomerService {
     }
 
     private LoanSubmissionResponse parseResponse(Facility[] facilityInfo,
-                                                       List<LoanOnlineInterestRate> interestRateAll,
-                                                       List<LoanOnlineRangeIncome> rangeIncomeAll) {
+                                                 List<LoanOnlineInterestRate> interestRateAll,
+                                                 List<LoanOnlineRangeIncome> rangeIncomeAll) {
         LoanSubmissionResponse response = new LoanSubmissionResponse();
         List<LoanCustomerDisburstAccount> accountList = new ArrayList<>();
         List<RangeIncome> rangeIncomeList = new ArrayList<>();
@@ -63,9 +63,12 @@ public class LoanSubmissionCustomerService {
             rangeIncome.setMaxAmount(itemRangeIncome.getRangeIncomeMaz());
             rangeIncome.setMinAmount(itemRangeIncome.getRangeIncomeMin());
             rangeIncome.setStatusWorking(itemRangeIncome.getEmploymentStatus());
-            rangeIncome.setRevenueMultiple(itemRangeIncome.getRevenueMultiple());
             rangeIncome.setProductNameEng(itemRangeIncome.getProductNameEng());
             rangeIncome.setProductNameTh(itemRangeIncome.getProductNameTh());
+            if (itemRangeIncome.getProductCode().equals("C2G01")) {
+                rangeIncome.setMaxLimit(itemRangeIncome.getMaxLimit());
+                rangeIncome.setRevenueMultiple(itemRangeIncome.getRevenueMultiple());
+            }
             rangeIncomeList.add(rangeIncome);
         }
 
@@ -81,8 +84,6 @@ public class LoanSubmissionCustomerService {
         response.setRangeIncomeList(rangeIncomeList);
         response.setInterestRateList(interestRateList);
         response.setAccounts(accountList);
-
-
         return response;
     }
 
@@ -102,12 +103,12 @@ public class LoanSubmissionCustomerService {
         try {
             ResponseEntity<TmbOneServiceResponse<List<LoanOnlineInterestRate>>> nodeTextResponse = commonServiceClient.getInterestRateAll();
             oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
+            return oneTmbOneServiceResponse;
 
         } catch (Exception e) {
             throw e;
         }
 
-        return oneTmbOneServiceResponse;
     }
 
     public TmbOneServiceResponse<List<LoanOnlineRangeIncome>> getRangeIncomeAll() {
@@ -116,12 +117,11 @@ public class LoanSubmissionCustomerService {
         try {
             ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> nodeTextResponse = commonServiceClient.getRangeIncomeAll();
             oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
+            return oneTmbOneServiceResponse;
 
         } catch (Exception e) {
             throw e;
         }
-
-        return oneTmbOneServiceResponse;
     }
 }
 

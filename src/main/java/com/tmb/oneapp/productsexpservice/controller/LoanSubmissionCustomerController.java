@@ -13,7 +13,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +32,7 @@ public class LoanSubmissionCustomerController {
             new TMBLogger<>(LoanSubmissionCustomerController.class);
 
 
-    @GetMapping(value = "/get-data-income-info", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/get-data-income-info")
     @LogAround
     @ApiOperation("Get customer info")
     public ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> getIncomeInfo(@Valid LoanSubmissionRequest request) {

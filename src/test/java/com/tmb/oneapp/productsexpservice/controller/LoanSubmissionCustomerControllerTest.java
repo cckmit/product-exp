@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
