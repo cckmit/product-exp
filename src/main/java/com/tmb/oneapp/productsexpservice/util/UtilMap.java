@@ -81,7 +81,7 @@ public class UtilMap {
         BeanUtils.copyProperties(accountDetailBody.getFundDetail(), accountDetail);
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
         List<StatementList> statementList = statementResponse.getStatementList();
-        FundOrderHistory order = null;
+        FundOrderHistory order;
         for (StatementList stmt : statementList) {
             order = new FundOrderHistory();
             BeanUtils.copyProperties(stmt, order);

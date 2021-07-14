@@ -42,7 +42,7 @@ public class ProductExpServiceCloseTest {
     private AccountRequestClient accountRequestClient;
     private KafkaProducerService kafkaProducerService;
     private CommonServiceClient commonServiceClient;
-    private ProductExpAsynService productExpAsynService;
+    private ProductExpAsyncService productExpAsyncService;
     private CustomerExpServiceClient customerExpServiceClient;
     private CustomerServiceClient customerServiceClient;
     private ObjectMapper mapper;
@@ -57,11 +57,11 @@ public class ProductExpServiceCloseTest {
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
-        productExpAsynService = mock(ProductExpAsynService.class);
+        productExpAsyncService = mock(ProductExpAsyncService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
         mapper = mock(ObjectMapper.class);
         productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient,
-                productExpAsynService, customerExpServiceClient, customerServiceClient);
+                productExpAsyncService, customerExpServiceClient, customerServiceClient);
 
     }
 

@@ -71,7 +71,7 @@ public class ProductExpServiceTest {
 
     private CommonServiceClient commonServiceClient;
 
-    private ProductExpAsynService productExpAsynService;
+    private ProductExpAsyncService productExpAsyncService;
 
     private CustomerExpServiceClient customerExpServiceClient;
 
@@ -90,13 +90,13 @@ public class ProductExpServiceTest {
         productsExpService = mock(ProductsExpService.class);
         kafkaProducerService = mock(KafkaProducerService.class);
         commonServiceClient = mock(CommonServiceClient.class);
-        productExpAsynService = mock(ProductExpAsynService.class);
+        productExpAsyncService = mock(ProductExpAsyncService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
         productsExpService = new ProductsExpService(investmentRequestClient,
                 accountRequestClient,
                 kafkaProducerService,
                 commonServiceClient,
-                productExpAsynService,
+                productExpAsyncService,
                 customerExpServiceClient,
                 customerServiceClient);
     }
@@ -150,16 +150,16 @@ public class ProductExpServiceTest {
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule.json").toFile(), FundRuleBody.class);
             statementResponse = mapper.readValue(Paths.get("src/test/resources/investment/investment_stmt.json").toFile(), StatementResponse.class);
 
-            when(productExpAsynService.fetchFundAccountDetail(any(), any())).thenReturn(CompletableFuture.completedFuture(this.accountDetailBody));
-            when(productExpAsynService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
-            when(productExpAsynService.fetchStatementByPort(any(), any())).thenReturn(CompletableFuture.completedFuture(statementResponse));
+            when(productExpAsyncService.fetchFundAccountDetail(any(), any())).thenReturn(CompletableFuture.completedFuture(this.accountDetailBody));
+            when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
+            when(productExpAsyncService.fetchStatementByPort(any(), any())).thenReturn(CompletableFuture.completedFuture(statementResponse));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        CompletableFuture<AccountDetailBody> fetchFundAccDetail = productExpAsynService.fetchFundAccountDetail(any(), any());
-        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
-        CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStatementByPort(any(), any());
+        CompletableFuture<AccountDetailBody> fetchFundAccDetail = productExpAsyncService.fetchFundAccountDetail(any(), any());
+        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
+        CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(any(), any());
         CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
 
         AccountDetailBody accountDetailBody = fetchFundAccDetail.get();
@@ -408,19 +408,19 @@ public class ProductExpServiceTest {
             commonData.setEligibleAccountCodeBuy(eligibleAcc);
             commonDataList.add(commonData);
 
-            when(productExpAsynService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
-            when(productExpAsynService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
-            when(productExpAsynService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
-            when(productExpAsynService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(commonDataList));
+            when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
+            when(productExpAsyncService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsyncService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
+            when(productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(commonDataList));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         UtilMap utilMap = new UtilMap();
-        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
-        CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(), anyString());
-        CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
+        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
+        CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(any(), anyString());
+        CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString());
 
         CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
         FundRuleBody fundRuleBodyCom = fetchFundRule.get();
@@ -448,18 +448,18 @@ public class ProductExpServiceTest {
         String custExp = null;
 
         try {
-            when(productExpAsynService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
-            when(productExpAsynService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
-            when(productExpAsynService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
-            when(productExpAsynService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsyncService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsyncService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
-        CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(), anyString());
-        CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(anyString(), anyString());
+        CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
+        CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(any(), anyString());
+        CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString());
 
         CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
         FundRuleBody fundRuleBodyCom = fetchFundRule.get();
@@ -685,7 +685,7 @@ public class ProductExpServiceTest {
             ObjectMapper mapper = new ObjectMapper();
             fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustGeneralProfileResponse.class);
 
-            when(productExpAsynService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsyncService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -973,17 +973,17 @@ public class ProductExpServiceTest {
             fundAccountRs.add(fundAccount);
             favoriteFundData.add(favoriteFundData1);
 
-            when(productExpAsynService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(fundAccountRs));
-            when(productExpAsynService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
-            when(productExpAsynService.fetchFundFavorite(any(), anyString())).thenReturn(CompletableFuture.completedFuture(favoriteFundData));
+            when(productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(fundAccountRs));
+            when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsyncService.fetchFundFavorite(any(), anyString())).thenReturn(CompletableFuture.completedFuture(favoriteFundData));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         List<FundClassListInfo> listFund;
-        CompletableFuture<List<FundClassListInfo>> fetchFundListInfo = productExpAsynService.fetchFundListInfo(any(), anyString(), anyString());
-        CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsynService.fetchFundSummary(any(), any());
-        CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsynService.fetchFundFavorite(any(), anyString());
+        CompletableFuture<List<FundClassListInfo>> fetchFundListInfo = productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString());
+        CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(any(), any());
+        CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(any(), anyString());
         CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
 
         listFund = fetchFundListInfo.get();
@@ -1009,9 +1009,9 @@ public class ProductExpServiceTest {
     @Test
     public void getFundListWithException() {
         try {
-            when(productExpAsynService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
-            when(productExpAsynService.fetchFundSummary(any(), any())).thenReturn(null);
-            when(productExpAsynService.fetchFundFavorite(any(), anyString())).thenReturn(null);
+            when(productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
+            when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(null);
+            when(productExpAsyncService.fetchFundFavorite(any(), anyString())).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1033,8 +1033,8 @@ public class ProductExpServiceTest {
         String portListReturn = "{\"status\":{\"code\":\"0000\",\"message\":\"success\",\"service\":\"accounts-service\",\"description\":\"success\"},\"data\":{\"saving_accounts\":[{\"appl_code\":\"60\",\"acct_ctrl1\":\"0011\",\"acct_ctrl2\":\"0001\",\"acct_ctrl3\":\"0110\",\"acct_ctrl4\":\"0200\",\"acct_nbr\":\"00001102416367\",\"account_name\":\"MIBITSIE01 LMIB1\",\"product_group_code\":\"SDA\",\"product_code\":\"0225\",\"owner_type\":\"P\",\"relationship_code\":\"PRIIND\",\"account_status\":\"0\",\"current_balance\":1.0335840775E9,\"balance_currency\":\"THB\"},{\"appl_code\":\"60\",\"acct_ctrl1\":\"0011\",\"acct_ctrl2\":\"0001\",\"acct_ctrl3\":\"0110\",\"acct_ctrl4\":\"0200\",\"acct_nbr\":\"00001102416458\",\"account_name\":\"นาย MIBITSIE01 LMIB1\",\"product_group_code\":\"SDA\",\"product_code\":\"0221\",\"owner_type\":\"P\",\"relationship_code\":\"PRIIND\",\"account_status\":\"0\",\"current_balance\":922963.66,\"balance_currency\":\"THB\"},{\"appl_code\":\"60\",\"acct_ctrl1\":\"0011\",\"acct_ctrl2\":\"0001\",\"acct_ctrl3\":\"0110\",\"acct_ctrl4\":\"0200\",\"acct_nbr\":\"00001102416524\",\"account_name\":\"นาย MIBITSIE01 LMIB1\",\"product_group_code\":\"SDA\",\"product_code\":\"0211\",\"owner_type\":\"P\",\"relationship_code\":\"PRIIND\",\"account_status\":\"0\",\"current_balance\":5000.0,\"balance_currency\":\"THB\"},{\"appl_code\":\"60\",\"acct_ctrl1\":\"0011\",\"acct_ctrl2\":\"0001\",\"acct_ctrl3\":\"0110\",\"acct_ctrl4\":\"0300\",\"acct_nbr\":\"00001103318497\",\"account_name\":\"นาย MIBITSIE01 LMIB1\",\"product_group_code\":\"CDA\",\"product_code\":\"0664\",\"owner_type\":\"P\",\"relationship_code\":\"PRIIND\",\"account_status\":\"0\",\"current_balance\":10000.0,\"balance_currency\":\"THB\"}],\"current_accounts\":[],\"loan_accounts\":[],\"trade_finance_accounts\":[],\"treasury_accounts\":[],\"debit_card_accounts\":[],\"merchant_accounts\":[],\"foreign_exchange_accounts\":[],\"mutual_fund_accounts\":[{\"appl_code\":\"97\",\"acct_ctrl1\":\"0011\",\"acct_ctrl2\":\"0000\",\"acct_ctrl3\":\"0000\",\"acct_ctrl4\":\"0000\",\"acct_nbr\":\"PT000000000001829798\",\"product_group_code\":\"MF\",\"product_group_code_ec\":\"0000\",\"product_code\":\"\",\"relationship_code\":\"PRIIND\",\"xps_account_status\":\"BLANK\"},{\"appl_code\":\"97\",\"acct_ctrl1\":\"0011\",\"acct_ctrl2\":\"0000\",\"acct_ctrl3\":\"0000\",\"acct_ctrl4\":\"0000\",\"acct_nbr\":\"PT000000000001829800\",\"product_group_code\":\"MF\",\"product_group_code_ec\":\"0000\",\"product_code\":\"\",\"relationship_code\":\"PRIIND\",\"xps_account_status\":\"BLANK\"}],\"bancassurance_accounts\":[],\"other_accounts\":[]}}";
         when(accountRequestClient.getPortList(any(), anyString())).thenReturn(portListReturn);
         FundSummaryBody fundSummaryBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/invest_fundsummary_for_suggestallocation_data.json").toFile(), FundSummaryBody.class);
-        when(productExpAsynService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(FundSummaryResponse.builder().body(fundSummaryBody).build()));
-        when(productExpAsynService.suitabilityInquiry(any(), anyString())).thenReturn(CompletableFuture.completedFuture(SuitabilityInfo.builder().suitabilityScore("2").build()));
+        when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(FundSummaryResponse.builder().body(fundSummaryBody).build()));
+        when(productExpAsyncService.suitabilityInquiry(any(), anyString())).thenReturn(CompletableFuture.completedFuture(SuitabilityInfo.builder().suitabilityScore("2").build()));
         FundAllocationResponse fundAllocationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation.json").toFile(), FundAllocationResponse.class);
         TmbOneServiceResponse<FundAllocationResponse> response = new TmbOneServiceResponse<>();
         response.setData(fundAllocationResponse);

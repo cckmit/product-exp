@@ -39,12 +39,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * ProductExpAsynService class this clasee use for asyn process
+ * ProductExpAsyncService class this class use for async process
  */
 @Service
-public class ProductExpAsynService {
+public class ProductExpAsyncService {
 
-    private static final TMBLogger<ProductExpAsynService> logger = new TMBLogger<>(ProductExpAsynService.class);
+    private static final TMBLogger<ProductExpAsyncService> logger = new TMBLogger<>(ProductExpAsyncService.class);
     private final InvestmentRequestClient investmentRequestClient;
     private final AccountRequestClient accountRequestClient;
     private final CustomerServiceClient customerServiceClient;
@@ -52,11 +52,11 @@ public class ProductExpAsynService {
     private final CacheServiceClient cacheServiceClient;
 
     @Autowired
-    public ProductExpAsynService(InvestmentRequestClient investmentRequestClient,
-                                 AccountRequestClient accountRequestClient,
-                                 CustomerServiceClient customerServiceClient,
-                                 CommonServiceClient commonServiceClient,
-                                 CacheServiceClient cacheServiceClient) {
+    public ProductExpAsyncService(InvestmentRequestClient investmentRequestClient,
+                                  AccountRequestClient accountRequestClient,
+                                  CustomerServiceClient customerServiceClient,
+                                  CommonServiceClient commonServiceClient,
+                                  CacheServiceClient cacheServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.customerServiceClient = customerServiceClient;

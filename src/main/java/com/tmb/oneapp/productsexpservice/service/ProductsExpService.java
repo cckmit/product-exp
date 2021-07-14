@@ -83,7 +83,7 @@ public class ProductsExpService {
 
     private final CommonServiceClient commonServiceClient;
 
-    private final ProductExpAsynService productExpAsynService;
+    private final ProductExpAsyncService productExpAsyncService;
 
     private final KafkaProducerService kafkaProducerService;
 
@@ -99,7 +99,7 @@ public class ProductsExpService {
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
                               CommonServiceClient commonServiceClient,
-                              ProductExpAsynService productExpAsynService,
+                              ProductExpAsyncService productExpAsyncService,
                               CustomerExpServiceClient customerExpServiceClient,
                               CustomerServiceClient customerServiceClient) {
 
@@ -107,7 +107,7 @@ public class ProductsExpService {
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
         this.commonServiceClient = commonServiceClient;
-        this.productExpAsynService = productExpAsynService;
+        this.productExpAsyncService = productExpAsyncService;
         this.customerExpServiceClient = customerExpServiceClient;
         this.customerServiceClient = customerServiceClient;
     }
@@ -129,9 +129,9 @@ public class ProductsExpService {
 
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
-            CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsynService.fetchFundAccountDetail(invHeaderReqParameter, fundAccountRequestBody);
-            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
-            CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsynService.fetchStatementByPort(invHeaderReqParameter, orderStmtByPortRq);
+            CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(invHeaderReqParameter, fundAccountRequestBody);
+            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
+            CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(invHeaderReqParameter, orderStmtByPortRq);
             CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort);
 
             AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
@@ -289,10 +289,10 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailRs fundPaymentDetailRs;
         try {
-            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
-            CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
-            CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
-            CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
+            CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
+            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
+            CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
             CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
             FundRuleBody fundRuleBody = fetchFundRule.get();
@@ -622,7 +622,7 @@ public class ProductsExpService {
     public boolean isCustIDExpired(FfsRequestBody ffsRequestBody) {
         CompletableFuture<CustGeneralProfileResponse> responseResponseEntity = null;
         try {
-            responseResponseEntity = productExpAsynService.fetchCustomerProfile(ffsRequestBody.getCrmId());
+            responseResponseEntity = productExpAsyncService.fetchCustomerProfile(ffsRequestBody.getCrmId());
             CompletableFuture.allOf(responseResponseEntity);
             CustGeneralProfileResponse responseData = responseResponseEntity.get();
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
@@ -650,9 +650,9 @@ public class ProductsExpService {
             unitHolder.setUnitHolderNo(unitHolderList);
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
-                    productExpAsynService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
-            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsynService.fetchFundFavorite(invHeaderReqParameter, fundListRq.getCrmId());
+                    productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
+            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
+            CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, fundListRq.getCrmId());
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();
@@ -674,8 +674,8 @@ public class ProductsExpService {
         try {
             List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
             unitHolder.setUnitHolderNo(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsynService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsynService.suitabilityInquiry(invHeaderReqParameter, crmID);
+            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
+            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.suitabilityInquiry(invHeaderReqParameter, crmID);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
             ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(invHeaderReqParameter, FundAllocationRequestBody.builder().suitabilityScore(suitabilityScore).build());
