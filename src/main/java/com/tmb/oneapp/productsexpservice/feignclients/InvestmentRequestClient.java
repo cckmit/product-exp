@@ -128,7 +128,7 @@ public interface InvestmentRequestClient {
      * @param headers the headers
      * @return the fund summary response
      */
-    @PostMapping(value = "${investment.service.fund.listinfo.url}")
+    @PostMapping(value = "${investment.service.fund.list.info.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundListBody>> callInvestmentFundListInfoService(
             @RequestHeader Map<String, String> headers);
@@ -140,7 +140,7 @@ public interface InvestmentRequestClient {
      * @param ffsRequestBody the unit holder
      * @return the fund fact sheet response
      */
-    @PostMapping(value = "${investment.service.fund.factsheet.url}")
+    @PostMapping(value = "${investment.service.fund.fact.sheet.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FfsResponse>> callInvestmentFundFactSheetService(
             @RequestHeader Map<String, String> headers, @RequestBody FfsRequestBody ffsRequestBody);
@@ -177,7 +177,7 @@ public interface InvestmentRequestClient {
      * @param headers the headers
      * @return the fund favorite response
      */
-    @PostMapping(value = "${investment.service.fund.listfavorite.url}")
+    @PostMapping(value = "${investment.service.fund.list.favorite.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<List<CustomerFavoriteFundData>>> callInvestmentFundFavoriteService(
             @RequestHeader Map<String, String> headers);
