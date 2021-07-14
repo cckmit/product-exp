@@ -246,14 +246,14 @@ public class FlexiLoanConfirmService {
     }
 
     private String getSaleSheetFilePath(List<RslCode> rslConfigs, String productCode) {
-        String saleSheetFile = rslConfigs.stream().filter(p -> productCode.equals(p.getPdCode())).findFirst().get().getSalesheetName();
+        String saleSheetFile = rslConfigs.stream().filter(p -> productCode.equals(p.getRslCode())).findFirst().get().getSalesheetName();
         String saleSheetFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/%s", sftpClientImp.getRemoteHost(), saleSheetFile);
         logger.info("saleSheetFilePath: {}", saleSheetFilePath);
         return saleSheetFilePath;
     }
 
     private String getTermAndConditionFilePath(List<RslCode> rslConfigs, String productCode) {
-        String tncFile = rslConfigs.stream().filter(p -> productCode.equals(p.getPdCode())).findFirst().get().getTncName();
+        String tncFile = rslConfigs.stream().filter(p -> productCode.equals(p.getRslCode())).findFirst().get().getTncName();
         String tncFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/%s", sftpClientImp.getRemoteHost(), tncFile);
         logger.info("tncFilePath: {}", tncFilePath);
         return tncFilePath;

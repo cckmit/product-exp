@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.RslCode;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -22,6 +23,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.SFTPClientImp;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.*;
@@ -246,7 +248,7 @@ public class FlexiLoanConfirmServiceTest {
     private ResponseEntity<TmbOneServiceResponse<List<CommonData>>> mockGetCommonConfig() {
         CommonData commonData = new CommonData();
         RslCode rslCode = new RslCode();
-        rslCode.setPdCode("RC01");
+        rslCode.setRslCode("RC01");
         rslCode.setSalesheetName("salesheetName");
         rslCode.setTncName("tncName");
         List<RslCode> rslCodes = new ArrayList<>();
@@ -256,6 +258,9 @@ public class FlexiLoanConfirmServiceTest {
         commonDataList.add(commonData);
         TmbOneServiceResponse response = new TmbOneServiceResponse();
         response.setData(commonDataList);
+        TmbStatus status = new TmbStatus();
+        status.setCode(ResponseCode.SUCESS.getCode());
+        response.setStatus(status);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
