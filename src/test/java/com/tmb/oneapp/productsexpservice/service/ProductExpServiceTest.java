@@ -139,7 +139,7 @@ public class ProductExpServiceTest {
     @Test
     public void testGetFundAccountDetailAndFundRule() throws Exception {
         StatementResponse statementResponse;
-        ViewAipResponse viewAipResponse;
+        ViewAipResponse viewAipResponse = new ViewAipResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundHouseCode("ABCC");
         fundAccountRequest.setTranType("2");
@@ -167,19 +167,20 @@ public class ProductExpServiceTest {
         CompletableFuture<AccountDetailBody> fetchFundAccDetail = productExpAsyncService.fetchFundAccountDetail(any(), any());
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
         CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(any(), any());
-        CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort, fetchViewAip);
+        CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
 
         AccountDetailBody accountDetailBody = fetchFundAccDetail.get();
         FundRuleBody fundRuleBody = fetchFundRule.get();
         StatementResponse fetchStatementResponse = fetchStmtByPort.get();
-        ViewAipResponseBody aipResponseBody = fetchViewAip.get();
 
-        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, fetchStatementResponse, aipResponseBody);
+        ViewAipResponseBody viewAipResponseBody = new ViewAipResponseBody();
+        viewAipResponseBody.setFundClassList(viewAipResponse.getData().getFundClassList());
+        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, fetchStatementResponse, viewAipResponseBody);
 
         Assert.assertNotNull(fundAccountResponse);
         Assert.assertNotNull(accountDetailBody);
         Assert.assertNotNull(fetchStatementResponse);
-        Assert.assertNotNull(aipResponseBody);
+        Assert.assertNotNull(viewAipResponseBody);
         FundAccountResponse result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
         Assert.assertNotNull(result);
     }
@@ -195,7 +196,6 @@ public class ProductExpServiceTest {
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setPortfolioNumber("PT000000001");
-        fundAccountRq.setServiceType("1");
         fundAccountRq.setFundCode("DDD");
 
         TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -225,7 +225,6 @@ public class ProductExpServiceTest {
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity = null;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setPortfolioNumber("PT000000001");
-        fundAccountRq.setServiceType("1");
         fundAccountRq.setFundCode("DDD");
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
@@ -271,7 +270,6 @@ public class ProductExpServiceTest {
 
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
         fundAccountRequestBody.setPortfolioNumber("PT000000000000138924");
-        fundAccountRequestBody.setServiceType("2");
         fundAccountRequestBody.setFundCode("DDD");
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
@@ -336,7 +334,6 @@ public class ProductExpServiceTest {
 
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
         fundAccountRq.setPortfolioNumber("PT000000000000138924");
-        fundAccountRq.setServiceType("2");
         fundAccountRq.setFundCode("DDD");
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
