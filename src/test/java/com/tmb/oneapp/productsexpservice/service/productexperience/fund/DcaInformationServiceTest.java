@@ -2,17 +2,12 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
-import com.tmb.oneapp.productsexpservice.dto.fund.information.InformationDto;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavResponse;
-import com.tmb.oneapp.productsexpservice.model.fund.information.request.FundCodeRequestBody;
-import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
@@ -23,13 +18,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
