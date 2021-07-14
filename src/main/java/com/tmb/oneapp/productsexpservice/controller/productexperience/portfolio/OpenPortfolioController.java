@@ -6,12 +6,12 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.ValidateOpenPortfolioResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioValidationRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.PortfolioResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.portfolio.OpenPortfolioService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.portfolio.OpenPortfolioValidationService;
 import io.swagger.annotations.Api;
@@ -67,7 +67,7 @@ public class OpenPortfolioController {
             @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, openPortfolioRequest.getCrmId(), openPortfolioRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
-            if(!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+            if (!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return ResponseEntity.badRequest().body(oneServiceResponse);
             }
             return ResponseEntity.ok(oneServiceResponse);

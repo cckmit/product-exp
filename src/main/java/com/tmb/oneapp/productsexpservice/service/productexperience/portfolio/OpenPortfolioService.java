@@ -6,20 +6,20 @@ import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortf
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
-import com.tmb.oneapp.productsexpservice.model.client.request.RelationshipRequest;
-import com.tmb.oneapp.productsexpservice.model.client.response.RelationshipResponseBody;
-import com.tmb.oneapp.productsexpservice.model.customer.account.purpose.response.AccountPurposeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.request.AccountRedeemRequest;
-import com.tmb.oneapp.productsexpservice.model.customer.account.redeem.response.AccountRedeemResponseBody;
-import com.tmb.oneapp.productsexpservice.model.customer.request.CustomerRequest;
-import com.tmb.oneapp.productsexpservice.model.customer.response.CustomerResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.request.PortfolioNicknameRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.nickname.response.PortfolioNicknameResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequest;
-import com.tmb.oneapp.productsexpservice.model.portfolio.request.OpenPortfolioRequestBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.OpenPortfolioValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.PortfolioResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.request.AccountRedeemRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
@@ -77,7 +77,7 @@ public class OpenPortfolioService {
      */
     public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) {
         try {
-            openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
+            openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
             ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, customerRequest);
