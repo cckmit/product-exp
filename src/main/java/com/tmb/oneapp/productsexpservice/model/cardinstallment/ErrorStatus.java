@@ -9,10 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @author Admin
- *
- */
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({
 "error_code",
@@ -26,4 +22,6 @@ public class ErrorStatus {
     private String errorCode;
     @JsonProperty("description")
     private String description;
+    @JsonProperty("namespace")
+    private String namespace;
 }

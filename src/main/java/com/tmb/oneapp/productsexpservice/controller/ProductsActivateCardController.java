@@ -68,11 +68,18 @@ public class ProductsActivateCardController {
             String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
             String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
             if (!Strings.isNullOrEmpty(accountId)) {
-                ResponseEntity<ActivateCardResponse> activateCardResponse = creditCardClient.activateCard(headers);
+                ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> activateCardResponse = creditCardClient.activateCard(headers);
                 int statusCodeValue = activateCardResponse.getStatusCodeValue();
                 HttpStatus statusCode = activateCardResponse.getStatusCode();
                 if (activateCardResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
-
+                	response = activateCardResponse.getBody().getData();
+					if (1 == response.getStatus().getStatusCode() && !response.getStatus().getErrorStatus().isEmpty()) {
+						oneServiceResponse.setStatus(
+								new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+										ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+						oneServiceResponse.setData(response);
+						return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+					}
                     oneServiceResponse
                             .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

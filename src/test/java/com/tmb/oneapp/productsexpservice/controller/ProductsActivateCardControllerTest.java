@@ -5,6 +5,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ public class ProductsActivateCardControllerTest {
                 "0000000050078360018000167");
         ActivateCardResponse activateCardResponse = new ActivateCardResponse();
         activateCardResponse.setAccountId("0000000050078360018000167");
+        ActivateCardStatusResponse activateCardStatusResponse = new ActivateCardStatusResponse();
+        activateCardStatusResponse.setStatusCode(0);
+        activateCardResponse.setStatus(activateCardStatusResponse);
         handleGetCardBlockCodeResponse(activateCardResponse, HttpStatus.OK);
         ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> res = productsActivateCardController
                 .activateCard(requestHeadersParameter);
@@ -83,14 +87,14 @@ public class ProductsActivateCardControllerTest {
 
     }
 
-    public void handleGetCardBlockCodeResponse(ActivateCardResponse activateCardResponse, HttpStatus status) {
-        TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse = new TmbOneServiceResponse<ActivateCardResponse>();
-        oneServiceResponse.setData(activateCardResponse);
-        ResponseEntity<ActivateCardResponse> response = new ResponseEntity<ActivateCardResponse>(activateCardResponse,
-                status);
-        when(creditCardClient.activateCard(any())).thenReturn(response);
+	public void handleGetCardBlockCodeResponse(ActivateCardResponse activateCardResponse, HttpStatus status) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		TmbOneServiceResponse<ActivateCardResponse> oneServiceResponse = new TmbOneServiceResponse<ActivateCardResponse>();
+		oneServiceResponse.setData(activateCardResponse);
+		when(creditCardClient.activateCard(any()))
+				.thenReturn(ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse));
 
-    }
+	}
 
     @Test
     void testDataNotFoundError() {

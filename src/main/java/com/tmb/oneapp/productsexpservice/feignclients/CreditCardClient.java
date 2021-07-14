@@ -35,7 +35,7 @@ public interface CreditCardClient {
 			@PathVariable(value = "ACCOUNT_ID") String accountId);
 
 	@PostMapping(value = "/apis/creditcard/credit-card/activate-card")
-	ResponseEntity<ActivateCardResponse> activateCard(@RequestHeader Map<String, String> headers);
+	ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> activateCard(@RequestHeader Map<String, String> headers);
 
 	@PostMapping(value = "/apis/creditcard/credit-card/activateCreditCard/verifyCvv")
 	ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvv(@RequestHeader Map<String, String> headers);
