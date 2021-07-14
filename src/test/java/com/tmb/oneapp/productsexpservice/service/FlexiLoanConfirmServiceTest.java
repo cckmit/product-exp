@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.RslCode;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -22,6 +23,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.SFTPClientImp;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.*;
@@ -85,6 +87,7 @@ public class FlexiLoanConfirmServiceTest {
         doReturn(mockGetApplicationInfoSuccess()).when(getApplicationInfoClient).getApplicationInfo(anyLong());
         doReturn(mockGetInstantLoanCalUWSuccess()).when(instantLoanCalUWClient).getCalculateUnderwriting(any());
         doReturn(mockSubmitInstantLoanSubmission()).when(submitApplicationClient).submitApplication(any(), any());
+        doReturn(mockGetCommonConfig()).when(commonServiceClient).getCommonConfigByModule(anyString(), anyString());
         doNothing().when(notificationService).sendNotifyFlexiLoanSubmission(anyString(), anyString(), anyString(), any());
         doReturn("filePath").when(fileGeneratorService).generateFlexiLoanSubmissionPdf(any(), anyString(), anyString());
     }
@@ -257,6 +260,9 @@ public class FlexiLoanConfirmServiceTest {
         commonDataList.add(commonData);
         TmbOneServiceResponse response = new TmbOneServiceResponse();
         response.setData(commonDataList);
+        TmbStatus status = new TmbStatus();
+        status.setCode(ResponseCode.SUCESS.getCode());
+        response.setStatus(status);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
