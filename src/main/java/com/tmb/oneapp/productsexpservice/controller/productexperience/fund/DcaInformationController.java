@@ -36,7 +36,7 @@ public class DcaInformationController {
      * Description:- method get dca list
      *
      * @param correlationId        the correlation id
-     * @param crmId the dca information request
+     * @param dcaInformationRequestBody the crmid request
      * @return return dca list
      */
     @ApiOperation(value = "Get dca allow aip flag list to frontend")
