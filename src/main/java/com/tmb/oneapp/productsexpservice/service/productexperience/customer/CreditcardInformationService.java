@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * CreditcardInformationService get credit information
+ */
 @Service
 public class CreditcardInformationService {
 
@@ -27,6 +30,13 @@ public class CreditcardInformationService {
         this.customerExpServiceClient = customerExpServiceClient;
     }
 
+    /**
+     * Method getCredicardInformation to call customer exp service get credit
+     *
+     * @param correlationId
+     * @param crmId
+     * @return CreditcardInformationResponse
+     */
     public TmbOneServiceResponse<CreditcardInformationResponse> getCredicardInformation(String correlationId, String crmId){
         TmbOneServiceResponse<CreditcardInformationResponse> response = new TmbOneServiceResponse<>();
         try {
