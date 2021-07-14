@@ -4,7 +4,6 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,17 +26,13 @@ public class DcaInformationService {
 
     private static final TMBLogger<DcaInformationService> logger = new TMBLogger<>(DcaInformationService.class);
 
-    private final CustomerExpServiceClient customerExpServiceClient;
-
     private final InvestmentRequestClient investmentRequestClient;
 
     private final ProductsExpService productsExpService;
 
     @Autowired
-    public DcaInformationService(CustomerExpServiceClient customerExpServiceClient,
-                                 InvestmentRequestClient investmentRequestClient,
+    public DcaInformationService(InvestmentRequestClient investmentRequestClient,
                                  ProductsExpService productsExpService) {
-        this.customerExpServiceClient = customerExpServiceClient;
         this.investmentRequestClient = investmentRequestClient;
         this.productsExpService = productsExpService;
     }
@@ -65,9 +61,9 @@ public class DcaInformationService {
         FundSummaryBody fundSummaryBody = fundSummaryResponse.getBody().getData().getBody();
         List<FundClass> fundClass = fundSummaryBody.getFundClassList().getFundClass();
         List<FundHouse> fundHouseList = fundClass.stream()
-                .map(x -> x.getFundHouseList())
-                .flatMap(x -> x.stream()).collect(Collectors.toList());
-        List<Fund> fundList = fundHouseList.stream().map(t -> t.getFundList().getFund()).flatMap(t -> t.stream()).collect(Collectors.toList());
+                .map(FundClass::getFundHouseList)
+                .flatMap(Collection::stream).collect(Collectors.toList());
+        List<Fund> fundList = fundHouseList.stream().map(t -> t.getFundList().getFund()).flatMap(Collection::stream).collect(Collectors.toList());
         List<FundClassListInfo> fundClassListInfos = fundListBody.getBody().getData().getFundClassList();
         List<FundClassListInfo> dcaList = fundClassListInfos.stream().filter(
                 t -> t.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)
