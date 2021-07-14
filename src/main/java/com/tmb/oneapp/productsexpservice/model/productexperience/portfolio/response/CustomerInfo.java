@@ -1,7 +1,9 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response;
 
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.CustomerModel;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
