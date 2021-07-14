@@ -27,7 +27,9 @@ public class SubmissionPaymentInfo {
     private BigDecimal creditLimit;
     private Calendar loanContractDate;
     private String firstPaymentDueDate;
+    private String nextPaymentDueDate;
     private String rateType;
     private BigDecimal rateTypePercent;
+    private String underwriting;
 }
 
