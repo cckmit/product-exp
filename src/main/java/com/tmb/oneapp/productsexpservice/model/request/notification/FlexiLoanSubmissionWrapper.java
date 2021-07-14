@@ -15,10 +15,10 @@ public class FlexiLoanSubmissionWrapper {
     private String productName;
     private String customerName;
     private String idCardNo;
-    private BigDecimal finalLoanAmount;
-    private Long tenor;
-    private BigDecimal interestRate;
-    private BigDecimal requestAmount;
+    private String finalLoanAmount;
+    private BigDecimal tenor;
+    private String interestRate;
+    private String requestAmount;
     private String applyDate;
     private String paymentMethod;
     private String email;
@@ -31,15 +31,14 @@ public class FlexiLoanSubmissionWrapper {
     private String dueDate;
     private String firstPaymentDueDate;
     private String nextPaymentDueDate;
-    private BigDecimal installment;
-    private BigDecimal cashDisbursement;
-    private BigDecimal currentLoan;
+    private String installment;
+    private String cashDisbursement;
+    private String currentLoan;
     private String currentAccount;
-
-    private BigDecimal interestRateDS;
+    private String interestRateTeir;
     private String rateTypeValue;
     private String showBOTFields;
-    private Boolean isReject;
+    private String underwriting;
 
     private List<String> attachments;
 }
