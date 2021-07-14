@@ -14,7 +14,6 @@ import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplication
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
