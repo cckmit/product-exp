@@ -28,7 +28,7 @@ import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBo
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
@@ -173,7 +173,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.listfavorite.url}")
     @ResponseBody
-    public ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers);
+    public ResponseEntity<TmbOneServiceResponse<List<CustomerFavoriteFundData>>> callInvestmentFundFavoriteService(@RequestHeader Map<String, String> headers);
 
 
     /**

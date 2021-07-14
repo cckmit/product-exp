@@ -10,7 +10,7 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
@@ -357,7 +357,7 @@ public class ProductExpAsyncServiceTest {
         try {
             Map<String, String> invHeaderReqParameter = new HashMap<>();
             when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenThrow(MockitoException.class);
-            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
+            CompletableFuture<List<CustomerFavoriteFundData>> response = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -368,14 +368,14 @@ public class ProductExpAsyncServiceTest {
     public void fetchFundFavorite() {
         try {
             Map<String, String> invHeaderReqParameter = new HashMap<>();
-            List<CustFavoriteFundData> favoriteFundData = new ArrayList<>();
-            CustFavoriteFundData fundHolidayBody = new CustFavoriteFundData();
-            TmbOneServiceResponse<List<CustFavoriteFundData>> serviceResponseStmt = new TmbOneServiceResponse<>();
+            List<CustomerFavoriteFundData> favoriteFundData = new ArrayList<>();
+            CustomerFavoriteFundData fundHolidayBody = new CustomerFavoriteFundData();
+            TmbOneServiceResponse<List<CustomerFavoriteFundData>> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             fundHolidayBody.setFundCode("AAAA");
             fundHolidayBody.setIsFavorite("N");
             fundHolidayBody.setId("1");
-            fundHolidayBody.setCustId("100000023333");
+            fundHolidayBody.setCustomerId("100000023333");
 
             favoriteFundData.add(fundHolidayBody);
 
@@ -386,7 +386,7 @@ public class ProductExpAsyncServiceTest {
 
             when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
 
-            CompletableFuture<List<CustFavoriteFundData>> response = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
+            CompletableFuture<List<CustomerFavoriteFundData>> response = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, "100000023333");
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -467,7 +467,7 @@ public class ProductExpAsyncServiceTest {
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
         ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
         when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
-        productExpAsyncService.getFundClassListInfos(mapper, cacheResponse);
+        productExpAsyncService.getFundClassListInfoList(mapper, cacheResponse);
 
         assertNotNull(response);
     }

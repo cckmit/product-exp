@@ -25,7 +25,7 @@ import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDet
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -957,8 +957,8 @@ public class ProductExpServiceTest {
         List<FundClassListInfo> fundAccountRs = new ArrayList<>();
         FundClassListInfo fundAccount;
         FundSummaryResponse fundHolidayBody;
-        List<CustFavoriteFundData> favoriteFundData = new ArrayList<>();
-        CustFavoriteFundData favoriteFundData1 = new CustFavoriteFundData();
+        List<CustomerFavoriteFundData> favoriteFundData = new ArrayList<>();
+        CustomerFavoriteFundData favoriteFundData1 = new CustomerFavoriteFundData();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -968,7 +968,7 @@ public class ProductExpServiceTest {
             favoriteFundData1.setFundCode("AAAA");
             favoriteFundData1.setIsFavorite("N");
             favoriteFundData1.setId("1");
-            favoriteFundData1.setCustId("100000023333");
+            favoriteFundData1.setCustomerId("100000023333");
 
             fundAccountRs.add(fundAccount);
             favoriteFundData.add(favoriteFundData1);
@@ -983,13 +983,13 @@ public class ProductExpServiceTest {
         List<FundClassListInfo> listFund;
         CompletableFuture<List<FundClassListInfo>> fetchFundListInfo = productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString());
         CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(any(), any());
-        CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(any(), anyString());
+        CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(any(), anyString());
         CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
 
         listFund = fetchFundListInfo.get();
         FundSummaryResponse fundSummaryResponse = fetchFundSummary.get();
-        List<CustFavoriteFundData> custFavoriteFundDataList = fetchFundFavorite.get();
-        listFund = UtilMap.mappingFollowingFlag(listFund, custFavoriteFundDataList);
+        List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
+        listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
         listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
 
         CacheModel cacheModel = UtilMap.mappingCache("teeeeeeee", "abc");
@@ -1034,7 +1034,7 @@ public class ProductExpServiceTest {
         when(accountRequestClient.getPortList(any(), anyString())).thenReturn(portListReturn);
         FundSummaryBody fundSummaryBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/invest_fundsummary_for_suggestallocation_data.json").toFile(), FundSummaryBody.class);
         when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(FundSummaryResponse.builder().body(fundSummaryBody).build()));
-        when(productExpAsyncService.suitabilityInquiry(any(), anyString())).thenReturn(CompletableFuture.completedFuture(SuitabilityInfo.builder().suitabilityScore("2").build()));
+        when(productExpAsyncService.fetchSuitabilityInquiry(any(), anyString())).thenReturn(CompletableFuture.completedFuture(SuitabilityInfo.builder().suitabilityScore("2").build()));
         FundAllocationResponse fundAllocationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation.json").toFile(), FundAllocationResponse.class);
         TmbOneServiceResponse<FundAllocationResponse> response = new TmbOneServiceResponse<>();
         response.setData(fundAllocationResponse);

@@ -20,7 +20,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDe
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
-import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
@@ -519,14 +519,14 @@ public class UtilMap {
      * Generic Method to mappingFollowingFlag
      *
      * @param fundClassList
-     * @param custFavoriteFundDataList
+     * @param customerFavoriteFundDataList
      * @return List<FundClassList>
      */
-    public static List<FundClassListInfo> mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustFavoriteFundData> custFavoriteFundDataList) {
+    public static List<FundClassListInfo> mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustomerFavoriteFundData> customerFavoriteFundDataList) {
         List<FundClassListInfo> fundClassLists = new ArrayList<>();
         for (FundClassListInfo fundClass : fundClassList) {
-            for (CustFavoriteFundData custFavoriteFund : custFavoriteFundDataList) {
-                if (custFavoriteFund.getFundCode().equals(fundClass.getFundCode())) {
+            for (CustomerFavoriteFundData customerFavoriteFund : customerFavoriteFundDataList) {
+                if (customerFavoriteFund.getFundCode().equals(fundClass.getFundCode())) {
                     fundClass.setFollowingFlag(ProductsExpServiceConstant.PROCESS_FLAG_Y);
                 }
             }

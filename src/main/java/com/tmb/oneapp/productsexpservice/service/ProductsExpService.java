@@ -38,7 +38,7 @@ import com.tmb.oneapp.productsexpservice.model.customer.search.response.Customer
 import com.tmb.oneapp.productsexpservice.model.response.fund.countprocessorder.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundSuggestAllocationList;
-import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
@@ -75,6 +75,9 @@ import java.util.stream.Collectors;
 @Service
 public class ProductsExpService {
 
+    @Value("${com.tmb.oneapp.service.activity.topic.name}")
+    private String topicName;
+
     private static final TMBLogger<ProductsExpService> logger = new TMBLogger<>(ProductsExpService.class);
 
     private final InvestmentRequestClient investmentRequestClient;
@@ -85,14 +88,11 @@ public class ProductsExpService {
 
     private final ProductExpAsyncService productExpAsyncService;
 
-    private final KafkaProducerService kafkaProducerService;
-
-    @Value("${com.tmb.oneapp.service.activity.topic.name}")
-    private String topicName;
-
     private final CustomerExpServiceClient customerExpServiceClient;
 
     private final CustomerServiceClient customerServiceClient;
+
+    private final KafkaProducerService kafkaProducerService;
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
@@ -652,13 +652,13 @@ public class ProductsExpService {
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
                     productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
             CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, fundListRq.getCrmId());
+            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, fundListRq.getCrmId());
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();
             FundSummaryResponse fundSummaryResponse = fetchFundSummary.get();
-            List<CustFavoriteFundData> custFavoriteFundDataList = fetchFundFavorite.get();
-            listFund = UtilMap.mappingFollowingFlag(listFund, custFavoriteFundDataList);
+            List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
+            listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
             return listFund;
         } catch (Exception ex) {
@@ -675,7 +675,7 @@ public class ProductsExpService {
             List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
             unitHolder.setUnitHolderNo(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
             CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.suitabilityInquiry(invHeaderReqParameter, crmID);
+            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(invHeaderReqParameter, crmID);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
             ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(invHeaderReqParameter, FundAllocationRequestBody.builder().suitabilityScore(suitabilityScore).build());

@@ -19,7 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequ
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustFavoriteFundData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
@@ -45,10 +45,15 @@ import java.util.concurrent.CompletableFuture;
 public class ProductExpAsyncService {
 
     private static final TMBLogger<ProductExpAsyncService> logger = new TMBLogger<>(ProductExpAsyncService.class);
+
     private final InvestmentRequestClient investmentRequestClient;
+
     private final AccountRequestClient accountRequestClient;
+
     private final CustomerServiceClient customerServiceClient;
+
     private final CommonServiceClient commonServiceClient;
+
     private final CacheServiceClient cacheServiceClient;
 
     @Autowired
@@ -81,12 +86,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -106,12 +106,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -131,12 +126,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseStmt.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -156,12 +146,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseFundHoliday.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -180,12 +165,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseFundHoliday);
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -205,12 +185,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseCommon.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -229,12 +204,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -244,7 +214,7 @@ public class ProductExpAsyncService {
      * @param invHeaderReqParameter
      * @param correlationId
      * @param key
-     * @return CompletableFuture<List < FundClassList>>
+     * @return CompletableFuture<List < FundClassListInfo>>
      */
     @LogAround
     @Async
@@ -254,44 +224,8 @@ public class ProductExpAsyncService {
             return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
-    }
-
-    /**
-     * @param invHeaderReqParameter
-     * @param correlationId
-     * @param key
-     * @param mapper
-     * @return
-     * @throws JsonProcessingException
-     */
-    CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter, String correlationId, String key, ObjectMapper mapper) throws JsonProcessingException {
-        List<FundClassListInfo> fundClassLists;
-        ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
-        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
-            ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
-            fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
-            String fundClassStr = mapper.writeValueAsString(fundClassLists);
-            cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
-        } else {
-            fundClassLists = getFundClassListInfos(mapper, responseCache);
-        }
-        return CompletableFuture.completedFuture(fundClassLists);
-    }
-
-    List<FundClassListInfo> getFundClassListInfos(ObjectMapper mapper, ResponseEntity<TmbOneServiceResponse<String>> responseCache) throws JsonProcessingException {
-        List<FundClassListInfo> fundClassLists;
-        String fundStr = responseCache.getBody().getData();
-        TypeFactory typeFactory = mapper.getTypeFactory();
-        fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
-        return fundClassLists;
     }
 
     /**
@@ -310,12 +244,7 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -324,24 +253,19 @@ public class ProductExpAsyncService {
      *
      * @param invHeaderReqParameter
      * @param crmId
-     * @return CompletableFuture<List < CustFavoriteFundData>>
+     * @return CompletableFuture<List < CustomerFavoriteFundData>>
      */
     @LogAround
     @Async
-    public CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
+    public CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
         try {
             invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_CRM_ID, crmId);
-            ResponseEntity<TmbOneServiceResponse<List<CustFavoriteFundData>>> responseResponseEntity =
+            ResponseEntity<TmbOneServiceResponse<List<CustomerFavoriteFundData>>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
     }
 
@@ -350,11 +274,11 @@ public class ProductExpAsyncService {
      *
      * @param invHeaderReqParameter
      * @param crmId
-     * @return CompletableFuture<List < CustFavoriteFundData>>
+     * @return CompletableFuture<SuitabilityInfo>
      */
     @LogAround
     @Async
-    public CompletableFuture<SuitabilityInfo> suitabilityInquiry(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
+    public CompletableFuture<SuitabilityInfo> fetchSuitabilityInquiry(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
         try {
             SuitabilityBody suitabilityBody = new SuitabilityBody();
             suitabilityBody.setRmNumber(crmId);
@@ -363,12 +287,39 @@ public class ProductExpAsyncService {
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw new TMBCommonException(
-                    ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(),
-                    HttpStatus.OK,
-                    null);
+            throw getTmbCommonException();
         }
+    }
+
+    public CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter, String correlationId, String key, ObjectMapper mapper) throws JsonProcessingException {
+        List<FundClassListInfo> fundClassLists;
+        ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
+            ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
+                    investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
+            fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
+            String fundClassStr = mapper.writeValueAsString(fundClassLists);
+            cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
+        } else {
+            fundClassLists = getFundClassListInfoList(mapper, responseCache);
+        }
+        return CompletableFuture.completedFuture(fundClassLists);
+    }
+
+    public List<FundClassListInfo> getFundClassListInfoList(ObjectMapper mapper, ResponseEntity<TmbOneServiceResponse<String>> responseCache) throws JsonProcessingException {
+        List<FundClassListInfo> fundClassLists;
+        String fundStr = responseCache.getBody().getData();
+        TypeFactory typeFactory = mapper.getTypeFactory();
+        fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
+        return fundClassLists;
+    }
+
+    private TMBCommonException getTmbCommonException() {
+        return new TMBCommonException(
+                ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(),
+                HttpStatus.OK,
+                null);
     }
 }
