@@ -77,7 +77,7 @@ public class OpenPortfolioService {
      */
     public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) {
         try {
-            openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_MESSAGE_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
+            openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
             ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, customerRequest);

@@ -37,15 +37,15 @@ import static org.mockito.Mockito.*;
 
 public class ProductExpServiceCloseTest {
 
-    InvestmentRequestClient investmentRequestClient;
-    ProductsExpService productsExpService;
-    AccountRequestClient accountRequestClient;
-    KafkaProducerService kafkaProducerService;
-    CommonServiceClient commonServiceClient;
-    ProductExpAsynService productExpAsynService;
-    CustomerExpServiceClient customerExpServiceClient;
-    CustomerServiceClient customerServiceClient;
-    ObjectMapper mapper;
+    private InvestmentRequestClient investmentRequestClient;
+    private ProductsExpService productsExpService;
+    private AccountRequestClient accountRequestClient;
+    private KafkaProducerService kafkaProducerService;
+    private CommonServiceClient commonServiceClient;
+    private ProductExpAsynService productExpAsynService;
+    private CustomerExpServiceClient customerExpServiceClient;
+    private CustomerServiceClient customerServiceClient;
+    private ObjectMapper mapper;
 
     private FundRuleBody fundRuleBody = null;
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
@@ -347,8 +347,8 @@ public class ProductExpServiceCloseTest {
         alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
         productsExpService.logActivity(activityLogs);
         Assert.assertNotNull(activityLogs);
@@ -373,8 +373,8 @@ public class ProductExpServiceCloseTest {
         alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRq);
         doNothing().when(kafkaProducerService).sendMessageAsync(anyString(), any());
         when(mapper.writeValueAsString(anyString())).thenThrow(MockitoException.class);
 
@@ -398,8 +398,8 @@ public class ProductExpServiceCloseTest {
         alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
         productsExpService.logActivity(activityLogs);
         Assert.assertNotNull(activityLogs);

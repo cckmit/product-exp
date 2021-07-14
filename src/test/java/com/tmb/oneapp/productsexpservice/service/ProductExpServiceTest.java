@@ -229,9 +229,7 @@ public class ProductExpServiceTest {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule.json").toFile(), FundRuleBody.class);
-
             oneServiceResponseBody.setData(fundRuleBody);
             oneServiceResponseBody.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -279,7 +277,6 @@ public class ProductExpServiceTest {
         orderStmtByPortRq.setFundCode("EEEE");
 
         StatementResponse statementResponse = null;
-
         TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<StatementResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
@@ -420,7 +417,6 @@ public class ProductExpServiceTest {
         }
 
         UtilMap utilMap = new UtilMap();
-
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsynService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsynService.fetchFundHoliday(any(), anyString());
         CompletableFuture<String> fetchCustomerExp = productExpAsynService.fetchCustomerExp(any(), anyString());
@@ -430,9 +426,10 @@ public class ProductExpServiceTest {
         FundRuleBody fundRuleBodyCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
         String customerExp = fetchCustomerExp.get();
-        List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
 
+        List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
         Assert.assertNotNull(customerExp);
+
         FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
         Assert.assertNotNull(response);
 
@@ -488,9 +485,7 @@ public class ProductExpServiceTest {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
-
             responseEntity.setData(fundRuleBody);
             responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -570,6 +565,7 @@ public class ProductExpServiceTest {
     @Test
     public void isServiceCloseWithException() {
         FundResponse fundResponse = new FundResponse();
+
         try {
             when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
@@ -669,6 +665,7 @@ public class ProductExpServiceTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         boolean getFundSummary = productsExpService.isCASADormant(corrID, fundAccountRequest);
         Assert.assertTrue(getFundSummary);
     }
@@ -764,7 +761,6 @@ public class ProductExpServiceTest {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
@@ -878,6 +874,7 @@ public class ProductExpServiceTest {
     @Test
     public void testisCASADormant() {
         String responseCustomerExp = null;
+
         try {
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
         } catch (Exception ex) {
@@ -903,8 +900,8 @@ public class ProductExpServiceTest {
         alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
-                ProductsExpServiceConstant.ACTIVITY_LOG_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_TYPE_INVESTMENT_STATUS_TRACKING, alternativeRq);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRq);
 
         Assert.assertNotNull(activityLogs);
     }
@@ -930,7 +927,6 @@ public class ProductExpServiceTest {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
@@ -948,8 +944,10 @@ public class ProductExpServiceTest {
 
         boolean isBusClose = productsExpService.isBusinessClose(corrID, ffsRequestBody);
         Assert.assertEquals(false, isBusClose);
+
         boolean isCASADormant = productsExpService.isCASADormant(corrID, ffsRequestBody);
         Assert.assertEquals(false, isCASADormant);
+
         FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrID, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
@@ -967,26 +965,23 @@ public class ProductExpServiceTest {
             fundAccount = mapper.readValue(Paths.get("src/test/resources/investment/fund_list.json").toFile(), FundClassListInfo.class);
             fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(), FundSummaryResponse.class);
 
-            fundAccountRs.add(fundAccount);
-
             favoriteFundData1.setFundCode("AAAA");
             favoriteFundData1.setIsFavorite("N");
             favoriteFundData1.setId("1");
             favoriteFundData1.setCustId("100000023333");
 
+            fundAccountRs.add(fundAccount);
             favoriteFundData.add(favoriteFundData1);
 
             when(productExpAsynService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(fundAccountRs));
             when(productExpAsynService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
             when(productExpAsynService.fetchFundFavorite(any(), anyString())).thenReturn(CompletableFuture.completedFuture(favoriteFundData));
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         List<FundClassListInfo> listFund;
-        CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
-                productExpAsynService.fetchFundListInfo(any(), anyString(), anyString());
+        CompletableFuture<List<FundClassListInfo>> fetchFundListInfo = productExpAsynService.fetchFundListInfo(any(), anyString(), anyString());
         CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsynService.fetchFundSummary(any(), any());
         CompletableFuture<List<CustFavoriteFundData>> fetchFundFavorite = productExpAsynService.fetchFundFavorite(any(), anyString());
         CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
@@ -1043,8 +1038,7 @@ public class ProductExpServiceTest {
         FundAllocationResponse fundAllocationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation.json").toFile(), FundAllocationResponse.class);
         TmbOneServiceResponse<FundAllocationResponse> response = new TmbOneServiceResponse<>();
         response.setData(fundAllocationResponse);
-        when(investmentRequestClient.callInvestmentFundAllocation(any(), any()))
-                .thenReturn(ResponseEntity.ok(response));
+        when(investmentRequestClient.callInvestmentFundAllocation(any(), any())).thenReturn(ResponseEntity.ok(response));
         SuggestAllocationDTO suggestAllocationDTOMock = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation_dto.json").toFile(), SuggestAllocationDTO.class);
         SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(corrID, crmId);
         Assert.assertNotNull(suggestAllocationDTO);
