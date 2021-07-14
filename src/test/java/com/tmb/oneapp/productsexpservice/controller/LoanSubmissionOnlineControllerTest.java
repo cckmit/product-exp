@@ -1,7 +1,10 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmitRegisterRequest;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +29,13 @@ class LoanSubmissionOnlineControllerTest {
     @Mock
     LoanSubmissionIncomeInfoService loanSubmissionIncomeInfoService;
 
+    @Mock
+    LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanSubmissionOnlineController = new LoanSubmissionOnlineController(loanSubmissionIncomeInfoService);
+        loanSubmissionOnlineController = new LoanSubmissionOnlineController(loanSubmissionIncomeInfoService, loanSubmissionCreateApplicationService);
     }
 
     @Test
@@ -50,4 +56,17 @@ class LoanSubmissionOnlineControllerTest {
         assertTrue(responseEntity.getStatusCode().isError());
     }
 
+    @Test
+    public void testSubmitRegisterApplicationSuccess() throws ServiceException, RemoteException {
+        when(loanSubmissionCreateApplicationService.submitRegisterApplication(any(), any())).thenReturn(new ResponseInstantLoanCreateApplication());
+        ResponseEntity<TmbOneServiceResponse<ResponseInstantLoanCreateApplication>> responseEntity = loanSubmissionOnlineController.submitRegisterApplication(new LoanSubmitRegisterRequest());
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testSubmitRegisterApplicationFail() throws ServiceException, RemoteException {
+        when(loanSubmissionCreateApplicationService.submitRegisterApplication(any(), any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<ResponseInstantLoanCreateApplication>> responseEntity = loanSubmissionOnlineController.submitRegisterApplication(new LoanSubmitRegisterRequest());
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
 }
