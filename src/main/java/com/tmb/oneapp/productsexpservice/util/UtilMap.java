@@ -27,7 +27,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayB
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
-import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
@@ -113,15 +113,15 @@ public class UtilMap {
      * @param responseCustomerExp
      * @return FundPaymentDetailRs
      */
-    public FundPaymentDetailRs mappingPaymentResponse(FundRuleBody fundRuleBody,
-                                                      FundHolidayBody fundHolidayBody,
-                                                      List<CommonData> responseCommon,
-                                                      String responseCustomerExp) {
+    public FundPaymentDetailResponse mappingPaymentResponse(FundRuleBody fundRuleBody,
+                                                            FundHolidayBody fundHolidayBody,
+                                                            List<CommonData> responseCommon,
+                                                            String responseCustomerExp) {
         if (StringUtils.isEmpty(fundRuleBody)
                 || StringUtils.isEmpty(responseCustomerExp)) {
             return null;
         } else {
-            FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
+            FundPaymentDetailResponse fundPaymentDetailResponse = new FundPaymentDetailResponse();
             if (!StringUtils.isEmpty(fundHolidayBody)) {
                 FundHolidayClassList fundHolidayUnit;
                 List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
@@ -134,16 +134,16 @@ public class UtilMap {
                     fundHolidayUnit.setHolidayDesc(fundHoliday.getHolidayDesc());
                     fundHolidayClassList.add(fundHolidayUnit);
                 }
-                fundPaymentDetailRs.setFundHolidayList(fundHolidayClassList);
+                fundPaymentDetailResponse.setFundHolidayList(fundHolidayClassList);
             }
 
             FundRule fundRule = new FundRule();
             List<FundRuleInfoList> fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
-            fundPaymentDetailRs.setFundRule(fundRule);
-            fundPaymentDetailRs.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp));
-            return fundPaymentDetailRs;
+            fundPaymentDetailResponse.setFundRule(fundRule);
+            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp));
+            return fundPaymentDetailResponse;
         }
     }
 

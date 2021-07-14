@@ -19,7 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.respo
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
-import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
@@ -165,10 +165,10 @@ public class UtilMapTest {
         data.setChannel("1234");
         FundRuleInfoList list = new FundRuleInfoList();
         list.setFundHouseCode("1234");
-        FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
-        fundPaymentDetailRs.setFundRule(list);
+        FundPaymentDetailResponse fundPaymentDetailResponse = new FundPaymentDetailResponse();
+        fundPaymentDetailResponse.setFundRule(list);
         List<DepositAccount> depositAccountList = UtilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp");
-        fundPaymentDetailRs.setDepositAccountList(depositAccountList);
+        fundPaymentDetailResponse.setDepositAccountList(depositAccountList);
         data.setAccount290Url("1234");
         assertNotEquals(data.getAccount290Url(), depositAccountList);
     }

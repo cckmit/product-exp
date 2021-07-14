@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.request.fundlist;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,9 +11,11 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FundListRq {
+public class FundListRequest {
 
     private String crmId;
+
     @NotNull
-    private List<String> unitHolderNo;
+    @JsonProperty(value = "unitHolderNo")
+    private List<String> unitHolderNumber;
 }

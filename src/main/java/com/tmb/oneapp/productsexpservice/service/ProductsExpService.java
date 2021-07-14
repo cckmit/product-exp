@@ -27,7 +27,7 @@ import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
@@ -47,7 +47,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidati
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
-import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
@@ -289,10 +289,10 @@ public class ProductsExpService {
      * @return
      */
     @LogAround
-    public FundPaymentDetailRs getFundPrePaymentDetail(String correlationId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+    public FundPaymentDetailResponse getFundPrePaymentDetail(String correlationId, FundPaymentDetailRequest fundPaymentDetailRequest) {
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRequest);
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-        FundPaymentDetailRs fundPaymentDetailRs;
+        FundPaymentDetailResponse fundPaymentDetailResponse;
         try {
             CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
             CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
@@ -306,12 +306,12 @@ public class ProductsExpService {
             List<CommonData> commonDataList = fetchCommonConfigByModule.get();
 
             UtilMap map = new UtilMap();
-            fundPaymentDetailRs = map.mappingPaymentResponse(fundRuleBody, fundHolidayBody, commonDataList, customerExp);
+            fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleBody, fundHolidayBody, commonDataList, customerExp);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
-        return fundPaymentDetailRs;
+        return fundPaymentDetailResponse;
     }
 
     /**
@@ -641,23 +641,23 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundList
      *
-     * @param fundListRq
+     * @param fundListRequest
      * @param correlationId
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, FundListRq fundListRq) {
+    public List<FundClassListInfo> getFundList(String correlationId, FundListRequest fundListRequest) {
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
             UnitHolder unitHolder = new UnitHolder();
-            String unitHolderList = fundListRq.getUnitHolderNo().stream().collect(Collectors.joining(","));
+            String unitHolderList = fundListRequest.getUnitHolderNumber().stream().collect(Collectors.joining(","));
             unitHolder.setUnitHolderNo(unitHolderList);
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
                     productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
             CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, fundListRq.getCrmId());
+            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, fundListRequest.getCrmId());
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();

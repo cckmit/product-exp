@@ -10,14 +10,14 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
-import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
@@ -226,18 +226,18 @@ public class ProductExpServiceControllerTest {
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
         fundPaymentDetailRequest.setTranType("1");
 
-        FundPaymentDetailRs fundPaymentDetailRs;
+        FundPaymentDetailResponse fundPaymentDetailResponse;
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            fundPaymentDetailRs = mapper.readValue(Paths.get("src/test/resources/investment/fund_payment_detail.json").toFile(), FundPaymentDetailRs.class);
-            when(productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRequest)).thenReturn(fundPaymentDetailRs);
+            fundPaymentDetailResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_payment_detail.json").toFile(), FundPaymentDetailResponse.class);
+            when(productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRequest)).thenReturn(fundPaymentDetailResponse);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> actualResult = productExpServiceController
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> actualResult = productExpServiceController
                 .getFundPrePaymentDetail(corrID, fundPaymentDetailRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getFundRule());
@@ -427,14 +427,14 @@ public class ProductExpServiceControllerTest {
     public void getFundListException() {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
-        FundListRq fundListRq = new FundListRq();
-        fundListRq.setCrmId("12343455555");
-        fundListRq.setUnitHolderNo(unitStr);
+        FundListRequest fundListRequest = new FundListRequest();
+        fundListRequest.setCrmId("12343455555");
+        fundListRequest.setUnitHolderNumber(unitStr);
 
-        when(productsExpService.getFundList(corrID, fundListRq)).thenThrow(MockitoException.class);
+        when(productsExpService.getFundList(corrID, fundListRequest)).thenThrow(MockitoException.class);
 
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
-                .getFundListInfo(corrID, fundListRq);
+                .getFundListInfo(corrID, fundListRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
@@ -442,18 +442,18 @@ public class ProductExpServiceControllerTest {
     public void getFundListNotFound() {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
-        FundListRq fundListRq = new FundListRq();
-        fundListRq.setCrmId("12343455555");
-        fundListRq.setUnitHolderNo(unitStr);
+        FundListRequest fundListRequest = new FundListRequest();
+        fundListRequest.setCrmId("12343455555");
+        fundListRequest.setUnitHolderNumber(unitStr);
 
         try {
-            when(productsExpService.getFundList(corrID, fundListRq)).thenReturn(null);
+            when(productsExpService.getFundList(corrID, fundListRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
-                .getFundListInfo(corrID, fundListRq);
+                .getFundListInfo(corrID, fundListRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
@@ -461,9 +461,9 @@ public class ProductExpServiceControllerTest {
     public void getFundList() {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
-        FundListRq fundListRq = new FundListRq();
-        fundListRq.setCrmId("12343455555");
-        fundListRq.setUnitHolderNo(unitStr);
+        FundListRequest fundListRequest = new FundListRequest();
+        fundListRequest.setCrmId("12343455555");
+        fundListRequest.setUnitHolderNumber(unitStr);
 
         List<FundClassListInfo> list = new ArrayList<>();
         FundClassListInfo fundClassListInfo = new FundClassListInfo();
@@ -471,23 +471,23 @@ public class ProductExpServiceControllerTest {
         list.add(fundClassListInfo);
 
         try {
-            when(productsExpService.getFundList(corrID, fundListRq)).thenReturn(list);
+            when(productsExpService.getFundList(corrID, fundListRequest)).thenReturn(list);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
-                .getFundListInfo(corrID, fundListRq);
+                .getFundListInfo(corrID, fundListRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
     @Test
     void testDataNotFoundError() {
-        TmbOneServiceResponse<FundPaymentDetailRs> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setService("products-exp-service");
         oneServiceResponse.setStatus(status);
-        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> response = productExpServiceController.dataNotFoundError(oneServiceResponse);
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> response = productExpServiceController.dataNotFoundError(oneServiceResponse);
         assertEquals(404, response.getStatusCodeValue());
     }
 
@@ -505,7 +505,7 @@ public class ProductExpServiceControllerTest {
     void testGetFundPrePaymentDetailNull() {
         when(productsExpService.getFundPrePaymentDetail(anyString(), any())).thenReturn(null);
 
-        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> result = productExpServiceController.getFundPrePaymentDetail("correlationId", new FundPaymentDetailRequest());
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> result = productExpServiceController.getFundPrePaymentDetail("correlationId", new FundPaymentDetailRequest());
         Assert.assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatusCode().value());
     }
 

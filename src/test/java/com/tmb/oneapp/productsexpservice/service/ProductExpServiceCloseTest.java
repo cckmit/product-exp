@@ -15,7 +15,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.respo
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
-import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
@@ -395,7 +395,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void mappingPaymentResponse() {
         UtilMap utilMap = new UtilMap();
-        FundPaymentDetailRs fundAccountRs = utilMap.mappingPaymentResponse(null, null, null, null);
+        FundPaymentDetailResponse fundAccountRs = utilMap.mappingPaymentResponse(null, null, null, null);
         Assert.assertNull(fundAccountRs);
     }
 

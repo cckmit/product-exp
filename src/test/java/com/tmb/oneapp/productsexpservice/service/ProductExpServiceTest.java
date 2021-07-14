@@ -18,7 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
@@ -32,7 +32,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidati
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
-import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailRs;
+import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
@@ -441,10 +441,10 @@ public class ProductExpServiceTest {
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
         Assert.assertNotNull(customerExp);
 
-        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
+        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
         Assert.assertNotNull(response);
 
-        FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRequest);
+        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRequest);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -479,7 +479,7 @@ public class ProductExpServiceTest {
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
         UtilMap utilMap = new UtilMap();
         Assert.assertNull(custExp);
-        FundPaymentDetailRs response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
+        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
         Assert.assertNull(response);
     }
 
@@ -603,7 +603,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundPaymentDetailRs serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRequest);
+        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRequest);
         Assert.assertNull(serviceRes);
     }
 
@@ -1008,12 +1008,12 @@ public class ProductExpServiceTest {
 
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
-        FundListRq fundListRq = new FundListRq();
-        fundListRq.setCrmId("12343455555");
-        fundListRq.setUnitHolderNo(unitStr);
+        FundListRequest fundListRequest = new FundListRequest();
+        fundListRequest.setCrmId("12343455555");
+        fundListRequest.setUnitHolderNumber(unitStr);
 
         Assert.assertNotNull(listFund);
-        List<FundClassListInfo> result = productsExpService.getFundList(corrID, fundListRq);
+        List<FundClassListInfo> result = productsExpService.getFundList(corrID, fundListRequest);
         Assert.assertNotNull(result);
     }
 
@@ -1029,11 +1029,11 @@ public class ProductExpServiceTest {
 
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
-        FundListRq fundListRq = new FundListRq();
-        fundListRq.setCrmId("12343455555");
-        fundListRq.setUnitHolderNo(unitStr);
+        FundListRequest fundListRequest = new FundListRequest();
+        fundListRequest.setCrmId("12343455555");
+        fundListRequest.setUnitHolderNumber(unitStr);
 
-        List<FundClassListInfo> result = productsExpService.getFundList(corrID, fundListRq);
+        List<FundClassListInfo> result = productsExpService.getFundList(corrID, fundListRequest);
         Assert.assertNotNull(result);
     }
 

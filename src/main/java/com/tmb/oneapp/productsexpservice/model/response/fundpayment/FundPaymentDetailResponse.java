@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FundPaymentDetailRs {
+public class FundPaymentDetailResponse {
     private FundRuleInfoList fundRule;
     private List<FundHolidayClassList> fundHolidayList;
     private List<DepositAccount> depositAccountList;
