@@ -1,10 +1,10 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
 import com.tmb.common.logger.LogAround;
-import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
+import com.tmb.oneapp.productsexpservice.model.fund.dcainformation.DcaInformationRequestBody;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.DcaInformationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,7 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
+
 import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatus;
 
 @Api(tags = "Get fund list for dcs")
@@ -34,7 +36,7 @@ public class DcaInformationController {
      * Description:- method get dca list
      *
      * @param correlationId        the correlation id
-     * @param crmId the dca information request
+     * @param dcaInformationRequestBody the crmid request
      * @return return dca list
      */
     @ApiOperation(value = "Get dca allow aip flag list to frontend")
@@ -43,8 +45,8 @@ public class DcaInformationController {
     public ResponseEntity<TmbOneServiceResponse<DcaInformationDto>> getDcaInformation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_CRM_ID) String crmId) {
-        TmbOneServiceResponse<DcaInformationDto> oneServiceResponse = dcaInformationService.getDcaInformation(correlationId, crmId);
+            @Valid @RequestBody DcaInformationRequestBody dcaInformationRequestBody) {
+        TmbOneServiceResponse<DcaInformationDto> oneServiceResponse = dcaInformationService.getDcaInformation(correlationId, dcaInformationRequestBody.getCrmId());
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             return ResponseEntity.ok(oneServiceResponse);
         } else {

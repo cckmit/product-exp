@@ -1,6 +1,9 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.RslCode;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -19,6 +22,8 @@ import com.tmb.common.model.response.notification.NotificationResponse;
 import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.SFTPClientImp;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.*;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
@@ -30,9 +35,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -55,6 +64,8 @@ public class FlexiLoanConfirmServiceTest {
     @Mock
     private LoanSubmissionInstantLoanSubmitApplicationClient submitApplicationClient;
     @Mock
+    private CommonServiceClient commonServiceClient;
+    @Mock
     private FileGeneratorService fileGeneratorService;
     @Mock
     private SFTPClientImp sftpClientImp;
@@ -64,7 +75,7 @@ public class FlexiLoanConfirmServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        flexiLoanConfirmService = new FlexiLoanConfirmService(getFacilityInfoClient, getCustomerInfoClient, getCreditCardInfoClient, getApplicationInfoClient, instantLoanCalUWClient, notificationService, submitApplicationClient, fileGeneratorService, sftpClientImp);
+        flexiLoanConfirmService = new FlexiLoanConfirmService(getFacilityInfoClient, getCustomerInfoClient, getCreditCardInfoClient, getApplicationInfoClient, instantLoanCalUWClient, notificationService, submitApplicationClient, commonServiceClient, fileGeneratorService, sftpClientImp);
         mockSuccess();
     }
 
@@ -84,7 +95,8 @@ public class FlexiLoanConfirmServiceTest {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode());
         doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
-        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        doReturn(mockGetCommonConfig(RSLProductCodeEnum.CREDIT_CARD_TTB_ABSOLUTE.getProductCode())).when(commonServiceClient).getCommonConfigByModule(anyString(), anyString());
+        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), request);
         Assert.assertNotNull(response);
     }
 
@@ -93,7 +105,8 @@ public class FlexiLoanConfirmServiceTest {
         FlexiLoanConfirmRequest request = mockRequest();
         request.setProductCode(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode());
         doReturn(mockGetFacilityInfoSuccess(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode())).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
-        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), mockRequest());
+        doReturn(mockGetCommonConfig(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode())).when(commonServiceClient).getCommonConfigByModule(anyString(), anyString());
+        FlexiLoanConfirmResponse response = flexiLoanConfirmService.confirm(mockRequestHeaders(), request);
         Assert.assertNotNull(response);
     }
 
@@ -230,5 +243,24 @@ public class FlexiLoanConfirmServiceTest {
         response.setBody(body);
 
         return response;
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<List<CommonData>>> mockGetCommonConfig(String productCode) {
+        CommonData commonData = new CommonData();
+        RslCode rslCode = new RslCode();
+        rslCode.setRslCode(productCode);
+        rslCode.setSalesheetName("salesheetName");
+        rslCode.setTncName("tncName");
+        List<RslCode> rslCodes = new ArrayList<>();
+        rslCodes.add(rslCode);
+        commonData.setDefaultRslCode(rslCodes);
+        List<CommonData> commonDataList = new ArrayList<>();
+        commonDataList.add(commonData);
+        TmbOneServiceResponse response = new TmbOneServiceResponse();
+        response.setData(commonDataList);
+        TmbStatus status = new TmbStatus();
+        status.setCode(ResponseCode.SUCESS.getCode());
+        response.setStatus(status);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

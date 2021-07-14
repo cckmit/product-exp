@@ -69,6 +69,7 @@ public class FetchCardDetailsControllerTest {
         CreditCardDetail creditCardDetail = new CreditCardDetail();
         creditCardDetail.setAccountId("0000000050078360018000167");
         creditCardDetail.setProductId("12345");
+        creditCardDetail.setCardEmail(new CardEmail());
         FetchCardResponse fetchCardResponse = new FetchCardResponse();
         fetchCardResponse.setStatus(silverlakeStatus);
         fetchCardResponse.setCreditCard(creditCardDetail);
@@ -114,6 +115,7 @@ public class FetchCardDetailsControllerTest {
         CreditCardDetail creditCardDetail = new CreditCardDetail();
         creditCardDetail.setAccountId("0000000050078360018000167");
         creditCardDetail.setProductId("12345");
+        creditCardDetail.setCardEmail(new CardEmail());
         FetchCardResponse fetchCardResponse = new FetchCardResponse();
         fetchCardResponse.setStatus(silverlakeStatus);
         fetchCardResponse.setCreditCard(creditCardDetail);
