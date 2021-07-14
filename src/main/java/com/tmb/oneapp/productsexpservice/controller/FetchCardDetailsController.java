@@ -196,6 +196,8 @@ public class FetchCardDetailsController {
 			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(
 					applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag());
 			break;
+		default:
+			break;
 		}
 	}
 
