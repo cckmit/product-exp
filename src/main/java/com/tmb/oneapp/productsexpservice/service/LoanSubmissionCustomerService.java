@@ -27,6 +27,7 @@ public class LoanSubmissionCustomerService {
 
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
     private final CommonServiceClient commonServiceClient;
+    private static final String RC01 = "RC01";
 
     public LoanSubmissionResponse getCustomerInfo(Long caId) throws ServiceException, RemoteException {
         Facility[] facilityInfo = getFacility(caId);
@@ -65,7 +66,7 @@ public class LoanSubmissionCustomerService {
             rangeIncome.setStatusWorking(itemRangeIncome.getEmploymentStatus());
             rangeIncome.setProductNameEng(itemRangeIncome.getProductNameEng());
             rangeIncome.setProductNameTh(itemRangeIncome.getProductNameTh());
-            if (itemRangeIncome.getProductCode().equals("C2G01")) {
+            if (!itemRangeIncome.getProductCode().equals(RC01)) {
                 rangeIncome.setMaxLimit(itemRangeIncome.getMaxLimit());
                 rangeIncome.setRevenueMultiple(itemRangeIncome.getRevenueMultiple());
             }
