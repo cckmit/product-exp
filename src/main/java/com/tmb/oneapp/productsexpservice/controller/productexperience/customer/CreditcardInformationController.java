@@ -3,7 +3,6 @@ package com.tmb.oneapp.productsexpservice.controller.productexperience.customer;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.CreditcardInformationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditcardInformationResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CreditcardInformationService;
@@ -43,7 +42,7 @@ public class CreditcardInformationController {
     @ApiOperation(value = "Get creditcard list information for customer")
     @LogAround
     @PostMapping(value = "/accnt/creditcard", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<CreditcardInformationResponse>> getDcaInformation(
+    public ResponseEntity<TmbOneServiceResponse<CreditcardInformationResponse>> getCreditcardInformation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody CreditcardInformationRequestBody creditcardInformationRequestBody) {

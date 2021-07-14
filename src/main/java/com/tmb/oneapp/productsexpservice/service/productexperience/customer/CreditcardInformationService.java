@@ -3,11 +3,9 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.customer;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCard;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditcardInformationResponse;
-import com.tmb.oneapp.productsexpservice.service.productexperience.fund.DcaInformationService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +32,7 @@ public class CreditcardInformationService {
         try {
             ResponseEntity<TmbOneServiceResponse<CreditcardInformationResponse>> creditCardInformationResponse =
                     customerExpServiceClient.getCustomerCreditCard(correlationId,crmId);
-            if(creditCardInformationResponse.getStatusCode().equals(HttpStatus.OK)){
+            if(!creditCardInformationResponse.getStatusCode().equals(HttpStatus.OK)){
                 throw new TMBCommonException("failed call customer-exp-service for get credit card");
             }
             List<CreditCard> creditCards = creditCardInformationResponse.getBody().getData().getCreditCards();
