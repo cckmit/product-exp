@@ -64,7 +64,7 @@ public class FlexiLoanConfirmService {
 
     private static final String E_APP_TEMPLATE = "fop/e_app.xsl";
 
-    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws Exception {
+    public FlexiLoanConfirmResponse confirm(Map<String, String> requestHeaders, FlexiLoanConfirmRequest request) throws FOPException, IOException, TransformerException, ServiceException, ParseException {
 
         ResponseApplication applicationResp = getApplicationInfo(request.getCaID());
         String appRefNo = applicationResp.getBody().getAppRefNo();
@@ -76,18 +76,23 @@ public class FlexiLoanConfirmService {
         String filePath = generateFlexiLoanConfirmReport(wrapper, fileName);
         storeEAppFile(requestHeaders, appRefNo, filePath);
 
-        List<RslCode> rslConfigs = getRslConfig(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID));
+        List<String> notificationAttachments = new ArrayList<>();
+
         String letterOfConsentAttachments = getLetterOfConsentFilePath(appRefNo, applicationResp);
-        String saleSheetAttachments = getSaleSheetFilePath(rslConfigs, request.getProductCode());
-        String termAndConditionAttachments = getTermAndConditionFilePath(rslConfigs, request.getProductCode());
+
+        List<RslCode> rslConfigs = getRslConfig(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID));
+        if(rslConfigs.size()>0) {
+            String saleSheetAttachments = getSaleSheetFilePath(rslConfigs);
+            String termAndConditionAttachments = getTermAndConditionFilePath(rslConfigs);
+
+            notificationAttachments.add(saleSheetAttachments);
+            notificationAttachments.add(termAndConditionAttachments);
+        }
 
         String eAppAttachments = String.format("sftp://%s/users/enotiftp/SIT/MIB/TempAttachments/%s.pdf", sftpClientImp.getRemoteHost(), fileName);
 
-        List<String> notificationAttachments = new ArrayList<>();
         notificationAttachments.add(eAppAttachments);
         notificationAttachments.add(letterOfConsentAttachments);
-        notificationAttachments.add(saleSheetAttachments);
-        notificationAttachments.add(termAndConditionAttachments);
 
         wrapper.setEmail("oranuch@odds.team");
         sendNotification(requestHeaders, wrapper);
@@ -245,15 +250,15 @@ public class FlexiLoanConfirmService {
         return letterOfConsentFilePath;
     }
 
-    private String getSaleSheetFilePath(List<RslCode> rslConfigs, String productCode) {
-        String saleSheetFile = rslConfigs.stream().filter(p -> productCode.equals(p.getRslCode())).findFirst().get().getSalesheetName();
+    private String getSaleSheetFilePath(List<RslCode> rslConfigs) {
+        String saleSheetFile = rslConfigs.get(0).getSalesheetName();
         String saleSheetFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/%s", sftpClientImp.getRemoteHost(), saleSheetFile);
         logger.info("saleSheetFilePath: {}", saleSheetFilePath);
         return saleSheetFilePath;
     }
 
-    private String getTermAndConditionFilePath(List<RslCode> rslConfigs, String productCode) {
-        String tncFile = rslConfigs.stream().filter(p -> productCode.equals(p.getRslCode())).findFirst().get().getTncName();
+    private String getTermAndConditionFilePath(List<RslCode> rslConfigs) {
+        String tncFile = rslConfigs.get(0).getTncName();
         String tncFilePath = String.format("sftp://%s/users/enotiftp/SIT/MIB/%s", sftpClientImp.getRemoteHost(), tncFile);
         logger.info("tncFilePath: {}", tncFilePath);
         return tncFilePath;
@@ -382,11 +387,11 @@ public class FlexiLoanConfirmService {
         return submissionCustomerInfo;
     }
 
-    private List<RslCode> getRslConfig(String correlationId) throws Exception {
+    private List<RslCode> getRslConfig(String correlationId) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> config = commonServiceClient.getCommonConfigByModule(correlationId, "lending_module");
         if(ResponseCode.SUCESS.getCode().equals(config.getBody().getStatus().getCode())) {
             return config.getBody().getData().get(0).getDefaultRslCode();
         }
-        throw new Exception("get rsl config fail");
+        return new ArrayList<>();
     }
 }
