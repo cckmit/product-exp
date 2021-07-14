@@ -7,10 +7,10 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
-import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
@@ -220,25 +220,25 @@ public class ProductExpServiceControllerTest {
 
     @Test
     public void testGetFundPrePaymentDetailNotNull() {
-        FundPaymentDetailRq fundPaymentDetailRq = new FundPaymentDetailRq();
-        fundPaymentDetailRq.setCrmId("001100000000000000000012025950");
-        fundPaymentDetailRq.setFundCode("SCBTMF");
-        fundPaymentDetailRq.setFundHouseCode("SCBAM");
-        fundPaymentDetailRq.setTranType("1");
+        FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
+        fundPaymentDetailRequest.setCrmId("001100000000000000000012025950");
+        fundPaymentDetailRequest.setFundCode("SCBTMF");
+        fundPaymentDetailRequest.setFundHouseCode("SCBAM");
+        fundPaymentDetailRequest.setTranType("1");
 
         FundPaymentDetailRs fundPaymentDetailRs;
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             fundPaymentDetailRs = mapper.readValue(Paths.get("src/test/resources/investment/fund_payment_detail.json").toFile(), FundPaymentDetailRs.class);
-            when(productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRq)).thenReturn(fundPaymentDetailRs);
+            when(productsExpService.getFundPrePaymentDetail(corrID, fundPaymentDetailRequest)).thenReturn(fundPaymentDetailRs);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> actualResult = productExpServiceController
-                .getFundPrePaymentDetail(corrID, fundPaymentDetailRq);
+                .getFundPrePaymentDetail(corrID, fundPaymentDetailRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getFundRule());
         Assert.assertNotNull(actualResult.getBody().getData().getDepositAccountList());
@@ -365,44 +365,44 @@ public class ProductExpServiceControllerTest {
 
     @Test
     public void validateAlternativeSaleAndSwitchException() {
-        AlternativeRq alternativeRq = new AlternativeRq();
-        alternativeRq.setFundCode("SCBTMF");
-        alternativeRq.setFundHouseCode("SCBAM");
-        alternativeRq.setCrmId("001100000000000000000012025950");
-        alternativeRq.setProcessFlag("Y");
-        alternativeRq.setOrderType("2");
+        AlternativeRequest alternativeRequest = new AlternativeRequest();
+        alternativeRequest.setFundCode("SCBTMF");
+        alternativeRequest.setFundHouseCode("SCBAM");
+        alternativeRequest.setCrmId("001100000000000000000012025950");
+        alternativeRequest.setProcessFlag("Y");
+        alternativeRequest.setOrderType("2");
 
-        when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq)).thenThrow(MockitoException.class);
+        when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRequest)).thenThrow(MockitoException.class);
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
-                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+                .validateAlternativeSellAndSwitch(corrID, alternativeRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
     public void validateAlternativeSaleAndSwitchError() {
-        AlternativeRq alternativeRq = new AlternativeRq();
-        alternativeRq.setFundCode("SCBTMF");
-        alternativeRq.setFundHouseCode("SCBAM");
-        alternativeRq.setCrmId("001100000000000000000012025950");
-        alternativeRq.setProcessFlag("Y");
-        alternativeRq.setOrderType("2");
-        alternativeRq.setUnitHolderNo("PT00000000000");
+        AlternativeRequest alternativeRequest = new AlternativeRequest();
+        alternativeRequest.setFundCode("SCBTMF");
+        alternativeRequest.setFundHouseCode("SCBAM");
+        alternativeRequest.setCrmId("001100000000000000000012025950");
+        alternativeRequest.setProcessFlag("Y");
+        alternativeRequest.setOrderType("2");
+        alternativeRequest.setUnitHolderNumber("PT00000000000");
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
-                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+                .validateAlternativeSellAndSwitch(corrID, alternativeRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
     public void validateAlternativeSaleAndSwitch() {
-        AlternativeRq alternativeRq = new AlternativeRq();
-        alternativeRq.setFundCode("SCBTMF");
-        alternativeRq.setFundHouseCode("SCBAM");
-        alternativeRq.setCrmId("001100000000000000000012025950");
-        alternativeRq.setProcessFlag("Y");
-        alternativeRq.setOrderType("2");
-        alternativeRq.setUnitHolderNo("PT00000000000");
+        AlternativeRequest alternativeRequest = new AlternativeRequest();
+        alternativeRequest.setFundCode("SCBTMF");
+        alternativeRequest.setFundHouseCode("SCBAM");
+        alternativeRequest.setCrmId("001100000000000000000012025950");
+        alternativeRequest.setProcessFlag("Y");
+        alternativeRequest.setOrderType("2");
+        alternativeRequest.setUnitHolderNumber("PT00000000000");
 
         FundResponse fundRsAndValidation;
 
@@ -413,13 +413,13 @@ public class ProductExpServiceControllerTest {
             fundRsAndValidation.setErrorDesc("success");
             fundRsAndValidation.setErrorMsg("success");
 
-            when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRq)).thenReturn(fundRsAndValidation);
+            when(productsExpService.validateAlternativeSellAndSwitch(corrID, alternativeRequest)).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
-                .validateAlternativeSellAndSwitch(corrID, alternativeRq);
+                .validateAlternativeSellAndSwitch(corrID, alternativeRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
@@ -505,7 +505,7 @@ public class ProductExpServiceControllerTest {
     void testGetFundPrePaymentDetailNull() {
         when(productsExpService.getFundPrePaymentDetail(anyString(), any())).thenReturn(null);
 
-        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> result = productExpServiceController.getFundPrePaymentDetail("correlationId", new FundPaymentDetailRq());
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailRs>> result = productExpServiceController.getFundPrePaymentDetail("correlationId", new FundPaymentDetailRequest());
         Assert.assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatusCode().value());
     }
 

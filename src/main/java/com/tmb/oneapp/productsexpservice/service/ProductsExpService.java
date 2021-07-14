@@ -18,19 +18,21 @@ import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.fund.countprocessorder.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundallocation.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
-import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
-import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
@@ -124,21 +126,24 @@ public class ProductsExpService {
         FundAccountResponse fundAccountResponse;
         FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAcc(fundAccountRequest);
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRequest);
-        OrderStmtByPortRq orderStmtByPortRq = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
+        OrderStmtByPortRequest orderStmtByPortRequest = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
                 ProductsExpServiceConstant.FIXED_START_PAGE, ProductsExpServiceConstant.FIXED_END_PAGE);
+        ViewAipRequest viewAipRequest = UtilMap.mappingRequestViewAip(fundAccountRequest);
 
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> header = UtilMap.createHeader(correlationId);
         try {
-            CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(invHeaderReqParameter, fundAccountRequestBody);
-            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
-            CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(invHeaderReqParameter, orderStmtByPortRq);
-            CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort);
+            CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(header, fundAccountRequestBody);
+            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(header, fundRuleRequestBody);
+            CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(header, orderStmtByPortRequest);
+            CompletableFuture<ViewAipResponseBody> viewAipBody = productExpAsyncService.fetchViewAip(header, viewAipRequest);
+            CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort, viewAipBody);
 
             AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
             FundRuleBody fundRuleBody = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
+            ViewAipResponseBody viewAipResponseBody = viewAipBody.get();
 
-            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse);
+            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
@@ -279,19 +284,19 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundAccDetail
      *
-     * @param fundPaymentDetailRq
+     * @param fundPaymentDetailRequest
      * @param correlationId
      * @return
      */
     @LogAround
-    public FundPaymentDetailRs getFundPrePaymentDetail(String correlationId, FundPaymentDetailRq fundPaymentDetailRq) {
-        FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRq);
+    public FundPaymentDetailRs getFundPrePaymentDetail(String correlationId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+        FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRequest);
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailRs fundPaymentDetailRs;
         try {
             CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
             CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
-            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(invHeaderReqParameter, fundPaymentDetailRq.getCrmId());
+            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(invHeaderReqParameter, fundPaymentDetailRequest.getCrmId());
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
             CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
@@ -347,19 +352,19 @@ public class ProductsExpService {
     /**
      * Generic Method to validate AlternativeSellAndSwitch
      *
-     * @param alternativeRq
+     * @param alternativeRequest
      * @param correlationId
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRq alternativeRq) {
+    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRequest alternativeRequest) {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
             FfsRequestBody ffsRequestBody = new FfsRequestBody();
-            ffsRequestBody.setUnitHolderNo(alternativeRq.getUnitHolderNo());
-            ffsRequestBody.setProcessFlag(alternativeRq.getProcessFlag());
-            ffsRequestBody.setCrmId(alternativeRq.getCrmId());
+            ffsRequestBody.setUnitHolderNumber(alternativeRequest.getUnitHolderNumber());
+            ffsRequestBody.setProcessFlag(alternativeRequest.getProcessFlag());
+            ffsRequestBody.setCrmId(alternativeRequest.getCrmId());
             String fatcaFlag = getFatcaFlag(correlationId, ffsRequestBody.getCrmId());
             fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse, fatcaFlag);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
@@ -799,13 +804,13 @@ public class ProductsExpService {
      * @param correlationId
      * @param activityType
      * @param trackingStatus
-     * @param alternativeRq
+     * @param alternativeRequest
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId,
                                                                   String activityType,
                                                                   String trackingStatus,
-                                                                  AlternativeRq alternativeRq) {
-        String failReason = alternativeRq.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
+                                                                  AlternativeRequest alternativeRequest) {
+        String failReason = alternativeRequest.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
                 ProductsExpServiceConstant.SUCCESS_MESSAGE : ProductsExpServiceConstant.FAILED_MESSAGE;
 
         ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()), trackingStatus);
@@ -814,13 +819,13 @@ public class ProductsExpService {
         activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_APP_VERSION);
         activityData.setFailReason(failReason);
         activityData.setActivityType(activityType);
-        activityData.setCrmId(alternativeRq.getCrmId());
-        activityData.setVerifyFlag(alternativeRq.getProcessFlag());
+        activityData.setCrmId(alternativeRequest.getCrmId());
+        activityData.setVerifyFlag(alternativeRequest.getProcessFlag());
         activityData.setReason(failReason);
-        activityData.setFundCode(alternativeRq.getFundCode());
-        activityData.setFundClass(alternativeRq.getFundClassNameThHub());
-        if (!StringUtils.isEmpty(alternativeRq.getUnitHolderNo())) {
-            activityData.setUnitHolderNo(alternativeRq.getUnitHolderNo());
+        activityData.setFundCode(alternativeRequest.getFundCode());
+        activityData.setFundClass(alternativeRequest.getFundClassThaiHubName());
+        if (!StringUtils.isEmpty(alternativeRequest.getUnitHolderNumber())) {
+            activityData.setUnitHolderNo(alternativeRequest.getUnitHolderNumber());
         } else {
             activityData.setUnitHolderNo(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_UNIT_HOLDER);
         }

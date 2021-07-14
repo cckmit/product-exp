@@ -15,9 +15,11 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -71,18 +73,18 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchFundAccDetail get Fund account detail
+     * Method fetchFundAccDetail to get Fund account detail
      *
-     * @param invHeaderReqParameter
+     * @param header
      * @param fundAccountRequestBody
      * @return CompletableFuture<AccDetailBody>
      */
     @LogAround
     @Async
-    public CompletableFuture<AccountDetailBody> fetchFundAccountDetail(Map<String, String> invHeaderReqParameter, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
+    public CompletableFuture<AccountDetailBody> fetchFundAccountDetail(Map<String, String> header, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> response = investmentRequestClient
-                    .callInvestmentFundAccDetailService(invHeaderReqParameter, fundAccountRequestBody);
+                    .callInvestmentFundAccDetailService(header, fundAccountRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
@@ -91,18 +93,18 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchFundRule get Fund rule
+     * Method fetchFundRule to get Fund rule
      *
-     * @param invHeaderReqParameter
+     * @param header
      * @param fundRuleRequestBody
      * @return CompletableFuture<FundRuleBody>
      */
     @LogAround
     @Async
-    public CompletableFuture<FundRuleBody> fetchFundRule(Map<String, String> invHeaderReqParameter, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
+    public CompletableFuture<FundRuleBody> fetchFundRule(Map<String, String> header, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = investmentRequestClient
-                    .callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
+                    .callInvestmentFundRuleService(header, fundRuleRequestBody);
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
@@ -111,18 +113,18 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchStmtByPort get order statement
+     * Method fetchStmtByPort to get order statement
      *
-     * @param invHeaderReqParameter
-     * @param orderStmtByPortRq
+     * @param header
+     * @param orderStmtByPortRequest
      * @return CompletableFuture<StatementResponse>
      */
     @LogAround
     @Async
-    public CompletableFuture<StatementResponse> fetchStatementByPort(Map<String, String> invHeaderReqParameter, OrderStmtByPortRq orderStmtByPortRq) throws TMBCommonException {
+    public CompletableFuture<StatementResponse> fetchStatementByPort(Map<String, String> header, OrderStmtByPortRequest orderStmtByPortRequest) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseStmt = investmentRequestClient
-                    .callInvestmentStatementByPortService(invHeaderReqParameter, orderStmtByPortRq);
+                    .callInvestmentStatementByPortService(header, orderStmtByPortRequest);
             return CompletableFuture.completedFuture(responseStmt.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
@@ -131,7 +133,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchFundHoliday get fund holiday
+     * Method fetchFundHoliday to get fund holiday
      *
      * @param invHeaderReqParameter
      * @param fundCode
@@ -151,7 +153,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchCustomerExp get customer account
+     * Method fetchCustomerExp to get customer account
      *
      * @param invHeaderReqParameter
      * @param crmID
@@ -170,7 +172,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchCommonConfigByModule get common config
+     * Method fetchCommonConfigByModule to get common config
      *
      * @param correlationId
      * @param module
@@ -190,7 +192,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchCustomerProfile get customer profile
+     * Method fetchCustomerProfile to get customer profile
      *
      * @param crmID
      * @return CompletableFuture<CustomerProfileResponseData>
@@ -209,7 +211,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchFundListInfo get fundlist info
+     * Method fetchFundListInfo to get fund list info
      *
      * @param invHeaderReqParameter
      * @param correlationId
@@ -229,7 +231,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchFundSummary get fund summary
+     * Method fetchFundSummary to get fund summary
      *
      * @param invHeaderReqParameter
      * @param unitHolder
@@ -249,7 +251,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchFundFavorite get fund favorite
+     * Method fetchFundFavorite to get fund favorite
      *
      * @param invHeaderReqParameter
      * @param crmId
@@ -270,7 +272,7 @@ public class ProductExpAsyncService {
     }
 
     /**
-     * Method fetchFundFavorite get fund favorite
+     * Method fetchFundFavorite to get fund favorite
      *
      * @param invHeaderReqParameter
      * @param crmId
@@ -284,6 +286,26 @@ public class ProductExpAsyncService {
             suitabilityBody.setRmNumber(crmId);
             ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundSuitabilityService(invHeaderReqParameter, suitabilityBody);
+            return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw getTmbCommonException();
+        }
+    }
+
+    /**
+     * Method fetchViewAip to get AIP plans
+     *
+     * @param header
+     * @param viewAipRequest
+     * @return CompletableFuture<SuitabilityInfo>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<ViewAipResponseBody> fetchViewAip(Map<String, String> header, ViewAipRequest viewAipRequest) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity =
+                    investmentRequestClient.getViewAipPlans(header, viewAipRequest);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

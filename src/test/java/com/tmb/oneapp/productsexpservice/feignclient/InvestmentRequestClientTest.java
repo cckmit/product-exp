@@ -59,7 +59,7 @@ public class InvestmentRequestClientTest {
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNo("PT000000001");
+        fundAccountRq.setUnitHolderNumber("PT000000001");
         fundAccountRq.setServiceType("1");
         TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
@@ -95,7 +95,7 @@ public class InvestmentRequestClientTest {
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNo("PT000000001");
+        fundAccountRq.setUnitHolderNumber("PT000000001");
         fundAccountRq.setServiceType("1");
         TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
 

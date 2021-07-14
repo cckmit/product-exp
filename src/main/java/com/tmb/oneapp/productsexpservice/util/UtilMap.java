@@ -11,14 +11,16 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRq;
+import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -55,15 +57,18 @@ public class UtilMap {
      *
      * @param accountDetailBody
      * @param fundRuleBody
-     * @param statementRs
+     * @param statementResponse
+     * @param viewAipResponseBody
      * @return FundAccountRs
      */
-    public static FundAccountResponse validateTMBResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody, StatementResponse statementRs) {
+    public static FundAccountResponse validateTMBResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody,
+                                                          StatementResponse statementResponse, ViewAipResponseBody viewAipResponseBody) {
+
         if ((StringUtils.isEmpty(accountDetailBody) && StringUtils.isEmpty(fundRuleBody))) {
             return null;
         } else {
             FundAccountResponse fundAccountResponse = new FundAccountResponse();
-            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accountDetailBody, fundRuleBody, statementRs);
+            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
             fundAccountResponse.setDetails(fundAccountDetail);
             return fundAccountResponse;
         }
@@ -76,7 +81,9 @@ public class UtilMap {
      * @param fundRuleBody
      * @return FundAccountDetail
      */
-    public static FundAccountDetail mappingResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody, StatementResponse statementResponse) {
+    public static FundAccountDetail mappingResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody,
+                                                    StatementResponse statementResponse, ViewAipResponseBody viewAipResponseBody) {
+
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accountDetailBody.getFundDetail(), accountDetail);
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
@@ -92,6 +99,7 @@ public class UtilMap {
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
         fundAccountDetail.setFundRuleInfoList(fundRuleBody.getFundRuleInfoList());
         fundAccountDetail.setAccountDetail(accountDetail);
+        fundAccountDetail.setViewAip(viewAipResponseBody);
 
         return fundAccountDetail;
     }
@@ -115,7 +123,7 @@ public class UtilMap {
         } else {
             FundPaymentDetailRs fundPaymentDetailRs = new FundPaymentDetailRs();
             if (!StringUtils.isEmpty(fundHolidayBody)) {
-                FundHolidayClassList fundHolidayUnit = null;
+                FundHolidayClassList fundHolidayUnit;
                 List<FundHolidayClassList> fundHolidayClassList = new ArrayList<>();
                 List<FundHolidayClassList> fundHolidayClassListRs = fundHolidayBody.getFundClassList();
                 for (FundHolidayClassList fundHoliday : fundHolidayClassListRs) {
@@ -148,13 +156,14 @@ public class UtilMap {
      */
     public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp) {
         List<DepositAccount> depositAccountList = new ArrayList<>();
+
         try {
+            JsonNode node;
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = null;
             node = mapper.readValue(responseCustomerExp, JsonNode.class);
             ArrayNode arrayNode = (ArrayNode) node.get("data");
             int size = arrayNode.size();
-            DepositAccount depositAccount = null;
+            DepositAccount depositAccount;
             List<String> eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
             for (int i = 0; i < size; i++) {
                 JsonNode itr = arrayNode.get(i);
@@ -306,8 +315,8 @@ public class UtilMap {
             return true;
         } else {
             try {
+                JsonNode node;
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = null;
                 node = mapper.readValue(responseCustomerExp, JsonNode.class);
                 ArrayNode arrayNode = (ArrayNode) node.get("data");
                 int size = arrayNode.size();
@@ -382,9 +391,9 @@ public class UtilMap {
      * @return List<FundSearch>
      */
     public static List<FundSearch> mappingFundSearchListData(List<FundClass> fundClass) {
+        FundSearch fundSearch;
         List<FundSearch> searchList = new ArrayList<>();
         List<FundSearch> fundListDistinctByFundCode = new ArrayList<>();
-        FundSearch fundSearch = null;
         try {
             for (FundClass fundClassLoop : fundClass) {
                 List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
@@ -426,25 +435,25 @@ public class UtilMap {
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
         fundAccountRequestBody.setFundCode(fundAccountRequest.getFundCode());
         fundAccountRequestBody.setServiceType(fundAccountRequest.getServiceType());
-        fundAccountRequestBody.setUnitHolderNo(fundAccountRequest.getUnitHolderNumber());
+        fundAccountRequestBody.setUnitHolderNumber(fundAccountRequest.getUnitHolderNumber());
         return fundAccountRequestBody;
     }
 
     /**
      * Generic Method to mappingRequestFundRule
      *
-     * @param fundAccountRq
+     * @param fundAccountRequest
      * @return FundRuleRequestBody
      */
-    public static FundRuleRequestBody mappingRequestFundRule(Object fundAccountRq) {
+    public static FundRuleRequestBody mappingRequestFundRule(Object fundAccountRequest) {
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        if (fundAccountRq instanceof FundAccountRequest) {
-            FundAccountRequest fundAccount = (FundAccountRequest) fundAccountRq;
+        if (fundAccountRequest instanceof FundAccountRequest) {
+            FundAccountRequest fundAccount = (FundAccountRequest) fundAccountRequest;
             fundRuleRequestBody.setFundCode(fundAccount.getFundCode());
             fundRuleRequestBody.setFundHouseCode(fundAccount.getFundHouseCode());
             fundRuleRequestBody.setTranType(fundAccount.getTranType());
-        } else if (fundAccountRq instanceof FundPaymentDetailRq) {
-            FundPaymentDetailRq fundAccount = (FundPaymentDetailRq) fundAccountRq;
+        } else if (fundAccountRequest instanceof FundPaymentDetailRequest) {
+            FundPaymentDetailRequest fundAccount = (FundPaymentDetailRequest) fundAccountRequest;
             fundRuleRequestBody.setFundCode(fundAccount.getFundCode());
             fundRuleRequestBody.setFundHouseCode(fundAccount.getFundHouseCode());
             fundRuleRequestBody.setTranType(fundAccount.getTranType());
@@ -453,18 +462,33 @@ public class UtilMap {
     }
 
     /**
+     * Generic Method to mappingRequestViewAip
+     *
+     * @param fundAccountRequest
+     * @return FundRuleRequestBody
+     */
+    public static ViewAipRequest mappingRequestViewAip(FundAccountRequest fundAccountRequest) {
+        return ViewAipRequest.builder()
+                .crmId(fundAccountRequest.getCrmId())
+                .getFlag(fundAccountRequest.getGetFlag())
+                .portfolioList(fundAccountRequest.getPortfolioList())
+                .fundCode(fundAccountRequest.getFundCode())
+                .build();
+    }
+
+    /**
      * Generic Method to mappingRequestStmtByPort
      *
      * @param fundAccountRequest
      * @return OrderStmtByPortRq
      */
-    public static OrderStmtByPortRq mappingRequestStmtByPort(FundAccountRequest fundAccountRequest, String startPage, String endPage) {
-        OrderStmtByPortRq orderStmtByPortRq = new OrderStmtByPortRq();
-        orderStmtByPortRq.setPortfolioNumber(fundAccountRequest.getUnitHolderNumber());
-        orderStmtByPortRq.setFundCode(fundAccountRequest.getFundCode());
-        orderStmtByPortRq.setRowStart(startPage);
-        orderStmtByPortRq.setRowEnd(endPage);
-        return orderStmtByPortRq;
+    public static OrderStmtByPortRequest mappingRequestStmtByPort(FundAccountRequest fundAccountRequest, String startPage, String endPage) {
+        OrderStmtByPortRequest orderStmtByPortRequest = new OrderStmtByPortRequest();
+        orderStmtByPortRequest.setPortfolioNumber(fundAccountRequest.getUnitHolderNumber());
+        orderStmtByPortRequest.setFundCode(fundAccountRequest.getFundCode());
+        orderStmtByPortRequest.setRowStart(startPage);
+        orderStmtByPortRequest.setRowEnd(endPage);
+        return orderStmtByPortRequest;
     }
 
     /**
@@ -473,16 +497,16 @@ public class UtilMap {
      * @param ffsRequestBody
      * @return AlternativeRq
      */
-    public static AlternativeRq mappingRequestAlternative(FfsRequestBody ffsRequestBody) {
-        AlternativeRq alternativeRq = new AlternativeRq();
-        alternativeRq.setCrmId(ffsRequestBody.getCrmId());
-        alternativeRq.setFundCode(ffsRequestBody.getFundCode());
-        alternativeRq.setProcessFlag(ffsRequestBody.getProcessFlag());
-        alternativeRq.setUnitHolderNo(ffsRequestBody.getUnitHolderNo());
-        alternativeRq.setFundHouseCode(ffsRequestBody.getFundHouseCode());
-        alternativeRq.setOrderType(ffsRequestBody.getOrderType());
-        alternativeRq.setFundClassNameThHub(ffsRequestBody.getFundClassNameThHub());
-        return alternativeRq;
+    public static AlternativeRequest mappingRequestAlternative(FfsRequestBody ffsRequestBody) {
+        AlternativeRequest alternativeRequest = new AlternativeRequest();
+        alternativeRequest.setCrmId(ffsRequestBody.getCrmId());
+        alternativeRequest.setFundCode(ffsRequestBody.getFundCode());
+        alternativeRequest.setProcessFlag(ffsRequestBody.getProcessFlag());
+        alternativeRequest.setUnitHolderNumber(ffsRequestBody.getUnitHolderNumber());
+        alternativeRequest.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+        alternativeRequest.setOrderType(ffsRequestBody.getOrderType());
+        alternativeRequest.setFundClassThaiHubName(ffsRequestBody.getFundClassThaiHubName());
+        return alternativeRequest;
     }
 
     @SuppressWarnings("all")
@@ -491,7 +515,6 @@ public class UtilMap {
             if (!optionalResponse.isPresent()) {
                 return null;
             }
-
             String respBody = StandardCharsets.UTF_8.decode(optionalResponse.get()).toString();
             return (TmbOneServiceResponse) TMBUtils.convertStringToJavaObj(respBody, TmbOneServiceResponse.class);
         } catch (Exception e) {

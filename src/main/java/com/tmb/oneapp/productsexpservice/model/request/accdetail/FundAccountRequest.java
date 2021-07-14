@@ -13,6 +13,9 @@ import javax.validation.constraints.NotNull;
 public class FundAccountRequest {
 
     @NotNull
+    private String crmId;
+
+    @NotNull
     @JsonProperty(value = "unitHolderNo")
     private String unitHolderNumber;
 
@@ -27,4 +30,10 @@ public class FundAccountRequest {
 
     @NotNull
     private String serviceType;
+
+    @NotNull
+    private String getFlag;
+
+    @NotNull
+    private String portfolioList;
 }

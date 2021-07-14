@@ -5,12 +5,14 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundClass;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRq;
+import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRq;
+import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundOrderHistory;
@@ -47,13 +49,17 @@ public class UtilMapTest {
 
     @Test
     public void testValidateTMBResponse() {
-        AccountDetailBody body = new AccountDetailBody();
+        /* body  */
         FundDetail fundDetail = new FundDetail();
         fundDetail.setFundHouseCode("1234");
         fundDetail.setCost("1234");
         fundDetail.setFundEnglishName("card");
         fundDetail.setInvestmentValue("12345");
+
+        AccountDetailBody body = new AccountDetailBody();
         body.setFundDetail(fundDetail);
+
+        /* fundRuleBody */
         FundRuleBody fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
@@ -61,8 +67,8 @@ public class UtilMapTest {
             fundRuleList.add(ruleInfoList);
         }
         fundRuleBody.setFundRuleInfoList(fundRuleList);
-        StatementResponse statementResponse = new StatementResponse();
-        statementResponse.setTotalRecord("10");
+
+        /* statementResponse */
         List<StatementList> list = new ArrayList<>();
         for (StatementList statementList : list) {
             statementList.setTranTypeEN("Normal");
@@ -70,21 +76,30 @@ public class UtilMapTest {
             statementList.setEffectiveDate("28-03-2021");
             list.add(statementList);
         }
+        StatementResponse statementResponse = new StatementResponse();
+        statementResponse.setTotalRecord("10");
         statementResponse.setStatementList(list);
-        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse);
+
+        ViewAipResponseBody viewAipResponseBody = ViewAipResponseBody.builder().build();
+
+        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse, viewAipResponseBody);
         List<FundOrderHistory> ordersHistories = result.getDetails().getAccountDetail().getOrdersHistories();
         Assert.assertEquals(true, ordersHistories.isEmpty());
     }
 
     @Test
     public void testMappingResponse() {
-        AccountDetailBody body = new AccountDetailBody();
+        /* body */
         FundDetail fundDetail = new FundDetail();
         fundDetail.setFundHouseCode("1234");
         fundDetail.setCost("1234");
         fundDetail.setFundEnglishName("card");
         fundDetail.setInvestmentValue("12345");
+
+        AccountDetailBody body = new AccountDetailBody();
         body.setFundDetail(fundDetail);
+
+        /* fundRuleBody */
         FundRuleBody fundRuleBody = new FundRuleBody();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
@@ -92,6 +107,8 @@ public class UtilMapTest {
             fundRuleList.add(ruleInfoList);
         }
         fundRuleBody.setFundRuleInfoList(fundRuleList);
+
+        /* statementResponse */
         StatementResponse statementResponse = new StatementResponse();
         statementResponse.setTotalRecord("10");
         List<StatementList> list = new ArrayList<>();
@@ -102,7 +119,11 @@ public class UtilMapTest {
             list.add(statementList);
         }
         statementResponse.setStatementList(list);
-        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse);
+
+        /* aipResponseBody */
+        ViewAipResponseBody aipResponseBody = ViewAipResponseBody.builder().build();
+
+        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse, aipResponseBody);
         List<FundRuleInfoList> fundRuleInfoList = result.getFundRuleInfoList();
         Assert.assertEquals(true, fundRuleInfoList.isEmpty());
     }
@@ -254,26 +275,48 @@ public class UtilMapTest {
     public void testMappingRequestStmtByPort() {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("1234");
-        OrderStmtByPortRq result = UtilMap.mappingRequestStmtByPort(fundAccountRequest, "startPage", "endPage");
-        OrderStmtByPortRq portRq = new OrderStmtByPortRq();
-        portRq.setFundCode("1234");
-        Assert.assertEquals(portRq.getFundCode(), result.getFundCode());
+        OrderStmtByPortRequest result = UtilMap.mappingRequestStmtByPort(fundAccountRequest, "startPage", "endPage");
+        OrderStmtByPortRequest portRequest = new OrderStmtByPortRequest();
+        portRequest.setFundCode("1234");
+        Assert.assertEquals(portRequest.getFundCode(), result.getFundCode());
     }
 
     @Test
     public void testMappingRequestAlternative() {
         FfsRequestBody body = new FfsRequestBody();
         body.setFundCode("1234");
-        AlternativeRq result = UtilMap.mappingRequestAlternative(body);
-        AlternativeRq alternativeRq = new AlternativeRq();
-        alternativeRq.setFundCode("1234");
-        Assert.assertEquals(alternativeRq.getFundCode(), result.getFundCode());
+        AlternativeRequest result = UtilMap.mappingRequestAlternative(body);
+        AlternativeRequest alternativeRequest = new AlternativeRequest();
+        alternativeRequest.setFundCode("1234");
+        Assert.assertEquals(alternativeRequest.getFundCode(), result.getFundCode());
     }
 
     @Test
     public void testMapTmbOneServiceResponse() {
         TmbOneServiceResponse result = UtilMap.mapTmbOneServiceResponse(null);
         Assert.assertEquals(null, result);
+    }
+
+    @Test
+    void should_return_view_aip_request_when_call_map_request_view_aip_given_fund_account_request() {
+        // Given
+        FundAccountRequest fundAccountRequest = new FundAccountRequest();
+        fundAccountRequest.setCrmId("00000000028365");
+        fundAccountRequest.setGetFlag("1");
+        fundAccountRequest.setPortfolioList("PT000000000001831831, PT000000000001831820");
+        fundAccountRequest.setFundCode("TMBGQG");
+
+        // When
+        ViewAipRequest actual = UtilMap.mappingRequestViewAip(fundAccountRequest);
+
+        // Then
+        ViewAipRequest expected = ViewAipRequest.builder()
+                .crmId("00000000028365")
+                .getFlag("1")
+                .portfolioList("PT000000000001831831, PT000000000001831820")
+                .fundCode("TMBGQG")
+                .build();
+        assertEquals(expected, actual);
     }
 
     @Test
