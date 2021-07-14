@@ -4,6 +4,7 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
@@ -131,6 +132,7 @@ public interface CustomerServiceClient {
 
 	/**
 	 * Update email statment
+	 * @param statementFlag 
 	 * 
 	 * @param crmId
 	 * @param correlationId
@@ -138,6 +140,6 @@ public interface CustomerServiceClient {
 	 */
 	@PostMapping(value = "/apis/customers/profile/update-e-statement")
 	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
-			@RequestHeader Map<String, String> requestHeaders);
+			@RequestHeader Map<String, String> requestHeaders,  @RequestBody StatementFlag statementFlag);
 
 }

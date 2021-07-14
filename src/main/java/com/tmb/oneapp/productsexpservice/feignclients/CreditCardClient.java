@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
@@ -112,4 +113,9 @@ public interface CreditCardClient {
 	@PostMapping(value = "/apis/creditcard/creditcard-details/cancel-e-statement")
 	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> cancelEnableEStatement(
 			@RequestHeader Map<String, String> headers);
+
+	@GetMapping(value = "/apis/creditcard/creditcard-balances/{CRM_ID}")
+	ResponseEntity<GetCardsBalancesResponse> getCreditCardBalance(@RequestHeader Map<String, String> headers,
+			@PathVariable(value = "CRM_ID") String crmId);
+
 }
