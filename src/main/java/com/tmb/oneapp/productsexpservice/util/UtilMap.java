@@ -616,6 +616,9 @@ public class UtilMap {
      * @return
      */
     public static String fillUpCrmIdFormat(String crmId) {
+        if (crmId.length() > 14) {
+            return crmId;
+        }
         DecimalFormat decimalFormat = new DecimalFormat(ProductsExpServiceConstant.CRM_ID_FORMAT);
         return ProductsExpServiceConstant.CRM_ID_PREFIX.concat(decimalFormat.format(Double.parseDouble(crmId)));
     }
