@@ -6,7 +6,7 @@ import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
-import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -116,28 +116,27 @@ public interface CustomerServiceClient {
             @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestBody CrmSearchBody requestBody
     );
-    
-	/**
-	 * Get e-statement
-	 *
-	 * @param crmId         customer ID
-	 * @param correlationId correlationId
-	 * @return
-	 */
-	@GetMapping(value = "/apis/customers/profile/get-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getCustomerEStatement(
-			@RequestHeader(value = X_CRMID) String crmId,
-			@RequestHeader(value = X_CORRELATION_ID) String correlationId);
 
-	/**
-	 * Update email statment
-	 * 
-	 * @param crmId
-	 * @param correlationId
-	 * @return
-	 */
-	@PostMapping(value = "/apis/customers/profile/update-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
-			@RequestHeader Map<String, String> requestHeaders);
+    /**
+     * Get e-statement
+     *
+     * @param crmId         customer ID
+     * @param correlationId correlationId
+     * @return
+     */
+    @GetMapping(value = "/apis/customers/profile/get-e-statement")
+    ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getCustomerEStatement(
+            @RequestHeader(value = X_CRMID) String crmId,
+            @RequestHeader(value = X_CORRELATION_ID) String correlationId);
+
+    /**
+     * Update email statment
+     *
+     * @param requestHeaders
+     * @return
+     */
+    @PostMapping(value = "/apis/customers/profile/update-e-statement")
+    ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
+            @RequestHeader Map<String, String> requestHeaders);
 
 }

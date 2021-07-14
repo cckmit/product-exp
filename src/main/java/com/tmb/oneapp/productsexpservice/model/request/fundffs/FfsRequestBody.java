@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.request.fundffs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import lombok.Getter;
 import lombok.Setter;
 

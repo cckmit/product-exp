@@ -2,8 +2,8 @@ package com.tmb.oneapp.productsexpservice.mapper.customer;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
-import com.tmb.oneapp.productsexpservice.model.portfolio.response.CustomerInfo;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.CustomerInfo;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

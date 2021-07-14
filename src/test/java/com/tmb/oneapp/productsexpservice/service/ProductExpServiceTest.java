@@ -13,9 +13,9 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.request.alternative.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRq;
@@ -23,10 +23,10 @@ import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDe
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
-import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountDetail;
-import com.tmb.oneapp.productsexpservice.model.response.accdetail.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.customer.search.response.CustomerSearchResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fund.fundallocation.FundAllocationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;

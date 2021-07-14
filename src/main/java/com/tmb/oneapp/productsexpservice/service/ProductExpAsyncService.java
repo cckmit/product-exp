@@ -17,7 +17,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolde
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
-import com.tmb.oneapp.productsexpservice.model.request.accdetail.FundAccountRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
