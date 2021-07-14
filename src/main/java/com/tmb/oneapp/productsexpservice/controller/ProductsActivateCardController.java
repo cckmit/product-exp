@@ -73,7 +73,7 @@ public class ProductsActivateCardController {
                 HttpStatus statusCode = activateCardResponse.getStatusCode();
                 if (activateCardResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
                 	response = activateCardResponse.getBody().getData();
-					if (!response.getStatus().getErrorStatus().isEmpty()) {
+					if (1 == response.getStatus().getStatusCode() && !response.getStatus().getErrorStatus().isEmpty()) {
 						oneServiceResponse.setStatus(
 								new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 										ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
