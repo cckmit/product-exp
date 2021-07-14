@@ -37,7 +37,7 @@ public class LoanSubmissionOnlineController {
     @LogAround
     @ApiOperation(value = "get income info")
 
-    public ResponseEntity<TmbOneServiceResponse<IncomeInfo>> getIncomeInfo(@ApiParam(value = "CRMID", defaultValue = "001100000000000000000001184383", required = true) @RequestHeader(name = "X-CRMID", required = false) String crmId) {
+    public ResponseEntity<TmbOneServiceResponse<IncomeInfo>> getIncomeInfo(@RequestHeader(name = "X-CRMID", required = true) String crmId) {
         TmbOneServiceResponse<IncomeInfo> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
