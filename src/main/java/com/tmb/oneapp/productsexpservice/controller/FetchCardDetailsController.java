@@ -119,9 +119,9 @@ public class FetchCardDetailsController {
 						fetchCardResponse.setProductCodeData(productCodeData);
 					}
 
-					EStatementDetail eStatementDetail = getEStatementDetail(crmId, correlationId);
+					EStatementDetail eStatementDetail = getEStatementDetail(fetchCardResponse, crmId, correlationId);
 					fetchCardResponse.setEStatementDetail(eStatementDetail);
-
+										
 					creditCardEvent = creditCardLogService.loadCardDetailsEvent(creditCardEvent,
 							requestHeadersParameter, fetchCardResponse);
 					creditCardLogService.logActivity(creditCardEvent);
@@ -155,7 +155,8 @@ public class FetchCardDetailsController {
 
 	}
 
-	private EStatementDetail getEStatementDetail(String crmId, String correlationId) {
+	private EStatementDetail getEStatementDetail(FetchCardResponse fetchCardResponse, String crmId,
+			String correlationId) {
 		EStatementDetail result = new EStatementDetail();
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
 				.getCustomerProfile(crmId);
@@ -163,12 +164,39 @@ public class FetchCardDetailsController {
 		if (profileResponse != null) {
 			result.setEmailAddress(profileResponse.getEmailAddress());
 			result.setEmailVerifyFlag(profileResponse.getEmailVerifyFlag());
+			fetchCardResponse.getCreditCard().getCardEmail().setEmailAddress(profileResponse.getEmailAddress());
 		}
 		ApplyEStatementResponse applyEStatementResponse = applyEStatementService.getEStatement(crmId, correlationId);
 		if (applyEStatementResponse != null) {
-			result.setStatementFlag(applyEStatementResponse.getCustomer().getStatementFlag());
+			processMappingEStatementFlag(fetchCardResponse, applyEStatementResponse);
 		}
 		return result;
+	}
+	
+	private void processMappingEStatementFlag(FetchCardResponse fetchCardResponse,
+			ApplyEStatementResponse applyEStatementResponse) {
+		switch (fetchCardResponse.getCreditCard().getProductId()) {
+		case "VABSIN":
+		case "VBKDSI":
+		case "VABSSN":
+		case "VSOFAS":
+		case "VTOPBR":
+		case "VTTBCP":
+		case "VSOSMT":
+		case "VSOCHI":
+		case "MSCHIL":
+			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(
+					applyEStatementResponse.getCustomer().getStatementFlag().getECreditcardStatementFlag());
+			break;
+		case "VFPSTD":
+			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(
+					applyEStatementResponse.getCustomer().getStatementFlag().getEReadyCashStatementFlag());
+			break;
+		case "C2G":
+			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(
+					applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag());
+			break;
+		}
 	}
 
 }
