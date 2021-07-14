@@ -139,13 +139,13 @@ public class ProductExpServiceTest {
     @Test
     public void testGetFundAccountDetailAndFundRule() throws Exception {
         StatementResponse statementResponse;
-        ViewAipResponse viewAipResponse;
+        ViewAipResponse viewAipResponse = new ViewAipResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundHouseCode("ABCC");
         fundAccountRequest.setTranType("2");
         fundAccountRequest.setFundCode("ABCC");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT0000000000123");
+        fundAccountRequest.setPortfolioNumber("PT0000000000123");
         fundAccountRequest.setCrmId("00000000028365");
         fundAccountRequest.setGetFlag("1");
         fundAccountRequest.setPortfolioList("PT000000000001831831, PT000000000001831820");
@@ -160,7 +160,6 @@ public class ProductExpServiceTest {
             when(productExpAsyncService.fetchFundAccountDetail(any(), any())).thenReturn(CompletableFuture.completedFuture(accountDetailBody));
             when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
             when(productExpAsyncService.fetchStatementByPort(any(), any())).thenReturn(CompletableFuture.completedFuture(statementResponse));
-            when(productExpAsyncService.fetchViewAip(any(), any())).thenReturn(CompletableFuture.completedFuture(viewAipResponse.getData()));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -168,20 +167,20 @@ public class ProductExpServiceTest {
         CompletableFuture<AccountDetailBody> fetchFundAccDetail = productExpAsyncService.fetchFundAccountDetail(any(), any());
         CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
         CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(any(), any());
-        CompletableFuture<ViewAipResponseBody> fetchViewAip = productExpAsyncService.fetchViewAip(any(), any());
-        CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort, fetchViewAip);
+        CompletableFuture.allOf(fetchFundAccDetail, fetchFundRule, fetchStmtByPort);
 
         AccountDetailBody accountDetailBody = fetchFundAccDetail.get();
         FundRuleBody fundRuleBody = fetchFundRule.get();
         StatementResponse fetchStatementResponse = fetchStmtByPort.get();
-        ViewAipResponseBody aipResponseBody = fetchViewAip.get();
 
-        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, fetchStatementResponse, aipResponseBody);
+        ViewAipResponseBody viewAipResponseBody = new ViewAipResponseBody();
+        viewAipResponseBody.setFundClassList(viewAipResponse.getData().getFundClassList());
+        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, fetchStatementResponse, viewAipResponseBody);
 
         Assert.assertNotNull(fundAccountResponse);
         Assert.assertNotNull(accountDetailBody);
         Assert.assertNotNull(fetchStatementResponse);
-        Assert.assertNotNull(aipResponseBody);
+        Assert.assertNotNull(viewAipResponseBody);
         FundAccountResponse result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
         Assert.assertNotNull(result);
     }
@@ -191,13 +190,12 @@ public class ProductExpServiceTest {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT000001111");
+        fundAccountRequest.setPortfolioNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNumber("PT000000001");
-        fundAccountRq.setServiceType("1");
+        fundAccountRq.setPortfolioNumber("PT000000001");
         fundAccountRq.setFundCode("DDD");
 
         TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -226,8 +224,7 @@ public class ProductExpServiceTest {
     public void testGetFundRule() {
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity = null;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNumber("PT000000001");
-        fundAccountRq.setServiceType("1");
+        fundAccountRq.setPortfolioNumber("PT000000001");
         fundAccountRq.setFundCode("DDD");
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
@@ -268,12 +265,11 @@ public class ProductExpServiceTest {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT000001111");
+        fundAccountRequest.setPortfolioNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
-        fundAccountRequestBody.setUnitHolderNumber("PT000000000000138924");
-        fundAccountRequestBody.setServiceType("2");
+        fundAccountRequestBody.setPortfolioNumber("PT000000000000138924");
         fundAccountRequestBody.setFundCode("DDD");
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
@@ -333,12 +329,11 @@ public class ProductExpServiceTest {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT000001111");
+        fundAccountRequest.setPortfolioNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNumber("PT000000000000138924");
-        fundAccountRq.setServiceType("2");
+        fundAccountRq.setPortfolioNumber("PT000000000000138924");
         fundAccountRq.setFundCode("DDD");
 
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
@@ -612,7 +607,7 @@ public class ProductExpServiceTest {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT000001111");
+        fundAccountRequest.setPortfolioNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         try {

@@ -128,7 +128,7 @@ public interface InvestmentRequestClient {
      * @param headers the headers
      * @return the fund summary response
      */
-    @PostMapping(value = "${investment.service.fund.list.info.url}")
+    @PostMapping(value = "${investment.service.fund.listinfo.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundListBody>> callInvestmentFundListInfoService(
             @RequestHeader Map<String, String> headers);

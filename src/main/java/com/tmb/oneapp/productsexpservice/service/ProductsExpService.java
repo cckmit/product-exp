@@ -135,20 +135,28 @@ public class ProductsExpService {
             CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(header, fundAccountRequestBody);
             CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(header, fundRuleRequestBody);
             CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(header, orderStmtByPortRequest);
-            CompletableFuture<ViewAipResponseBody> viewAipBody = productExpAsyncService.fetchViewAip(header, viewAipRequest);
-            CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort, viewAipBody);
+            CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort);
 
             AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
             FundRuleBody fundRuleBody = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
-            ViewAipResponseBody viewAipResponseBody = viewAipBody.get();
-
+            ViewAipResponseBody viewAipResponseBody = getTmbOneServiceResponseResponseEntity(viewAipRequest, header);
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
         return fundAccountResponse;
+    }
+
+    private ViewAipResponseBody getTmbOneServiceResponseResponseEntity(ViewAipRequest viewAipRequest, Map<String, String> header) {
+        try {
+            header.put(ProductsExpServiceConstant.HEADER_X_CRM_ID,viewAipRequest.getCrmId());
+            ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity = investmentRequestClient.getViewAipPlans(header, viewAipRequest);
+            return responseResponseEntity.getBody().getData();
+        }catch (Exception ex){
+            return null;
+        }
     }
 
     /**

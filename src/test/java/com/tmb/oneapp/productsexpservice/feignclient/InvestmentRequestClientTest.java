@@ -54,13 +54,12 @@ public class InvestmentRequestClientTest {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT000001111");
+        fundAccountRequest.setPortfolioNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNumber("PT000000001");
-        fundAccountRq.setServiceType("1");
+        fundAccountRq.setPortfolioNumber("PT000000001");
         TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
@@ -90,13 +89,12 @@ public class InvestmentRequestClientTest {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT000001111");
+        fundAccountRequest.setPortfolioNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
         ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> responseEntity;
         FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setUnitHolderNumber("PT000000001");
-        fundAccountRq.setServiceType("1");
+        fundAccountRq.setPortfolioNumber("PT000000001");
         TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
         try {

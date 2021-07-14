@@ -434,8 +434,7 @@ public class UtilMap {
     public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRequest fundAccountRequest) {
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
         fundAccountRequestBody.setFundCode(fundAccountRequest.getFundCode());
-        fundAccountRequestBody.setServiceType(fundAccountRequest.getServiceType());
-        fundAccountRequestBody.setUnitHolderNumber(fundAccountRequest.getUnitHolderNumber());
+        fundAccountRequestBody.setPortfolioNumber(fundAccountRequest.getPortfolioNumber());
         return fundAccountRequestBody;
     }
 
@@ -484,7 +483,7 @@ public class UtilMap {
      */
     public static OrderStmtByPortRequest mappingRequestStmtByPort(FundAccountRequest fundAccountRequest, String startPage, String endPage) {
         OrderStmtByPortRequest orderStmtByPortRequest = new OrderStmtByPortRequest();
-        orderStmtByPortRequest.setPortfolioNumber(fundAccountRequest.getUnitHolderNumber());
+        orderStmtByPortRequest.setPortfolioNumber(fundAccountRequest.getPortfolioNumber());
         orderStmtByPortRequest.setFundCode(fundAccountRequest.getFundCode());
         orderStmtByPortRequest.setRowStart(startPage);
         orderStmtByPortRequest.setRowEnd(endPage);

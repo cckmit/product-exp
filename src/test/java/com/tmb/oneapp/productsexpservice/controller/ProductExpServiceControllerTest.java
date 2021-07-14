@@ -145,7 +145,7 @@ public class ProductExpServiceControllerTest {
         fundAccountRequest.setFundCode("EEEEEEE");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setPortfolioNumber("PT00000001111");
         fundAccountRequest.setTranType("All");
 
         try {
@@ -171,7 +171,7 @@ public class ProductExpServiceControllerTest {
         fundAccountRequest.setFundCode("EEEEEEE");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setPortfolioNumber("PT00000001111");
         fundAccountRequest.setTranType("All");
 
         try {
@@ -195,7 +195,7 @@ public class ProductExpServiceControllerTest {
         fundAccountRequest.setFundCode("EEEEEEE");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setPortfolioNumber("PT00000001111");
         fundAccountRequest.setTranType("All");
 
         AccountDetailBody accountDetailBody = null;
@@ -255,7 +255,7 @@ public class ProductExpServiceControllerTest {
         fundAccountRequest.setFundCode("EEEEEEE");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
         fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setUnitHolderNumber("PT00000001111");
+        fundAccountRequest.setPortfolioNumber("PT00000001111");
         fundAccountRequest.setTranType("All");
 
         AccountDetailBody accountDetailBody = null;
