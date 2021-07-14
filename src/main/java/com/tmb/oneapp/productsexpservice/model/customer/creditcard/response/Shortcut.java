@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.customer.creditcard.response;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -13,9 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Shortcut {
-    public String icon_name;
-    public String name;
-    public String phrase;
+    @JsonAlias("icon_name")
+    private String iconName;
+    private String name;
+    private String phrase;
 }
