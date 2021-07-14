@@ -1,0 +1,26 @@
+{
+  "creditCards": [
+    {
+      "cardNo": "476281XXXXXX0018",
+      "accountId": "0000000050075530019020018",
+      "cardImage_android": "/product/credit_card/cards_reserve_signature.svg",
+      "cardImage_ios": "/product/credit_card/cards_reserve_signature.png",
+      "productName_en": "Black Diamond",
+      "productName_th": "แบลคไดมอนด์",
+      "productNickname": null,
+      "dueDate": null,
+      "cardType": "PRI",
+      "cardName": "TTB XY11",
+      "updatedDate": "2021-05 31",
+      "compcode": "699",
+      "dueAmount": null,
+      "creditSpend": "66.76",
+      "creditRemain": "2999933.24",
+      "shortcuts": [],
+      "accountStatus": "active",
+      "productOrder": "20001",
+      "supplementaryInfos": null
+    }
+  ],
+  "flashCards": null
+}
