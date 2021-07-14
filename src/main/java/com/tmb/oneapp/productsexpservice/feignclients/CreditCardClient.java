@@ -104,15 +104,15 @@ public interface CreditCardClient {
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/update-e-statement")
 	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEmailEStatement(
-			@RequestHeader Map<String, String> headers, UpdateEStatmentRequest updateEstatementReq);
+			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/enable-e-statement")
 	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEnableEStatement(
-			@RequestHeader Map<String, String> headers, UpdateEStatmentRequest updateEstatementReq);
+			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/cancel-e-statement")
 	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> cancelEnableEStatement(
-			@RequestHeader Map<String, String> headers);
+			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@GetMapping(value = "/apis/creditcard/creditcard-balances/{CRM_ID}")
 	ResponseEntity<GetCardsBalancesResponse> getCreditCardBalance(@RequestHeader Map<String, String> headers,

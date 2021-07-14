@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,31 +70,32 @@ public class ApplyEStatementService {
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
 		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		
+
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
-		
-		constructStatementFlagReq(requestHeaders,statementFlag,updateEstatementReq);
-		
+
+		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq);
+
 		updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
 
 		try {
 
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
-					.updateEStatement(requestHeaders,statementFlag);
+					.updateEStatement(requestHeaders, statementFlag);
 			if (!ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 				throw new TMBCommonException("Fail on update EC system");
 			}
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
-			rollBackSilverlake(crmId, correlationId);
+			rollBackSilverlake(crmId, correlationId,updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * contruct Statment flag update
-	 * @param requestHeaders 
-	 * @param currentEstatementResponse 
+	 * 
+	 * @param requestHeaders
+	 * @param currentEstatementResponse
 	 * @param statementFlag
 	 * @param updateEstatementReq
 	 */
@@ -105,7 +107,7 @@ public class ApplyEStatementService {
 				.getProductHoldingService(requestHeaders, crmId);
 
 		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
-		if (CollectionUtils.isEmpty(loanProducts)) {
+		if (CollectionUtils.isNotEmpty(loanProducts)) {
 			statementFlag.setECashToGoStatementFlag("Y");
 		}
 		ResponseEntity<GetCardsBalancesResponse> cardBalanceResponse = creditCardClient
@@ -115,13 +117,30 @@ public class ApplyEStatementService {
 				updateEstatementReq.getAccountId());
 		if (hasCreditcard) {
 			statementFlag.setECreditcardStatementFlag("Y");
+			generatedFillUpProductype(updateEstatementReq, "CC");
 		}
 		boolean hasFlashCard = lookUpCardbyType(cardBalanceResponse.getBody(), FLASH_CARD_TYPE,
 				updateEstatementReq.getAccountId());
 		if (hasFlashCard) {
+			generatedFillUpProductype(updateEstatementReq, "FL");
 			statementFlag.setEReadyCashStatementFlag("Y");
 		}
 
+	}
+
+	/**
+	 * Update product type supported
+	 * 
+	 * @param updateEstatementReq
+	 * @param productCode
+	 */
+	private void generatedFillUpProductype(UpdateEStatmentRequest updateEstatementReq, String productCode) {
+		List<String> productTypes = updateEstatementReq.getProductType();
+		if (CollectionUtils.isEmpty(productTypes)) {
+			productTypes = new ArrayList<String>();
+		}
+		productTypes.add(productCode);
+		updateEstatementReq.setProductType(productTypes);
 	}
 
 	/**
@@ -134,11 +153,15 @@ public class ApplyEStatementService {
 	 */
 	private boolean lookUpCardbyType(GetCardsBalancesResponse body, String creditCardType, String acccountId) {
 		boolean isFound = false;
-		Optional<CreditCardDetail> creditCardDetailOpt = body.getCreditCard().stream()
-				.filter(e -> e.getAccountId().equals(acccountId)).collect(Collectors.toList()).stream().findFirst();
-		if (creditCardDetailOpt.isPresent()) {
-			isFound = creditCardDetailOpt.get().getCardStatus().getCardPloanFlag().equals(creditCardType);
+		List<CreditCardDetail> creditCardDetail = body.getCreditCard();
+		if (CollectionUtils.isNotEmpty(body.getCreditCard())) {
+			Optional<CreditCardDetail> creditCardDetailOpt = creditCardDetail.stream()
+					.filter(e -> e.getAccountId().equals(acccountId)).collect(Collectors.toList()).stream().findFirst();
+			if (creditCardDetailOpt.isPresent()) {
+				isFound = creditCardDetailOpt.get().getCardStatus().getCardPloanFlag().equals(creditCardType);
+			}
 		}
+
 		return isFound;
 	}
 
@@ -147,13 +170,14 @@ public class ApplyEStatementService {
 	 * 
 	 * @param crmId
 	 * @param correlationId
+	 * @param updateEstatementReq 
 	 */
-	private void rollBackSilverlake(String crmId, String correlationId) {
+	private void rollBackSilverlake(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq) {
 		logger.info("### ROLL BACK SILVERLAKE FOR {} ### ", crmId);
 		Map<String, String> headers = new HashMap<>();
 		headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		creditCardClient.cancelEnableEStatement(headers);
+		creditCardClient.cancelEnableEStatement(headers,updateEstatementReq);
 	}
 
 	/**
