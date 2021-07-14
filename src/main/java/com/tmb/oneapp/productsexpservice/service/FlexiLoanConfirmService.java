@@ -81,7 +81,7 @@ public class FlexiLoanConfirmService {
         String letterOfConsentAttachments = getLetterOfConsentFilePath(appRefNo, applicationResp);
 
         List<RslCode> rslConfigs = getRslConfig(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID));
-        if(rslConfigs.size()>0) {
+        if(!rslConfigs.isEmpty()) {
             String saleSheetAttachments = getSaleSheetFilePath(rslConfigs);
             String termAndConditionAttachments = getTermAndConditionFilePath(rslConfigs);
 
