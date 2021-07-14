@@ -137,7 +137,7 @@ public class ApplyEStatementService {
 	private void generatedFillUpProductype(UpdateEStatmentRequest updateEstatementReq, String productCode) {
 		List<String> productTypes = updateEstatementReq.getProductType();
 		if (CollectionUtils.isEmpty(productTypes)) {
-			productTypes = new ArrayList<String>();
+			productTypes = new ArrayList<>();
 		}
 		productTypes.add(productCode);
 		updateEstatementReq.setProductType(productTypes);
