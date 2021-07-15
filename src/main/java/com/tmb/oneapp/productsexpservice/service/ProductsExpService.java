@@ -154,7 +154,7 @@ public class ProductsExpService {
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, String crmId) {
         FundSummaryBody result = new FundSummaryBody();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummary;
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse;
         Map<String, String> header = UtilMap.createHeader(correlationId);
@@ -163,16 +163,17 @@ public class ProductsExpService {
         try {
             List<String> ports = getPortList(crmId, header, true);
             result.setPortsUnitHolder(ports);
-            unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
+            unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            logger.info(unitHolder.toString());
+            fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
             summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
             countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
                     CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
 
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummaryData);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummary);
 
-            if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
-                var body = fundSummaryData.getBody();
+            if (HttpStatus.OK.value() == fundSummary.getStatusCode().value()) {
+                var body = fundSummary.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
                 this.setFundSummaryBody(result, ports, body, summaryByPort);
             }
@@ -643,7 +644,7 @@ public class ProductsExpService {
         try {
             UnitHolder unitHolder = new UnitHolder();
             String unitHolderList = fundListRequest.getUnitHolderNumber().stream().collect(Collectors.joining(","));
-            unitHolder.setUnitHolderNo(unitHolderList);
+            unitHolder.setUnitHolderNumber(unitHolderList);
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
                     productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
@@ -669,7 +670,7 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
             List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
-            unitHolder.setUnitHolderNo(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            unitHolder.setUnitHolderNumber(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
             CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
             CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(invHeaderReqParameter, crmID);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
