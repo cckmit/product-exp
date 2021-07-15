@@ -470,7 +470,7 @@ public class UtilMap {
         return ViewAipRequest.builder()
                 .crmId(fundAccountRequest.getCrmId())
                 .getFlag(fundAccountRequest.getGetFlag())
-                .portfolioList(fundAccountRequest.getPortfolioList())
+                .portfolioList(fundAccountRequest.getPortfolioNumber())
                 .fundCode(fundAccountRequest.getFundCode())
                 .build();
     }
