@@ -139,7 +139,7 @@ class ApplicationStatusServiceTest {
                         .body(mockPostFirstTimeUsageResponse));
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -235,7 +235,7 @@ class ApplicationStatusServiceTest {
                         .body(mockPostFirstTimeUsageResponse));
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -313,7 +313,7 @@ class ApplicationStatusServiceTest {
                 );
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -416,7 +416,7 @@ class ApplicationStatusServiceTest {
                         .body(mockPostFirstTimeUsageResponse));
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -489,7 +489,7 @@ class ApplicationStatusServiceTest {
                 .thenThrow(new IllegalArgumentException());
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -543,7 +543,7 @@ class ApplicationStatusServiceTest {
                 .thenThrow(TMBCommonException.class);
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -595,7 +595,7 @@ class ApplicationStatusServiceTest {
                 .thenThrow(IllegalArgumentException.class);
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");

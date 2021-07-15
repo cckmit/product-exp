@@ -2,7 +2,6 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.request.ApplicationStatusRequest;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.ApplicationStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.ApplicationStatusService;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ class ApplicationStatusControllerTest {
                         .setRslStatus(0));
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -64,7 +63,7 @@ class ApplicationStatusControllerTest {
                         .setRslStatus(rslSuccess));
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -84,7 +83,7 @@ class ApplicationStatusControllerTest {
                 .thenThrow(new TMBCommonException("fail"));
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(DEVICE_ID, "deviceId");
         header.put(ACCEPT_LANGUAGE, "en");
@@ -100,7 +99,7 @@ class ApplicationStatusControllerTest {
     void getCaseStatus_missingField() {
 
         Map<String, String> header = new HashMap<>();
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
         header.put(X_CRMID, "crmId");
         header.put(ACCEPT_LANGUAGE, "en");
 

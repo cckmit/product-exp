@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
@@ -57,17 +56,15 @@ public class ProductsExpServiceTest {
     }
 
     @Test
-    public void testGetFundSummary() throws Exception {
-
-        FundSummaryRq rq = new FundSummaryRq();
-        rq.setCrmId("test");
-        String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+    public void testGetFundSummary() {
+        List<PtesDetail> ptesDetailList;
+        String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        String crmId = "001100000000000000000012025950";
         FundSummaryByPortResponse fundSummaryByPortResponse;
+        FundSummaryResponse expectedResponse = new FundSummaryResponse();
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
-        List<PtesDetail> ptesDetailList = null;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
 
         try {
@@ -108,17 +105,17 @@ public class ProductsExpServiceTest {
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
-            when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+            when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
-            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
+        FundSummaryBody result = productsExpService.getFundSummary(corrId, crmId);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE, result.getIsPtes());
@@ -129,15 +126,13 @@ public class ProductsExpServiceTest {
 
     @Test
     public void testGetFundSummaryWithSmartPort() {
-
-        FundSummaryRq rq = new FundSummaryRq();
-        rq.setCrmId("test");
-        String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+        List<PtesDetail> ptesDetailList;
+        String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        String crmId = "001100000000000000000012025950";
         FundSummaryByPortResponse fundSummaryByPortResponse;
+        FundSummaryResponse expectedResponse = new FundSummaryResponse();
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
-        List<PtesDetail> ptesDetailList;
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
 
@@ -179,17 +174,17 @@ public class ProductsExpServiceTest {
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
-            when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+            when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
-            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
+        FundSummaryBody result = productsExpService.getFundSummary(corrId, crmId);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE, result.getIsPtes());
@@ -199,12 +194,10 @@ public class ProductsExpServiceTest {
 
     @Test
     public void testGetFundSummaryWithNoSummaryByPort() {
-
-        FundSummaryRq rq = new FundSummaryRq();
-        rq.setCrmId("test");
-        String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+        String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        String crmId = "001100000000000000000012025950";
         FundSummaryByPortResponse fundSummaryByPortResponse;
+        FundSummaryResponse expectedResponse = new FundSummaryResponse();
         TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
@@ -237,14 +230,14 @@ public class ProductsExpServiceTest {
             when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
-            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), any())).thenReturn(
+            when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        FundSummaryBody result = productsExpService.getFundSummary(corrID, rq);
+        FundSummaryBody result = productsExpService.getFundSummary(corrId, crmId);
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertNull(expectedResponse.getBody().getSummaryByPort());

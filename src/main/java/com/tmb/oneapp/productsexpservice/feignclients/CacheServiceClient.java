@@ -21,7 +21,7 @@ public interface CacheServiceClient {
      */
     @GetMapping(value = "/apis/cache/{key}")
     ResponseEntity<TmbOneServiceResponse<String>> getCacheByKey(
-            @RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID,
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationID,
             @PathVariable("key") String key);
 
 

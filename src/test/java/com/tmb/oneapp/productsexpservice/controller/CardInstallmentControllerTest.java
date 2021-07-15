@@ -152,7 +152,7 @@ public class CardInstallmentControllerTest {
 
 	public Map<String, String> headerRequestParameter() {
 		Map<String, String> headers = new HashMap<>();
-		headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "test");
 		headers.put("os-version", "1.1");
 		headers.put("device-model", "nokia");
 		headers.put("activity-type-id", "00700103");
@@ -187,7 +187,7 @@ public class CardInstallmentControllerTest {
 		cardStatement.setPromotionFlag("Y");
 		oneServiceResponse.setData(cardInstallment);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
+		responseHeaders.set(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "123");
 		when(creditCardClient.confirmCardInstallment(any(), any()))
 				.thenThrow(new IllegalStateException("Error occurred"));
 		final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();
@@ -229,7 +229,7 @@ public class CardInstallmentControllerTest {
 		cardStatement.setPromotionFlag("Y");
 		oneServiceResponse.setData(cardInstallment);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
+		responseHeaders.set(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "123");
 		when(creditCardClient.confirmCardInstallment(any(), any()))
 				.thenThrow(new IllegalStateException("Error occurred"));
 		final TmbOneServiceResponse<List<CardInstallmentResponse>> loanStatementResponse = new TmbOneServiceResponse();

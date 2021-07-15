@@ -44,7 +44,7 @@ public class DcaInformationController {
     @PostMapping(value = "/dca/info", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<DcaInformationDto>> getDcaInformation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody DcaInformationRequestBody dcaInformationRequestBody) {
         TmbOneServiceResponse<DcaInformationDto> oneServiceResponse = dcaInformationService.getDcaInformation(correlationId, dcaInformationRequestBody.getCrmId());
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {

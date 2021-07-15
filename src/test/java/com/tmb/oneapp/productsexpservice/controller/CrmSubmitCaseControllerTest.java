@@ -38,7 +38,7 @@ class CrmSubmitCaseControllerTest {
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CRMID, "crmId");
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
 
         String requestBody = "{\n" +
                 "                \"firstname_th\": \"NAME\",\n" +
@@ -65,7 +65,7 @@ class CrmSubmitCaseControllerTest {
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CRMID, "crmId");
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
 
         String requestBody = "{\n" +
                 "                \"firstname_th\": \"NAME\",\n" +
@@ -92,7 +92,7 @@ class CrmSubmitCaseControllerTest {
 
         Map<String, String> header = new HashMap<>();
         header.put(X_CRMID, "crmId");
-        header.put(X_CORRELATION_ID, "correlationId");
+        header.put(HEADER_X_CORRELATION_ID, "correlationId");
 
         String requestBody = "{\n" +
                 "                \"firstname_th\": \"NAME\",\n" +

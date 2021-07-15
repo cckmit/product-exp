@@ -44,7 +44,7 @@ public class CreditCardInformationController {
     @PostMapping(value = "/accnt/creditcard", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> getCreditCardInformation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody CreditCardInformationRequestBody creditCardInformationRequestBody) {
         TmbOneServiceResponse<CreditCardInformationResponse> oneServiceResponse = creditcardInformationService.getCreditCardInformation(correlationId, creditCardInformationRequestBody.getCrmId());
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {

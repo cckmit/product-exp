@@ -224,7 +224,7 @@ public class FetchCardDetailsControllerTest {
 
     public Map<String, String> headerRequestParameter(String reqHeaders) {
         Map<String, String> reqData = new HashMap<String, String>();
-        reqData.put(ProductsExpServiceConstant.X_CORRELATION_ID, reqHeaders);
+        reqData.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, reqHeaders);
         return reqData;
 
     }

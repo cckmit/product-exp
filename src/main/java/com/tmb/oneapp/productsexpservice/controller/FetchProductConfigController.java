@@ -61,10 +61,10 @@ public class FetchProductConfigController {
     @LogAround
     @GetMapping(value = "/fetch/product-config")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
 
     public ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfigList(
-            @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId) {
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) final String correlationId) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<List<ProductConfig>> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -106,11 +106,11 @@ public class FetchProductConfigController {
     @LogAround
     @GetMapping(value = "/filter/{ekycFlag}")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
             @ApiImplicitParam(name = "Open eKyc filter", value = "eKyc flag", required = true, dataType = "string", paramType = "param", example = "1")})
 
     public ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfigListByEKYCFilter(
-            @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId,
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) final String correlationId,
             @PathVariable String ekycFlag
     ) throws JsonProcessingException, TMBCommonException {
         TmbOneServiceResponse<List<ProductConfig>> oneServiceResponse = new TmbOneServiceResponse<>();

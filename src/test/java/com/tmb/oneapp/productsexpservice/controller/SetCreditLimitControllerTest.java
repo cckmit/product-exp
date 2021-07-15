@@ -118,7 +118,7 @@ public class SetCreditLimitControllerTest {
 
     public Map<String, String> headerRequestParameter() {
         Map<String, String> headers = new HashMap<>();
-        headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+        headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "test");
         headers.put("os-version", "1.1");
         headers.put("device-model", "nokia");
         headers.put("activity-type-id", "00700103");

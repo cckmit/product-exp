@@ -24,7 +24,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -417,7 +416,7 @@ public class LoanDetailsControllerTest {
 
     public Map<String, String> headerRequestParameter(String correlationId) {
         Map<String, String> reqData = new HashMap<String, String>();
-        reqData.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+        reqData.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
         return reqData;
 
     }

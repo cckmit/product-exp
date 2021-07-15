@@ -32,8 +32,8 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/rsl/status")
 	ResponseEntity<TmbOneServiceResponse<List<LendingRslStatusResponse>>> getLendingRslStatus(
-			@RequestHeader(X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_CITIZEN_ID) String citizenId,
-			@RequestHeader(HEADER_MOBILE_NO) String mobileNo);
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_CITIZEN_ID) String citizenId,
+            @RequestHeader(HEADER_MOBILE_NO) String mobileNo);
 
 	/**
 	 * Call RSL Criteria for WorkStatusInfo
@@ -43,7 +43,7 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/criteria/status")
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkStatusInfo(
-			@RequestHeader(X_CORRELATION_ID) String correlationId);
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId);
 
 	/**
 	 * Call RSL Criteria for OccupationByOccupationCode
@@ -54,7 +54,7 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/criteria/status/{entrycode}")
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkStatusInfo(
-			@RequestHeader(X_CORRELATION_ID) String correlationId, @PathVariable("entrycode") String reference);
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @PathVariable("entrycode") String reference);
 
 	/**
 	 * Call RSL Criteria for get business type information
@@ -64,7 +64,7 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/criteria/businesstype")
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getBusinessTypeInfo(
-			@RequestHeader(X_CORRELATION_ID) String correlationId);
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId);
 
 	/**
 	 * Call RSL Criteria for get business type information
@@ -74,7 +74,7 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/criteria/businesstype/{entrycode}")
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getBusinessSubTypeInfo(
-			@RequestHeader(X_CORRELATION_ID) String correlationId, @PathVariable("entrycode") String reference);
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @PathVariable("entrycode") String reference);
 
 	/**
 	 * Call RSL Criteria for get source of income
@@ -84,7 +84,7 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/criteria/income/{entryCode}")
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getSourceOfIncomeInfo(
-			@RequestHeader(X_CORRELATION_ID) String correlationId, @PathVariable("entryCode") String reference);
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @PathVariable("entryCode") String reference);
 
 	/**
 	 * Call RSL Criteria for country information
@@ -95,7 +95,7 @@ public interface LendingServiceClient {
 	@GetMapping(value = "/apis/lending-service/criteria/country")
 
 	ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getCountryList(
-			@RequestHeader(X_CORRELATION_ID) String correlationId);
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId);
 
 	/**
 	 * Call RSL Criteria for working information
@@ -108,7 +108,7 @@ public interface LendingServiceClient {
 	 */
 	@GetMapping(value = "/apis/lending-service/fetch-working-info")
 	ResponseEntity<TmbOneServiceResponse<WorkProfileInfoResponse>> getWorkInformationWithProfile(
-			@RequestHeader(X_CORRELATION_ID) String correlationId,
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestParam(value = "occupationcode") String occupationCode,
 			@RequestParam(value = "businesstypecode") String businessTypeCode,
 			@RequestParam(value = "countryofincome") String countryOfIncome);
@@ -121,7 +121,7 @@ public interface LendingServiceClient {
 	 * @return
 	 */
 	@PostMapping(value = "/apis/lending-service/loan/products")
-	ResponseEntity<TmbOneServiceResponse<Object>> getLoanProducts(@RequestHeader(X_CORRELATION_ID) String correlationId,
+	ResponseEntity<TmbOneServiceResponse<Object>> getLoanProducts(@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestBody ProductRequest request);
 
 }
