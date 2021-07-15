@@ -134,10 +134,11 @@ public interface CustomerServiceClient {
      * Update email statment
      *
      * @param requestHeaders
+     * @param statementFlag 
      * @return
      */
     @PostMapping(value = "/apis/customers/profile/update-e-statement")
     ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
-            @RequestHeader Map<String, String> requestHeaders);
+            @RequestHeader Map<String, String> requestHeaders, @RequestBody StatementFlag statementFlag);
 
 }
