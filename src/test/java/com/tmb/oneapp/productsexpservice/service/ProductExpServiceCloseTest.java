@@ -388,7 +388,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void validateTMBResponse() {
         UtilMap utilMap = new UtilMap();
-        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(null, null, null, null);
+        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(null, null, null);
         Assert.assertNull(fundAccountResponse);
     }
 

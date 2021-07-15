@@ -12,8 +12,6 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
@@ -58,17 +56,17 @@ public class UtilMap {
      * @param accountDetailBody
      * @param fundRuleBody
      * @param statementResponse
-     * @param viewAipResponseBody
      * @return FundAccountRs
      */
-    public static FundAccountResponse validateTMBResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody,
-                                                          StatementResponse statementResponse, ViewAipResponseBody viewAipResponseBody) {
+    public static FundAccountResponse validateTMBResponse(AccountDetailBody accountDetailBody,
+                                                          FundRuleBody fundRuleBody,
+                                                          StatementResponse statementResponse) {
 
         if ((StringUtils.isEmpty(accountDetailBody) && StringUtils.isEmpty(fundRuleBody))) {
             return null;
         } else {
             FundAccountResponse fundAccountResponse = new FundAccountResponse();
-            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
+            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accountDetailBody, fundRuleBody, statementResponse);
             fundAccountResponse.setDetails(fundAccountDetail);
             return fundAccountResponse;
         }
@@ -81,8 +79,9 @@ public class UtilMap {
      * @param fundRuleBody
      * @return FundAccountDetail
      */
-    public static FundAccountDetail mappingResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody,
-                                                    StatementResponse statementResponse, ViewAipResponseBody viewAipResponseBody) {
+    public static FundAccountDetail mappingResponse(AccountDetailBody accountDetailBody,
+                                                    FundRuleBody fundRuleBody,
+                                                    StatementResponse statementResponse) {
 
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accountDetailBody.getFundDetail(), accountDetail);
@@ -99,7 +98,6 @@ public class UtilMap {
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
         fundAccountDetail.setFundRuleInfoList(fundRuleBody.getFundRuleInfoList());
         fundAccountDetail.setAccountDetail(accountDetail);
-        fundAccountDetail.setViewAip(viewAipResponseBody);
 
         return fundAccountDetail;
     }
@@ -458,21 +456,6 @@ public class UtilMap {
             fundRuleRequestBody.setTranType(fundAccount.getTranType());
         }
         return fundRuleRequestBody;
-    }
-
-    /**
-     * Generic Method to mappingRequestViewAip
-     *
-     * @param fundAccountRequest
-     * @return FundRuleRequestBody
-     */
-    public static ViewAipRequest mappingRequestViewAip(FundAccountRequest fundAccountRequest) {
-        return ViewAipRequest.builder()
-                .crmId(fundAccountRequest.getCrmId())
-                .getFlag(fundAccountRequest.getGetFlag())
-                .portfolioList(fundAccountRequest.getPortfolioNumber())
-                .fundCode(fundAccountRequest.getFundCode())
-                .build();
     }
 
     /**

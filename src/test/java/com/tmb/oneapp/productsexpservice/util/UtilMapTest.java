@@ -5,8 +5,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundClass;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
@@ -80,9 +78,7 @@ public class UtilMapTest {
         statementResponse.setTotalRecord("10");
         statementResponse.setStatementList(list);
 
-        ViewAipResponseBody viewAipResponseBody = ViewAipResponseBody.builder().build();
-
-        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse, viewAipResponseBody);
+        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse);
         List<FundOrderHistory> ordersHistories = result.getDetails().getAccountDetail().getOrdersHistories();
         Assert.assertEquals(true, ordersHistories.isEmpty());
     }
@@ -120,10 +116,7 @@ public class UtilMapTest {
         }
         statementResponse.setStatementList(list);
 
-        /* aipResponseBody */
-        ViewAipResponseBody aipResponseBody = ViewAipResponseBody.builder().build();
-
-        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse, aipResponseBody);
+        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse);
         List<FundRuleInfoList> fundRuleInfoList = result.getFundRuleInfoList();
         Assert.assertEquals(true, fundRuleInfoList.isEmpty());
     }
@@ -295,28 +288,6 @@ public class UtilMapTest {
     public void testMapTmbOneServiceResponse() {
         TmbOneServiceResponse result = UtilMap.mapTmbOneServiceResponse(null);
         Assert.assertEquals(null, result);
-    }
-
-    @Test
-    void should_return_view_aip_request_when_call_map_request_view_aip_given_fund_account_request() {
-        // Given
-        FundAccountRequest fundAccountRequest = new FundAccountRequest();
-        fundAccountRequest.setCrmId("00000000028365");
-        fundAccountRequest.setGetFlag("1");
-        fundAccountRequest.setPortfolioNumber("PT000000000001831831, PT000000000001831820");
-        fundAccountRequest.setFundCode("TMBGQG");
-
-        // When
-        ViewAipRequest actual = UtilMap.mappingRequestViewAip(fundAccountRequest);
-
-        // Then
-        ViewAipRequest expected = ViewAipRequest.builder()
-                .crmId("00000000028365")
-                .getFlag("1")
-                .portfolioList("PT000000000001831831, PT000000000001831820")
-                .fundCode("TMBGQG")
-                .build();
-        assertEquals(expected, actual);
     }
 
     @Test

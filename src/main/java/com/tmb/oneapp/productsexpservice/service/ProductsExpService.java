@@ -18,8 +18,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
@@ -128,7 +126,6 @@ public class ProductsExpService {
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRequest);
         OrderStmtByPortRequest orderStmtByPortRequest = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
                 ProductsExpServiceConstant.FIXED_START_PAGE, ProductsExpServiceConstant.FIXED_END_PAGE);
-        ViewAipRequest viewAipRequest = UtilMap.mappingRequestViewAip(fundAccountRequest);
 
         Map<String, String> header = UtilMap.createHeader(correlationId);
         try {
@@ -140,23 +137,12 @@ public class ProductsExpService {
             AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
             FundRuleBody fundRuleBody = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
-            ViewAipResponseBody viewAipResponseBody = getTmbOneServiceResponseResponseEntity(viewAipRequest, header);
-            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
+            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
         }
         return fundAccountResponse;
-    }
-
-    private ViewAipResponseBody getTmbOneServiceResponseResponseEntity(ViewAipRequest viewAipRequest, Map<String, String> header) {
-        try {
-            header.put(ProductsExpServiceConstant.HEADER_X_CRM_ID,viewAipRequest.getCrmId());
-            ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity = investmentRequestClient.getViewAipPlans(header, viewAipRequest);
-            return responseResponseEntity.getBody().getData();
-        }catch (Exception ex){
-            return null;
-        }
     }
 
     /**

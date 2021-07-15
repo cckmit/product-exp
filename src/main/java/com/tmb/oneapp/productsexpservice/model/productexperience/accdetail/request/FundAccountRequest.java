@@ -12,9 +12,6 @@ import javax.validation.constraints.NotNull;
 public class FundAccountRequest {
 
     @NotNull
-    private String crmId;
-
-    @NotNull
     private String portfolioNumber;
 
     @NotNull
@@ -28,7 +25,4 @@ public class FundAccountRequest {
 
     @NotNull
     private String serviceType;
-
-    @NotNull
-    private String getFlag;
 }
