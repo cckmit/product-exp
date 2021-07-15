@@ -148,7 +148,6 @@ public class ProductExpServiceTest {
         fundAccountRequest.setPortfolioNumber("PT0000000000123");
         fundAccountRequest.setCrmId("00000000028365");
         fundAccountRequest.setGetFlag("1");
-        fundAccountRequest.setPortfolioList("PT000000000001831831, PT000000000001831820");
 
         try {
             ObjectMapper mapper = new ObjectMapper();

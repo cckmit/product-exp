@@ -303,7 +303,7 @@ public class UtilMapTest {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setCrmId("00000000028365");
         fundAccountRequest.setGetFlag("1");
-        fundAccountRequest.setPortfolioList("PT000000000001831831, PT000000000001831820");
+        fundAccountRequest.setPortfolioNumber("PT000000000001831831, PT000000000001831820");
         fundAccountRequest.setFundCode("TMBGQG");
 
         // When

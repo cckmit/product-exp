@@ -31,7 +31,4 @@ public class FundAccountRequest {
 
     @NotNull
     private String getFlag;
-
-    @NotNull
-    private String portfolioList;
 }
