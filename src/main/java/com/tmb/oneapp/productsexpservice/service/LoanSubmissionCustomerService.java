@@ -50,7 +50,7 @@ public class LoanSubmissionCustomerService {
         InterestRate interestRate = new InterestRate();
         LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
 
-        response.setTenure(facilityInfo[0].getTenure());
+        response.setTenure(BigDecimal.valueOf(36));
         response.setPayAmount(BigDecimal.valueOf(25));
 
         for (var itemFacility : facilityInfo) {
@@ -66,7 +66,7 @@ public class LoanSubmissionCustomerService {
             rangeIncome.setStatusWorking(itemRangeIncome.getEmploymentStatus());
             rangeIncome.setProductNameEng(itemRangeIncome.getProductNameEng());
             rangeIncome.setProductNameTh(itemRangeIncome.getProductNameTh());
-            if (!itemRangeIncome.getProductCode().equals(RC01)) {
+            if (!itemRangeIncome.getProductCode().equals(RC01) && itemRangeIncome.getRevenueMultiple() != null) {
                 rangeIncome.setMaxLimit(itemRangeIncome.getMaxLimit());
                 rangeIncome.setRevenueMultiple(itemRangeIncome.getRevenueMultiple());
             }
@@ -74,7 +74,10 @@ public class LoanSubmissionCustomerService {
         }
 
         for (var itemInterestRate : interestRateAll) {
-            interestRate.setInterestRate(itemInterestRate.getInterestRate());
+            if (itemInterestRate.getInterestRate() != null) {
+                interestRate.setInterestRate(itemInterestRate.getInterestRate());
+            }
+
             interestRate.setProductCode(itemInterestRate.getProductCode());
             interestRate.setMaxAmount(itemInterestRate.getRangeIncomeMax());
             interestRate.setMinAmount(itemInterestRate.getRangeIncomeMin());
