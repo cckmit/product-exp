@@ -597,7 +597,7 @@ public class UtilMap {
      * @param crmId
      * @return
      */
-    public static String fillUpCrmIdFormat(String crmId) {
+    public static String fullCrmIdFormat(String crmId) {
         if (crmId.length() > 14) {
             return crmId;
         }
