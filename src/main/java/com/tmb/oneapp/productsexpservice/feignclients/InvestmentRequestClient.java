@@ -17,8 +17,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickn
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
@@ -297,16 +295,4 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> updatePortfolioNickname(
             @RequestHeader Map<String, String> header, @RequestBody PortfolioNicknameRequest portfolioNicknameRequest);
-
-    /**
-     * Call investment portfolio nickname service to create or update portfolio nickname.
-     *
-     * @param header         the headers
-     * @param viewAipRequest the viewAipRequest
-     * @return the AIP plans response
-     */
-    @PostMapping(value = "${investment.service.view.aip.url}")
-    @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> getViewAipPlans(
-            @RequestHeader Map<String, String> header, @RequestBody ViewAipRequest viewAipRequest);
 }

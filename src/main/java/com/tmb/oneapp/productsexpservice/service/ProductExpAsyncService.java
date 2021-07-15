@@ -15,8 +15,6 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -286,27 +284,6 @@ public class ProductExpAsyncService {
             suitabilityBody.setRmNumber(crmId);
             ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundSuitabilityService(invHeaderReqParameter, suitabilityBody);
-            return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw getTmbCommonException();
-        }
-    }
-
-    /**
-     * Method fetchViewAip to get AIP plans
-     *
-     * @param header
-     * @param viewAipRequest
-     * @return CompletableFuture<SuitabilityInfo>
-     */
-    @LogAround
-    @Async
-    public CompletableFuture<ViewAipResponseBody> fetchViewAip(Map<String, String> header, ViewAipRequest viewAipRequest) throws TMBCommonException {
-        try {
-            header.put(ProductsExpServiceConstant.HEADER_X_CRM_ID,viewAipRequest.getCrmId());
-            ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity =
-                    investmentRequestClient.getViewAipPlans(header, viewAipRequest);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

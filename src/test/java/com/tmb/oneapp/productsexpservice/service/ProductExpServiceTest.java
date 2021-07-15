@@ -11,8 +11,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
@@ -139,22 +137,18 @@ public class ProductExpServiceTest {
     @Test
     public void testGetFundAccountDetailAndFundRule() throws Exception {
         StatementResponse statementResponse;
-        ViewAipResponse viewAipResponse = new ViewAipResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundHouseCode("ABCC");
         fundAccountRequest.setTranType("2");
         fundAccountRequest.setFundCode("ABCC");
         fundAccountRequest.setServiceType("1");
         fundAccountRequest.setPortfolioNumber("PT0000000000123");
-        fundAccountRequest.setCrmId("00000000028365");
-        fundAccountRequest.setGetFlag("1");
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             accountDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccountDetailBody.class);
             fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule.json").toFile(), FundRuleBody.class);
             statementResponse = mapper.readValue(Paths.get("src/test/resources/investment/investment_stmt.json").toFile(), StatementResponse.class);
-            viewAipResponse = mapper.readValue(Paths.get("src/test/resources/investment/account_detail/view_aip.json").toFile(), ViewAipResponse.class);
 
             when(productExpAsyncService.fetchFundAccountDetail(any(), any())).thenReturn(CompletableFuture.completedFuture(accountDetailBody));
             when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleBody));
@@ -172,14 +166,11 @@ public class ProductExpServiceTest {
         FundRuleBody fundRuleBody = fetchFundRule.get();
         StatementResponse fetchStatementResponse = fetchStmtByPort.get();
 
-        ViewAipResponseBody viewAipResponseBody = new ViewAipResponseBody();
-        viewAipResponseBody.setFundClassList(viewAipResponse.getData().getFundClassList());
-        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, fetchStatementResponse, viewAipResponseBody);
+        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, fetchStatementResponse);
 
         Assert.assertNotNull(fundAccountResponse);
         Assert.assertNotNull(accountDetailBody);
         Assert.assertNotNull(fetchStatementResponse);
-        Assert.assertNotNull(viewAipResponseBody);
         FundAccountResponse result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
         Assert.assertNotNull(result);
     }
@@ -316,8 +307,7 @@ public class ProductExpServiceTest {
         FundAccountResponse result = productsExpService.getFundAccountDetail(corrID, fundAccountRequest);
         Assert.assertNull(result);
         UtilMap utilMap = new UtilMap();
-        ViewAipResponseBody viewAipResponseBody = ViewAipResponseBody.builder().build();
-        FundAccountDetail fundAccountDetailResponse = utilMap.mappingResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
+        FundAccountDetail fundAccountDetailResponse = utilMap.mappingResponse(accountDetailBody, fundRuleBody, statementResponse);
         Assert.assertNotNull(fundAccountDetailResponse);
     }
 
