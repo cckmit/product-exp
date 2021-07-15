@@ -155,7 +155,7 @@ public class UnbilledStatementControllerTest {
 
     private HttpHeaders getHttpHeaders() {
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "123");
         return responseHeaders;
     }
 

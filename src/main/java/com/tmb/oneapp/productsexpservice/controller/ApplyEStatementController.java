@@ -1,6 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
 import java.time.Instant;
@@ -51,11 +51,11 @@ public class ApplyEStatementController {
 	@PostMapping(value = "/credit-card/get-e-statement", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "get e-statement")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000012004011", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getEStatement(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -80,12 +80,12 @@ public class ApplyEStatementController {
 	@PostMapping(value = "/credit-card/update-e-statement", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "update e-statement")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000012004011", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getUpdateEStatement(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers,
 			@RequestBody UpdateEStatmentRequest updateEstatementReq) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));

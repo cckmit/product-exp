@@ -54,7 +54,7 @@ public class CaseService {
      */
     public CaseStatusResponse getCaseStatus(Map<String, String> requestHeaders, String serviceTypeId) throws TMBCommonException {
         try {
-            String correlationId = requestHeaders.get(X_CORRELATION_ID);
+            String correlationId = requestHeaders.get(HEADER_X_CORRELATION_ID);
             String crmId = requestHeaders.get(X_CRMID);
             String deviceId = requestHeaders.get(DEVICE_ID);
 
@@ -119,7 +119,7 @@ public class CaseService {
      */
     @SuppressWarnings("all")
     public CustomerFirstUsage getFirstTimeUsage(Map<String, String> requestHeaders, String serviceTypeId) throws TMBCommonException {
-        String correlationId = requestHeaders.get(X_CORRELATION_ID);
+        String correlationId = requestHeaders.get(HEADER_X_CORRELATION_ID);
         String crmId = requestHeaders.get(X_CRMID);
         String deviceId = requestHeaders.get(DEVICE_ID);
 
@@ -202,7 +202,7 @@ public class CaseService {
      */
     @SuppressWarnings("all")
     public List<CaseStatusCase> getCaseStatus(Map<String, String> requestHeaders) throws TMBCommonException {
-        String correlationId = requestHeaders.get(X_CORRELATION_ID);
+        String correlationId = requestHeaders.get(HEADER_X_CORRELATION_ID);
         String crmId = requestHeaders.get(X_CRMID);
 
         try {
@@ -269,7 +269,7 @@ public class CaseService {
             baseEvent.setActivityDate(String.valueOf(System.currentTimeMillis()));
             baseEvent.setCrmId(requestHeaders.get(X_CRMID));
             baseEvent.setDeviceId(requestHeaders.get(DEVICE_ID));
-            baseEvent.setCorrelationId(requestHeaders.get(X_CORRELATION_ID));
+            baseEvent.setCorrelationId(requestHeaders.get(HEADER_X_CORRELATION_ID));
             baseEvent.setChannel(requestHeaders.get(CHANNEL));
             baseEvent.setAppVersion(requestHeaders.get(APP_VERSION));
             baseEvent.setIpAddress(requestHeaders.get(X_FORWARD_FOR));

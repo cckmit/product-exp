@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,8 +29,6 @@ import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
-import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
@@ -149,26 +148,26 @@ public class ProductsExpService {
      * Get fund summary fund summary response.
      *
      * @param correlationId the correlation id
-     * @param rq            the rq
+     * @param crmId         the crm id
      * @return the fund summary response
      */
     @LogAround
-    public FundSummaryBody getFundSummary(String correlationId, FundSummaryRq rq) {
+    public FundSummaryBody getFundSummary(String correlationId, String crmId) {
         FundSummaryBody result = new FundSummaryBody();
         ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData;
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse;
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> header = UtilMap.createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
+
         try {
-            String crmId = rq.getCrmId();
-            List<String> ports = getPortList(crmId, invHeaderReqParameter, true);
+            List<String> ports = getPortList(crmId, header, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
-            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
-            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(invHeaderReqParameter,
-                    CountToBeProcessOrderRequestBody.builder().serviceType("1").rm(crmId).build());
+            fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
+            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
+            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
+                    CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummaryData);
 
@@ -189,12 +188,10 @@ public class ProductsExpService {
         }
     }
 
-    public List<String> getPortList(String crmId, Map<String, String> invHeaderReqParameter, boolean isIncludePtesPortfolio) throws com.fasterxml.jackson.core.JsonProcessingException {
+    public List<String> getPortList(String crmId, Map<String, String> header, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
-        PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
-        ptesBodyRequest.setRmNumber(crmId);
-        String portData = customerExpServiceClient.getAccountSaving(invHeaderReqParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID), crmId);
+        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), crmId);
 
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
@@ -207,9 +204,9 @@ public class ProductsExpService {
             });
         }
         if (isIncludePtesPortfolio) {
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult = investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, crmId);
 
-            Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptestDetailResult)
+            Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptesDetailResult)
                     .map(ResponseEntity::getBody)
                     .map(TmbOneServiceResponse::getData);
             if (ptesDetailList.isPresent()) {

@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Builder
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreditcardInformationResponse {
+public class CreditCardInformationResponse {
 
     @JsonAlias("credit_cards")
     private List<CreditCard> creditCards;

@@ -75,7 +75,7 @@ public interface CustomerServiceClient {
      */
     @GetMapping(value = "/apis/customers/case/status/{CRM_ID}")
     ResponseEntity<TmbOneServiceResponse<List<CaseStatusCase>>> getCaseStatus(
-            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
             @PathVariable("CRM_ID") String crmId
     );
 
@@ -99,7 +99,7 @@ public interface CustomerServiceClient {
     @PostMapping(value = "/apis/customers/case/submit")
     ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitCustomerCase(
             @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
             @RequestBody CustomerCaseSubmitBody requestBody
     );
 
@@ -114,7 +114,7 @@ public interface CustomerServiceClient {
     @PostMapping(value = "/apis/customers/search")
     ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerSearch(
             @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = X_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
             @RequestBody CrmSearchBody requestBody
     );
 
@@ -128,7 +128,7 @@ public interface CustomerServiceClient {
     @GetMapping(value = "/apis/customers/profile/get-e-statement")
     ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getCustomerEStatement(
             @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = X_CORRELATION_ID) String correlationId);
+            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId);
 
     /**
      * Update email statment

@@ -93,7 +93,7 @@ public class CampaignTransactionsControllerTest {
     @Test
     void testBlockCardDetailsError() throws Exception {
         Map<String, String> requestHeadersParameter = new HashMap<>();
-        requestHeadersParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+        requestHeadersParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "test");
         CampaignTransactionQuery requestBodyParameter = new CampaignTransactionQuery();
         requestBodyParameter.setAccountId("0000000050078360018000167");
         requestBodyParameter.setSearchKeys("");

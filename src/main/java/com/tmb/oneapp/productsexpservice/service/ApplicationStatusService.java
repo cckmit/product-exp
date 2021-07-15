@@ -71,7 +71,7 @@ public class ApplicationStatusService {
         try {
             ApplicationStatusResponse response = new ApplicationStatusResponse();
 
-            String correlationId = requestHeaders.get(X_CORRELATION_ID);
+            String correlationId = requestHeaders.get(HEADER_X_CORRELATION_ID);
             String crmId = requestHeaders.get(X_CRMID);
             String language = requestHeaders.get(ACCEPT_LANGUAGE);
             String prospective = requestHeaders.getOrDefault(HEADER_PROSPECTIVE, "false");
@@ -383,7 +383,7 @@ public class ApplicationStatusService {
     @SuppressWarnings("all")
     public CustomerFirstUsage getFirstTimeUsage(Map<String, String> requestHeaders, String serviceTypeId) throws TMBCommonException {
         logger.info("Calling GET /apis/customers/firstTimeUsage.");
-        String correlationId = requestHeaders.get(X_CORRELATION_ID);
+        String correlationId = requestHeaders.get(HEADER_X_CORRELATION_ID);
         String crmId = requestHeaders.get(X_CRMID);
         String deviceId = requestHeaders.get(DEVICE_ID);
 

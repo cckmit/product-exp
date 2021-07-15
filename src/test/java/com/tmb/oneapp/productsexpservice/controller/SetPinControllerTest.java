@@ -148,7 +148,7 @@ public class SetPinControllerTest {
 
     public Map<String, String> headerRequestParameter(String correlationId) {
         Map<String, String> reqData = new HashMap<String, String>();
-        reqData.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+        reqData.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
         return reqData;
 
     }

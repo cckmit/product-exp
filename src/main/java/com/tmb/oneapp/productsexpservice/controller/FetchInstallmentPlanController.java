@@ -50,9 +50,9 @@ public class FetchInstallmentPlanController {
     @LogAround
     @GetMapping(value = "/fetch-installment-plan")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
     public ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> getInstallmentPlan(
-            @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) final String correlationId) {
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) final String correlationId) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<List<InstallmentPlan>> oneServiceResponse = new TmbOneServiceResponse<>();

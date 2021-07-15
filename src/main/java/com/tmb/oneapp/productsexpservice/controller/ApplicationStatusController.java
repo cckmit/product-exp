@@ -54,7 +54,7 @@ public class ApplicationStatusController {
     @ApiOperation(value = "Get Application Status")
     @PostMapping(value = "/application/status")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+            @ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
             @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000001184383", required = true, dataType = "string", paramType = "header"),
             @ApiImplicitParam(name = DEVICE_ID, defaultValue = "34cec72b26b7a30ae0a3eaa48d45d82bc2f69728472d9145d57565885", required = true, dataType = "string", paramType = "header"),
             @ApiImplicitParam(name = ACCEPT_LANGUAGE, defaultValue = "en", required = true, paramType = "header"),
@@ -68,7 +68,7 @@ public class ApplicationStatusController {
 
         TmbOneServiceResponse<ApplicationStatusResponse> response = new TmbOneServiceResponse<>();
 
-        if ((!requestHeaders.containsKey(X_CORRELATION_ID) ||
+        if ((!requestHeaders.containsKey(HEADER_X_CORRELATION_ID) ||
                 !requestHeaders.containsKey(X_CRMID) ||
                 !requestHeaders.containsKey(DEVICE_ID)) &&
                 !TRUE.equals(requestHeaders.get(HEADER_PROSPECTIVE))) {

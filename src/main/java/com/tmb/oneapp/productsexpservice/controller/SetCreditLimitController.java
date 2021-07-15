@@ -63,7 +63,7 @@ public class SetCreditLimitController {
     @ApiOperation(value = "Temporary and Permanent Credit Card Limit")
     @PostMapping(value = "/credit-card/set-credit-limit")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")})
 
     public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> setCreditLimit(
             @RequestBody SetCreditLimitReq requestBodyParameter,
@@ -74,7 +74,7 @@ public class SetCreditLimitController {
         TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<>();
         String mode = requestBodyParameter.getMode();
 
-        String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+        String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
         String activityDate = Long.toString(System.currentTimeMillis());
         String accountId = requestBodyParameter.getAccountId();
         String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);

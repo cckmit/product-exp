@@ -61,7 +61,7 @@ public class CreditCardController {
     @ApiOperation(value = "Verify Credit Card Details Api")
     @PostMapping(value = "/credit-card/verifycreditcard")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
             @ApiImplicitParam(name = "account-id", value = "Account Id", required = true, dataType = "string", paramType = "header", example = "0000000050078360018000167")})
 
     public ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> verifyCreditCardDetails(
@@ -71,10 +71,10 @@ public class CreditCardController {
         TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VERIFY_CARD_NO;
         String activityDate = Long.toString(System.currentTimeMillis());
-        CreditCardEvent creditCardEvent = new CreditCardEvent(requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate, activityId);
+        CreditCardEvent creditCardEvent = new CreditCardEvent(requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()), activityDate, activityId);
         try {
             String accountId = requestHeadersParameter.get(ProductsExpServiceConstant.ACCOUNT_ID);
-            String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+            String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)) {
                 ResponseEntity<GetCardBlockCodeResponse> blockCodeRes = creditCardClient
                         .getCardBlockCode(correlationId, accountId);

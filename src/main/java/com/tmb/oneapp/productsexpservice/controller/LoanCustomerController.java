@@ -35,7 +35,7 @@ public class LoanCustomerController {
     @ApiOperation("Get customer profile")
     @GetMapping(value = "/get-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanCustomerResponse>> getLoanCustomerProfile(@Valid @RequestHeader(name = "X-CRMID") String crmId,
-                                                                                              @Valid @RequestHeader(name = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+                                                                                              @Valid @RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
                                                                                               @Valid LoanCustomerRequest request) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -63,7 +63,7 @@ public class LoanCustomerController {
     @LogAround
     @ApiOperation("Submission customer profile")
     @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+    public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
                                                                                                      @Valid @RequestBody LoanCustomerSubmissionRequest request) {
 
         HttpHeaders responseHeaders = new HttpHeaders();

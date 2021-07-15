@@ -11,7 +11,8 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreditcardInformationRequestBody {
+public class CreditCardInformationRequestBody {
+
     @NotNull
     private String crmId;
 }

@@ -52,7 +52,7 @@ public class OpenPortfolioActivityLogService {
     private OpenPortfolioActivityLog initialActivityLogData(String correlationId, String crmId, String activityTypeId) {
         OpenPortfolioActivityLog activityData = new OpenPortfolioActivityLog(correlationId, String.valueOf(System.currentTimeMillis()), activityTypeId);
         activityData.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
-        activityData.setCrmId(UtilMap.fillUpCrmIdFormat(crmId));
+        activityData.setCrmId(UtilMap.fullCrmIdFormat(crmId));
         return activityData;
     }
 }

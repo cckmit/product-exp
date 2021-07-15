@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CountToBeProcessOrderRequestBody {
-    private @NotBlank String serviceType;
-    @JsonAlias({"crmId","rm"})
-    private String rm;
+
+    @NotBlank
+    private String serviceType;
 }

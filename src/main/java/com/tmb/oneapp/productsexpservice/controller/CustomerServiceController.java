@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
 @RestController
@@ -58,7 +58,7 @@ public class CustomerServiceController {
 	@PostMapping(value = "/fetch-customer-info", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer info details")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<CustIndividualProfileInfo>> getIndividualProfileInfo(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
@@ -96,7 +96,7 @@ public class CustomerServiceController {
 	@GetMapping(value = "/zipcode")
 	@ApiOperation(value = "Get Address info details by post code")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<Province>>> getZipcodeInfo(
 			@RequestParam(value = "code", defaultValue = "10800", required = true) String postCode,
@@ -135,11 +135,11 @@ public class CustomerServiceController {
 	@PostMapping(value = "/fetch-working-info", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get customer working information details")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<WorkingInfoResponse>> getWorkingInformation(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
 		TmbOneServiceResponse<WorkingInfoResponse> response = new TmbOneServiceResponse();
 		try {
@@ -169,11 +169,11 @@ public class CustomerServiceController {
 	@GetMapping(value = "/fetch-working-status")
 	@ApiOperation(value = "Get dependency working information details links")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkingStatusDependency(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient
@@ -205,12 +205,12 @@ public class CustomerServiceController {
 	@GetMapping(value = "/fetch-working-status/{occupationEntryCode}")
 	@ApiOperation(value = "Get dependency working information details links")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkingDependencyByOccupationCode(
 			@PathVariable String occupationEntryCode,
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient
@@ -241,11 +241,11 @@ public class CustomerServiceController {
 	@GetMapping(value = "/fetch-business-type")
 	@ApiOperation(value = "Get dependency working information details links")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkingDependencyBusinessType(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient
@@ -276,11 +276,11 @@ public class CustomerServiceController {
 	@GetMapping(value = "/fetch-business-type/{entrycode}")
 	@ApiOperation(value = "Get dependency working information details links")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getWorkingDependencyBusinessType(
 			@PathVariable String entrycode, @ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient
@@ -311,11 +311,11 @@ public class CustomerServiceController {
 	@GetMapping(value = "/fetch-working-income/{entrycode}")
 	@ApiOperation(value = "Get dependency income information details links")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getCountryIncomeSourceDependency(
 			@PathVariable String entrycode, @ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient
@@ -346,11 +346,11 @@ public class CustomerServiceController {
 	@GetMapping(value = "/fetch-country")
 	@ApiOperation(value = "Get dependency income information details links")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> getCountryDependency(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> headers) {
-		String correlationId = headers.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		TmbOneServiceResponse<List<CodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			ResponseEntity<TmbOneServiceResponse<List<CodeEntry>>> lendingResponse = lendingServiceClient

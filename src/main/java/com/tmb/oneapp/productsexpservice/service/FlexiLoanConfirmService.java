@@ -80,7 +80,7 @@ public class FlexiLoanConfirmService {
 
         String letterOfConsentAttachments = getLetterOfConsentFilePath(appRefNo, applicationResp);
 
-        List<RslCode> rslConfigs = getRslConfig(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID));
+        List<RslCode> rslConfigs = getRslConfig(requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID));
         if(!rslConfigs.isEmpty()) {
             String saleSheetAttachments = getSaleSheetFilePath(rslConfigs);
             String termAndConditionAttachments = getTermAndConditionFilePath(rslConfigs);
@@ -102,7 +102,7 @@ public class FlexiLoanConfirmService {
 
     private void sendNotification(Map<String, String> requestHeaders, FlexiLoanSubmissionWrapper wrapper) {
         try {
-            notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.X_CORRELATION_ID),
+            notificationService.sendNotifyFlexiLoanSubmission(requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID),
                     requestHeaders.get(ProductsExpServiceConstant.ACCOUNT_ID.toLowerCase()),
                     requestHeaders.get(ProductsExpServiceConstant.X_CRMID.toLowerCase()),
                     wrapper);

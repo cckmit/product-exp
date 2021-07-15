@@ -22,7 +22,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countproce
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
@@ -100,13 +99,16 @@ public interface InvestmentRequestClient {
     /***
      * Call investment to get fund sumaary by port
      * @param headers
+     * @param crmId
      * @param countToBeProcessOrderRequestBody
      * @return
      */
     @PostMapping(value = "${investment.service.fund.processed.order.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> callInvestmentCountProcessOrderService(
-            @RequestHeader Map<String, String> headers, @RequestBody CountToBeProcessOrderRequestBody countToBeProcessOrderRequestBody);
+            @RequestHeader Map<String, String> headers,
+            @RequestHeader("x-crmid") String crmId,
+            @RequestBody CountToBeProcessOrderRequestBody countToBeProcessOrderRequestBody);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -185,13 +187,14 @@ public interface InvestmentRequestClient {
      * Call investment to get ptest port
      *
      * @param headers
-     * @param request
+     * @param crmId
      * @return
      */
     @PostMapping(value = "${investment.service.fund.get.ptes.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> getPtesPort(
-            @RequestHeader Map<String, String> headers, @RequestBody PtesBodyRequest request);
+            @RequestHeader Map<String, String> headers,
+            @RequestHeader("x-crmid") String crmId);
 
     /**
      * Call investment fund information service to get fund information response.

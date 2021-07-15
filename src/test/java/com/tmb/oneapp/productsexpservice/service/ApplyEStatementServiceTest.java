@@ -39,7 +39,7 @@ public class ApplyEStatementServiceTest {
 
 	@Test
 	void testGetEStatement() throws Exception {
-		String correlationId = ProductsExpServiceConstant.X_CORRELATION_ID;
+		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
 		TmbOneServiceResponse<ApplyEStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 		ApplyEStatementResponse data = new ApplyEStatementResponse();

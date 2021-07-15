@@ -114,7 +114,7 @@ public class FlexiLoanConfirmServiceTest {
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put(ProductsExpServiceConstant.X_CRMID, "x_crmid");
         requestHeaders.put(ProductsExpServiceConstant.ACCOUNT_ID, "account_id");
-        requestHeaders.put(ProductsExpServiceConstant.X_CORRELATION_ID, "x_correlation_id");
+        requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "x_correlation_id");
         return requestHeaders;
     }
 

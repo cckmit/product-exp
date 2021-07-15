@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.util.Map;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 
 @RestController
 @Api(tags = "Apply So GooOD Feature Api")
@@ -56,7 +56,7 @@ public class CampaignTransactionsController {
     @ApiOperation(value = "Get Campaign Transactions Api")
     @PostMapping(value = "/creditcard/get-campaign-transactions")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header")
+            @ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header")
 
     })
     public ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> campaignTransactionResponse(
