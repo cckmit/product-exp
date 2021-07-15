@@ -6,7 +6,7 @@ import com.tmb.common.model.CommonData;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.ProductExpAsynService;
+import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,20 +22,20 @@ public class EligibleDepositAccountService {
 
     private static final TMBLogger<EligibleDepositAccountService> logger = new TMBLogger<>(EligibleDepositAccountService.class);
 
-    private ProductExpAsynService productExpAsynService;
+    private ProductExpAsyncService productExpAsyncService;
 
     private AccountRequestClient accountRequestClient;
 
     @Autowired
-    public EligibleDepositAccountService(ProductExpAsynService productExpAsynService, AccountRequestClient accountRequestClient) {
-        this.productExpAsynService = productExpAsynService;
+    public EligibleDepositAccountService(ProductExpAsyncService productExpAsyncService, AccountRequestClient accountRequestClient) {
+        this.productExpAsyncService = productExpAsyncService;
         this.accountRequestClient = accountRequestClient;
     }
 
     public List<DepositAccount> getEligibleDepositAccounts(String correlationId, String crmId) {
         List<DepositAccount> depositAccountList;
         try {
-            CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsynService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+            CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
             CompletableFuture<String> accountInfo =
                     CompletableFuture.completedFuture(accountRequestClient.callCustomerExpService(UtilMap.createHeader(correlationId), crmId));
             CompletableFuture.allOf(fetchCommonConfigByModule, accountInfo);

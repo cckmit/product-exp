@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.dto.fund.information;
 
-import com.tmb.oneapp.productsexpservice.model.fund.dailynav.response.DailyNavBody;
-import com.tmb.oneapp.productsexpservice.model.fund.information.response.InformationBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,9 +1,6 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
-import com.tmb.common.model.CashForUConfigInfo;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.LovMaster;
-import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.*;
 import com.tmb.common.model.address.Province;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
@@ -42,6 +39,12 @@ public interface CommonServiceClient {
 
 	@GetMapping(value = "/apis/common/internal/lovmaster/config")
 	ResponseEntity<TmbOneServiceResponse<LovMaster>> getLookupMasterModule(@RequestParam("code") String code);
+
+	@GetMapping(value = "/apis/common/get-interest-rate")
+	ResponseEntity<TmbOneServiceResponse<List<LoanOnlineInterestRate>>> getInterestRateAll();
+
+	@GetMapping(value = "/apis/common/get-range-income")
+	ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> getRangeIncomeAll();
 
 	/**
 	 * Get term and condition by channel and service code by calling common api
