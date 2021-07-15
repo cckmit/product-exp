@@ -3,9 +3,9 @@ package com.tmb.oneapp.productsexpservice.controller.productexperience.customer;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.customer.creditcard.CreditcardInformationRequestBody;
-import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditcardInformationResponse;
-import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CreditcardInformationService;
+import com.tmb.oneapp.productsexpservice.model.customer.creditcard.CreditCardInformationRequestBody;
+import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CreditCardInformationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -20,33 +20,33 @@ import javax.validation.Valid;
 
 import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatus;
 
-@Api(tags = "Get creditcard list information for customer")
+@Api(tags = "Get credit card list information for customer")
 @RequestMapping("/customer")
 @RestController
-public class CreditcardInformationController {
+public class CreditCardInformationController {
 
-    private final CreditcardInformationService creditcardInformationService;
+    private final CreditCardInformationService creditcardInformationService;
 
     @Autowired
-    public CreditcardInformationController(CreditcardInformationService creditcardInformationService) {
+    public CreditCardInformationController(CreditCardInformationService creditcardInformationService) {
         this.creditcardInformationService = creditcardInformationService;
     }
 
     /**
      * Description:- method get dca list
      *
-     * @param correlationId        the correlation id
-     * @param creditcardInformationRequestBody the crmid request
+     * @param correlationId                    the correlation id
+     * @param creditCardInformationRequestBody the crm id request
      * @return return dca list
      */
-    @ApiOperation(value = "Get creditcard list information for customer")
+    @ApiOperation(value = "Get credit card list information for customer")
     @LogAround
     @PostMapping(value = "/accnt/creditcard", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<CreditcardInformationResponse>> getCreditcardInformation(
+    public ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> getCreditCardInformation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody CreditcardInformationRequestBody creditcardInformationRequestBody) {
-        TmbOneServiceResponse<CreditcardInformationResponse> oneServiceResponse = creditcardInformationService.getCredicardInformation(correlationId, creditcardInformationRequestBody.getCrmId());
+            @Valid @RequestBody CreditCardInformationRequestBody creditCardInformationRequestBody) {
+        TmbOneServiceResponse<CreditCardInformationResponse> oneServiceResponse = creditcardInformationService.getCreditCardInformation(correlationId, creditCardInformationRequestBody.getCrmId());
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             return ResponseEntity.ok(oneServiceResponse);
         } else {

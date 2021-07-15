@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditcardInformationResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public interface CustomerExpServiceClient {
     );
 
     @GetMapping(value = "/apis/customer/accounts/creditcard-group")
-    ResponseEntity<TmbOneServiceResponse<CreditcardInformationResponse>> getCustomerCreditCard(
+    ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> getCustomerCreditCard(
             @RequestHeader(value = X_CORRELATION_ID) String correlationId,
             @RequestHeader("X-CRMID") String crmId
     );
