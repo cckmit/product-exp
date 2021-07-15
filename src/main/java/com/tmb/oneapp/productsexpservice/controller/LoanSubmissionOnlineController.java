@@ -25,7 +25,7 @@ import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/LoanSubmissionOnline")
+@RequestMapping("/loanSubmissionOnline")
 @Api(tags = "waive income")
 public class LoanSubmissionOnlineController {
     private final LoanSubmissionIncomeInfoService loanSubmissionIncomeInfoService;
