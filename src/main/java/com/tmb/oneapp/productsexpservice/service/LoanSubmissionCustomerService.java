@@ -46,20 +46,18 @@ public class LoanSubmissionCustomerService {
         List<RangeIncome> rangeIncomeList = new ArrayList<>();
         List<InterestRate> interestRateList = new ArrayList<>();
 
-        RangeIncome rangeIncome = new RangeIncome();
-        InterestRate interestRate = new InterestRate();
-        LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
-
         response.setTenure(BigDecimal.valueOf(36));
         response.setPayAmount(BigDecimal.valueOf(25));
 
         for (var itemFacility : facilityInfo) {
+            LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
             account.setAccountNo(itemFacility.getDisburstAccountNo());
             account.setAccountName(itemFacility.getAccountName());
             accountList.add(account);
         }
 
         for (var itemRangeIncome : rangeIncomeAll) {
+            RangeIncome rangeIncome = new RangeIncome();
             rangeIncome.setProductCode(itemRangeIncome.getProductCode());
             rangeIncome.setMaxAmount(itemRangeIncome.getRangeIncomeMaz());
             rangeIncome.setMinAmount(itemRangeIncome.getRangeIncomeMin());
@@ -74,6 +72,7 @@ public class LoanSubmissionCustomerService {
         }
 
         for (var itemInterestRate : interestRateAll) {
+            InterestRate interestRate = new InterestRate();
             if (itemInterestRate.getInterestRate() != null) {
                 interestRate.setInterestRate(itemInterestRate.getInterestRate());
             }
