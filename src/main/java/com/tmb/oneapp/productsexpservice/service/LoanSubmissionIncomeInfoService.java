@@ -22,7 +22,7 @@ public class LoanSubmissionIncomeInfoService {
         try {
 
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(rmId);
-            if (Objects.isNull(responseIncomeModel)) {
+            if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody())) {
                 return null;
             }
             IncomeInfo incomeInfo = new IncomeInfo();
