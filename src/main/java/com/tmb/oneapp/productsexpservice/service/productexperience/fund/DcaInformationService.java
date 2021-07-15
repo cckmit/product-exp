@@ -44,7 +44,7 @@ public class DcaInformationService {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
             List<String> portList = productsExpService.getPortList(crmId,invHeaderReqParameter,false);
             UnitHolder unitHolder = new UnitHolder();
-            unitHolder.setUnitHolderNo(portList.stream().collect(Collectors.joining(",")));
+            unitHolder.setUnitHolderNumber(portList.stream().collect(Collectors.joining(",")));
             ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter,
                     unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody = investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
