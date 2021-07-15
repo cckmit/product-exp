@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
+import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
@@ -118,4 +119,6 @@ public interface CreditCardClient {
 	ResponseEntity<GetCardsBalancesResponse> getCreditCardBalance(@RequestHeader Map<String, String> headers,
 			@PathVariable(value = "CRM_ID") String crmId);
 
+	@GetMapping(value = "/apis/creditcard/internal/lending/config/cashforyou")
+	ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> getCurrentCashForYouRate();
 }

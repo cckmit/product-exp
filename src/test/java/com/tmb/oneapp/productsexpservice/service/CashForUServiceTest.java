@@ -1,5 +1,12 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.BalanceCredit;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
@@ -26,13 +32,6 @@ import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
 import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.ModelTenor;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 @RunWith(JUnit4.class)
 public class CashForUServiceTest {
 
@@ -41,13 +40,10 @@ public class CashForUServiceTest {
 
 	private CashForUService cashForUservice;
 
-	@Mock
-	private CommonServiceClient commonServiceClient;
-
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		cashForUservice = new CashForUService(creditCardClient, commonServiceClient);
+		cashForUservice = new CashForUService(creditCardClient);
 	}
 
 	@Test
@@ -130,7 +126,7 @@ public class CashForUServiceTest {
 		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = new ResponseEntity<>(serverResponse,
 				HttpStatus.OK);
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
-		when(commonServiceClient.getCurrentCashForYouRate()).thenReturn(response);
+		when(creditCardClient.getCurrentCashForYouRate()).thenReturn(response);
 		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
 		rateRequest.setAmount("10000");
 		requestBody.setAmount(rateRequest.getAmount());
