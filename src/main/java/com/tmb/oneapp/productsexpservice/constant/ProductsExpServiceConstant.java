@@ -210,4 +210,7 @@ public class ProductsExpServiceConstant {
     /* CRM Format */
     public static final String CRM_ID_PREFIX = "0011000000000000";
     public static final String CRM_ID_FORMAT = "00000000000000";
+    
+    /* CUSTOMER CARD EXPIRE */
+    public static final String EXPIRE_DATE_DEFAULT = "1357-01-01";
 }

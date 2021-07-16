@@ -26,6 +26,7 @@ import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
@@ -51,7 +52,6 @@ public class CustomerProfileService {
 
 	private static final TMBLogger<CustomerProfileService> logger = new TMBLogger<>(CustomerProfileService.class);
 	
-	private static String EXPIRE_DATE_DEFAULT = "1357-01-01";
 
 	private CustomerServiceClient customerServiceClient;
 
@@ -133,7 +133,7 @@ public class CustomerProfileService {
 	 * @return
 	 */
 	private boolean isPermanentType(String idExpireDate) {
-		return EXPIRE_DATE_DEFAULT.equals(idExpireDate);
+		return ProductsExpServiceConstant.EXPIRE_DATE_DEFAULT.equals(idExpireDate);
 	}
 
 	/**
