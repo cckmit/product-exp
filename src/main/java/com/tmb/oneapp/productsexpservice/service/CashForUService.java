@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
@@ -26,13 +25,10 @@ public class CashForUService {
 
 	private CreditCardClient creditCardClient;
 
-	private CommonServiceClient commonServiceClient;
-
 	private CashForUConfigInfo rateCashForUInfo = null;
 
-	public CashForUService(CreditCardClient creditCardClient, CommonServiceClient commonServiceClient) {
+	public CashForUService(CreditCardClient creditCardClient) {
 		this.creditCardClient = creditCardClient;
-		this.commonServiceClient = commonServiceClient;
 	}
 
 	/**
@@ -52,7 +48,7 @@ public class CashForUService {
 					.getInstallmentRate(correlationId, rateRequest);
 			InstallmentRateResponse installmentRateResponse = loanResponse.getBody().getData();
 			if (Objects.isNull(rateCashForUInfo)) {
-				ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = commonServiceClient
+				ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
 						.getCurrentCashForYouRate();
 				rateCashForUInfo = response.getBody().getData();
 			}
@@ -135,8 +131,10 @@ public class CashForUService {
 		} else {
 			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(feeAmt)));
 		}
-		responseModelInfo.setCashInterestRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
-		responseModelInfo.setCashVatRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
+		responseModelInfo
+				.setCashInterestRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
+		responseModelInfo
+				.setCashVatRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
 
 	}
 

@@ -59,6 +59,4 @@ public interface CommonServiceClient {
 			@RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
 			@PathVariable("serviceCode") String serviceCode, @PathVariable("channel") String channel);
 
-	@GetMapping(value = "/apis/common/internal/lending/config/cashforyou")
-	ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> getCurrentCashForYouRate();
 }
