@@ -68,12 +68,14 @@ public class ApplyEStatementController {
 			oneServiceResponse.setData(applyEStatementResponse);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			return ResponseEntity.ok(oneServiceResponse);
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(),e.toString()));
+			return ResponseEntity.badRequest().body(oneServiceResponse);
 		}
-		return ResponseEntity.ok(oneServiceResponse);
+		
 	}
 
 	@LogAround
@@ -95,13 +97,14 @@ public class ApplyEStatementController {
 			applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-
+			return ResponseEntity.ok(oneServiceResponse);
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(),e.toString()));
+			return ResponseEntity.badRequest().body(oneServiceResponse);
 		}
-		return ResponseEntity.ok(oneServiceResponse);
+		
 	}
 
 }
