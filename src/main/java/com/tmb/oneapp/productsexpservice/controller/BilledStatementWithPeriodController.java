@@ -40,7 +40,7 @@ public class BilledStatementWithPeriodController {
     @ApiOperation(value = "get billed statement with period")
     @PostMapping(value = "/creditcard-billed-statement-period")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
     })
     public ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getBilledStatementWithPeriod(
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,

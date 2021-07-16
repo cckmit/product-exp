@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,8 +19,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
@@ -30,8 +29,6 @@ import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundsummary.FundSummaryRq;
-import com.tmb.oneapp.productsexpservice.model.request.fundsummary.PtesBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
@@ -128,7 +125,6 @@ public class ProductsExpService {
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRequest);
         OrderStmtByPortRequest orderStmtByPortRequest = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
                 ProductsExpServiceConstant.FIXED_START_PAGE, ProductsExpServiceConstant.FIXED_END_PAGE);
-        ViewAipRequest viewAipRequest = UtilMap.mappingRequestViewAip(fundAccountRequest);
 
         Map<String, String> header = UtilMap.createHeader(correlationId);
         try {
@@ -140,8 +136,7 @@ public class ProductsExpService {
             AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
             FundRuleBody fundRuleBody = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
-            ViewAipResponseBody viewAipResponseBody = getTmbOneServiceResponseResponseEntity(viewAipRequest, header);
-            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse, viewAipResponseBody);
+            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
@@ -149,45 +144,36 @@ public class ProductsExpService {
         return fundAccountResponse;
     }
 
-    private ViewAipResponseBody getTmbOneServiceResponseResponseEntity(ViewAipRequest viewAipRequest, Map<String, String> header) {
-        try {
-            header.put(ProductsExpServiceConstant.HEADER_X_CRM_ID,viewAipRequest.getCrmId());
-            ResponseEntity<TmbOneServiceResponse<ViewAipResponseBody>> responseResponseEntity = investmentRequestClient.getViewAipPlans(header, viewAipRequest);
-            return responseResponseEntity.getBody().getData();
-        }catch (Exception ex){
-            return null;
-        }
-    }
-
     /**
      * Get fund summary fund summary response.
      *
      * @param correlationId the correlation id
-     * @param rq            the rq
+     * @param crmId         the crm id
      * @return the fund summary response
      */
     @LogAround
-    public FundSummaryBody getFundSummary(String correlationId, FundSummaryRq rq) {
+    public FundSummaryBody getFundSummary(String correlationId, String crmId) {
         FundSummaryBody result = new FundSummaryBody();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryData;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummary;
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse;
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> header = UtilMap.createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
+
         try {
-            String crmId = rq.getCrmId();
-            List<String> ports = getPortList(crmId, invHeaderReqParameter, true);
+            List<String> ports = getPortList(crmId, header, true);
             result.setPortsUnitHolder(ports);
-            unitHolder.setUnitHolderNo(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            fundSummaryData = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
-            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(invHeaderReqParameter, unitHolder);
-            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(invHeaderReqParameter,
-                    CountToBeProcessOrderRequestBody.builder().serviceType("1").rm(crmId).build());
+            unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            logger.info(unitHolder.toString());
+            fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
+            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
+            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
+                    CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
 
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummaryData);
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummary);
 
-            if (HttpStatus.OK.value() == fundSummaryData.getStatusCode().value()) {
-                var body = fundSummaryData.getBody();
+            if (HttpStatus.OK.value() == fundSummary.getStatusCode().value()) {
+                var body = fundSummary.getBody();
                 var summaryByPort = summaryByPortResponse.getBody();
                 this.setFundSummaryBody(result, ports, body, summaryByPort);
             }
@@ -203,12 +189,10 @@ public class ProductsExpService {
         }
     }
 
-    public List<String> getPortList(String crmId, Map<String, String> invHeaderReqParameter, boolean isIncludePtesPortfolio) throws com.fasterxml.jackson.core.JsonProcessingException {
+    public List<String> getPortList(String crmId, Map<String, String> header, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
-        PtesBodyRequest ptesBodyRequest = new PtesBodyRequest();
-        ptesBodyRequest.setRmNumber(crmId);
-        String portData = customerExpServiceClient.getAccountSaving(invHeaderReqParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID), crmId);
+        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), crmId);
 
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
@@ -221,9 +205,9 @@ public class ProductsExpService {
             });
         }
         if (isIncludePtesPortfolio) {
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptestDetailResult = investmentRequestClient.getPtesPort(invHeaderReqParameter, ptesBodyRequest);
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, crmId);
 
-            Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptestDetailResult)
+            Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptesDetailResult)
                     .map(ResponseEntity::getBody)
                     .map(TmbOneServiceResponse::getData);
             if (ptesDetailList.isPresent()) {
@@ -660,7 +644,7 @@ public class ProductsExpService {
         try {
             UnitHolder unitHolder = new UnitHolder();
             String unitHolderList = fundListRequest.getUnitHolderNumber().stream().collect(Collectors.joining(","));
-            unitHolder.setUnitHolderNo(unitHolderList);
+            unitHolder.setUnitHolderNumber(unitHolderList);
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
                     productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
@@ -686,7 +670,7 @@ public class ProductsExpService {
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         try {
             List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
-            unitHolder.setUnitHolderNo(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            unitHolder.setUnitHolderNumber(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
             CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
             CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(invHeaderReqParameter, crmID);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);

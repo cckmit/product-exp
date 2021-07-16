@@ -113,7 +113,7 @@ public class BilledStatementControllerTest {
         TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         billedStatementResponse(oneServiceResponse);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.X_CORRELATION_ID, "123");
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "123");
         when(creditCardClient.getUnBilledStatement(any(), any())).thenThrow(new
                 IllegalStateException("Error occurred"));
         ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> result = billedStatementController

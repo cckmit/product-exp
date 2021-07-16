@@ -81,7 +81,7 @@ public class ProductsActivateCardControllerTest {
 
     public Map<String, String> headerRequestParameter(String correlationId, String accountNo) {
         Map<String, String> reqData = new HashMap<String, String>();
-        reqData.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+        reqData.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
         reqData.put(ProductsExpServiceConstant.ACCOUNT_ID, accountNo);
         return reqData;
 

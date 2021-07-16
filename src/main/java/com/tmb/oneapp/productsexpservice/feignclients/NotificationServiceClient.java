@@ -14,6 +14,6 @@ public interface NotificationServiceClient {
 
 	@PostMapping(value = "${notification-service.e-noti.send-message.endpoint}")
 	TmbOneServiceResponse<NotificationResponse> sendMessage(
-			@RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID, required = true) final String xCorrelationId,
+			@RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, required = true) final String xCorrelationId,
 			NotificationRequest request);
 }

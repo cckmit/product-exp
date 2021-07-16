@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request;
+package com.tmb.oneapp.productsexpservice.model.customer.creditcard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,14 +11,8 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@NotNull
-public class ViewAipRequest {
+public class CreditCardInformationRequestBody {
 
+    @NotNull
     private String crmId;
-
-    private String getFlag;
-
-    private String portfolioList;
-
-    private String fundCode;
 }

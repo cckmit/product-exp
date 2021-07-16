@@ -28,7 +28,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 
 /**
  * BlockCardController request mapping will handle apis call and then navigate
@@ -69,7 +69,7 @@ public class BlockCardController {
     @ApiOperation(value = "Block Card Api")
     @PostMapping(value = "/credit-card/block-card")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header")
+            @ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header")
 
     })
     public ResponseEntity<TmbOneServiceResponse<BlockCardResponse>> blockCardDetails(
@@ -82,7 +82,7 @@ public class BlockCardController {
         TmbOneServiceResponse<BlockCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         String activityId = ProductsExpServiceConstant.FINISH_BLOCK_CARD_ACTIVITY_ID;
         String activityDate = Long.toString(System.currentTimeMillis());
-        String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase());
+        String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase());
         String accountId = requestBodyParameter.getAccountId();
         String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 

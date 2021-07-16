@@ -19,7 +19,7 @@ public interface CommonServiceClient {
 
 	@GetMapping(value = "/apis/common/fetch/product-config")
 	ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> getProductConfig(
-			@RequestHeader(value = ProductsExpServiceConstant.X_CORRELATION_ID) String correlationID);
+			@RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationID);
 
 	@GetMapping(value = "/apis/common/internal/common/config")
 	ResponseEntity<TmbOneServiceResponse<List<CommonData>>> getCommonConfigByModule(
@@ -56,7 +56,7 @@ public interface CommonServiceClient {
 	 */
 	@GetMapping(value = "/apis/common/internal/term-condition/service/{serviceCode}/{channel}")
 	ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> getTermAndConditionByServiceCodeAndChannel(
-			@RequestHeader(ProductsExpServiceConstant.X_CORRELATION_ID) String correlationId,
+			@RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
 			@PathVariable("serviceCode") String serviceCode, @PathVariable("channel") String channel);
 
 }

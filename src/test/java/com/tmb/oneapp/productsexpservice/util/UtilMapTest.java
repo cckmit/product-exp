@@ -5,8 +5,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundClass;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.request.ViewAipRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accountdetail.response.ViewAipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
@@ -80,9 +78,7 @@ public class UtilMapTest {
         statementResponse.setTotalRecord("10");
         statementResponse.setStatementList(list);
 
-        ViewAipResponseBody viewAipResponseBody = ViewAipResponseBody.builder().build();
-
-        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse, viewAipResponseBody);
+        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse);
         List<FundOrderHistory> ordersHistories = result.getDetails().getAccountDetail().getOrdersHistories();
         Assert.assertEquals(true, ordersHistories.isEmpty());
     }
@@ -120,10 +116,7 @@ public class UtilMapTest {
         }
         statementResponse.setStatementList(list);
 
-        /* aipResponseBody */
-        ViewAipResponseBody aipResponseBody = ViewAipResponseBody.builder().build();
-
-        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse, aipResponseBody);
+        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse);
         List<FundRuleInfoList> fundRuleInfoList = result.getFundRuleInfoList();
         Assert.assertEquals(true, fundRuleInfoList.isEmpty());
     }
@@ -201,7 +194,7 @@ public class UtilMapTest {
         String correlationId = "1234";
         Map<String, String> result = UtilMap.createHeader(correlationId);
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put(ProductsExpServiceConstant.X_CORRELATION_ID, "1234");
+        hashMap.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "1234");
         hashMap.put("content-type", "application/json");
         Assert.assertEquals(hashMap, result);
     }
@@ -298,42 +291,20 @@ public class UtilMapTest {
     }
 
     @Test
-    void should_return_view_aip_request_when_call_map_request_view_aip_given_fund_account_request() {
-        // Given
-        FundAccountRequest fundAccountRequest = new FundAccountRequest();
-        fundAccountRequest.setCrmId("00000000028365");
-        fundAccountRequest.setGetFlag("1");
-        fundAccountRequest.setPortfolioList("PT000000000001831831, PT000000000001831820");
-        fundAccountRequest.setFundCode("TMBGQG");
-
-        // When
-        ViewAipRequest actual = UtilMap.mappingRequestViewAip(fundAccountRequest);
-
-        // Then
-        ViewAipRequest expected = ViewAipRequest.builder()
-                .crmId("00000000028365")
-                .getFlag("1")
-                .portfolioList("PT000000000001831831, PT000000000001831820")
-                .fundCode("TMBGQG")
-                .build();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void should_return_full_format_of_crm_id_when_call_fill_up_crm_id_format_given_crm_id() {
+    void should_return_full_format_of_crm_id_when_call_full_crm_id_format_given_half_crm_id() {
         // Given
         // When
-        String actual = UtilMap.fillUpCrmIdFormat("00000000002914");
+        String actual = UtilMap.fullCrmIdFormat("00000000002914");
 
         // Then
         assertEquals("001100000000000000000000002914", actual);
     }
 
     @Test
-    void should_return_full_format_of_crm_id_when_call_fill_up_crm_id_format_given_full_format_of_crm_id() {
+    void should_return_full_format_of_crm_id_when_call_full_crm_id_format_given_full_crm_id() {
         // Given
         // When
-        String actual = UtilMap.fillUpCrmIdFormat("001100000000000000000000002914");
+        String actual = UtilMap.fullCrmIdFormat("001100000000000000000000002914");
 
         // Then
         assertEquals("001100000000000000000000002914", actual);

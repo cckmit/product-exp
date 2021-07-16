@@ -251,7 +251,7 @@ public class CreditCardLogService {
 		creditCardEvent.setCrmId(reqHeader.get(ProductsExpServiceConstant.X_CRMID));
 		creditCardEvent.setDeviceId(reqHeader.get(ProductsExpServiceConstant.DEVICE_ID));
 		creditCardEvent.setDeviceModel(reqHeader.get(ProductsExpServiceConstant.DEVICE_MODEL));
-		creditCardEvent.setCorrelationId(reqHeader.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()));
+		creditCardEvent.setCorrelationId(reqHeader.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()));
 		creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
 	}
 

@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
 import java.text.DecimalFormat;
@@ -74,7 +74,7 @@ public class LoanDetailsController {
 	@PostMapping(value = "/loan/get-account-detail", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "get loan account detail")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getLoanAccountDetail(
 			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeadersParameter,
@@ -84,11 +84,11 @@ public class LoanDetailsController {
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
-		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String activityDate = Long.toString(System.currentTimeMillis());
 		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN;
 		CreditCardEvent creditCardEvent = new CreditCardEvent(
-				requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID.toLowerCase()), activityDate,
+				requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()), activityDate,
 				activityId);
 
 		try {

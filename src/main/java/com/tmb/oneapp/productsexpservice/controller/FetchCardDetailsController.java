@@ -84,7 +84,7 @@ public class FetchCardDetailsController {
 	@PostMapping(value = "/credit-card/fetch-card-details")
 	@ApiOperation(value = "Fetch credit card details")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = ProductsExpServiceConstant.X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
+			@ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
 			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<FetchCardResponse>> fetchCardDetails(
 			@RequestBody FetchCreditCardDetailsReq request,
@@ -92,7 +92,7 @@ public class FetchCardDetailsController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<FetchCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		String activityDate = Long.toString(System.currentTimeMillis());
 		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_LOAD_CARD_DETAILS;

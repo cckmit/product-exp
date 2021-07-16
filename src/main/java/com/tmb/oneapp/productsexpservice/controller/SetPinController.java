@@ -83,7 +83,7 @@ public class SetPinController {
             JsonProcessingException, TMBCommonException, TMBCommonExceptionWithResponse, UnsupportedEncodingException {
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
-            String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CORRELATION_ID);
+            String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
             String accountId = requestBodyParameter.getAccountId();
             String activityDate = Long.toString(System.currentTimeMillis());
             String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);

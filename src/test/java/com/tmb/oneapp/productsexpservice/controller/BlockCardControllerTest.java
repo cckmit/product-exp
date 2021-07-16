@@ -47,7 +47,7 @@ public class BlockCardControllerTest {
     @Test
     void testBlockCardDetailsSuccess() throws Exception {
         Map<String, String> requestHeadersParameter = new HashMap<>();
-        requestHeadersParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+        requestHeadersParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "test");
         BlockCardRequest requestBodyParameter = new BlockCardRequest();
         requestBodyParameter.setAccountId("0000000050078360018000167");
         requestBodyParameter.setBlockReason("L");
@@ -67,7 +67,7 @@ public class BlockCardControllerTest {
     @Test
     void testBlockCardDetailsSuccessNoDataFound() throws Exception {
         Map<String, String> requestHeadersParameter = new HashMap<>();
-        requestHeadersParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+        requestHeadersParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "test");
         BlockCardRequest bodyParameter = new BlockCardRequest();
         ResponseEntity<TmbOneServiceResponse<BlockCardResponse>> res = blockCardController
                 .blockCardDetails(bodyParameter, requestHeadersParameter);
@@ -87,7 +87,7 @@ public class BlockCardControllerTest {
     @Test
     void testBlockCardDetailsSuccessStatusOne() throws Exception {
         Map<String, String> requestHeadersParameter = new HashMap<>();
-        requestHeadersParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+        requestHeadersParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "test");
         BlockCardRequest requestBodyParameter = new BlockCardRequest();
         requestBodyParameter.setAccountId("0000000050078360018000167");
         requestBodyParameter.setBlockReason("L");
@@ -107,7 +107,7 @@ public class BlockCardControllerTest {
     @Test
     void testBlockCardDetailsError() throws Exception {
         Map<String, String> requestHeadersParameter = new HashMap<>();
-        requestHeadersParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, "test");
+        requestHeadersParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "test");
         BlockCardRequest requestBodyParameter = new BlockCardRequest();
         requestBodyParameter.setAccountId("0000000050078360018000167");
         requestBodyParameter.setBlockReason("L");

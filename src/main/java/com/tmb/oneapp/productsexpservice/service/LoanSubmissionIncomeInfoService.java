@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -17,10 +18,13 @@ public class LoanSubmissionIncomeInfoService {
     private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
 
 
-    public IncomeInfo getIncomeInfoByRmId(String rmId)throws ServiceException, RemoteException {
+    public IncomeInfo getIncomeInfoByRmId(String rmId) throws ServiceException, RemoteException {
         try {
 
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(rmId);
+            if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody())) {
+                return null;
+            }
             IncomeInfo incomeInfo = new IncomeInfo();
             incomeInfo.setIncomeAmount(responseIncomeModel.getBody().getIncomeModelAmt());
             return incomeInfo;

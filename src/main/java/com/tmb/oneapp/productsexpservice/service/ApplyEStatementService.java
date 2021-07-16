@@ -68,7 +68,7 @@ public class ApplyEStatementService {
 			throws TMBCommonException {
 		ApplyEStatementResponse currentEstatementResponse = getEStatement(crmId, correlationId);
 		Map<String, String> requestHeaders = new HashMap<>();
-		requestHeaders.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
 
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
@@ -175,7 +175,7 @@ public class ApplyEStatementService {
 	private void rollBackSilverlake(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq) {
 		logger.info("### ROLL BACK SILVERLAKE FOR {} ### ", crmId);
 		Map<String, String> headers = new HashMap<>();
-		headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
 		creditCardClient.cancelEnableEStatement(headers,updateEstatementReq);
 	}
@@ -190,7 +190,7 @@ public class ApplyEStatementService {
 	private void updateEStatementOnSilverLake(String crmId, String correlationId,
 			UpdateEStatmentRequest updateEstatementReq) {
 		Map<String, String> headers = new HashMap<>();
-		headers.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
 		creditCardClient.updateEmailEStatement(headers, updateEstatementReq);
 		creditCardClient.updateEnableEStatement(headers, updateEstatementReq);

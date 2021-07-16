@@ -66,7 +66,7 @@ public class ProductExpServiceCloseTest {
 
     private Map<String, String> createHeader(String correlationId) {
         Map<String, String> invHeaderReqParameter = new HashMap<>();
-        invHeaderReqParameter.put(ProductsExpServiceConstant.X_CORRELATION_ID, correlationId);
+        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
         invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return invHeaderReqParameter;
     }
@@ -388,7 +388,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void validateTMBResponse() {
         UtilMap utilMap = new UtilMap();
-        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(null, null, null, null);
+        FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(null, null, null);
         Assert.assertNull(fundAccountResponse);
     }
 
