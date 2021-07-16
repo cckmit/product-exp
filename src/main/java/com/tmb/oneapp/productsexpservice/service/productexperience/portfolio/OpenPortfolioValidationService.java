@@ -92,7 +92,7 @@ public class OpenPortfolioValidationService {
                 depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId);
             }
 
-            String[] bypassCrmId = {"001100000000000000000012035598", "00000018595360", "00000018592884"};
+            String[] bypassCrmId = {"001100000000000000000012035598", "00000018592884"};
             if (Arrays.stream(bypassCrmId).noneMatch(crmId::equals)) {
                 validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
             } else {
@@ -149,6 +149,13 @@ public class OpenPortfolioValidationService {
             return tmbOneServiceResponse;
         }
 
+        // validate complete flatca form
+        tmbOneServiceResponse.setStatus(validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
+        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
+            return tmbOneServiceResponse;
+        }
+
         // validate customer pass kyc (U,Blank) allow  and id card has not expired
         tmbOneServiceResponse.setStatus(validateKycAndIdCardExpire(customerInfo.getKycLimitedFlag(), customerInfo.getExpiryDate(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
@@ -167,13 +174,6 @@ public class OpenPortfolioValidationService {
         tmbOneServiceResponse.setStatus(validateNationality(correlationId, customerInfo.getNationality(), customerInfo.getNationalitySecond(), status));
         if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
-            return tmbOneServiceResponse;
-        }
-
-        // validate complete flatca form
-        tmbOneServiceResponse.setStatus(validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
-        if (!status.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
             return tmbOneServiceResponse;
         }
 
