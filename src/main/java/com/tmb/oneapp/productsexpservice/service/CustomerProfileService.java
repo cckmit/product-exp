@@ -1,7 +1,10 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,6 +50,8 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoR
 public class CustomerProfileService {
 
 	private static final TMBLogger<CustomerProfileService> logger = new TMBLogger<>(CustomerProfileService.class);
+	
+	private static String EXPIRE_DATE_DEFAULT = "1357-01-01";
 
 	private CustomerServiceClient customerServiceClient;
 
@@ -104,7 +109,12 @@ public class CustomerProfileService {
 			individualProfile.setCitizenId(generalProfile.getCitizenId());
 			individualProfile.setCustomerFullEN(generalProfile.getEngFname() + " " + generalProfile.getEngLname());
 			individualProfile.setCustomerFullTh(generalProfile.getThaFname() + " " + generalProfile.getThaLname());
-			individualProfile.setExpireDate(generalProfile.getIdExpireDate());
+			if(isPermanentType(generalProfile.getIdExpireDate())) {
+				individualProfile.setExpireDate(null);
+			}else {
+				individualProfile.setExpireDate(generalProfile.getIdExpireDate());
+			}
+			
 			individualProfile.setMobileNo(generalProfile.getPhoneNoFull());
 			individualProfile.setNationality(generalProfile.getNationality());
 			individualProfile.setFirstNameTh(generalProfile.getThaFname());
@@ -115,6 +125,15 @@ public class CustomerProfileService {
 
 		}
 		return individualProfile;
+	}
+	
+	/**
+	 * Logic for handle expire date
+	 * @param idExpireDate
+	 * @return
+	 */
+	private boolean isPermanentType(String idExpireDate) {
+		return EXPIRE_DATE_DEFAULT.equals(idExpireDate);
 	}
 
 	/**
