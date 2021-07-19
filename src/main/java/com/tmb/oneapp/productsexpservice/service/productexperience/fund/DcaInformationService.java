@@ -32,6 +32,10 @@ public class DcaInformationService {
 
     private final DcaInformationMapper dcaInformationMapper;
 
+
+    /**
+     * DcaInformationService class will get data from api services
+     */
     @Autowired
     public DcaInformationService(InvestmentRequestClient investmentRequestClient,
                                  ProductsExpService productsExpService,
@@ -41,6 +45,14 @@ public class DcaInformationService {
         this.dcaInformationMapper = dcaInformationMapper;
     }
 
+
+    /**
+     * Method getDcaInformation to call MF Service account saving and getFundListInfo and FundSummary
+     *
+     * @param correlationId
+     * @param crmId
+     * @return TmbOneServiceResponse<DcaInformationDto>
+     */
     public TmbOneServiceResponse<DcaInformationDto> getDcaInformation(String correlationId, String crmId) {
 
         TmbOneServiceResponse<DcaInformationDto> dcaInformationDto = new TmbOneServiceResponse<>();
