@@ -4,7 +4,9 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
+import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationModel;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.mapper.dcainformation.DcaInformationMapper;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
@@ -16,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,11 +30,15 @@ public class DcaInformationService {
 
     private final ProductsExpService productsExpService;
 
+    private final DcaInformationMapper dcaInformationMapper;
+
     @Autowired
     public DcaInformationService(InvestmentRequestClient investmentRequestClient,
-                                 ProductsExpService productsExpService) {
+                                 ProductsExpService productsExpService,
+                                 DcaInformationMapper dcaInformationMapper) {
         this.investmentRequestClient = investmentRequestClient;
         this.productsExpService = productsExpService;
+        this.dcaInformationMapper = dcaInformationMapper;
     }
 
     public TmbOneServiceResponse<DcaInformationDto> getDcaInformation(String correlationId, String crmId) {
@@ -65,11 +69,28 @@ public class DcaInformationService {
                 .flatMap(Collection::stream).collect(Collectors.toList());
         List<Fund> fundList = fundHouseList.stream().map(t -> t.getFundList().getFund()).flatMap(Collection::stream).collect(Collectors.toList());
         List<FundClassListInfo> fundClassListInfos = fundListBody.getBody().getData().getFundClassList();
-        List<FundClassListInfo> dcaList = fundClassListInfos.stream().filter(
-                t -> t.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)
-                        && fundList.stream().map(Fund::getFundCode).anyMatch(code -> code.equals(t.getFundCode()))).collect(Collectors.toList());
+
+//        List<FundClassListInfo> filterFundForDCA = fundClassListInfos.stream().filter(
+//                t -> t.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)
+//                        && fundList.stream().map(Fund::getFundCode).anyMatch(code -> code.equals(t.getFundCode()))).collect(Collectors.toList());
+
+        List<DcaInformationModel> dcaInformationModelList = new ArrayList<>();
+        for(FundClassListInfo fundClassListInfo : fundClassListInfos) { //Itereate throug every item from list1
+            if(fundClassListInfo.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)){
+                Optional<Fund> fundOpt = fundList.stream().filter(t -> t.getFundCode().equals(fundClassListInfo.getFundCode())).findFirst();
+                if(fundOpt.isPresent()){
+                    Fund fund = fundOpt.get();
+                    DcaInformationModel dcaInformationModel = dcaInformationMapper.fundClassInfoToDcaInformationModel(fundClassListInfo);
+                    dcaInformationModel.setMarketValue(fund.getMarketValue());
+                    dcaInformationModel.setPortfolioNumber(fund.getPortfolioNumber());
+                    dcaInformationModel.setUnrealizedProfit(fund.getUnrealizedProfit());
+                    dcaInformationModel.setUnrealizedProfitPercent(fund.getUnrealizedProfitPercent());
+                    dcaInformationModelList.add(dcaInformationModel);
+                }
+            }
+        }
         dcaInformationDto.setStatus(TmbStatusUtil.successStatus());
-        dcaInformationDto.setData(DcaInformationDto.builder().fundClassList(dcaList).build());
+        dcaInformationDto.setData(DcaInformationDto.builder().fundClassList(dcaInformationModelList).build());
         return dcaInformationDto;
     }
 

@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.dto.fund.dcainformation;
 
-import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DcaInformationDto {
-    List<FundClassListInfo> fundClassList;
+    List<DcaInformationModel> fundClassList;
 }
