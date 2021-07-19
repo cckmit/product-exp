@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * DcaInformationService class will get data from api services
+ */
 @Service
 public class DcaInformationService {
 
@@ -32,10 +35,6 @@ public class DcaInformationService {
 
     private final DcaInformationMapper dcaInformationMapper;
 
-
-    /**
-     * DcaInformationService class will get data from api services
-     */
     @Autowired
     public DcaInformationService(InvestmentRequestClient investmentRequestClient,
                                  ProductsExpService productsExpService,
