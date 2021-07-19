@@ -70,12 +70,8 @@ public class DcaInformationService {
         List<Fund> fundList = fundHouseList.stream().map(t -> t.getFundList().getFund()).flatMap(Collection::stream).collect(Collectors.toList());
         List<FundClassListInfo> fundClassListInfos = fundListBody.getBody().getData().getFundClassList();
 
-//        List<FundClassListInfo> filterFundForDCA = fundClassListInfos.stream().filter(
-//                t -> t.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)
-//                        && fundList.stream().map(Fund::getFundCode).anyMatch(code -> code.equals(t.getFundCode()))).collect(Collectors.toList());
-
         List<DcaInformationModel> dcaInformationModelList = new ArrayList<>();
-        for(FundClassListInfo fundClassListInfo : fundClassListInfos) { //Itereate throug every item from list1
+        for(FundClassListInfo fundClassListInfo : fundClassListInfos) {
             if(fundClassListInfo.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)){
                 Optional<Fund> fundOpt = fundList.stream().filter(t -> t.getFundCode().equals(fundClassListInfo.getFundCode())).findFirst();
                 if(fundOpt.isPresent()){
