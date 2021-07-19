@@ -6,8 +6,10 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
+import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationModel;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.mapper.dcainformation.DcaInformationMapper;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
@@ -48,6 +50,9 @@ public class DcaInformationServiceTest {
     @Mock
     public ProductsExpService productsExpService;
 
+    @Mock
+    public DcaInformationMapper dcaInformationMapper;
+
     @Test
     void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crmid() throws IOException {
         //Given
@@ -69,13 +74,14 @@ public class DcaInformationServiceTest {
         tmbFundListResponse.setData(fundListBody);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundListResponse));
 
+        DcaInformationModel dcaInformationModel = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/dcainformationmodel.json").toFile(), DcaInformationModel.class);
+        when(dcaInformationMapper.fundClassInfoToDcaInformationModel(any())).thenReturn(dcaInformationModel);
+
         //When
         TmbOneServiceResponse<DcaInformationDto> actual = dcaInformationService.getDcaInformation(correlationId,crmId);
 
-
         //Then
         DcaInformationDto dcaInformationDto = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/dcainformationdto.json").toFile(), DcaInformationDto.class);
-
         assertEquals(TmbStatusUtil.successStatus().getCode(),actual.getStatus().getCode());
         assertEquals(dcaInformationDto, actual.getData());
     }
