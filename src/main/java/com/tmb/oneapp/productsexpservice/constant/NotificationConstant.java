@@ -42,5 +42,10 @@ public class NotificationConstant {
 	public static final String APPLY_SO_GOOD_TOTAL = "TotalAmountTransaction";
 	public static final String TRX_DESC_TH = "TransactionDescriptionTH";
 	public static final String TRX_DESC_EN = "TransactionDescriptionEN";
+	
+	public static final String APPLY_E_STATEMENT_TEMPLATE_VALUE = "ONEAPP_020";
+	public static final String EMAIL = "email";
+	public static final String PRODUCT_GROUP_EN = "productGroupEN";
+	public static final String PRODUCT_GROUP_TH = "productGroupTH";
 
 }

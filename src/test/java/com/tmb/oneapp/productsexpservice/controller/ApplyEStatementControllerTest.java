@@ -24,6 +24,7 @@ import com.tmb.oneapp.productsexpservice.model.applyestatement.Profile;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.Status;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
 @RunWith(JUnit4.class)
 public class ApplyEStatementControllerTest {
@@ -33,11 +34,13 @@ public class ApplyEStatementControllerTest {
 	ApplyEStatementService applyEStatementService;
 	@InjectMocks
 	ApplyEStatementController applyEStatementController;
+	@Mock
+	NotificationService notificationService;
 
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		applyEStatementController = new ApplyEStatementController(applyEStatementService);
+		applyEStatementController = new ApplyEStatementController(applyEStatementService, notificationService);
 	}
 
 	@Test
