@@ -1,7 +1,7 @@
 package com.tmb.oneapp.productsexpservice.mapper.dcainformation;
 
 
-import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationModel;
+import com.tmb.oneapp.productsexpservice.dto.fund.dca.information.DcaInformationModel;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
