@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundPaymentDetailRequest extends FundRuleRequestBody {
 
