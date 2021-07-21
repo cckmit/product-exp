@@ -113,9 +113,8 @@ public class DcaValidationService {
 
         }catch (Exception ex){
             logger.info("Fetch Ptes Failed");
-        }finally {
-            return tmbStatus;
         }
+        return tmbStatus;
     }
 
 }
