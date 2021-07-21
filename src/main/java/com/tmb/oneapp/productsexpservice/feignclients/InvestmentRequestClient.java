@@ -1,6 +1,11 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.aip.request.AipValidationRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.aip.response.AipValidationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
@@ -8,25 +13,24 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.accoun
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.request.TransactionValidationRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.response.TransactionValidationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -298,4 +302,29 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> updatePortfolioNickname(
             @RequestHeader Map<String, String> header, @RequestBody PortfolioNicknameRequest portfolioNicknameRequest);
+
+    /**
+     * Call investment fund daily nav service to get fund daily nav response.
+     *
+     * @param header                       the headers
+     * @param crmId                        the crm id
+     * @param transactionValidationRequest the transaction validation request
+     * @return the transaction validation response
+     */
+    @PostMapping(value = "${investment.service.transaction.validation.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<TransactionValidationResponseBody>> getTransactionValidation(
+            @RequestHeader Map<String, String> header, @RequestHeader("x-crmid") String crmId, @RequestBody TransactionValidationRequest transactionValidationRequest);
+
+    /**
+     * Call investment fund daily nav service to get fund daily nav response.
+     *
+     * @param header               the headers
+     * @param aipValidationRequest the aip validation request
+     * @return the ais validation response
+     */
+    @PostMapping(value = "${investment.service.aip.validation.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<AipValidationResponseBody>> getAipValidation(
+            @RequestHeader Map<String, String> header, @RequestBody AipValidationRequest aipValidationRequest);
 }

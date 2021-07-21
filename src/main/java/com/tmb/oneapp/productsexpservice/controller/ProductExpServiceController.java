@@ -11,11 +11,11 @@ import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocati
 import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
 import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
@@ -29,7 +29,6 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +70,7 @@ public class ProductExpServiceController {
      */
     @LogAround
     @ApiOperation(value = "Fetch Fund Detail based on Unit Holder No, Fund House Code And FundCode")
-    @PostMapping(value = "/account/detail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/account/detail")
     public ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> getFundAccountDetail(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
@@ -107,7 +106,7 @@ public class ProductExpServiceController {
      */
     @ApiOperation(value = "Fetch Fund Summary and Port List based on Unit Holder No and CRMID")
     @LogAround
-    @PostMapping(value = "/summary", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/summary")
     public ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> getFundSummary(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
@@ -142,7 +141,7 @@ public class ProductExpServiceController {
      */
     @ApiOperation(value = "Get all payment detail info than return list of port, list of account, fund rule and list of holiday")
     @LogAround
-    @PostMapping(value = "/paymentDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/paymentDetails")
     public ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> getFundPrePaymentDetail(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
@@ -185,7 +184,7 @@ public class ProductExpServiceController {
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")
     @LogAround
-    @PostMapping(value = "/alternative/validation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/alternative/validation")
     public ResponseEntity<TmbOneServiceResponse<FfsResponse>> getFundFFSAndValidation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
@@ -253,7 +252,7 @@ public class ProductExpServiceController {
      */
     @ApiOperation(value = "Validation alternative case for Sale and Switch")
     @LogAround
-    @PostMapping(value = "/alternative/sellAndSwitch", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/alternative/sellAndSwitch")
     public ResponseEntity<TmbOneServiceResponse<FundResponse>> validateAlternativeSellAndSwitch(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
@@ -301,7 +300,7 @@ public class ProductExpServiceController {
      */
     @ApiOperation(value = "Fetch Fund list from MF Service and add more flag, then return to front-end")
     @LogAround
-    @PostMapping(value = "/search/fundList", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/search/fundList")
     public ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> getFundListInfo(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
@@ -337,7 +336,7 @@ public class ProductExpServiceController {
     }
 
     @ApiOperation(value = "Fetch Fund Suggest Allocation")
-    @PostMapping(value = "/suggested/allocation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/suggested/allocation")
     public ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> getFundSuggestAllocation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)

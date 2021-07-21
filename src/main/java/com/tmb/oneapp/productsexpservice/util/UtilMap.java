@@ -257,10 +257,9 @@ public class UtilMap {
      * @return
      */
     public static Map<String, String> createHeader(String correlationId) {
-        Map<String, String> invHeaderReqParameter = new HashMap<>();
-        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
-        invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        return invHeaderReqParameter;
+        Map<String, String> investmentHeader = new HashMap<>();
+        investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
+        return investmentHeader;
     }
 
     /**
