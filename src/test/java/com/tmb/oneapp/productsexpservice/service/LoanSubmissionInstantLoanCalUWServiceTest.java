@@ -98,7 +98,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApproveC2GFailed() throws TMBCommonException {
+    public void testCheckCalculateUnderwritingApproveC2GFailed() {
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G");

@@ -6,6 +6,7 @@ import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
+import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -126,7 +127,7 @@ public interface LendingServiceClient {
 	ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkApprovedStatus(@Valid InstantLoanCalUWRequest request);
 
 	@GetMapping(value = "/apis/lending-service/flexiLoan/submissionInfo")
-	ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> submissionInfo(
+	ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> submissionInfo(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@Valid SubmissionInfoRequest request);
 
