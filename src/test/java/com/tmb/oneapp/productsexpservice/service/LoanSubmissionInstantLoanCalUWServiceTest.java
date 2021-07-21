@@ -9,6 +9,7 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionInstantLoanCalUWClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
@@ -39,12 +40,15 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
     @Mock
     private LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
 
+    @Mock
+    private LendingServiceClient lendingServiceClient;
+
     LoanSubmissionInstantLoanCalUWService loanCalUWService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanCalUWService = new LoanSubmissionInstantLoanCalUWService(loanCalUWClient, getFacilityInfoClient);
+        loanCalUWService = new LoanSubmissionInstantLoanCalUWService(loanCalUWClient, getFacilityInfoClient,lendingServiceClient);
     }
 
     @Test
@@ -200,6 +204,5 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         instantLoanCalUWResponse.setPricings(pricingList);
         return pricings;
     }
-
 
 }
