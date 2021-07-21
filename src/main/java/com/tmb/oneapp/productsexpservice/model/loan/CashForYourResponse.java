@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @JsonInclude(Include.NON_NULL)
+@ToString
 public class CashForYourResponse {
 
 	@JsonProperty("installment_data")
