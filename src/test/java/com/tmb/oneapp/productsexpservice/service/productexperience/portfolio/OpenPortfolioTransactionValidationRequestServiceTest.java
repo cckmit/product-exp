@@ -47,10 +47,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class OpenPortfolioValidationServiceTest {
+class OpenPortfolioTransactionValidationRequestServiceTest {
 
     @Mock
-    private TMBLogger<OpenPortfolioValidationServiceTest> logger;
+    private TMBLogger<OpenPortfolioTransactionValidationRequestServiceTest> logger;
 
     @Mock
     private CustomerServiceClient customerServiceClient;

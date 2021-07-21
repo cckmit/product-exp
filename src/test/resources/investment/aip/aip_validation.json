@@ -1,0 +1,23 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "orderType": "P",
+    "fundCode": "TMBGQG",
+    "portfolioNumber": "PT000000000000566428",
+    "warningList": [
+      {
+        "code": "01",
+        "description": "Accept Fund Fact Sheet"
+      },
+      {
+        "code": "04",
+        "description": "Accept FX"
+      }
+    ]
+  }
+}

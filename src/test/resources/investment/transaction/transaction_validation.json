@@ -1,0 +1,40 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "orderDateTime": "2021-07-21T09:51:39",
+    "effectiveDate": "2021-07-21",
+    "workingHour": "Y",
+    "header": {
+      "rqUID": "1234567890",
+      "channelID": "MIB",
+      "serviceName": "getTransactionValidation",
+      "rqDateTime": "2021-07-21T13:51:54.000020+07.00",
+      "rsDateTime": "2021-07-21T13:51:54.752327+07:00",
+      "status": {
+        "statusCode": "0000",
+        "severity": "Info",
+        "statusDesc": "Success"
+      }
+    },
+    "consentList": [
+      {
+        "code": "01",
+        "messageTh": "ยอมรับเงื่อนไขที่ระบุไว้ในหนังสือชี้ชวน",
+        "messageEn": "I acknowledge and understand the investment policy in fund fact sheet."
+      },
+      {
+        "code": "04",
+        "messageTh": "กองทุนนี้มีการลงทุนในต่างประเทศและมีความเสี่ยงอัตราแลกเปลี่ยน ท่านตกลงรับทราบและยอมรับความเสี่ยงว่าอาจขาดทุนหรือได้รับกำไรจากอัตราแลกเปลี่ยน หรืออาจได้รับเงินคืนต่ำกว่าเงินลงทุนเริ่มแรก",
+        "messageEn": " This fund invest in foreign securities and has exchange rate risk: I acknowledge and accept the risk that I may get loss or gain from exchange rate of the return of my investment maybe lower than the original invested amount"
+      }
+    ],
+    "accountRedeem": "",
+    "frontEndFee": "2.22",
+    "paymentDate": ""
+  }
+}
