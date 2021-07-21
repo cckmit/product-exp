@@ -96,7 +96,7 @@ public class DcaValidationService {
         return tmbStatus;
     }
 
-    private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) throws TMBCommonException {
+    private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) {
         try{
             ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter,crmId);
             List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
