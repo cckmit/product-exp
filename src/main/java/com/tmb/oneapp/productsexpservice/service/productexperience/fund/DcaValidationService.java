@@ -55,8 +55,8 @@ public class DcaValidationService {
 
         try{
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter,crmId);
-            tmbStatus = validatePtesPort(dcaValidationRequest, ptesPort,dcaValidationDtoTmbOneServiceResponse.getStatus());
+
+            tmbStatus = validatePtesPort(crmId,dcaValidationRequest, invHeaderReqParameter,dcaValidationDtoTmbOneServiceResponse.getStatus());
             if(!tmbStatus.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
                 return dcaValidationDtoTmbOneServiceResponse;
             }
@@ -96,22 +96,26 @@ public class DcaValidationService {
         return tmbStatus;
     }
 
-    private TmbStatus validatePtesPort(DcaValidationRequest dcaValidationRequest, ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort, TmbStatus tmbStatus) throws TMBCommonException {
-        if(!ptesPort.getStatusCode().equals(HttpStatus.OK) || !ptesPort.getBody().getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
-            throw new TMBCommonException("failed fetch ptesport");
-        }
-        List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
-        Optional<PtesDetail> ptesPortOptional = ptesPortList.stream()
-                .filter(t -> t.getPortfolioFlag().equals(ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG) &&
-                        t.getPortfolioNumber().equals(dcaValidationRequest.getPortfolioNumber()))
-                .findFirst();
-        if(ptesPortOptional.isPresent()){
-            tmbStatus.setCode(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode());
-            tmbStatus.setMessage(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg());
-            tmbStatus.setDescription(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc());
+    private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) throws TMBCommonException {
+        try{
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter,crmId);
+            List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
+            Optional<PtesDetail> ptesPortOptional = ptesPortList.stream()
+                    .filter(t -> t.getPortfolioFlag().equals(ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG) &&
+                            t.getPortfolioNumber().equals(dcaValidationRequest.getPortfolioNumber()))
+                    .findFirst();
+            if(ptesPortOptional.isPresent()){
+                tmbStatus.setCode(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode());
+                tmbStatus.setMessage(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg());
+                tmbStatus.setDescription(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc());
+                return tmbStatus;
+            }
+
+        }catch (Exception ex){
+            logger.info("Fetch Ptes Failed");
+        }finally {
             return tmbStatus;
         }
-        return tmbStatus;
     }
 
 }
