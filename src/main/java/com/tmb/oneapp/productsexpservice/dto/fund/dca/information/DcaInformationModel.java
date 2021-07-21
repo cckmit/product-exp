@@ -1,11 +1,9 @@
-package com.tmb.oneapp.productsexpservice.dto.fund.dcainformation;
+package com.tmb.oneapp.productsexpservice.dto.fund.dca.information;
 
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
