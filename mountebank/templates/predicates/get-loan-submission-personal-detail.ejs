@@ -1,0 +1,55 @@
+{
+    "predicates": [{
+        "equals": {
+            "path": "/apis/products/lending/loanSubmission/personalDetail",
+            "query": {
+                "caId": "1234"
+            },
+            "method": "GET"
+        }
+    }],
+    "responses": [{
+        "is":{
+            "statusCode":200,
+            "headers":{
+                "Content-Type":"application/json"
+            },
+            "body":{
+                "status":{
+                    "code":"0000",
+                    "message":"success",
+                    "service":"products-exp-service",
+                    "description":"success"
+                },
+                "data": {
+                    "thai_salutation_code": "นาย",
+                    "thai_name": "ชื่อจริง",
+                    "thai_surname": "นามสกุล",
+                    "eng_name": "real name",
+                    "eng_surname": "surname",
+                    "birth_date": "14/07/2530",
+                    "expiry_date": "714145924429",
+                    "nationality": "ไทย",
+                    "mobile_no": "0639291563",
+                    "email": "mock@mail.mock",
+                    "address": {
+                        "no": "92/114",
+                        "buildingName": "ริริม รัชดา",
+                        "streetName": "เสนา",
+                        "postalCode": "10310",
+                        "country": "ไทย",
+                        "tumbol": "เสนานอก",
+                        "road": "รัชดาภิเษก",
+                        "moo": "123",
+                        "amphur": "ห้วยขวาง",
+                        "province": "กรุงเทพมหานคร",
+                        "floor": "12"
+                    },
+                    "resident_flag": ""
+                    }
+                }
+
+            }
+        }
+    ]
+}
