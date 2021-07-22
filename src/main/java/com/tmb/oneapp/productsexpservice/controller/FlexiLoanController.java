@@ -86,7 +86,7 @@ public class FlexiLoanController {
         TmbOneServiceResponse<SubmissionInfoResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            SubmissionInfoResponse response = flexiLoanService.getSubmissionInfo(request);
+            SubmissionInfoResponse response = flexiLoanService.getSubmissionInfo(correlationId,request);
             oneTmbOneServiceResponse.setData(response);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
