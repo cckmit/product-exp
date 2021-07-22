@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
@@ -21,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +41,7 @@ public class DcaValidationServiceTest {
     public InvestmentRequestClient investmentRequestClient;
 
     @Test
-    void should_return_dca_validation_dto_when_call_dca_validation_given_correlation_id_and_crmid_dcaValidation_request() throws IOException {
+    void should_return_dca_validation_dto_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
         //Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
@@ -64,7 +62,7 @@ public class DcaValidationServiceTest {
         TmbOneServiceResponse<List<PtesDetail>> tmbPtesListResponse = new TmbOneServiceResponse<>();
         tmbPtesListResponse.setStatus(TmbStatusUtil.successStatus());
         tmbPtesListResponse.setData(ptesDetailList);
-        when(investmentRequestClient.getPtesPort(any(),any())).thenReturn(
+        when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbPtesListResponse));
 
         TmbOneServiceResponse<FundRuleBody> tmbFundRuleResponse = new TmbOneServiceResponse<>();
@@ -81,20 +79,19 @@ public class DcaValidationServiceTest {
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundFactSheetResponse));
 
         //When
-        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId,crmId,dcaValidationRequest);
+        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
         //Then
-        DcaValidationDto mockDto = DcaValidationDto.builder().factsheetData(fundFactSheetData).build();
-        assertEquals(TmbStatusUtil.successStatus().getCode(),actual.getStatus().getCode());
+        DcaValidationDto mockDto = DcaValidationDto.builder().factSheetData(fundFactSheetData).build();
+        assertEquals(TmbStatusUtil.successStatus().getCode(), actual.getStatus().getCode());
         assertEquals(mockDto, actual.getData());
     }
 
     @Test
-    void should_return_error_2000036_ptes_port_is_not_allow_for_dca_when_call_dca_validation_given_correlation_id_and_crmid_dcaValidation_request() throws JsonProcessingException {
+    void should_return_error_2000036_ptes_port_is_not_allow_for_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
         //Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
-        String fundFactSheetData = "fundfactsheet";
 
         DcaValidationRequest dcaValidationRequest = DcaValidationRequest.builder()
                 .fundHouseCode("TFUND")
@@ -111,25 +108,24 @@ public class DcaValidationServiceTest {
         TmbOneServiceResponse<List<PtesDetail>> tmbPtesListResponse = new TmbOneServiceResponse<>();
         tmbPtesListResponse.setStatus(TmbStatusUtil.successStatus());
         tmbPtesListResponse.setData(ptesDetailList);
-        when(investmentRequestClient.getPtesPort(any(),any())).thenReturn(
+        when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbPtesListResponse));
 
         //When
-        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId,crmId,dcaValidationRequest);
+        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
         //Then
-        assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode(),actual.getStatus().getCode());
-        assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg(),actual.getStatus().getMessage());
-        assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc(),actual.getStatus().getDescription());
+        assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode(), actual.getStatus().getCode());
+        assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg(), actual.getStatus().getMessage());
+        assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc(), actual.getStatus().getDescription());
         assertNull(actual.getData());
     }
 
     @Test
-    void should_return_error_2000037_fund_not_allow_set_dca_when_call_dca_validation_given_correlation_id_and_crmid_dcaValidation_request() throws JsonProcessingException {
+    void should_return_error_2000037_fund_not_allow_set_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
         //Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
-        String fundFactSheetData = "fundfactsheet";
 
         DcaValidationRequest dcaValidationRequest = DcaValidationRequest.builder()
                 .fundHouseCode("TFUND")
@@ -146,7 +142,7 @@ public class DcaValidationServiceTest {
         TmbOneServiceResponse<List<PtesDetail>> tmbPtesListResponse = new TmbOneServiceResponse<>();
         tmbPtesListResponse.setStatus(TmbStatusUtil.successStatus());
         tmbPtesListResponse.setData(ptesDetailList);
-        when(investmentRequestClient.getPtesPort(any(),any())).thenReturn(
+        when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbPtesListResponse));
 
         TmbOneServiceResponse<FundRuleBody> tmbFundRuleResponse = new TmbOneServiceResponse<>();
@@ -157,20 +153,21 @@ public class DcaValidationServiceTest {
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundRuleResponse));
 
         //When
-        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId,crmId,dcaValidationRequest);
+        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
         //Then
-        assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getCode(),actual.getStatus().getCode());
-        assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getMsg(),actual.getStatus().getMessage());
-        assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getDesc(),actual.getStatus().getDescription());
+        assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getCode(), actual.getStatus().getCode());
+        assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getMsg(), actual.getStatus().getMessage());
+        assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getDesc(), actual.getStatus().getDescription());
         assertNull(actual.getData());
     }
 
     @Test
-    void should_return_null_when_call_dca_validation_given_correlation_id_and_crmid_dcaValidation_request() throws JsonProcessingException {
+    void should_return_null_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
         //Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        String crmId = "001100000000000000000001184383";;
+        String crmId = "001100000000000000000001184383";
+        ;
         DcaValidationRequest dcaValidationRequest = DcaValidationRequest.builder()
                 .fundHouseCode("TFUND")
                 .language("TH")
@@ -178,14 +175,13 @@ public class DcaValidationServiceTest {
                 .tranType("1")
                 .build();
 
-        when(investmentRequestClient.getPtesPort(any(),any()))
+        when(investmentRequestClient.getPtesPort(any(), any()))
                 .thenThrow(new RuntimeException("Error"));
         //When
-        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId,crmId,dcaValidationRequest);
+        TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
         //Then
         assertNull(actual.getStatus());
         assertNull(actual.getData());
     }
-
 }
