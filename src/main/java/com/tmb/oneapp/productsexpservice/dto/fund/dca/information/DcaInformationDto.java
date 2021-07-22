@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.dto.fund.dcainformation;
+package com.tmb.oneapp.productsexpservice.dto.fund.dca.information;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

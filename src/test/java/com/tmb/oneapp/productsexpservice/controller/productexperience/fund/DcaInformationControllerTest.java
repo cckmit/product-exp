@@ -2,8 +2,7 @@ package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.dto.fund.dcainformation.DcaInformationDto;
-import com.tmb.oneapp.productsexpservice.model.fund.dcainformation.DcaInformationRequestBody;
+import com.tmb.oneapp.productsexpservice.dto.fund.dca.information.DcaInformationDto;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.DcaInformationService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ public class DcaInformationControllerTest {
 
         //When
         ResponseEntity<TmbOneServiceResponse<DcaInformationDto>> actual =
-                dcaInformationController.getDcaInformation(correlationId, DcaInformationRequestBody.builder().crmId(crmId).build());
+                dcaInformationController.getDcaInformation(correlationId, crmId);
         //Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(dcaInformationDto, actual.getBody().getData());
@@ -68,7 +67,7 @@ public class DcaInformationControllerTest {
 
         //When
         ResponseEntity<TmbOneServiceResponse<DcaInformationDto>> actual =
-                dcaInformationController.getDcaInformation(correlationId,DcaInformationRequestBody.builder().crmId(crmId).build());
+                dcaInformationController.getDcaInformation(correlationId,crmId);
         //Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(TmbStatusUtil.notFoundStatus().getCode(),actual.getBody().getStatus().getCode());

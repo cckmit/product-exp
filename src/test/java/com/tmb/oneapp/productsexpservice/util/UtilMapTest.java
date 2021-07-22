@@ -195,7 +195,6 @@ public class UtilMapTest {
         Map<String, String> result = UtilMap.createHeader(correlationId);
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "1234");
-        hashMap.put("content-type", "application/json");
         Assert.assertEquals(hashMap, result);
     }
 

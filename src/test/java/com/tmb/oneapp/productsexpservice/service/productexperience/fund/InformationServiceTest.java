@@ -65,7 +65,7 @@ class InformationServiceTest {
     }
 
     @Test
-    void should_return_null_when_call_get_fund_information_given_throw_runtime_exception_from_product_exp_asyn_service() throws TMBCommonException {
+    void should_return_null_when_call_get_fund_information_given_throw_runtime_exception_from_product_exp_async_service() throws TMBCommonException {
         //Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
