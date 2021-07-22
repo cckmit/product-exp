@@ -7,8 +7,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.productexperience.aip.request.AipValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.aip.response.AipValidationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
@@ -21,8 +19,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickn
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.request.TransactionValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.response.TransactionValidationResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -153,36 +149,6 @@ public class InvestmentAsyncService {
     public CompletableFuture<PortfolioNicknameResponseBody> updatePortfolioNickname(Map<String, String> investmentRequestHeader, PortfolioNicknameRequest portfolioNicknameRequest) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> response = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
-            return CompletableFuture.completedFuture(response.getBody().getData());
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw getTmbCommonException();
-        }
-    }
-
-    /**
-     * Method fetchTransactionValidation to get transaction validation
-     *
-     * @return CompletableFuture<TransactionValidationResponseBody>
-     */
-    public CompletableFuture<TransactionValidationResponseBody> fetchTransactionValidation(Map<String, String> investmentRequestHeader, String crmId, TransactionValidationRequest transactionValidationRequest) throws TMBCommonException {
-        try {
-            ResponseEntity<TmbOneServiceResponse<TransactionValidationResponseBody>> response = investmentRequestClient.getTransactionValidation(investmentRequestHeader, crmId, transactionValidationRequest);
-            return CompletableFuture.completedFuture(response.getBody().getData());
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            throw getTmbCommonException();
-        }
-    }
-
-    /**
-     * Method fetchAipValidation to get aip validation
-     *
-     * @return CompletableFuture<TransactionValidationResponseBody>
-     */
-    public CompletableFuture<AipValidationResponseBody> fetchAipValidation(Map<String, String> investmentRequestHeader, AipValidationRequest aipValidationRequest) throws TMBCommonException {
-        try {
-            ResponseEntity<TmbOneServiceResponse<AipValidationResponseBody>> response = investmentRequestClient.getAipValidation(investmentRequestHeader, aipValidationRequest);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

@@ -6,9 +6,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.productexperience.aip.request.AipValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.aip.response.AipValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.aip.response.AipValidationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
@@ -28,9 +25,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickn
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.request.TransactionValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.response.TransactionValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.response.TransactionValidationResponseBody;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,7 +42,6 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -390,103 +383,6 @@ class InvestmentAsyncServiceTest {
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
             investmentAsyncService.openPortfolio(any(), any());
-        });
-
-        //Then
-        TMBCommonException expected = new TMBCommonException(
-                ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
-                null);
-
-        assertEquals(expected.getClass(), actual.getClass());
-    }
-
-    @Test
-    void should_return_transaction_validation_body_when_call_fetch_transaction_validation_given_header_and_crm_id_and_transaction_validation_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
-        //Given
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> investmentRequestHeader = Map.of("test", "test");
-        String crmId = "001100000000000000000000028365";
-        TransactionValidationResponse transactionValidationResponse = mapper.readValue(Paths.get("src/test/resources/investment/transaction/transaction_validation.json").toFile(),
-                TransactionValidationResponse.class);
-
-        TmbOneServiceResponse<TransactionValidationResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData(transactionValidationResponse.getData());
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setService("products-exp-async-service");
-        tmbOneServiceResponse.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<TransactionValidationResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-
-
-        TransactionValidationRequest transactionValidationRequest = TransactionValidationRequest.builder().build();
-        when(investmentRequestClient.getTransactionValidation(investmentRequestHeader, crmId, transactionValidationRequest)).thenReturn(response);
-
-        //When
-        CompletableFuture<TransactionValidationResponseBody> actual = investmentAsyncService.fetchTransactionValidation(investmentRequestHeader, crmId, transactionValidationRequest);
-
-        //Then
-        CompletableFuture<TransactionValidationResponseBody> expected = CompletableFuture.completedFuture(transactionValidationResponse.getData());
-        assertEquals(expected.get(), actual.get());
-    }
-
-    @Test
-    void should_return_null_when_call_fetch_transaction_validation_given_throw_exception_from_api() {
-        //Given
-        when(investmentRequestClient.getTransactionValidation(any(), anyString(), any())).thenThrow(RuntimeException.class);
-
-        //When
-        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.fetchTransactionValidation(any(), anyString(), any());
-        });
-
-        //Then
-        TMBCommonException expected = new TMBCommonException(
-                ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
-                null);
-
-        assertEquals(expected.getClass(), actual.getClass());
-    }
-
-    @Test
-    void should_return_aip_validation_body_when_call_fetch_aip_validation_given_header_and_aip_validation_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
-        //Given
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> investmentRequestHeader = Map.of("test", "test");
-        AipValidationResponse aipValidationResponse = mapper.readValue(Paths.get("src/test/resources/investment/aip/aip_validation.json").toFile(),
-                AipValidationResponse.class);
-
-        TmbOneServiceResponse<AipValidationResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData(aipValidationResponse.getData());
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setService("products-exp-async-service");
-        tmbOneServiceResponse.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<AipValidationResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-
-
-        AipValidationRequest aipValidationRequest = AipValidationRequest.builder().build();
-        when(investmentRequestClient.getAipValidation(investmentRequestHeader, aipValidationRequest)).thenReturn(response);
-
-        //When
-        CompletableFuture<AipValidationResponseBody> actual = investmentAsyncService.fetchAipValidation(investmentRequestHeader, aipValidationRequest);
-
-        //Then
-        CompletableFuture<AipValidationResponseBody> expected = CompletableFuture.completedFuture(aipValidationResponse.getData());
-        assertEquals(expected.get(), actual.get());
-    }
-
-    @Test
-    void should_return_null_when_call_fetch_aip_validation_given_throw_exception_from_api() {
-        //Given
-        when(investmentRequestClient.getAipValidation(any(), any())).thenThrow(RuntimeException.class);
-
-        //When
-        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.fetchAipValidation(any(), any());
         });
 
         //Then

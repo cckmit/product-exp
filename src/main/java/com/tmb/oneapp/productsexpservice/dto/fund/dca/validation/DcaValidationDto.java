@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.dto.fund.dca.validation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,5 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DcaValidationDto {
-    private String factsheetData;
+
+    @JsonProperty(value = "factsheetData")
+    private String factSheetData;
 }
