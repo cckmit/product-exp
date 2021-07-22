@@ -890,6 +890,8 @@ public class NotificationService {
 		params.put(NotificationConstant.EMAIL, email);
 		params.put(NotificationConstant.PRODUCT_GROUP_EN, notifyCommon.getProductNameEN());
 		params.put(NotificationConstant.PRODUCT_GROUP_TH, notifyCommon.getProductNameTH());
+		params.put(NotificationConstant.CHANNEL_NAME_EN, notifyCommon.getChannelNameEn());
+		params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
 		record.setCrmId(notifyCommon.getCrmId());
