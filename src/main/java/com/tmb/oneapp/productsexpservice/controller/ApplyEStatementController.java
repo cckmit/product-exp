@@ -24,6 +24,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -36,10 +37,13 @@ import io.swagger.annotations.ApiParam;
 public class ApplyEStatementController {
 	private static final TMBLogger<ApplyEStatementController> logger = new TMBLogger<>(ApplyEStatementController.class);
 	private final ApplyEStatementService applyEStatementService;
+	private final NotificationService notificationService;
 
 	@Autowired
-	public ApplyEStatementController(ApplyEStatementService applyEStatementService) {
+	public ApplyEStatementController(ApplyEStatementService applyEStatementService,
+			NotificationService notificationService) {
 		this.applyEStatementService = applyEStatementService;
+		this.notificationService = notificationService;
 	}
 
 	/**
@@ -72,10 +76,10 @@ public class ApplyEStatementController {
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService(),e.toString()));
+					ResponseCode.FAILED.getService(), e.toString()));
 			return ResponseEntity.badRequest().body(oneServiceResponse);
 		}
-		
+
 	}
 
 	@LogAround
@@ -97,14 +101,15 @@ public class ApplyEStatementController {
 			applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			notificationService.doNotifySuccessForApplyEStatement(correlationId, crmId, updateEstatementReq);
 			return ResponseEntity.ok(oneServiceResponse);
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService(),e.toString()));
+					ResponseCode.FAILED.getService(), e.toString()));
 			return ResponseEntity.badRequest().body(oneServiceResponse);
 		}
-		
+
 	}
 
 }
