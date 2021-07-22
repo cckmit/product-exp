@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
@@ -18,9 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -65,7 +64,7 @@ public class PersonalLoanControllerTest {
 	}
 
 	@Test
-	public void testCheckCalUWSuccess() throws ServiceException, RemoteException {
+	public void testCheckCalUWSuccess() throws TMBCommonException {
         InstantLoanCalUWRequest request = new InstantLoanCalUWRequest();
         request.setCaId(BigDecimal.valueOf(2021052704186761L));
         request.setTriggerFlag("Y");
@@ -79,7 +78,7 @@ public class PersonalLoanControllerTest {
 	}
 
 	@Test
-	public void testCheckCalUWSFail() throws ServiceException, RemoteException {
+	public void testCheckCalUWSFail() throws TMBCommonException {
 
         InstantLoanCalUWRequest request = new InstantLoanCalUWRequest();
         request.setCaId(BigDecimal.valueOf(2021052704186775L));

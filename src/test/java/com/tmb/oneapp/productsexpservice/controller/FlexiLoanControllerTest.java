@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
@@ -43,22 +44,22 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException {
+    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException, TMBCommonException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";
         SubmissionInfoResponse response = new SubmissionInfoResponse();
-        when(flexiLoanService.getSubmissionInfo(any())).thenReturn(response);
+        when(flexiLoanService.getSubmissionInfo(any(),any())).thenReturn(response);
         ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> responseEntity = flexiLoanController.getSubmissionInfo(correlationId, request);
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException {
+    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException, TMBCommonException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";
-        when(flexiLoanService.getSubmissionInfo(any())).thenThrow(new IllegalArgumentException());
+        when(flexiLoanService.getSubmissionInfo(any(),any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> responseEntity = flexiLoanController.getSubmissionInfo(correlationId, request);
         assertTrue(responseEntity.getStatusCode().isError());
     }
