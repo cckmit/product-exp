@@ -4,8 +4,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.aip.request.AipValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.aip.response.AipValidationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
@@ -24,8 +22,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickn
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.request.TransactionValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.response.TransactionValidationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -302,29 +298,4 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> updatePortfolioNickname(
             @RequestHeader Map<String, String> header, @RequestBody PortfolioNicknameRequest portfolioNicknameRequest);
-
-    /**
-     * Call investment fund daily nav service to get fund daily nav response.
-     *
-     * @param header                       the headers
-     * @param crmId                        the crm id
-     * @param transactionValidationRequest the transaction validation request
-     * @return the transaction validation response
-     */
-    @PostMapping(value = "${investment.service.transaction.validation.url}")
-    @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<TransactionValidationResponseBody>> getTransactionValidation(
-            @RequestHeader Map<String, String> header, @RequestHeader("x-crmid") String crmId, @RequestBody TransactionValidationRequest transactionValidationRequest);
-
-    /**
-     * Call investment fund daily nav service to get fund daily nav response.
-     *
-     * @param header               the headers
-     * @param aipValidationRequest the aip validation request
-     * @return the ais validation response
-     */
-    @PostMapping(value = "${investment.service.aip.validation.url}")
-    @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<AipValidationResponseBody>> getAipValidation(
-            @RequestHeader Map<String, String> header, @RequestBody AipValidationRequest aipValidationRequest);
 }
