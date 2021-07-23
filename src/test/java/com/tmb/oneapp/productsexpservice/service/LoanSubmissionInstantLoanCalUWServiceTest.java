@@ -55,7 +55,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         instantLoanCalUWRequest.setProduct("RC01");
         instantLoanCalUWRequest.setTriggerFlag("Y");
 
-        when(lendingServiceClient.checkApprovedStatus(instantLoanCalUWRequest)).thenReturn(ResponseEntity.ok(mockCalUW()));
+        when(lendingServiceClient.checkApprovedStatus(instantLoanCalUWRequest.getCaId(),instantLoanCalUWRequest.getTriggerFlag(),instantLoanCalUWRequest.getProduct())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
         InstantLoanCalUWResponse actualResult = loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest);
 
@@ -74,7 +74,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(lendingServiceClient.checkApprovedStatus(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
                 loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest));
@@ -89,7 +89,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.TEN);
 
-        when(lendingServiceClient.checkApprovedStatus(any())).thenReturn(ResponseEntity.ok(mockCalUW()));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
         InstantLoanCalUWResponse actualResult = loanCalUWService.checkCalculateUnderwriting(calUWReq);
 
@@ -109,7 +109,7 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(lendingServiceClient.checkApprovedStatus(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
                 loanCalUWService.checkCalculateUnderwriting(calUWReq));
