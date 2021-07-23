@@ -37,7 +37,7 @@ public class FlexiLoanServiceTest {
     public void testService_creditCard() throws TMBCommonException {
         TmbOneServiceResponse<SubmissionInfoResponse> oneServiceResponse = new TmbOneServiceResponse<SubmissionInfoResponse>();
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
-        when(lendingServiceClient.submissionInfo(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.submissionInfo(any(), any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
@@ -50,7 +50,7 @@ public class FlexiLoanServiceTest {
     public void testService_creditCardFailed() throws TMBCommonException {
         TmbOneServiceResponse<SubmissionInfoResponse> oneServiceResponse = new TmbOneServiceResponse<SubmissionInfoResponse>();
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
-        when(lendingServiceClient.submissionInfo(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.submissionInfo(any(), any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
@@ -64,7 +64,7 @@ public class FlexiLoanServiceTest {
     public void testService_c2g() throws TMBCommonException {
         TmbOneServiceResponse<SubmissionInfoResponse> oneServiceResponse = new TmbOneServiceResponse<SubmissionInfoResponse>();
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
-        when(lendingServiceClient.submissionInfo(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.submissionInfo(any(), any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
@@ -77,7 +77,7 @@ public class FlexiLoanServiceTest {
     public void testService_c2gFailed() throws TMBCommonException {
         TmbOneServiceResponse<SubmissionInfoResponse> oneServiceResponse = new TmbOneServiceResponse<SubmissionInfoResponse>();
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
-        when(lendingServiceClient.submissionInfo(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.submissionInfo(any(), any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);

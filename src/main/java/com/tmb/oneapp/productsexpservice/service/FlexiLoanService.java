@@ -21,7 +21,7 @@ public class FlexiLoanService {
     public SubmissionInfoResponse getSubmissionInfo(String correlationId, SubmissionInfoRequest request) throws TMBCommonException {
 
         try {
-            TmbOneServiceResponse<SubmissionInfoResponse> responseEntity = lendingServiceClient.submissionInfo(correlationId,request).getBody();
+            TmbOneServiceResponse<SubmissionInfoResponse> responseEntity = lendingServiceClient.submissionInfo(correlationId,request.getCaId(),request.getProductCode()).getBody();
             if (responseEntity.getStatus().getCode().equals("0000")) {
                 return responseEntity.getData();
             } else {
