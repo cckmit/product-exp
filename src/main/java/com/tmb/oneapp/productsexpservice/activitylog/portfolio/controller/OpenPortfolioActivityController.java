@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
-
 @Api(tags = "Update the activity log that belong to open portfolio")
 @RequestMapping("/activities")
 @RestController
@@ -40,14 +38,14 @@ public class OpenPortfolioActivityController {
     @ApiOperation(value = "Response success status of saving activity log")
     @PostMapping(value = "/open/portfolio/click-confirm")
     public ResponseEntity<TmbOneServiceResponse<String>> clickConfirm(
-            @ApiParam(value = HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody OpenPortfolioActivityLogRequest openPortfolioActivityLogRequest) {
         TmbOneServiceResponse<String> oneServiceResponse = new TmbOneServiceResponse<>();
 
         openPortfolioActivityLogService.clickConfirm(correlationId, crmId, openPortfolioActivityLogRequest);
-        oneServiceResponse.setStatus(buildStatusResponse(SUCCESS_CODE, SUCCESS_MESSAGE));
+        oneServiceResponse.setStatus(buildStatusResponse(ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE));
         oneServiceResponse.setData("Update activity log is successfully");
         return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }

@@ -5,6 +5,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponse;
@@ -30,7 +31,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +64,7 @@ class OpenPortfolioControllerTest {
         validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
 
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> responseService = new TmbOneServiceResponse<ValidateOpenPortfolioResponse>();
-        responseService.setStatus(new TmbStatus(SUCCESS_CODE, SUCCESS_MESSAGE, SERVICE_NAME, SUCCESS_MESSAGE));
+        responseService.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
         responseService.setData(validateOpenPortfolioResponse);
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
@@ -98,7 +98,7 @@ class OpenPortfolioControllerTest {
         responseService.setStatus(new TmbStatus(
                 OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
                 OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
-                SERVICE_NAME,
+                ProductsExpServiceConstant.SERVICE_NAME,
                 OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc()));
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();

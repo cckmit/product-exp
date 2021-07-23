@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
@@ -17,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
-
 @FeignClient(name = "${feign.customers.service.name}", url = "${feign.customers.service.url}")
 public interface CustomerServiceClient {
 
@@ -32,8 +31,8 @@ public interface CustomerServiceClient {
      */
     @GetMapping(value = "/apis/customers/firstTimeUsage")
     ResponseEntity<TmbOneServiceResponse<CustomerFirstUsage>> getFirstTimeUsage(
-            @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = DEVICE_ID) String deviceId,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
+            @RequestHeader(value = ProductsExpServiceConstant.DEVICE_ID) String deviceId,
             @RequestParam(value = "serviceTypeId") String serviceTypeId
     );
 
@@ -47,8 +46,8 @@ public interface CustomerServiceClient {
      */
     @PostMapping(value = "/apis/customers/firstTimeUsage")
     ResponseEntity<TmbOneServiceResponse<String>> postFirstTimeUsage(
-            @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = DEVICE_ID) String deviceId,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
+            @RequestHeader(value = ProductsExpServiceConstant.DEVICE_ID) String deviceId,
             @RequestParam(value = "serviceTypeId") String serviceTypeId
     );
 
@@ -62,8 +61,8 @@ public interface CustomerServiceClient {
      */
     @PutMapping(value = "/apis/customers/firstTimeUsage")
     ResponseEntity<TmbOneServiceResponse<String>> putFirstTimeUsage(
-            @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = DEVICE_ID) String deviceId,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
+            @RequestHeader(value = ProductsExpServiceConstant.DEVICE_ID) String deviceId,
             @RequestParam(value = "serviceTypeId") String serviceTypeId
     );
 
@@ -75,18 +74,16 @@ public interface CustomerServiceClient {
      */
     @GetMapping(value = "/apis/customers/case/status/{CRM_ID}")
     ResponseEntity<TmbOneServiceResponse<List<CaseStatusCase>>> getCaseStatus(
-            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @PathVariable("CRM_ID") String crmId
     );
-
 
     /**
      * @param crmId getCustDetails method consume crmId from
      *              customers-service
      */
     @GetMapping(value = "/apis/customers", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getCustomerProfile(@RequestHeader(name = X_CRMID) String crmId);
-
+    ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getCustomerProfile(@RequestHeader(name = ProductsExpServiceConstant.X_CRMID) String crmId);
 
     /**
      * Post submit NCB customer case
@@ -98,8 +95,8 @@ public interface CustomerServiceClient {
      */
     @PostMapping(value = "/apis/customers/case/submit")
     ResponseEntity<TmbOneServiceResponse<Map<String, String>>> submitCustomerCase(
-            @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @RequestBody CustomerCaseSubmitBody requestBody
     );
 
@@ -113,8 +110,8 @@ public interface CustomerServiceClient {
      */
     @PostMapping(value = "/apis/customers/search")
     ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerSearch(
-            @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @RequestBody CrmSearchBody requestBody
     );
 
@@ -127,18 +124,17 @@ public interface CustomerServiceClient {
      */
     @GetMapping(value = "/apis/customers/profile/get-e-statement")
     ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getCustomerEStatement(
-            @RequestHeader(value = X_CRMID) String crmId,
-            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId);
+            @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId);
 
     /**
      * Update email statment
      *
      * @param requestHeaders
-     * @param statementFlag 
+     * @param statementFlag
      * @return
      */
     @PostMapping(value = "/apis/customers/profile/update-e-statement")
     ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
             @RequestHeader Map<String, String> requestHeaders, @RequestBody StatementFlag statementFlag);
-
 }
