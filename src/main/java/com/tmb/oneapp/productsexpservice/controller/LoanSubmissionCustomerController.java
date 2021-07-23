@@ -7,7 +7,6 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanSubmissionResponse;
-import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionRequest;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,14 +35,16 @@ public class LoanSubmissionCustomerController {
     @GetMapping("/get-data-income-info")
     @LogAround
     @ApiOperation("Get customer info")
-    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> getIncomeInfo(@Valid LoanSubmissionRequest request) {
+    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> getIncomeInfo(@Valid @RequestHeader(name = "X-CRMID") String crmId,
+                                                                                       @Valid @RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId
+                                                                                     ) {
         TmbOneServiceResponse<LoanSubmissionResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
         try {
 
-            LoanSubmissionResponse loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo(request.getCaId());
+            LoanSubmissionResponse loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo(correlationId, crmId);
             oneTmbOneServiceResponse.setData(loanSubmissionResponse);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
