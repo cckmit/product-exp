@@ -10,4 +10,5 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class IncomeInfo {
     private BigDecimal incomeAmount;
+    private String statusWorking;
 }
