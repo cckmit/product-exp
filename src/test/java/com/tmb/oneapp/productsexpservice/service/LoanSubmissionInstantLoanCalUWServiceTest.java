@@ -1,16 +1,17 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.creditcard.ApprovalMemoCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.feature.Feature;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionInstantLoanCalUWClient;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
@@ -21,73 +22,74 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
-import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class LoanSubmissionInstantLoanCalUWServiceTest {
+
     @Mock
-    private LoanSubmissionInstantLoanCalUWClient loanCalUWClient;
-    @Mock
-    private LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
+    private LendingServiceClient lendingServiceClient;
 
     LoanSubmissionInstantLoanCalUWService loanCalUWService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanCalUWService = new LoanSubmissionInstantLoanCalUWService(loanCalUWClient, getFacilityInfoClient);
+        loanCalUWService = new LoanSubmissionInstantLoanCalUWService(lendingServiceClient);
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException {
-        RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
+    public void testCheckCalculateUnderwritingApprove() throws TMBCommonException {
 
-        Body body = new Body();
-        body.setTriggerFlag("Y");
-        body.setCaId(BigDecimal.TEN);
-        request.setBody(body);
+        InstantLoanCalUWRequest instantLoanCalUWRequest = new InstantLoanCalUWRequest();
+        instantLoanCalUWRequest.setCaId(BigDecimal.TEN);
+        instantLoanCalUWRequest.setProduct("RC01");
+        instantLoanCalUWRequest.setTriggerFlag("Y");
 
-        when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
+        when(lendingServiceClient.checkApprovedStatus(instantLoanCalUWRequest.getCaId(),instantLoanCalUWRequest.getTriggerFlag(),instantLoanCalUWRequest.getProduct())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
-        InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
-        calUWReq.setProduct("RC01");
-        calUWReq.setTriggerFlag("Y");
-        calUWReq.setCaId(BigDecimal.TEN);
-
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
-
-        InstantLoanCalUWResponse actualResult = loanCalUWService.checkCalculateUnderwriting(calUWReq);
+        InstantLoanCalUWResponse actualResult = loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest);
 
         Assert.assertNotNull(actualResult);
 
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException {
-        RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
+    public void testCheckCalculateUnderwritingApproveFailed() {
+        InstantLoanCalUWRequest instantLoanCalUWRequest = new InstantLoanCalUWRequest();
+        instantLoanCalUWRequest.setCaId(BigDecimal.TEN);
+        instantLoanCalUWRequest.setProduct("RC01");
+        instantLoanCalUWRequest.setTriggerFlag("Y");
 
-        Body body = new Body();
-        body.setTriggerFlag("Y");
-        body.setCaId(BigDecimal.TEN);
-        request.setBody(body);
+        TmbOneServiceResponse<InstantLoanCalUWResponse> oneServiceResponse = new TmbOneServiceResponse<InstantLoanCalUWResponse>();
 
-        when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+
+        assertThrows(Exception.class, () ->
+                loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest));
+
+    }
+
+    @Test
+    public void testCheckCalculateUnderwritingApproveC2G() throws TMBCommonException {
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G");
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.TEN);
 
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
         InstantLoanCalUWResponse actualResult = loanCalUWService.checkCalculateUnderwriting(calUWReq);
 
@@ -95,7 +97,52 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
 
     }
 
-    private ResponseInstantLoanCalUW mockCalUW() {
+    @Test
+    public void testCheckCalculateUnderwritingApproveC2GFailed() {
+
+        InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
+        calUWReq.setProduct("C2G");
+        calUWReq.setTriggerFlag("Y");
+        calUWReq.setCaId(BigDecimal.TEN);
+
+        TmbOneServiceResponse<InstantLoanCalUWResponse> oneServiceResponse = new TmbOneServiceResponse<InstantLoanCalUWResponse>();
+
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+
+        assertThrows(Exception.class, () ->
+                loanCalUWService.checkCalculateUnderwriting(calUWReq));
+
+    }
+
+    private TmbOneServiceResponse<InstantLoanCalUWResponse> mockCalUW() {
+        TmbOneServiceResponse<InstantLoanCalUWResponse> oneServiceResponse = new TmbOneServiceResponse<InstantLoanCalUWResponse>();
+
+        List<LoanCustomerPricing> pricingList = new ArrayList<>();
+        LoanCustomerPricing pricing = new LoanCustomerPricing();
+        pricing.setMonthTo(BigDecimal.ONE);
+        pricing.setMonthFrom(BigDecimal.ONE);
+        pricing.setRateVariance(BigDecimal.ONE);
+        pricing.setRate("1");
+        pricingList.add(pricing);
+
+        InstantLoanCalUWResponse instantLoanCalUWResponse = new InstantLoanCalUWResponse();
+        instantLoanCalUWResponse.setTenor(BigDecimal.ONE);
+        instantLoanCalUWResponse.setRequestAmount(BigDecimal.TEN);
+        instantLoanCalUWResponse.setStatus("S");
+        instantLoanCalUWResponse.setLoanContractDate(Calendar.getInstance());
+        instantLoanCalUWResponse.setInstallmentAmount(BigDecimal.ONE);
+        instantLoanCalUWResponse.setProduct("RC01");
+        instantLoanCalUWResponse.setPayDate("25");
+        instantLoanCalUWResponse.setCreditLimit(BigDecimal.TEN);
+        instantLoanCalUWResponse.setFirstPaymentDueDate("25");
+        instantLoanCalUWResponse.setOutStandingBalance(BigDecimal.TEN);
+        instantLoanCalUWResponse.setRateTypePercent(BigDecimal.TEN);
+        instantLoanCalUWResponse.setDisburstAccountNo("xxx");
+        instantLoanCalUWResponse.setInterestRate(BigDecimal.ONE);
+        instantLoanCalUWResponse.setPricings(pricingList);
+
         ResponseInstantLoanCalUW response = new ResponseInstantLoanCalUW();
         ApprovalMemoCreditCard[] approvalMemoCreditCardList = new ApprovalMemoCreditCard[10];
         ApprovalMemoCreditCard approvalMemoCreditCard = new ApprovalMemoCreditCard();
@@ -141,7 +188,9 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         responseBody.setApprovalMemoCreditCards(approvalMemoCreditCardList);
         responseBody.setApprovalMemoFacilities(approvalMemoFacilities);
         response.setBody(responseBody);
-        return response;
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
+        oneServiceResponse.setData(instantLoanCalUWResponse);
+        return oneServiceResponse;
     }
 
     private ResponseFacility mockFacility() {
@@ -200,6 +249,5 @@ public class LoanSubmissionInstantLoanCalUWServiceTest {
         instantLoanCalUWResponse.setPricings(pricingList);
         return pricings;
     }
-
 
 }

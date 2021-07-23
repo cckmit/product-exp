@@ -53,41 +53,41 @@ public class DcaValidationService {
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
         dcaValidationDtoTmbOneServiceResponse.setStatus(tmbStatus);
 
-        try{
+        try {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
 
-            tmbStatus = validatePtesPort(crmId,dcaValidationRequest, invHeaderReqParameter,dcaValidationDtoTmbOneServiceResponse.getStatus());
-            if(!tmbStatus.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+            tmbStatus = validatePtesPort(crmId, dcaValidationRequest, invHeaderReqParameter, dcaValidationDtoTmbOneServiceResponse.getStatus());
+            if (!tmbStatus.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return dcaValidationDtoTmbOneServiceResponse;
             }
 
-            ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter,FundRuleRequestBody.builder()
+            ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, FundRuleRequestBody.builder()
                     .fundCode(dcaValidationRequest.getFundCode())
                     .fundHouseCode(dcaValidationRequest.getFundHouseCode())
                     .tranType(dcaValidationRequest.getTranType())
                     .build());
-            tmbStatus = validateAllowAipFlag(fundRule,dcaValidationDtoTmbOneServiceResponse.getStatus());
-            if(!tmbStatus.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+            tmbStatus = validateAllowAipFlag(fundRule, dcaValidationDtoTmbOneServiceResponse.getStatus());
+            if (!tmbStatus.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return dcaValidationDtoTmbOneServiceResponse;
             }
 
             ResponseEntity<TmbOneServiceResponse<FfsResponse>> fundFactSheet = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, FfsRequestBody.builder().fundCode(dcaValidationRequest.getFundCode()).language(dcaValidationRequest.getLanguage()).build());
-            dcaValidationDtoTmbOneServiceResponse.setData(DcaValidationDto.builder().factsheetData(fundFactSheet.getBody().getData().getBody().getFactSheetData()).build());
-           return dcaValidationDtoTmbOneServiceResponse;
-        }catch (Exception ex){
-            logger.error("error : {}",ex);
+            dcaValidationDtoTmbOneServiceResponse.setData(DcaValidationDto.builder().factSheetData(fundFactSheet.getBody().getData().getBody().getFactSheetData()).build());
+            return dcaValidationDtoTmbOneServiceResponse;
+        } catch (Exception ex) {
+            logger.error("error : {}", ex);
             dcaValidationDtoTmbOneServiceResponse.setStatus(null);
             dcaValidationDtoTmbOneServiceResponse.setData(null);
             return dcaValidationDtoTmbOneServiceResponse;
         }
     }
 
-    private TmbStatus validateAllowAipFlag(ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRule,TmbStatus tmbStatus) throws TMBCommonException {
-        if(!fundRule.getStatusCode().equals(HttpStatus.OK)){
+    private TmbStatus validateAllowAipFlag(ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRule, TmbStatus tmbStatus) throws TMBCommonException {
+        if (!fundRule.getStatusCode().equals(HttpStatus.OK)) {
             throw new TMBCommonException("failed fetch fund rule");
         }
         FundRuleInfoList fundRuleInfoList = fundRule.getBody().getData().getFundRuleInfoList().get(0);
-        if(!fundRuleInfoList.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)){
+        if (!fundRuleInfoList.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)) {
             tmbStatus.setCode(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getCode());
             tmbStatus.setMessage(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getMsg());
             tmbStatus.setDescription(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getDesc());
@@ -97,21 +97,21 @@ public class DcaValidationService {
     }
 
     private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) {
-        try{
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter,crmId);
+        try {
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter, crmId);
             List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
             Optional<PtesDetail> ptesPortOptional = ptesPortList.stream()
                     .filter(t -> t.getPortfolioFlag().equals(ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG) &&
                             t.getPortfolioNumber().equals(dcaValidationRequest.getPortfolioNumber()))
                     .findFirst();
-            if(ptesPortOptional.isPresent()){
+            if (ptesPortOptional.isPresent()) {
                 tmbStatus.setCode(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode());
                 tmbStatus.setMessage(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg());
                 tmbStatus.setDescription(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc());
                 return tmbStatus;
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.info("Fetch Ptes Failed");
         }
         return tmbStatus;
