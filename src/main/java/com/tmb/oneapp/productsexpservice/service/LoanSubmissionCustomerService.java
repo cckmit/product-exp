@@ -13,9 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +26,7 @@ public class LoanSubmissionCustomerService {
     private final CustomerExpServiceClient customerExpServiceClient;
     private static final String RC01 = "RC01";
 
-    public LoanSubmissionResponse getCustomerInfo(String correlationId, String crmId) throws ServiceException, RemoteException {
+    public LoanSubmissionResponse getCustomerInfo(String correlationId, String crmId) {
         LoanCustomerResponse response = new LoanCustomerResponse();
         List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
         response.setDisburstAccounts(disburstAccounts);
@@ -92,7 +90,7 @@ public class LoanSubmissionCustomerService {
     }
 
 
-    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId) {
+    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId)  {
 
         List<LoanCustomerDisburstAccount> disburstAccounts = new ArrayList<>();
 

@@ -32,7 +32,7 @@ public class LoanSubmissionIncomeInfoService {
         try {
 
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
-            if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody())) {
+            if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody()) || Objects.isNull(responseIncomeModel.getBody().getIncomeModelAmt())) {
                 return null;
             }
 
@@ -58,10 +58,10 @@ public class LoanSubmissionIncomeInfoService {
         return null;
     }
 
-    private String mapWorkingStatus(String occupation_code) throws ServiceException, RemoteException {
+    private String mapWorkingStatus(String occupationCode) throws ServiceException, RemoteException {
         ResponseDropdown getDropdownListResp = getDropdownListClient.getDropdownList("RM_OCCUPATION");
         var list = getDropdownListResp.getBody().getCommonCodeEntries();
-        var commonCodeEntry = Arrays.stream(list).filter(a -> a.getEntryCode().equals(occupation_code)).findFirst();
+        var commonCodeEntry = Arrays.stream(list).filter(a -> a.getEntryCode().equals(occupationCode)).findFirst();
         if (commonCodeEntry.isPresent()) {
             var result = commonCodeEntry.get();
             if (result.getExtValue1().equals("01")) {
