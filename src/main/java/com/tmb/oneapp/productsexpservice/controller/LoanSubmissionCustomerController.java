@@ -9,6 +9,8 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCustomerService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.Instant;
+
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +39,9 @@ public class LoanSubmissionCustomerController {
     @GetMapping("/get-data-income-info")
     @LogAround
     @ApiOperation("Get customer info")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
+            @ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
     public ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> getIncomeInfo(@Valid @RequestHeader(name = "X-CRMID") String crmId,
                                                                                        @Valid @RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId
                                                                                      ) {
