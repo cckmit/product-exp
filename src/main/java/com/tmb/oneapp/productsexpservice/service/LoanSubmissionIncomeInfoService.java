@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Service
@@ -59,17 +60,12 @@ public class LoanSubmissionIncomeInfoService {
 
     private String mapWorkingStatus(String occupation_code) throws ServiceException, RemoteException {
         ResponseDropdown getDropdownListResp = getDropdownListClient.getDropdownList("RM_OCCUPATION");
-
         var list = getDropdownListResp.getBody().getCommonCodeEntries();
-        for (var item : list) {
-            if (item.getEntryCode().equals(occupation_code)) {
-                if (item.getExtValue1().equals("01")) {
-                    return "salary";
-                }
-                if (item.getExtValue1().equals("02")) {
-                    return "self_employed";
-                }
-            }
+        var commonCodeEntry = Arrays.stream(list).filter(a -> a.getEntryCode().equals(occupation_code)).findFirst().get();
+        if (commonCodeEntry.getExtValue1().equals("01")) {
+            return "salary";
+        } else if (commonCodeEntry.getExtValue1().equals("02")) {
+            return "self_employed";
         }
         return null;
     }
