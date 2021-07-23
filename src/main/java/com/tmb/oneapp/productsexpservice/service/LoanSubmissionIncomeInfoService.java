@@ -4,6 +4,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
+import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetDropdownListClient;
@@ -32,7 +33,7 @@ public class LoanSubmissionIncomeInfoService {
         try {
 
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
-            if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody())) {
+            if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody()) || Objects.isNull(responseIncomeModel.getBody().getIncomeModelAmt())) {
                 return null;
             }
 
