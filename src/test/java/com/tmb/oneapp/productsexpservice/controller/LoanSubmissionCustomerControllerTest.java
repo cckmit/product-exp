@@ -38,8 +38,8 @@ public class LoanSubmissionCustomerControllerTest {
         LoanSubmissionRequest request = new LoanSubmissionRequest();
         request.setCaId(2021053104186868L);
         LoanSubmissionResponse response = new LoanSubmissionResponse();
-        when(loanSubmissionCustomerService.getCustomerInfo(request.getCaId())).thenReturn(response);
-        ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> result =loanSubmissionCustomerController.getIncomeInfo(request);
+        when(loanSubmissionCustomerService.getCustomerInfo("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","001100000000000000000018593707")).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> result =loanSubmissionCustomerController.getIncomeInfo("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","001100000000000000000018593707");
         Assert.assertNotEquals(200, result);
 
     }

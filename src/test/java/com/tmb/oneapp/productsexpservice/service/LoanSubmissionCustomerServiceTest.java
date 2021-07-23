@@ -11,8 +11,10 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
+import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
 import org.junit.Assert;
@@ -38,18 +40,19 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class LoanSubmissionCustomerServiceTest {
 
-    @Mock
-    private LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
 
     @Mock
     private CommonServiceClient commonServiceClient;
+
+    @Mock
+    private  CustomerExpServiceClient customerExpServiceClient;
 
     LoanSubmissionCustomerService loanSubmissionCustomerService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanSubmissionCustomerService = new LoanSubmissionCustomerService(getFacilityInfoClient, commonServiceClient);
+        loanSubmissionCustomerService = new LoanSubmissionCustomerService(commonServiceClient,customerExpServiceClient);
     }
 
     @Test
@@ -101,11 +104,11 @@ public class LoanSubmissionCustomerServiceTest {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(respFacility);
+        when(customerExpServiceClient.getCustomerAccountSaving(any(),any())).thenReturn(mockAccountSaving());
         when(commonServiceClient.getInterestRateAll()).thenReturn(ResponseEntity.ok(loanOnlineTmbOneServiceResponse));
         when(commonServiceClient.getRangeIncomeAll()).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
-        LoanSubmissionResponse loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo(2021062304188182L);
+        LoanSubmissionResponse loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","001100000000000000000018593707");
         Assert.assertNotNull(loanSubmissionResponse);
 
     }
@@ -167,5 +170,18 @@ public class LoanSubmissionCustomerServiceTest {
         pricingList.add(pricing);
         instantLoanCalUWResponse.setPricings(pricingList);
         return pricings;
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<AccountSaving>> mockAccountSaving() {
+        TmbOneServiceResponse<AccountSaving> tmbResponse = new TmbOneServiceResponse<>();
+        AccountSaving accountSaving = new AccountSaving();
+        DepositAccount depositAccount = new DepositAccount();
+        depositAccount.setAccountNumber("accountNo");
+        depositAccount.setProductNameTh("accountName");
+        List<DepositAccount> depositAccountList = new ArrayList<>();
+        depositAccountList.add(depositAccount);
+        accountSaving.setDepositAccountLists(depositAccountList);
+        tmbResponse.setData(accountSaving);
+        return ResponseEntity.ok().body(tmbResponse);
     }
 }
