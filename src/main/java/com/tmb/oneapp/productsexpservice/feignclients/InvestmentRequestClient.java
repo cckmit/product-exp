@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.FundListBySuitScoreBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
@@ -298,4 +299,16 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> updatePortfolioNickname(
             @RequestHeader Map<String, String> header, @RequestBody PortfolioNicknameRequest portfolioNicknameRequest);
+
+    /**
+     * Call investment fund ListFundInfo service fund list response.
+     * @param headers    the headers
+     * @return the FundListBody response
+     */
+
+    @PostMapping(value = "${investment.service.fund.listinfo.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> callInvestmentListFundInfoService(@RequestHeader Map<String, String> headers);
+
+
 }
