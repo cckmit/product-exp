@@ -61,11 +61,14 @@ public class LoanSubmissionIncomeInfoService {
     private String mapWorkingStatus(String occupation_code) throws ServiceException, RemoteException {
         ResponseDropdown getDropdownListResp = getDropdownListClient.getDropdownList("RM_OCCUPATION");
         var list = getDropdownListResp.getBody().getCommonCodeEntries();
-        var commonCodeEntry = Arrays.stream(list).filter(a -> a.getEntryCode().equals(occupation_code)).findFirst().get();
-        if (commonCodeEntry.getExtValue1().equals("01")) {
-            return "salary";
-        } else if (commonCodeEntry.getExtValue1().equals("02")) {
-            return "self_employed";
+        var commonCodeEntry = Arrays.stream(list).filter(a -> a.getEntryCode().equals(occupation_code)).findFirst();
+        if (commonCodeEntry.isPresent()) {
+            var result = commonCodeEntry.get();
+            if (result.getExtValue1().equals("01")) {
+                return "salary";
+            } else if (result.getExtValue1().equals("02")) {
+                return "self_employed";
+            }
         }
         return null;
     }
