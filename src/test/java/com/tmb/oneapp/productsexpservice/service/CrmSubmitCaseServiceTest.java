@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
@@ -26,10 +25,9 @@ import static org.mockito.Mockito.when;
 class CrmSubmitCaseServiceTest {
 
     private final CustomerServiceClient customerServiceClient = Mockito.mock(CustomerServiceClient.class);
-    private final KafkaProducerService kafkaProducerService = Mockito.mock(KafkaProducerService.class);
+    private final CaseService caseService = Mockito.mock(CaseService.class);
 
-    private final CrmSubmitCaseService crmSubmitCaseService = new CrmSubmitCaseService(customerServiceClient,
-            kafkaProducerService, "activityLog");
+    private final CrmSubmitCaseService crmSubmitCaseService = new CrmSubmitCaseService(customerServiceClient, caseService);
 
     @Test
     void createNcbCase_Success_by_email() throws TMBCommonException {

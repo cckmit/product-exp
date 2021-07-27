@@ -1,21 +1,16 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.BaseEvent;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CaseSubmitPwaActivity;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -34,15 +29,12 @@ public class CrmSubmitCaseService {
     private static final TMBLogger<CrmSubmitCaseService> logger = new TMBLogger<>(CrmSubmitCaseService.class);
 
     private final CustomerServiceClient customerServiceClient;
-    private final String topicName;
-    private final KafkaProducerService kafkaProducerService;
+    private final CaseService caseService;
 
     public CrmSubmitCaseService(CustomerServiceClient customerServiceClient,
-                                KafkaProducerService kafkaProducerService,
-                                @Value("${com.tmb.oneapp.service.activity.topic.name}") final String topicName) {
+                                CaseService caseService) {
         this.customerServiceClient = customerServiceClient;
-        this.kafkaProducerService = kafkaProducerService;
-        this.topicName = topicName;
+        this.caseService = caseService;
     }
 
     /**
@@ -91,7 +83,7 @@ public class CrmSubmitCaseService {
             result.put(ProductsExpServiceConstant.TRANSACTION_DATE, requestDate);  //NOSONAR lightweight logging
 
             //101500503 - email, 101500504 - call, 101500505 - leave msg
-            logActivityCST(new CaseSubmitPwaActivity(correlationId,
+            caseService.logActivityCST(new CaseSubmitPwaActivity(correlationId,
                             String.valueOf(System.currentTimeMillis()),
                             activityId)
                             .setCaseNumber(caseNumber)
@@ -103,7 +95,7 @@ public class CrmSubmitCaseService {
             return result; //NOSONAR lightweight logging
         } catch (Exception e) {
             logger.error("createNcbCase error : {}", e);
-            logActivityCST(new CaseSubmitPwaActivity(correlationId,
+            caseService.logActivityCST(new CaseSubmitPwaActivity(correlationId,
                             String.valueOf(System.currentTimeMillis()),
                             activityId)
                             .setCaseNumber("")
@@ -115,39 +107,6 @@ public class CrmSubmitCaseService {
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-        }
-    }
-
-    /**
-     * Method logActivity
-     *
-     * @param baseEvent base event
-     */
-    @Async
-    @LogAround
-    public void logActivityCST(BaseEvent baseEvent, Map<String, String> requestHeaders, String activityStatus, String failReason) {
-        try {
-            baseEvent.setActivityStatus(activityStatus);
-            baseEvent.setFailReason(failReason);
-
-            baseEvent.setActivityDate(String.valueOf(System.currentTimeMillis()));
-            baseEvent.setCrmId(requestHeaders.get(X_CRMID));
-            baseEvent.setDeviceId(requestHeaders.get(DEVICE_ID));
-            baseEvent.setCorrelationId(requestHeaders.get(HEADER_X_CORRELATION_ID));
-            baseEvent.setChannel(requestHeaders.get(CHANNEL));
-            baseEvent.setAppVersion(requestHeaders.get(APP_VERSION));
-            baseEvent.setIpAddress(requestHeaders.get(X_FORWARD_FOR));
-            baseEvent.setDeviceModel(requestHeaders.get(DEVICE_MODEL));
-            baseEvent.setOsVersion(requestHeaders.get(OS_VERSION));
-
-            ObjectMapper mapper = new ObjectMapper();
-            String output = mapper.writeValueAsString(baseEvent);
-            logger.info("Activity Data request is  {} : ", output);
-            logger.info("Activity Data request topicName is  {} : ", topicName);
-            kafkaProducerService.sendMessageAsync(topicName, output);
-            logger.info("callPostEventService -  data posted to activity_service : {}", System.currentTimeMillis());
-        } catch (Exception e) {
-            logger.info("Unable to log the activity request : {}", e.toString());
         }
     }
 }
