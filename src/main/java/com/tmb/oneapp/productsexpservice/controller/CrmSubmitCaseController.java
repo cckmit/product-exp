@@ -61,15 +61,8 @@ public class CrmSubmitCaseController {
         TmbOneServiceResponse<Map<String, String>> caseStatusTrackingResponse = new TmbOneServiceResponse<>();
 
         try {
-            final Map<String, String> caseCreateResult = crmSubmitCaseService.createCrmCase(requestHeaders.get(X_CRMID), requestHeaders.get(HEADER_X_CORRELATION_ID), requestBody.getFirstnameTh(), requestBody.getLastnameTh(), requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getServiceTypeMatrixCode(), requestBody.getNote());
-
-            if (caseCreateResult == null) {
-                caseStatusTrackingResponse.setStatus(new TmbStatus("0009",
-                        ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService()));
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .headers(TMBUtils.getResponseHeaders())
-                        .body(caseStatusTrackingResponse);
-            }
+            final Map<String, String> caseCreateResult = crmSubmitCaseService.createCrmCase(requestHeaders, requestBody.getFirstnameTh(), requestBody.getLastnameTh(),
+                    requestBody.getFirstnameEn(), requestBody.getLastnameEn(), requestBody.getServiceTypeMatrixCode(), requestBody.getNote());
 
             caseStatusTrackingResponse.setData(caseCreateResult);
             caseStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
