@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
@@ -131,5 +132,11 @@ public interface LendingServiceClient {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestParam(value = "caId") Long caId,
 			@RequestParam(value = "productCode") String productCode);
+
+
+	@GetMapping(value = "/apis/lending-service/loanSubmission/personalDetail")
+	ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(
+			@RequestHeader(HEADER_X_CRM_ID) String crmid,
+			@RequestParam(value = "caId") Long caId);
 
 }
