@@ -36,7 +36,7 @@ public class FundFilterServiceTest {
     private FundListBySuitScoreRequest fundListBySuitScoreRequest;
     void initFundFilterRq() {
         fundListBySuitScoreRequest = new FundListBySuitScoreRequest();
-        fundListBySuitScoreRequest.setSuitScore("02");
+        fundListBySuitScoreRequest.setSuitScore("2");
 
     }
 

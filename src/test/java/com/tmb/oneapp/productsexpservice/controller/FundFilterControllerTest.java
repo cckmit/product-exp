@@ -1,4 +1,6 @@
+
 package com.tmb.oneapp.productsexpservice.controller;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -33,7 +35,7 @@ public class FundFilterControllerTest {
 
     void initFundFilterRq() {
         fundListBySuitScoreRequest = new FundListBySuitScoreRequest();
-        fundListBySuitScoreRequest.setSuitScore("07");
+        fundListBySuitScoreRequest.setSuitScore("2");
 
     }
 
@@ -78,3 +80,4 @@ public class FundFilterControllerTest {
 
 
 }
+

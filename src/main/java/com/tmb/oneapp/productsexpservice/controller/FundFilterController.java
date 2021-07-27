@@ -62,8 +62,8 @@ public class  FundFilterController{
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         FundListBySuitScoreBody fundListResponse = fundFilterService.getFundListBySuitScore(correlationId, fundListRq);
-        boolean y= fundListResponse.getFundClassList().isEmpty();
-        if (!y) {
+        boolean res= fundListResponse.getFundClassList().isEmpty();
+        if (!res) {
             oneServiceResponse.setData(fundListResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
