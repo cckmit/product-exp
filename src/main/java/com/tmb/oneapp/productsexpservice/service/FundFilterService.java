@@ -68,7 +68,12 @@ public class FundFilterService {
      */
     private FundListBySuitScoreBody filterFundListBasedOnSuitScore(List<FundClassListInfo> fundList, String suitScore) {
         FundListBySuitScoreBody fundListBySuitScoreBodyResponses = new FundListBySuitScoreBody();
-        fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals(suitScore))
+        String score=null;
+        if(suitScore.length()<2){
+            score = "0"+suitScore;
+        }
+        String finalScore = score;
+        fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals(finalScore))
                 .collect(Collectors.toList()));
         return fundListBySuitScoreBodyResponses;
     }
