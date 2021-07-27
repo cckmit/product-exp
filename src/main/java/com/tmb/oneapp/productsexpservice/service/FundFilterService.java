@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,13 +69,33 @@ public class FundFilterService {
      */
     private FundListBySuitScoreBody filterFundListBasedOnSuitScore(List<FundClassListInfo> fundList, String suitScore) {
         FundListBySuitScoreBody fundListBySuitScoreBodyResponses = new FundListBySuitScoreBody();
-        String score=null;
-        if(suitScore.length()<2){
-            score = "0"+suitScore;
+        switch(suitScore)
+        {
+            case "1":
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("01"))
+                        .collect(Collectors.toList()));
+                break;
+            case "2":
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("02") || t.getRiskRate().equals("03") || t.getRiskRate().equals("04"))
+                        .collect(Collectors.toList()));
+                break;
+            case "3":
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("05"))
+                        .collect(Collectors.toList()));
+                break;
+            case "4":
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("06")|| t.getRiskRate().equals("07"))
+                        .collect(Collectors.toList()));
+                break;
+            case "5":
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("08"))
+                        .collect(Collectors.toList()));
+                break;
+            default:
+                fundListBySuitScoreBodyResponses.setFundClassList(Collections.emptyList());
         }
-        String finalScore = score;
-        fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals(finalScore))
-                .collect(Collectors.toList()));
+
         return fundListBySuitScoreBodyResponses;
+
     }
 }
