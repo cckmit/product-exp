@@ -10,6 +10,8 @@ import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequ
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import com.tmb.oneapp.productsexpservice.service.PersonalDetailService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +37,8 @@ public class PersonalDetailController {
     @GetMapping(value = "/personalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Get Personal Detail")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
     public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
             @Valid PersonalDetailRequest request) {
