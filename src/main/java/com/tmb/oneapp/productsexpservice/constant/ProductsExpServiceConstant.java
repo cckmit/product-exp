@@ -196,6 +196,9 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "101000702";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_CLICK_CONFIRM = "101000703";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_ENTER_CORRECT_PIN = "101000704";
+    public static final String CASE_SUBMIT_PWA_BY_EMAIL_ACTIVITY_ID = "101500503";
+    public static final String CASE_SUBMIT_PWA_BY_CALL_ACTIVITY_ID = "101500504";
+    public static final String CASE_SUBMIT_PWA_BY_LEAVE_MSG_ACTIVITY_ID = "101500505";
 
     /* ACTIVITY LOG MESSAGE */
     public static final String ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
@@ -213,4 +216,8 @@ public class ProductsExpServiceConstant {
     
     /* CUSTOMER CARD EXPIRE */
     public static final String EXPIRE_DATE_DEFAULT = "1357-01-01";
+
+    public static final String SERVICE_TYPE_MATRIC_CODE_PWA_CALL_TO_ADVISOR = "O0011";
+    public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_MESSAGE_TO_ADVISOR = "O0012";
+    public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_EMAIL_TO_ADVISOR = "O0013";
 }
