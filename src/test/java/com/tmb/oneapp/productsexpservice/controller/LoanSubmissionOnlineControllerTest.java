@@ -1,8 +1,9 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
-import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmitRegisterRequest;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
@@ -11,14 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
-
-import javax.xml.rpc.ServiceException;
-
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
-
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +34,7 @@ class LoanSubmissionOnlineControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdSuccess() throws ServiceException, RemoteException {
+    public void testGetIncomeInfoByRmIdSuccess() throws  TMBCommonException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
         when(loanSubmissionIncomeInfoService.getIncomeInfoByRmId(any())).thenReturn(res);
@@ -48,25 +43,25 @@ class LoanSubmissionOnlineControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdFail() throws ServiceException, RemoteException {
-        IncomeInfo res = new IncomeInfo();
-        res.setIncomeAmount(BigDecimal.valueOf(100));
+    public void testGetIncomeInfoByRmIdFail() throws TMBCommonException {
         when(loanSubmissionIncomeInfoService.getIncomeInfoByRmId(any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<IncomeInfo>> responseEntity = loanSubmissionOnlineController.getIncomeInfo("rmid");
         assertTrue(responseEntity.getStatusCode().isError());
     }
 
     @Test
-    public void testSubmitRegisterApplicationSuccess() throws ServiceException, RemoteException {
-        when(loanSubmissionCreateApplicationService.submitRegisterApplication(any(), any())).thenReturn(new ResponseInstantLoanCreateApplication());
-        ResponseEntity<TmbOneServiceResponse<ResponseInstantLoanCreateApplication>> responseEntity = loanSubmissionOnlineController.submitRegisterApplication(new LoanSubmitRegisterRequest());
+    public void testCreateApplicationSuccess() throws  TMBCommonException {
+        ResponseApplication responseApplication = new ResponseApplication();
+        when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenReturn(responseApplication);
+        ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.createApplication("rmid",new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testSubmitRegisterApplicationFail() throws ServiceException, RemoteException {
-        when(loanSubmissionCreateApplicationService.submitRegisterApplication(any(), any())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<TmbOneServiceResponse<ResponseInstantLoanCreateApplication>> responseEntity = loanSubmissionOnlineController.submitRegisterApplication(new LoanSubmitRegisterRequest());
+    public void testCreateApplicationFail() throws  TMBCommonException {
+        when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.createApplication("rmid",new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().isError());
     }
+
 }

@@ -5,10 +5,10 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
-import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmitRegisterRequest;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
@@ -59,15 +59,16 @@ public class LoanSubmissionOnlineController {
 
     @LogAround
     @ApiOperation("Submission Create application")
-    @PostMapping(value = "/createApplication", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<ResponseInstantLoanCreateApplication>> submitRegisterApplication(@Valid @RequestBody LoanSubmitRegisterRequest request) {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<ResponseApplication>> createApplication(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, required = true) String crmId,
+                                                                                        @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<ResponseInstantLoanCreateApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<ResponseApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ResponseInstantLoanCreateApplication res = loanSubmissionCreateApplicationService.submitRegisterApplication(request, "INST");
+            ResponseApplication res = loanSubmissionCreateApplicationService.createApplication(crmId, request);
             oneTmbOneServiceResponse.setData(res);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -76,11 +77,11 @@ public class LoanSubmissionOnlineController {
             responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
+
             logger.error("Error while submission create application : {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
-
     }
 }
