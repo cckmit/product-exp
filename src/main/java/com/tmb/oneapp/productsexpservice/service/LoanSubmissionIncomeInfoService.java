@@ -1,75 +1,34 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
-import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetDropdownListClient;
-import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetIncomeModelInfoClient;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
 public class LoanSubmissionIncomeInfoService {
     private static final TMBLogger<LoanSubmissionIncomeInfoService> logger = new TMBLogger<>(LoanSubmissionIncomeInfoService.class);
-    private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
-    private CustomerServiceClient customerServiceClient;
-    private final LoanSubmissionGetDropdownListClient getDropdownListClient;
+    private final LendingServiceClient lendingServiceClient;
 
-
-    public IncomeInfo getIncomeInfoByRmId(String rmId) throws ServiceException, RemoteException {
+    public IncomeInfo getIncomeInfoByRmId(String rmId) throws TMBCommonException {
         try {
-
-            ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
-            if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody()) || Objects.isNull(responseIncomeModel.getBody().getIncomeModelAmt())) {
-                return null;
+            TmbOneServiceResponse<IncomeInfo> responseEntity = lendingServiceClient.getIncomeInfo(rmId).getBody();
+            if (responseEntity.getStatus().getCode().equals("0000")) {
+                return responseEntity.getData();
+            } else {
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                        ResponseCode.FAILED.getMessage(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
-
-            IncomeInfo incomeInfo = new IncomeInfo();
-            incomeInfo.setIncomeAmount(responseIncomeModel.getBody().getIncomeModelAmt());
-            incomeInfo.setStatusWorking(getWorkingStatus(rmId));
-
-            return incomeInfo;
         } catch (Exception e) {
             logger.error("getIncomeInfoByRmId got exception:{}", e);
             throw e;
         }
-    }
-
-    private String getWorkingStatus(String rmId) throws ServiceException, RemoteException {
-        ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
-                .getCustomerProfile(rmId);
-        if (Objects.nonNull(responseWorkingProfileInfo)
-                && Objects.nonNull(responseWorkingProfileInfo.getBody())
-                && Objects.nonNull(responseWorkingProfileInfo.getBody().getData())) {
-            return mapWorkingStatus(responseWorkingProfileInfo.getBody().getData().getOccupationCode());
-        }
-        return null;
-    }
-
-    private String mapWorkingStatus(String occupationCode) throws ServiceException, RemoteException {
-        ResponseDropdown getDropdownListResp = getDropdownListClient.getDropdownList("RM_OCCUPATION");
-        var list = getDropdownListResp.getBody().getCommonCodeEntries();
-        var commonCodeEntry = Arrays.stream(list).filter(a -> a.getEntryCode().equals(occupationCode)).findFirst();
-        if (commonCodeEntry.isPresent()) {
-            var result = commonCodeEntry.get();
-            if (result.getExtValue1().equals("01")) {
-                return "salary";
-            } else if (result.getExtValue1().equals("02")) {
-                return "self_employed";
-            }
-        }
-        return null;
     }
 }
