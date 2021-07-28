@@ -12,6 +12,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PersonalDetailResponse {
     private String thaiSalutationCode;
+    private String citizenId;
     private String engName;
     private String engSurName;
     private String thaiName;
