@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +48,7 @@ class LoanSubmissionCreateApplicationServiceTest {
         oneServiceResponse.setData(responseApplication);
         when(lendingServiceClient.createApplication(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
         ResponseApplication result = loanSubmissionCreateApplicationService.createApplication("rmId", new LoanSubmissionCreateApplicationReq());
-        assertEquals(result.getBody().getAppType(), "test");
+        assertEquals("test", result.getBody().getAppType());
     }
 
     @Test
