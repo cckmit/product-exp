@@ -276,19 +276,20 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundAccDetail
      *
-     * @param fundPaymentDetailRequest
      * @param correlationId
-     * @return
+     * @param crmId
+     * @param fundPaymentDetailRequest
+     * @return FundPaymentDetailResponse
      */
     @LogAround
-    public FundPaymentDetailResponse getFundPrePaymentDetail(String correlationId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+    public FundPaymentDetailResponse getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) {
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRequest);
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailResponse fundPaymentDetailResponse;
         try {
-            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
-            CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
-            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(invHeaderReqParameter, fundPaymentDetailRequest.getCrmId());
+            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(headerParameter, fundRuleRequestBody);
+            CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(headerParameter, fundRuleRequestBody.getFundCode());
+            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(headerParameter, UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
             CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);

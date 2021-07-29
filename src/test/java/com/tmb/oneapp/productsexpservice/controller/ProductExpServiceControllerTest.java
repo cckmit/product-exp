@@ -223,7 +223,6 @@ public class ProductExpServiceControllerTest {
     @Test
     public void testGetFundPrePaymentDetailNotNull() {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
-        fundPaymentDetailRequest.setCrmId("001100000000000000000012025950");
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
         fundPaymentDetailRequest.setTranType("1");
@@ -233,14 +232,14 @@ public class ProductExpServiceControllerTest {
         try {
             ObjectMapper mapper = new ObjectMapper();
             fundPaymentDetailResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_payment_detail.json").toFile(), FundPaymentDetailResponse.class);
-            when(productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest)).thenReturn(fundPaymentDetailResponse);
+            when(productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest)).thenReturn(fundPaymentDetailResponse);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> actualResult = productExpServiceController
-                .getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest);
+                .getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getFundRule());
         Assert.assertNotNull(actualResult.getBody().getData().getDepositAccountList());
@@ -502,9 +501,10 @@ public class ProductExpServiceControllerTest {
 
     @Test
     void testGetFundPrePaymentDetailNull() {
-        when(productsExpService.getFundPrePaymentDetail(anyString(), any())).thenReturn(null);
+        when(productsExpService.getFundPrePaymentDetail(anyString(), anyString(), any())).thenReturn(null);
 
-        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> result = productExpServiceController.getFundPrePaymentDetail("correlationId", new FundPaymentDetailRequest());
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> result = productExpServiceController.getFundPrePaymentDetail(
+                "correlationId", "crmId", new FundPaymentDetailRequest());
         Assert.assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatusCode().value());
     }
 

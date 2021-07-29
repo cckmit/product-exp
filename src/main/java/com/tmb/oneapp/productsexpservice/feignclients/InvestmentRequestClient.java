@@ -60,7 +60,8 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.fund.rule.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundRuleBody>> callInvestmentFundRuleService(
-            @RequestHeader Map<String, String> headers, @RequestBody FundRuleRequestBody fundRuleRequestBody);
+            @RequestHeader Map<String, String> headers,
+            @RequestBody FundRuleRequestBody fundRuleRequestBody);
 
     /**
      * Call investment fund acc detail service response entity.
@@ -302,7 +303,8 @@ public interface InvestmentRequestClient {
 
     /**
      * Call investment fund ListFundInfo service fund list response.
-     * @param headers    the headers
+     *
+     * @param headers the headers
      * @return the FundListBody response
      */
 

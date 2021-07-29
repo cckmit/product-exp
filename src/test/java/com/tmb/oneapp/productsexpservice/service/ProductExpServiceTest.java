@@ -355,7 +355,6 @@ public class ProductExpServiceTest {
     @Test
     public void testGetFundPrePaymentDetail() throws Exception {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
-        fundPaymentDetailRequest.setCrmId("001100000000000000000012025950");
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
         fundPaymentDetailRequest.setTranType("1");
@@ -427,14 +426,13 @@ public class ProductExpServiceTest {
         FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
         Assert.assertNotNull(response);
 
-        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest);
+        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         Assert.assertNotNull(serviceRes);
     }
 
     @Test
     public void testGetFundPrePaymentDetailNotFound() throws Exception {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
-        fundPaymentDetailRequest.setCrmId("001100000000000000000012025950");
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
         fundPaymentDetailRequest.setTranType("1");
@@ -573,7 +571,6 @@ public class ProductExpServiceTest {
     @Test
     public void testGetFundPrePaymentDetailNotfoundException() {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
-        fundPaymentDetailRequest.setCrmId("001100000000000000000012025950");
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
         fundPaymentDetailRequest.setTranType("1");
@@ -586,7 +583,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest);
+        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         Assert.assertNull(serviceRes);
     }
 

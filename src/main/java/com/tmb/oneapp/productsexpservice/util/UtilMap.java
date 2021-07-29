@@ -603,4 +603,15 @@ public class UtilMap {
         DecimalFormat decimalFormat = new DecimalFormat(ProductsExpServiceConstant.CRM_ID_FORMAT);
         return ProductsExpServiceConstant.CRM_ID_PREFIX.concat(decimalFormat.format(Double.parseDouble(crmId)));
     }
+
+    /**
+     * @param crmId
+     * @return half digit of crmId
+     */
+    public static String halfCrmIdFormat(String crmId) {
+        if (crmId.length() <= 14) {
+            return crmId;
+        }
+        return crmId.substring(crmId.length() - ProductsExpServiceConstant.DIGIT_OF_CRM_ID);
+    }
 }

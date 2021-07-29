@@ -308,4 +308,24 @@ public class UtilMapTest {
         // Then
         assertEquals("001100000000000000000000002914", actual);
     }
+
+    @Test
+    void should_return_half_format_of_crm_id_when_call_half_crm_id_format_given_half_crm_id() {
+        // Given
+        // When
+        String actual = UtilMap.halfCrmIdFormat("00000000002914");
+
+        // Then
+        assertEquals("00000000002914", actual);
+    }
+
+    @Test
+    void should_return_half_format_of_crm_id_when_call_half_crm_id_format_given_full_crm_id() {
+        // Given
+        // When
+        String actual = UtilMap.halfCrmIdFormat("001100000000000000000000002914");
+
+        // Then
+        assertEquals("00000000002914", actual);
+    }
 }

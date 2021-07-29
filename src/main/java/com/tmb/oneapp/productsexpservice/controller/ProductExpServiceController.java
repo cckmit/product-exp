@@ -136,8 +136,9 @@ public class ProductExpServiceController {
      * Description:- Inquiry MF Service
      *
      * @param correlationId            the correlation id
-     * @param fundPaymentDetailRequest the fund account rq
-     * @return return  list of port, list of account, fund rule and list of holiday
+     * @param crmId                    the crm id
+     * @param fundPaymentDetailRequest the fund payment detail request
+     * @return return list of port, list of account, fund rule and list of holiday
      */
     @ApiOperation(value = "Get all payment detail info than return list of port, list of account, fund rule and list of holiday")
     @LogAround
@@ -146,12 +147,13 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody FundPaymentDetailRequest fundPaymentDetailRequest) {
 
         TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundPaymentDetailResponse fundPaymentDetailResponse = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest);
+        FundPaymentDetailResponse fundPaymentDetailResponse = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         if (fundPaymentDetailResponse != null) {
             oneServiceResponse.setData(fundPaymentDetailResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
