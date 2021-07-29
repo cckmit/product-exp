@@ -104,7 +104,7 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-            when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
+            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
@@ -173,7 +173,7 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-            when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
+            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
@@ -227,7 +227,7 @@ public class ProductsExpServiceTest {
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
+            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
