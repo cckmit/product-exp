@@ -26,9 +26,9 @@ import java.time.Instant;
 /**
  * FundFilterController request will handle to call apis for filtering the List Fund Data from Investment Service
  */
-@Api(tags=" Get FilteredFund List based on SuitScore")
+@Api(tags = " Get FilteredFund List based on SuitScore")
 @RestController
-public class  FundFilterController{
+public class FundFilterController {
 
     private static final TMBLogger<FundFilterController> logger = new TMBLogger<>(FundFilterController.class);
 
@@ -36,6 +36,7 @@ public class  FundFilterController{
 
     /**
      * Instantiates a new Fund Filter Controller.
+     *
      * @param fundFilterService the Fund Filter Service
      */
     @Autowired
@@ -46,8 +47,8 @@ public class  FundFilterController{
     /**
      * Description:- Inquiry MF Service
      *
-     * @param correlationId      the correlation id
-     * @param fundListRq the fund List Rq
+     * @param correlationId              the correlation id
+     * @param fundListBySuitScoreRequest the fund list by suit score request
      * @return return fund list based on suitability score
      */
     @LogAround
@@ -57,13 +58,14 @@ public class  FundFilterController{
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody FundListBySuitScoreRequest fundListRq) {
-        TmbOneServiceResponse<FundListBySuitScoreBody> oneServiceResponse= new TmbOneServiceResponse<>();
+            @Valid @RequestBody FundListBySuitScoreRequest fundListBySuitScoreRequest) {
+        TmbOneServiceResponse<FundListBySuitScoreBody> oneServiceResponse = new TmbOneServiceResponse<>();
+
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundListBySuitScoreBody fundListResponse = fundFilterService.getFundListBySuitScore(correlationId, fundListRq);
-        boolean res= fundListResponse.getFundClassList().isEmpty();
-        if (!res) {
+        FundListBySuitScoreBody fundListResponse = fundFilterService.getFundListBySuitScore(correlationId, fundListBySuitScoreRequest);
+        boolean isFundListEmpty = fundListResponse.getFundClassList().isEmpty();
+        if (!isFundListEmpty) {
             oneServiceResponse.setData(fundListResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -76,6 +78,5 @@ public class  FundFilterController{
             oneServiceResponse.setData(null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
         }
-
     }
 }
