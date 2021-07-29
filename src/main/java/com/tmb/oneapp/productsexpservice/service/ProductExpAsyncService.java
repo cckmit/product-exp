@@ -251,17 +251,17 @@ public class ProductExpAsyncService {
     /**
      * Method fetchFundFavorite to get fund favorite
      *
-     * @param invHeaderReqParameter
+     * @param headerParameter
      * @param crmId
      * @return CompletableFuture<List < CustomerFavoriteFundData>>
      */
     @LogAround
     @Async
-    public CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
+    public CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
-            invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
+            headerParameter.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
             ResponseEntity<TmbOneServiceResponse<List<CustomerFavoriteFundData>>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundFavoriteService(invHeaderReqParameter);
+                    investmentRequestClient.callInvestmentFundFavoriteService(headerParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

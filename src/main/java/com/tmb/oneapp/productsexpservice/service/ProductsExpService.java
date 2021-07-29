@@ -192,7 +192,7 @@ public class ProductsExpService {
     public List<String> getPortList(String crmId, Map<String, String> header, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
-        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), crmId);
+        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), UtilMap.halfCrmIdFormat(crmId));
 
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
@@ -641,7 +641,7 @@ public class ProductsExpService {
      */
     @LogAround
     public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
             UnitHolder unitHolder = new UnitHolder();
@@ -649,9 +649,9 @@ public class ProductsExpService {
             unitHolder.setUnitHolderNumber(unitHolderList);
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
-                    productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
-            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, crmId);
+                    productExpAsyncService.fetchFundListInfo(headerParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
+            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(headerParameter, unitHolder);
+            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(headerParameter, crmId);
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();
