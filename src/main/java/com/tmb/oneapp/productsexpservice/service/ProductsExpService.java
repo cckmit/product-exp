@@ -19,29 +19,28 @@ import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
-import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundSuggestAllocationList;
+import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
-import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundSuggestAllocationList;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
@@ -161,7 +160,7 @@ public class ProductsExpService {
         ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
 
         try {
-            List<String> ports = getPortList(crmId, header, true);
+            List<String> ports = getPortList(header, crmId, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             logger.info(unitHolder.toString());
@@ -189,10 +188,10 @@ public class ProductsExpService {
         }
     }
 
-    public List<String> getPortList(String crmId, Map<String, String> header, boolean isIncludePtesPortfolio) throws JsonProcessingException {
+    public List<String> getPortList(Map<String, String> header, String crmId, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
-        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), crmId);
+        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), UtilMap.halfCrmIdFormat(crmId));
 
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
@@ -205,7 +204,7 @@ public class ProductsExpService {
             });
         }
         if (isIncludePtesPortfolio) {
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, crmId);
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, UtilMap.halfCrmIdFormat(crmId));
 
             Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptesDetailResult)
                     .map(ResponseEntity::getBody)
@@ -276,19 +275,20 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundAccDetail
      *
-     * @param fundPaymentDetailRequest
      * @param correlationId
-     * @return
+     * @param crmId
+     * @param fundPaymentDetailRequest
+     * @return FundPaymentDetailResponse
      */
     @LogAround
-    public FundPaymentDetailResponse getFundPrePaymentDetail(String correlationId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+    public FundPaymentDetailResponse getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) {
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRequest);
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailResponse fundPaymentDetailResponse;
         try {
-            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(invHeaderReqParameter, fundRuleRequestBody);
-            CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(invHeaderReqParameter, fundRuleRequestBody.getFundCode());
-            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(invHeaderReqParameter, fundPaymentDetailRequest.getCrmId());
+            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(headerParameter, fundRuleRequestBody);
+            CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(headerParameter, fundRuleRequestBody.getFundCode());
+            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(headerParameter, UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
             CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
@@ -309,56 +309,53 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundFFSAndValidation
      *
-     * @param ffsRequestBody
      * @param correlationId
-     * @return FfsRsAndValidation
+     * @param crmId
+     * @param fundFactSheetRequestBody
+     * @return FundFactSheetValidationResponse
      */
     @LogAround
-    public FfsRsAndValidation getFundFFSAndValidation(String correlationId, FfsRequestBody ffsRequestBody) {
-        FfsRsAndValidation ffsRsAndValidation = new FfsRsAndValidation();
+    public FundFactSheetValidationResponse getFundFactSheetValidation(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
+        FundFactSheetValidationResponse fundFactSheetValidationResponse = new FundFactSheetValidationResponse();
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
-            String fatcaFlag = getFatcaFlag(correlationId, ffsRequestBody.getCrmId());
-            ffsRsAndValidation = validationAlternativeFlow(correlationId, ffsRequestBody, ffsRsAndValidation, fatcaFlag);
-
+            String fatcaFlag = getFatcaFlag(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            fundFactSheetValidationResponse = validationAlternativeFlow(
+                    correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, fatcaFlag);
         } else {
-            errorData(ffsRsAndValidation, fundResponse);
+            errorData(fundFactSheetValidationResponse, fundResponse);
         }
-        return ffsRsAndValidation;
+        return fundFactSheetValidationResponse;
     }
 
-    void errorData(FfsRsAndValidation ffsRsAndValidation, FundResponse fundResponse) {
-        ffsRsAndValidation.setError(true);
-        ffsRsAndValidation.setErrorCode(fundResponse.getErrorCode());
-        ffsRsAndValidation.setErrorMsg(fundResponse.getErrorMsg());
-        ffsRsAndValidation.setErrorDesc(fundResponse.getErrorDesc());
+    void errorData(FundFactSheetValidationResponse fundFactSheetValidationResponse, FundResponse fundResponse) {
+        fundFactSheetValidationResponse.setError(true);
+        fundFactSheetValidationResponse.setErrorCode(fundResponse.getErrorCode());
+        fundFactSheetValidationResponse.setErrorMsg(fundResponse.getErrorMsg());
+        fundFactSheetValidationResponse.setErrorDesc(fundResponse.getErrorDesc());
     }
 
-    void ffsData(FfsRsAndValidation ffsRsAndValidation, ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity) {
-        FfsData ffsData = new FfsData();
-        ffsData.setFactSheetData(responseEntity.getBody().getData().getBody().getFactSheetData());
-        ffsRsAndValidation.setBody(ffsData);
+    void ffsData(FundFactSheetValidationResponse fundFactSheetValidationResponse, ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> responseEntity) {
+        FundFactSheetData fundFactSheetData = new FundFactSheetData();
+        fundFactSheetData.setFactSheetData(responseEntity.getBody().getData().getBody().getFactSheetData());
+        fundFactSheetValidationResponse.setBody(fundFactSheetData);
     }
 
     /**
      * Generic Method to validate AlternativeSellAndSwitch
      *
-     * @param alternativeRequest
      * @param correlationId
+     * @param crmId
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validateAlternativeSellAndSwitch(String correlationId, AlternativeRequest alternativeRequest) {
+    public FundResponse validateAlternativeSellAndSwitch(String correlationId, String crmId) {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
-            FfsRequestBody ffsRequestBody = new FfsRequestBody();
-            ffsRequestBody.setUnitHolderNumber(alternativeRequest.getUnitHolderNumber());
-            ffsRequestBody.setProcessFlag(alternativeRequest.getProcessFlag());
-            ffsRequestBody.setCrmId(alternativeRequest.getCrmId());
-            String fatcaFlag = getFatcaFlag(correlationId, ffsRequestBody.getCrmId());
-            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse, fatcaFlag);
+            String fatcaFlag = getFatcaFlag(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, fatcaFlag);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
                 fundResponseSuccess(fundResponse);
             }
@@ -372,7 +369,7 @@ public class ProductsExpService {
                 .searchValue(crmId)
                 .build();
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
-                customerServiceClient.customerSearch(crmId, correlationId, request);
+                customerServiceClient.customerSearch(correlationId, crmId, request);
         return response.getBody().getData().get(0).getFatcaFlag();
     }
 
@@ -387,81 +384,88 @@ public class ProductsExpService {
     }
 
     /**
-     * To validate Alternative case and verify expire-citizen id
+     * To validate alternative case and verify expire-citizen id
      *
-     * @param ffsRequestBody
      * @param correlationId
-     * @param ffsRsAndValidation
-     * @return FfsRsAndValidation
+     * @param crmId
+     * @param fundFactSheetRequestBody
+     * @param fundFactSheetValidationResponse
+     * @param fatcaFlag
+     * @return FundFactSheetValidationResponse
      */
     @LogAround
-    public FfsRsAndValidation validationAlternativeFlow(String correlationId, FfsRequestBody ffsRequestBody,
-                                                        FfsRsAndValidation ffsRsAndValidation, String fatcaFlag) {
+    public FundFactSheetValidationResponse validationAlternativeFlow(String correlationId, String crmId,
+                                                                     FundFactSheetRequestBody fundFactSheetRequestBody,
+                                                                     FundFactSheetValidationResponse fundFactSheetValidationResponse,
+                                                                     String fatcaFlag) {
+        boolean isStopped = false;
         final boolean isNotValid = true;
-        boolean isStoped = false;
-        if (isCASADormant(correlationId, ffsRequestBody)) {
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
-            isStoped = true;
+        if (isCASADormant(correlationId, crmId)) {
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
+            fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
+            fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
+            isStopped = true;
         }
-        if (!isStoped && isSuitabilityExpired(correlationId, ffsRequestBody)) {
-            ffsRsAndValidation.setError(isNotValid);
-            ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
-            ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
-            ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
-            isStoped = true;
+        if (!isStopped && isSuitabilityExpired(correlationId, crmId)) {
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
+            fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
+            fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
+            isStopped = true;
         }
-        if (!isStoped && isCustIDExpired(ffsRequestBody)) {
-            fundResponseError(ffsRsAndValidation, isNotValid);
-            isStoped = true;
+        if (!isStopped && isCustomerIdExpired(crmId)) {
+            fundResponseError(fundFactSheetValidationResponse, isNotValid);
+            isStopped = true;
         }
-        if (!isStoped && isBusinessClose(correlationId, ffsRequestBody)) {
-            errorResponse(ffsRsAndValidation, isNotValid);
-            isStoped = true;
+        if (!isStopped && isBusinessClose(correlationId, fundFactSheetRequestBody)) {
+            errorResponse(fundFactSheetValidationResponse, isNotValid);
+            isStopped = true;
         }
-        if (!isStoped && fatcaFlag.equalsIgnoreCase("0")) {
-            funResponseMapping(ffsRsAndValidation,
+        if (!isStopped && fatcaFlag.equalsIgnoreCase("0")) {
+            funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-        } else if (!isStoped && !fatcaFlag.equalsIgnoreCase("N")) {
-            funResponseMapping(ffsRsAndValidation,
+        } else if (!isStopped && !fatcaFlag.equalsIgnoreCase("N")) {
+            funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.USNATIONAL.getCode(),
                     FatcaErrorEnums.USNATIONAL.getMsg(),
                     FatcaErrorEnums.USNATIONAL.getDesc());
         }
-        return ffsRsAndValidation;
+        return fundFactSheetValidationResponse;
     }
 
-    void errorResponse(FfsRsAndValidation ffsRsAndValidation, boolean isNotValid) {
-        ffsRsAndValidation.setError(isNotValid);
-        ffsRsAndValidation.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
-        ffsRsAndValidation.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
-        ffsRsAndValidation.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
+    void errorResponse(FundFactSheetValidationResponse fundFactSheetValidationResponse, boolean isNotValid) {
+        fundFactSheetValidationResponse.setError(isNotValid);
+        fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE);
+        fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE);
+        fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC);
     }
 
     /**
      * To validate Alternative case and verify expire-citizen id
      *
-     * @param ffsRequestBody
      * @param correlationId
+     * @param crmId
      * @param fundResponse
+     * @param fatcaFlag
      * @return FundResponse
      */
     @LogAround
-    public FundResponse validationAlternativeSellAndSwitchFlow(String correlationId, FfsRequestBody ffsRequestBody,
-                                                               FundResponse fundResponse, String fatcaFlag) {
+    public FundResponse validationAlternativeSellAndSwitchFlow(String correlationId,
+                                                               String crmId,
+                                                               FundResponse fundResponse,
+                                                               String fatcaFlag) {
         final boolean isNotValid = true;
-        if (isSuitabilityExpired(correlationId, ffsRequestBody)) {
+        if (isSuitabilityExpired(correlationId, crmId)) {
             fundResponse.setError(isNotValid);
             fundResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
             fundResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
             fundResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
             return fundResponse;
         }
-        if (isCustIDExpired(ffsRequestBody)) {
+        if (isCustomerIdExpired(crmId)) {
             fundResponseError(fundResponse, isNotValid);
             return fundResponse;
         }
@@ -543,25 +547,27 @@ public class ProductsExpService {
      * Method isBusinessClose for check cut of time from fundRule
      *
      * @param correlationId
-     * @param ffsRequestBody
+     * @param fundFactSheetRequestBody
      */
-    public boolean isBusinessClose(String correlationId, FfsRequestBody ffsRequestBody) {
+    public boolean isBusinessClose(String correlationId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setFundCode(ffsRequestBody.getFundCode());
-        fundRuleRequestBody.setFundHouseCode(ffsRequestBody.getFundHouseCode());
+        fundRuleRequestBody.setFundCode(fundFactSheetRequestBody.getFundCode());
+        fundRuleRequestBody.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
         fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
 
         ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity;
         try {
-            Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            responseEntity = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
+            Map<String, String> investmentHeaderHeader = UtilMap.createHeader(correlationId);
+            responseEntity = investmentRequestClient.callInvestmentFundRuleService(investmentHeaderHeader, fundRuleRequestBody);
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-            if (!StringUtils.isEmpty(responseEntity) &&
-                    HttpStatus.OK == responseEntity.getStatusCode()) {
+
+            if (!StringUtils.isEmpty(responseEntity) && HttpStatus.OK == responseEntity.getStatusCode()) {
                 FundRuleBody fundRuleBody = responseEntity.getBody().getData();
                 FundRuleInfoList fundRuleInfoList = fundRuleBody.getFundRuleInfoList().get(0);
-                return (UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd())
-                        && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx()));
+                return (
+                        UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd())
+                                && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx())
+                );
             }
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
@@ -574,13 +580,13 @@ public class ProductsExpService {
      * Method isCASADormant get Customer account and check dormant status
      *
      * @param correlationId
-     * @param ffsRequestBody
+     * @param crmId
      */
-    public boolean isCASADormant(String correlationId, FfsRequestBody ffsRequestBody) {
-        String responseCustomerExp = null;
+    public boolean isCASADormant(String correlationId, String crmId) {
+        String responseCustomerExp;
         try {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, ffsRequestBody.getCrmId());
+            responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             return UtilMap.isCASADormant(responseCustomerExp);
         } catch (Exception e) {
@@ -593,15 +599,13 @@ public class ProductsExpService {
      * Method isSuitabilityExpired Call MF service to check suitability is expire.
      *
      * @param correlationId
-     * @param ffsRequestBody
+     * @param crmId
      */
-    public boolean isSuitabilityExpired(String correlationId, FfsRequestBody ffsRequestBody) {
-        ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity = null;
+    private boolean isSuitabilityExpired(String correlationId, String crmId) {
+        ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity;
         try {
-            SuitabilityBody suitabilityBody = new SuitabilityBody();
-            suitabilityBody.setRmNumber(ffsRequestBody.getCrmId());
-            Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            responseResponseEntity = investmentRequestClient.callInvestmentFundSuitabilityService(invHeaderReqParameter, suitabilityBody);
+            Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
+            responseResponseEntity = investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
             return UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
@@ -611,15 +615,15 @@ public class ProductsExpService {
     }
 
     /**
-     * Method isCustIDExpired call to customer-info and get id_expire_date to verify with current date
+     * Method isCustomerIdExpired call to customer-info and get id_expire_date to verify with current date
      *
-     * @param ffsRequestBody
+     * @param crmId
      */
     @LogAround
-    public boolean isCustIDExpired(FfsRequestBody ffsRequestBody) {
-        CompletableFuture<CustGeneralProfileResponse> responseResponseEntity = null;
+    public boolean isCustomerIdExpired(String crmId) {
+        CompletableFuture<CustGeneralProfileResponse> responseResponseEntity;
         try {
-            responseResponseEntity = productExpAsyncService.fetchCustomerProfile(ffsRequestBody.getCrmId());
+            responseResponseEntity = productExpAsyncService.fetchCustomerProfile(UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture.allOf(responseResponseEntity);
             CustGeneralProfileResponse responseData = responseResponseEntity.get();
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
@@ -633,13 +637,14 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundList
      *
-     * @param fundListRequest
      * @param correlationId
+     * @param crmId
+     * @param fundListRequest
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, FundListRequest fundListRequest) {
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
+        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
             UnitHolder unitHolder = new UnitHolder();
@@ -647,9 +652,9 @@ public class ProductsExpService {
             unitHolder.setUnitHolderNumber(unitHolderList);
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
-                    productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
-            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, fundListRequest.getCrmId());
+                    productExpAsyncService.fetchFundListInfo(headerParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
+            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(headerParameter, unitHolder);
+            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(headerParameter, crmId);
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();
@@ -664,18 +669,29 @@ public class ProductsExpService {
         }
     }
 
+    /**
+     * Generic Method to call MF Service getFundList
+     *
+     * @param correlationId
+     * @param crmId
+     * @return SuggestAllocationDTO
+     */
     @LogAround
-    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmID) {
+    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmId) {
         UnitHolder unitHolder = new UnitHolder();
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
         try {
-            List<String> portList = getPortListForFundSummary(invHeaderReqParameter, crmID);
+            List<String> portList = getPortListForFundSummary(investmentHeaderRequest, crmId);
             unitHolder.setUnitHolderNumber(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(invHeaderReqParameter, crmID);
+            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(investmentHeaderRequest, unitHolder);
+            CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(investmentHeaderRequest, crmId);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
-            ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(invHeaderReqParameter, FundAllocationRequestBody.builder().suitabilityScore(suitabilityScore).build());
+            ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(
+                    investmentHeaderRequest,
+                    FundAllocationRequestBody.builder()
+                            .suitabilityScore(suitabilityScore)
+                            .build());
             return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
@@ -683,13 +699,15 @@ public class ProductsExpService {
         }
     }
 
-    private List<String> getPortListForFundSummary(Map<String, String> invHeaderReqParameter, String crmID) throws com.fasterxml.jackson.core.JsonProcessingException {
+    private List<String> getPortListForFundSummary(Map<String, String> investmentHeaderRequest, String crmId) throws JsonProcessingException {
         List<String> portList = new ArrayList<>();
-        String portListStr = accountRequestClient.getPortList(invHeaderReqParameter, crmID);
+        String portListStr = accountRequestClient.getPortList(investmentHeaderRequest, crmId);
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readValue(portListStr, JsonNode.class);
         JsonNode dataNode = node.get("data");
         ArrayNode arrayNode = (ArrayNode) dataNode.get("mutual_fund_accounts");
+
         for (int i = 0; i < arrayNode.size(); i++) {
             JsonNode itr = arrayNode.get(i);
             portList.add(itr.get("acct_nbr").textValue());

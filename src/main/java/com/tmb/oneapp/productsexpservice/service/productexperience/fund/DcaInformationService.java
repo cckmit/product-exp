@@ -55,17 +55,17 @@ public class DcaInformationService {
     public TmbOneServiceResponse<DcaInformationDto> getDcaInformation(String correlationId, String crmId) {
 
         TmbOneServiceResponse<DcaInformationDto> dcaInformationDto = new TmbOneServiceResponse<>();
-        try{
-            Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            List<String> portList = productsExpService.getPortList(crmId,invHeaderReqParameter,false);
+        try {
+            Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
+            List<String> portList = productsExpService.getPortList(headerParameter, crmId, false);
             UnitHolder unitHolder = new UnitHolder();
             unitHolder.setUnitHolderNumber(portList.stream().collect(Collectors.joining(",")));
-            ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter,
+            ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(headerParameter,
                     unitHolder);
-            ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody = investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
-            return mappingDcaInformationDto(fundSummaryResponse,fundListBody,dcaInformationDto);
-        }catch (Exception ex){
-            logger.error("error : {}",ex);
+            ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody = investmentRequestClient.callInvestmentFundListInfoService(headerParameter);
+            return mappingDcaInformationDto(fundSummaryResponse, fundListBody, dcaInformationDto);
+        } catch (Exception ex) {
+            logger.error("error : {}", ex);
             dcaInformationDto.setStatus(null);
             dcaInformationDto.setData(null);
             return dcaInformationDto;
@@ -82,10 +82,10 @@ public class DcaInformationService {
         List<FundClassListInfo> fundClassListInfos = fundListBody.getBody().getData().getFundClassList();
 
         List<DcaInformationModel> dcaInformationModelList = new ArrayList<>();
-        for(FundClassListInfo fundClassListInfo : fundClassListInfos) {
-            if(fundClassListInfo.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)){
+        for (FundClassListInfo fundClassListInfo : fundClassListInfos) {
+            if (fundClassListInfo.getAllowAipFlag().equals(ProductsExpServiceConstant.APPLICATION_STATUS_FLAG_TRUE)) {
                 Optional<Fund> fundOpt = fundList.stream().filter(t -> t.getFundCode().equals(fundClassListInfo.getFundCode())).findFirst();
-                if(fundOpt.isPresent()){
+                if (fundOpt.isPresent()) {
                     Fund fund = fundOpt.get();
                     DcaInformationModel dcaInformationModel = dcaInformationMapper.fundClassInfoToDcaInformationModel(fundClassListInfo);
                     dcaInformationModel.setMarketValue(fund.getMarketValue());

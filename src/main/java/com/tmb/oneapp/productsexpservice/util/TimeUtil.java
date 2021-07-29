@@ -19,8 +19,7 @@ public class TimeUtil {
      * @param argEndTime   the end HHMM
      * @return boolean
      */
-    public static boolean isTimeBetweenTwoTime(String argStartTime,
-                                               String argEndTime, String argCurrentTime) throws ParseException {
+    public static boolean isTimeBetweenTwoTime(String argStartTime, String argEndTime, String argCurrentTime) throws ParseException {
         String regex = "^([0-1][0-9]|2[0-3]):([0-5][0-9])$";
         if (argStartTime.matches(regex) && argEndTime.matches(regex) && argCurrentTime.matches(regex)) {
             boolean valid;

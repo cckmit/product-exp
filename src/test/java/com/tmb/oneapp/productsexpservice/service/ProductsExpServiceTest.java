@@ -14,10 +14,10 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -104,7 +104,7 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-            when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
+            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
@@ -173,7 +173,7 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-            when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
+            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
@@ -227,7 +227,7 @@ public class ProductsExpServiceTest {
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(customerExpServiceClient.getAccountSaving(any(), anyString())).thenReturn(data);
+            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
@@ -278,7 +278,7 @@ public class ProductsExpServiceTest {
 
     @Test
     void testErrorResponse() {
-        FfsRsAndValidation validation = new FfsRsAndValidation();
+        FundFactSheetValidationResponse validation = new FundFactSheetValidationResponse();
         validation.setError(true);
         productsExpService.errorResponse(validation, true);
         assertNotNull(validation);
@@ -286,22 +286,22 @@ public class ProductsExpServiceTest {
 
     @Test
     void testFfsData() {
-        FfsRsAndValidation validation = new FfsRsAndValidation();
+        FundFactSheetValidationResponse validation = new FundFactSheetValidationResponse();
         validation.setError(true);
-        TmbOneServiceResponse<FfsResponse> response = new TmbOneServiceResponse<>();
-        FfsResponse data = new FfsResponse();
-        FfsData body = new FfsData();
+        TmbOneServiceResponse<FundFactSheetResponse> response = new TmbOneServiceResponse<>();
+        FundFactSheetResponse data = new FundFactSheetResponse();
+        FundFactSheetData body = new FundFactSheetData();
         body.setFactSheetData("test");
         data.setBody(body);
         response.setData(data);
-        ResponseEntity<TmbOneServiceResponse<FfsResponse>> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
         productsExpService.ffsData(validation, responseEntity);
         assertNotNull(responseEntity);
     }
 
     @Test
     void testErrorData() {
-        FfsRsAndValidation validation = new FfsRsAndValidation();
+        FundFactSheetValidationResponse validation = new FundFactSheetValidationResponse();
         validation.setError(true);
         FundResponse fundResponse = new FundResponse();
         fundResponse.setError(true);

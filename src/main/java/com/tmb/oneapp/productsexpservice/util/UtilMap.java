@@ -16,7 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -220,11 +220,10 @@ public class UtilMap {
     public static boolean isBusinessClose(String startTime, String endTime) {
         boolean isClose = false;
         try {
-            if (!StringUtils.isEmpty(startTime)
-                    && !StringUtils.isEmpty(endTime)) {
-                Calendar calCurrent = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM);
-                String getCurrentTime = sdf.format(calCurrent.getTime());
+            if (!StringUtils.isEmpty(startTime) && !StringUtils.isEmpty(endTime)) {
+                Calendar currentDate = Calendar.getInstance();
+                SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM);
+                String getCurrentTime = simpleDateTimeFormat.format(currentDate.getTime());
                 if (isTimeBetweenTwoTime(startTime, endTime, getCurrentTime)) {
                     isClose = true;
                 }
@@ -475,18 +474,19 @@ public class UtilMap {
     /**
      * Generic Method to mappingRequestStmtByPort
      *
-     * @param ffsRequestBody
-     * @return AlternativeRq
+     * @param crmId
+     * @param fundFactSheetRequestBody
+     * @return AlternativeRequest
      */
-    public static AlternativeRequest mappingRequestAlternative(FfsRequestBody ffsRequestBody) {
+    public static AlternativeRequest mappingRequestAlternative(String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setCrmId(ffsRequestBody.getCrmId());
-        alternativeRequest.setFundCode(ffsRequestBody.getFundCode());
-        alternativeRequest.setProcessFlag(ffsRequestBody.getProcessFlag());
-        alternativeRequest.setUnitHolderNumber(ffsRequestBody.getUnitHolderNumber());
-        alternativeRequest.setFundHouseCode(ffsRequestBody.getFundHouseCode());
-        alternativeRequest.setOrderType(ffsRequestBody.getOrderType());
-        alternativeRequest.setFundClassThaiHubName(ffsRequestBody.getFundClassThaiHubName());
+        alternativeRequest.setCrmId(UtilMap.fullCrmIdFormat(crmId));
+        alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
+        alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
+        alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
+        alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
+        alternativeRequest.setOrderType(fundFactSheetRequestBody.getOrderType());
+        alternativeRequest.setFundClassThaiHubName(fundFactSheetRequestBody.getFundClassThaiHubName());
         return alternativeRequest;
     }
 
@@ -602,5 +602,16 @@ public class UtilMap {
         }
         DecimalFormat decimalFormat = new DecimalFormat(ProductsExpServiceConstant.CRM_ID_FORMAT);
         return ProductsExpServiceConstant.CRM_ID_PREFIX.concat(decimalFormat.format(Double.parseDouble(crmId)));
+    }
+
+    /**
+     * @param crmId
+     * @return half digit of crmId
+     */
+    public static String halfCrmIdFormat(String crmId) {
+        if (crmId.length() <= 14) {
+            return crmId;
+        }
+        return crmId.substring(crmId.length() - ProductsExpServiceConstant.DIGIT_OF_CRM_ID);
     }
 }

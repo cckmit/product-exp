@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerClientModel {
-    private String crmId;
 
     private String jointType;
 

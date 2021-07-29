@@ -8,8 +8,8 @@ import com.tmb.oneapp.productsexpservice.enums.DcaValidationErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -72,9 +72,9 @@ public class DcaValidationServiceTest {
         when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundRuleResponse));
 
-        TmbOneServiceResponse<FfsResponse> tmbFundFactSheetResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundFactSheetResponse> tmbFundFactSheetResponse = new TmbOneServiceResponse<>();
         tmbFundFactSheetResponse.setStatus(TmbStatusUtil.successStatus());
-        tmbFundFactSheetResponse.setData(FfsResponse.builder().body(FfsData.builder().factSheetData(fundFactSheetData).build()).build());
+        tmbFundFactSheetResponse.setData(FundFactSheetResponse.builder().body(FundFactSheetData.builder().factSheetData(fundFactSheetData).build()).build());
         when(investmentRequestClient.callInvestmentFundFactSheetService(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundFactSheetResponse));
 

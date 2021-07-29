@@ -11,14 +11,14 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
-import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInfoMapper;
+import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInformationMapper;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponse;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioValidationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.CustomerInfo;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.CustomerInformation;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.ValidateOpenPortfolioResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
@@ -68,7 +68,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
     private OpenPortfolioActivityLogService openPortfolioActivityLogService;
 
     @Mock
-    private CustomerInfoMapper customerInfoMapper;
+    private CustomerInformationMapper customerInformationMapper;
 
     @InjectMocks
     private OpenPortfolioValidationService openPortfolioValidationService;
@@ -137,9 +137,9 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
             response.getBody().getData().get(0).setKycLimitedFlag("U");
         }
 
-        CustomerInfo customerInfo = objectMapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(), CustomerInfo.class);
-        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(response);
-        when(customerInfoMapper.map(any())).thenReturn(customerInfo);
+        CustomerInformation customerInformation = objectMapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(), CustomerInformation.class);
+        when(customerServiceClient.customerSearch(anyString(), anyString(), any())).thenReturn(response);
+        when(customerInformationMapper.map(any())).thenReturn(customerInformation);
     }
 
     @Test
@@ -178,7 +178,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         // Then
         assertEquals("0000", actual.getStatus().getCode());
-        assertNotNull(actual.getData().getCustomerInfo());
+        assertNotNull(actual.getData().getCustomerInformation());
         assertNotNull(actual.getData().getTermsConditions());
         assertNotNull(actual.getData().getDepositAccountList());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
@@ -209,7 +209,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         // Then
         assertEquals("0000", actual.getStatus().getCode());
-        assertNotNull(actual.getData().getCustomerInfo());
+        assertNotNull(actual.getData().getCustomerInformation());
         assertNotNull(actual.getData().getTermsConditions());
         assertNull(actual.getData().getDepositAccountList());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());

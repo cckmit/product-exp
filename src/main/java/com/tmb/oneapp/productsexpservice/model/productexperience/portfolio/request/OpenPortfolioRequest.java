@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OpenPortfolioRequest {
 
-    private String crmId;
-
     private String suitabilityScore;
 
     private String portfolioType;
