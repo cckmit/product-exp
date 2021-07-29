@@ -252,7 +252,6 @@ class InvestmentAsyncServiceTest {
         ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
         RelationshipRequest relationshipRequest = RelationshipRequest.builder()
-                .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
                 .preferredRedemptionAccountName("นาง สุนิสา ผลงาม 00000632964227 (SDA)")
@@ -264,10 +263,11 @@ class InvestmentAsyncServiceTest {
                 .preferredAddressType("Contact")
                 .status("Active")
                 .build();
-        when(investmentRequestClient.updateClientRelationship(investmentRequestHeader, relationshipRequest)).thenReturn(response);
+        when(investmentRequestClient.updateClientRelationship(investmentRequestHeader, "00000000002914", relationshipRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<RelationshipResponseBody> actual = investmentAsyncService.updateClientRelationship(investmentRequestHeader, relationshipRequest);
+        CompletableFuture<RelationshipResponseBody> actual = investmentAsyncService.updateClientRelationship(
+                investmentRequestHeader, "00000000002914", relationshipRequest);
 
         //Then
         CompletableFuture<RelationshipResponseBody> expected = CompletableFuture.completedFuture(relationshipResponse.getData());
@@ -277,11 +277,11 @@ class InvestmentAsyncServiceTest {
     @Test
     void should_return_null_when_call_update_client_relationship_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.updateClientRelationship(any(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.updateClientRelationship(any(), anyString(), any())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.updateClientRelationship(any(), any());
+            investmentAsyncService.updateClientRelationship(any(), anyString(), any());
         });
 
         //Then
@@ -310,15 +310,15 @@ class InvestmentAsyncServiceTest {
         ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
         OpenPortfolioRequest openPortfolioRequest = OpenPortfolioRequest.builder()
-                .crmId("00000000002914")
                 .suitabilityScore("5")
                 .portfolioType("TMB_ADVTYPE_10_ADVISORY")
                 .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
                 .build();
-        when(investmentRequestClient.openPortfolio(investmentRequestHeader, openPortfolioRequest)).thenReturn(response);
+        when(investmentRequestClient.openPortfolio(investmentRequestHeader, "00000000002914", openPortfolioRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<OpenPortfolioResponseBody> actual = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
+        CompletableFuture<OpenPortfolioResponseBody> actual = investmentAsyncService.openPortfolio(
+                investmentRequestHeader, "00000000002914", openPortfolioRequest);
 
         //Then
         CompletableFuture<OpenPortfolioResponseBody> expected = CompletableFuture.completedFuture(openPortfolioResponse.getData());
@@ -328,11 +328,11 @@ class InvestmentAsyncServiceTest {
     @Test
     void should_return_null_when_call_open_portfolio_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.openPortfolio(any(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.openPortfolio(any(), anyString(), any())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.openPortfolio(any(), any());
+            investmentAsyncService.openPortfolio(any(), anyString(), any());
         });
 
         //Then
@@ -377,11 +377,11 @@ class InvestmentAsyncServiceTest {
     @Test
     void should_return_null_when_call_update_portfolio_nickname_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.openPortfolio(any(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.openPortfolio(any(), anyString(), any())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.openPortfolio(any(), any());
+            investmentAsyncService.openPortfolio(any(), anyString(), any());
         });
 
         //Then

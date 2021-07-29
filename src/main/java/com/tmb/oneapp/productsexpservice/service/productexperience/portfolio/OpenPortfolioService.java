@@ -116,10 +116,12 @@ public class OpenPortfolioService {
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
         try {
             RelationshipRequest relationshipRequest = openPortfolioMapper.openPortfolioRequestBodyToRelationshipRequest(openPortfolioRequestBody);
-            CompletableFuture<RelationshipResponseBody> relationship = investmentAsyncService.updateClientRelationship(investmentRequestHeader, relationshipRequest);
+            CompletableFuture<RelationshipResponseBody> relationship = investmentAsyncService.updateClientRelationship(
+                    investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), relationshipRequest);
 
             OpenPortfolioRequest openPortfolioRequest = openPortfolioMapper.openPortfolioRequestBodyToOpenPortfolioRequest(openPortfolioRequestBody);
-            CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
+            CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(
+                    investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), openPortfolioRequest);
 
             CompletableFuture.allOf(relationship, openPortfolio);
             openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());

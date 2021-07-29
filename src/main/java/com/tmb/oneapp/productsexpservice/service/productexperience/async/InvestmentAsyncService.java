@@ -115,9 +115,9 @@ public class InvestmentAsyncService {
      *
      * @return CompletableFuture<RelationshipResponseBody>
      */
-    public CompletableFuture<RelationshipResponseBody> updateClientRelationship(Map<String, String> investmentRequestHeader, RelationshipRequest relationshipRequest) throws TMBCommonException {
+    public CompletableFuture<RelationshipResponseBody> updateClientRelationship(Map<String, String> investmentRequestHeader, String crmId, RelationshipRequest relationshipRequest) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> response = investmentRequestClient.updateClientRelationship(investmentRequestHeader, relationshipRequest);
+            ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> response = investmentRequestClient.updateClientRelationship(investmentRequestHeader, crmId, relationshipRequest);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
@@ -130,9 +130,9 @@ public class InvestmentAsyncService {
      *
      * @return CompletableFuture<OpenPortfolioResponseBody>
      */
-    public CompletableFuture<OpenPortfolioResponseBody> openPortfolio(Map<String, String> investmentRequestHeader, OpenPortfolioRequest openPortfolioRequest) throws TMBCommonException {
+    public CompletableFuture<OpenPortfolioResponseBody> openPortfolio(Map<String, String> investmentRequestHeader, String crmId, OpenPortfolioRequest openPortfolioRequest) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> response = investmentRequestClient.openPortfolio(investmentRequestHeader, openPortfolioRequest);
+            ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> response = investmentRequestClient.openPortfolio(investmentRequestHeader, crmId, openPortfolioRequest);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

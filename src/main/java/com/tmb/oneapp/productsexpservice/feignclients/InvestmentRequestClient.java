@@ -277,7 +277,9 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.client.relationship.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> updateClientRelationship(
-            @RequestHeader Map<String, String> header, @RequestBody RelationshipRequest relationshipRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId,
+            @RequestBody RelationshipRequest relationshipRequest);
 
     /**
      * Call investment open portfolio service to open portfolio.
@@ -289,7 +291,9 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.open.portfolio.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> openPortfolio(
-            @RequestHeader Map<String, String> header, @RequestBody OpenPortfolioRequest openPortfolioRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId,
+            @RequestBody OpenPortfolioRequest openPortfolioRequest);
 
     /**
      * Call investment portfolio nickname service to create or update portfolio nickname.

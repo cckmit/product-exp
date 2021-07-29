@@ -196,7 +196,7 @@ class OpenPortfolioServiceTest {
         oneServiceRelationshipResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-        when(investmentAsyncService.updateClientRelationship(any(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceRelationshipResponse.getData()));
+        when(investmentAsyncService.updateClientRelationship(any(), anyString(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceRelationshipResponse.getData()));
 
         OpenPortfolioResponse openPortfolioResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/open_portfolio.json").toFile(),
                 OpenPortfolioResponse.class);
@@ -205,7 +205,7 @@ class OpenPortfolioServiceTest {
         oneServiceOpenPortfolioResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-        when(investmentAsyncService.openPortfolio(any(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceOpenPortfolioResponse.getData()));
+        when(investmentAsyncService.openPortfolio(any(), anyString(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceOpenPortfolioResponse.getData()));
 
         PortfolioNicknameResponse portfolioNicknameResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/nickname.json").toFile(),
                 PortfolioNicknameResponse.class);
@@ -217,7 +217,6 @@ class OpenPortfolioServiceTest {
         when(investmentRequestClient.updatePortfolioNickname(any(), any())).thenReturn(ResponseEntity.ok(oneServicePortfolioNicknameResponse));
 
         OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
-                .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
                 .preferredRedemptionAccountName("นาง สุนิสา ผลงาม 00000632964227 (SDA)")

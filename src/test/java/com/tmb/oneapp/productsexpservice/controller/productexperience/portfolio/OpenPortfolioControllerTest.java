@@ -164,7 +164,6 @@ class OpenPortfolioControllerTest {
     void should_return_portfolio_response_when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
         // Given
         OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
-                .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
                 .preferredRedemptionAccountName("นาง สุนิสา ผลงาม 00000632964227 (SDA)")
