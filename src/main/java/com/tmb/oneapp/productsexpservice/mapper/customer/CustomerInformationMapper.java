@@ -3,7 +3,7 @@ package com.tmb.oneapp.productsexpservice.mapper.customer;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.CustomerInfo;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.CustomerInformation;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -12,17 +12,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 @Component
-public class CustomerInfoMapper {
-    private static final TMBLogger<CustomerInfoMapper> logger = new TMBLogger<>(CustomerInfoMapper.class);
+public class CustomerInformationMapper {
+    private static final TMBLogger<CustomerInformationMapper> logger = new TMBLogger<>(CustomerInformationMapper.class);
 
     private String customerServiceDateFormat = "yyyy-MM-dd";
     private String openPortFolioDateFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
-    public CustomerInfo map(CustomerSearchResponse customerResponse) {
+    public CustomerInformation map(CustomerSearchResponse customerResponse) {
         try {
             SimpleDateFormat openPortFormat = new SimpleDateFormat(openPortFolioDateFormat);
-            return CustomerInfo.builder()
-                    .crmId(customerResponse.getCrmId())
+            return CustomerInformation.builder()
                     .wealthCrmId(ProductsExpServiceConstant.MIB_CUSTOMER_STATIC_ID)
                     .phoneNumber(customerResponse.getMobileNumber())
                     .dateOfBirth(formatDateForOpenPortFolio(customerResponse.getBirthDate()))

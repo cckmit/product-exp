@@ -8,7 +8,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
@@ -240,7 +239,9 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.customer.create.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> createCustomer(
-            @RequestHeader Map<String, String> header, @RequestBody CustomerRequest customerRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId,
+            @RequestBody CustomerRequest customerRequest);
 
     /**
      * Call investment account purpose service to get account purpose response.
@@ -256,14 +257,15 @@ public interface InvestmentRequestClient {
     /**
      * Call investment account redeem service to get account redeem response.
      *
-     * @param header               the headers
-     * @param accountRedeemRequest the accountRedeemRequest
+     * @param header the headers
+     * @param crmId  the crm id
      * @return the account redeem response
      */
     @PostMapping(value = "${investment.service.customer.account.redeem.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> getCustomerAccountRedeem(
-            @RequestHeader Map<String, String> header, @RequestBody AccountRedeemRequest accountRedeemRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId);
 
     /**
      * Call investment client relationship service to update client relationship.

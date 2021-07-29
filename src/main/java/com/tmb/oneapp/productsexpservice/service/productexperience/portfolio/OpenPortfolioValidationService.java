@@ -10,7 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
-import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInfoMapper;
+import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInformationMapper;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioValidationRequest;
@@ -54,7 +54,7 @@ public class OpenPortfolioValidationService {
 
     private OpenPortfolioActivityLogService openPortfolioActivityLogService;
 
-    private CustomerInfoMapper customerInfoMapper;
+    private CustomerInformationMapper customerInformationMapper;
 
     @Autowired
     public OpenPortfolioValidationService(
@@ -63,14 +63,14 @@ public class OpenPortfolioValidationService {
             ProductsExpService productsExpService,
             EligibleDepositAccountService eligibleDepositAccountService,
             OpenPortfolioActivityLogService openPortfolioActivityLogService,
-            CustomerInfoMapper customerInfoMapper) {
+            CustomerInformationMapper customerInformationMapper) {
 
         this.customerServiceClient = customerServiceClient;
         this.commonServiceClient = commonServiceClient;
         this.productsExpService = productsExpService;
         this.eligibleDepositAccountService = eligibleDepositAccountService;
         this.openPortfolioActivityLogService = openPortfolioActivityLogService;
-        this.customerInfoMapper = customerInfoMapper;
+        this.customerInformationMapper = customerInformationMapper;
     }
 
     /**
@@ -363,7 +363,7 @@ public class OpenPortfolioValidationService {
     private void mappingOpenPortFolioValidationResponse(TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse, CustomerSearchResponse customerInfo, TermAndConditionResponseBody termAndCondition, List<DepositAccount> depositAccountList) {
         tmbOneServiceResponse.setData(ValidateOpenPortfolioResponse.builder()
                 .termsConditions(termAndCondition)
-                .customerInfo(customerInfoMapper.map(customerInfo))
+                .customerInformation(customerInformationMapper.map(customerInfo))
                 .depositAccountList(depositAccountList)
                 .build());
     }

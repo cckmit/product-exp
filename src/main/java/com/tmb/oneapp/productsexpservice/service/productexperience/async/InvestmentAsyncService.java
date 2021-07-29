@@ -10,7 +10,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
@@ -101,9 +100,9 @@ public class InvestmentAsyncService {
      *
      * @return CompletableFuture<AccountRedeemBody>
      */
-    public CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem(Map<String, String> investmentRequestHeader, AccountRedeemRequest accountRedeemRequest) throws TMBCommonException {
+    public CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem(Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, accountRedeemRequest);
+            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

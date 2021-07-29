@@ -57,8 +57,8 @@ class OpenPortfolioControllerTest {
         ValidateOpenPortfolioResponse validateOpenPortfolioResponse = new ValidateOpenPortfolioResponse();
         validateOpenPortfolioResponse.setTermsConditions(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/termandcondition.json").toFile(),
                 TermAndConditionResponseBody.class));
-        validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
-                CustomerInfo.class));
+        validateOpenPortfolioResponse.setCustomerInformation(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
+                CustomerInformation.class));
         List<DepositAccount> depositAccountList = new ArrayList<>();
         depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(), DepositAccount.class));
         validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
@@ -88,8 +88,8 @@ class OpenPortfolioControllerTest {
         ValidateOpenPortfolioResponse validateOpenPortfolioResponse = new ValidateOpenPortfolioResponse();
         validateOpenPortfolioResponse.setTermsConditions(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/termandcondition.json").toFile(),
                 TermAndConditionResponseBody.class));
-        validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
-                CustomerInfo.class));
+        validateOpenPortfolioResponse.setCustomerInformation(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
+                CustomerInformation.class));
         List<DepositAccount> depositAccountList = new ArrayList<>();
         depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(), DepositAccount.class));
         validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
@@ -122,7 +122,6 @@ class OpenPortfolioControllerTest {
     void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws IOException {
         // Given
         CustomerRequest customerRequest = CustomerRequest.builder()
-                .crmId("00000007924129")
                 .wealthCrmId("D0000000988")
                 .phoneNumber("0948096953")
                 .dateOfBirth("2019-04-03T09:23:45")

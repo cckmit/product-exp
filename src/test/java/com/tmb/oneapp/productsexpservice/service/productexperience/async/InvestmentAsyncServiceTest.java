@@ -11,7 +11,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.client.response
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
@@ -42,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -206,11 +206,10 @@ class InvestmentAsyncServiceTest {
         tmbOneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
-        AccountRedeemRequest accountRedeemRequest = AccountRedeemRequest.builder().crmId("00000007924129").build();
-        when(investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, accountRedeemRequest)).thenReturn(response);
+        when(investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, "00000007924129")).thenReturn(response);
 
         //When
-        CompletableFuture<AccountRedeemResponseBody> actual = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, accountRedeemRequest);
+        CompletableFuture<AccountRedeemResponseBody> actual = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, "00000007924129");
 
         //Then
         CompletableFuture<AccountRedeemResponseBody> expected = CompletableFuture.completedFuture(accountPurposeResponse.getData());
@@ -224,7 +223,7 @@ class InvestmentAsyncServiceTest {
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.fetchAccountRedeem(any(), any());
+            investmentAsyncService.fetchAccountRedeem(any(), anyString());
         });
 
         //Then

@@ -9,7 +9,6 @@ import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
@@ -80,11 +79,10 @@ public class OpenPortfolioService {
             openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
-            ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, customerRequest);
+            ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), customerRequest);
             if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
-                AccountRedeemRequest accountRedeemRequest = AccountRedeemRequest.builder().crmId(customerRequest.getCrmId()).build();
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
-                CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, accountRedeemRequest);
+                CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
                 CompletableFuture.allOf(fetchAccountPurpose, fetchAccountRedeem);
 
                 AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.get();

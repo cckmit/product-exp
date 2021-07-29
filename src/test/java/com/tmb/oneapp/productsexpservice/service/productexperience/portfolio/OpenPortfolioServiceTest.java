@@ -84,7 +84,7 @@ class OpenPortfolioServiceTest {
         oneServiceCustomerResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-        when(investmentRequestClient.createCustomer(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
+        when(investmentRequestClient.createCustomer(any(), anyString(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
 
         AccountPurposeResponse accountPurposeResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_purpose.json").toFile(),
                 AccountPurposeResponse.class);
@@ -102,10 +102,9 @@ class OpenPortfolioServiceTest {
         oneServiceAccountRedeemResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-        when(investmentAsyncService.fetchAccountRedeem(any(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceAccountRedeemResponse.getData()));
+        when(investmentAsyncService.fetchAccountRedeem(any(), anyString())).thenReturn(CompletableFuture.completedFuture(oneServiceAccountRedeemResponse.getData()));
 
         CustomerRequest customerRequest = CustomerRequest.builder()
-                .crmId("00000007924129")
                 .wealthCrmId("D0000000988")
                 .phoneNumber("0948096953")
                 .dateOfBirth("2019-04-03T09:23:45")
@@ -155,10 +154,9 @@ class OpenPortfolioServiceTest {
         // Given
         TmbOneServiceResponse<CustomerResponseBody> oneServiceCustomerResponse = new TmbOneServiceResponse<>();
         oneServiceCustomerResponse.setData(null);
-        when(investmentRequestClient.createCustomer(any(), any())).thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
+        when(investmentRequestClient.createCustomer(any(), anyString(), any())).thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
 
         CustomerRequest customerRequest = CustomerRequest.builder()
-                .crmId("00000007924129")
                 .wealthCrmId("D0000000988")
                 .phoneNumber("0948096953")
                 .dateOfBirth("2019-04-03T09:23:45")
