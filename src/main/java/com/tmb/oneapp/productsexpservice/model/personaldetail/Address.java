@@ -20,4 +20,5 @@ public class Address {
     private String amphur;
     private String province;
     private String floor;
+    private String roomNo;
 }

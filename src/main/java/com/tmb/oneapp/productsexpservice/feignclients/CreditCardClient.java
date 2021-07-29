@@ -1,27 +1,48 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
-import com.tmb.oneapp.productsexpservice.model.loan.*;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
+import com.tmb.oneapp.productsexpservice.model.customer.creditcard.CreditCardServiceHour;
+import com.tmb.oneapp.productsexpservice.model.loan.DepositRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.DepositResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.EligibleLeadResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.InstallmentRateResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @FeignClient(name = "${feign.creditcard.service.name}", url = "${feign.creditcard.service.url}")
 public interface CreditCardClient {
@@ -121,4 +142,7 @@ public interface CreditCardClient {
 
 	@GetMapping(value = "/apis/creditcard/internal/lending/config/cashforyou")
 	ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> getCurrentCashForYouRate();
+	
+	@GetMapping(value = "/apis/creditcard/internal/lending/config/servicehour")
+	ResponseEntity<TmbOneServiceResponse<CreditCardServiceHour>> getCreditCardServiceHour();
 }
