@@ -51,5 +51,20 @@ public class CreditCardServiceHourControllerTest {
 				.getCreditCardServiceHour(headers);
 		Assert.assertNotEquals(400, result.getStatusCodeValue());
 	}
+	
+	@Test
+	public void testGetCreditCardServiceHourNotFound() {
+		CreditCardServiceHour data = new CreditCardServiceHour();
+		data.setApplyEStatementStarttimeEndtime("04:00-21:00");
+		TmbOneServiceResponse<CreditCardServiceHour> oneServiceResponse = new TmbOneServiceResponse<>();
+		oneServiceResponse.setData(data);
+		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		when(creditCardClient.getCreditCardServiceHour()).thenReturn(null);
+		Map<String, String> headers = new HashMap<String, String>();
+		ResponseEntity<TmbOneServiceResponse<CreditCardServiceHour>> result = creditCardServiceHourController
+				.getCreditCardServiceHour(headers);
+		Assert.assertEquals(404, result.getStatusCodeValue());
+	}
 
 }
