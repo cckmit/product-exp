@@ -44,7 +44,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.exceptions.base.MockitoException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.nio.charset.StandardCharsets;
@@ -76,7 +75,7 @@ public class ProductExpServiceTest {
 
     private CustomerServiceClient customerServiceClient;
 
-    private final String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     private final String crmId = "001100000000000000000012025950";
 
@@ -171,7 +170,7 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(fundAccountResponse);
         Assert.assertNotNull(accountDetailBody);
         Assert.assertNotNull(fetchStatementResponse);
-        FundAccountResponse result = productsExpService.getFundAccountDetail(corrId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
         Assert.assertNotNull(result);
     }
 
@@ -199,12 +198,12 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrId), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(correlationId), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrId), fundAccountRq);
+        responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(correlationId), fundAccountRq);
         Assert.assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
         Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getFundDetail().getFundHouseCode());
         Assert.assertNotNull(responseEntity.getBody().getData().getFundDetail());
@@ -233,12 +232,12 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundRuleService(createHeader(corrId), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
+            when(investmentRequestClient.callInvestmentFundRuleService(createHeader(correlationId), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        fundRuleResponseEntity = investmentRequestClient.callInvestmentFundRuleService(createHeader(corrId), fundRuleRequestBody);
+        fundRuleResponseEntity = investmentRequestClient.callInvestmentFundRuleService(createHeader(correlationId), fundRuleRequestBody);
         Assert.assertEquals(HttpStatus.OK, fundRuleResponseEntity.getStatusCode());
         Assert.assertEquals("TESEQDSSFX", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundCode());
         Assert.assertEquals("TFUND", fundRuleResponseEntity.getBody().getData().getFundRuleInfoList().get(0).getFundHouseCode());
@@ -297,14 +296,14 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrId), fundAccountRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(investmentRequestClient.callInvestmentFundRuleService(createHeader(corrId), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
-            when(investmentRequestClient.callInvestmentStatementByPortService(createHeader(corrId), orderStmtByPortRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
+            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(correlationId), fundAccountRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundRuleService(createHeader(correlationId), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
+            when(investmentRequestClient.callInvestmentStatementByPortService(createHeader(correlationId), orderStmtByPortRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        FundAccountResponse result = productsExpService.getFundAccountDetail(corrId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
         Assert.assertNull(result);
         UtilMap utilMap = new UtilMap();
         FundAccountDetail fundAccountDetailResponse = utilMap.mappingResponse(accountDetailBody, fundRuleBody, statementResponse);
@@ -344,12 +343,12 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(productsExpService.getFundAccountDetail(corrId, fundAccountRequest)).thenReturn(null);
+            when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        FundAccountResponse result = productsExpService.getFundAccountDetail(corrId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
         Assert.assertNull(result);
     }
 
@@ -428,7 +427,7 @@ public class ProductExpServiceTest {
         FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleBodyCom, fundHolidayBodyCom, commonDataListCom, customerExp);
         Assert.assertNotNull(response);
 
-        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(corrId, fundPaymentDetailRequest);
+        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -491,7 +490,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        boolean getFundSummary = productsExpService.isBusinessClose(corrId, fundAccountRequest);
+        boolean getFundSummary = productsExpService.isBusinessClose(correlationId, fundAccountRequest);
         Assert.assertFalse(getFundSummary);
     }
 
@@ -521,7 +520,7 @@ public class ProductExpServiceTest {
         }
 
         responseCommonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
-        fundResponse = productsExpService.isServiceHour(corrId, fundResponse);
+        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
         Assert.assertNotNull(responseCommonRs);
         Assert.assertNotNull(fundResponse);
     }
@@ -552,7 +551,7 @@ public class ProductExpServiceTest {
         }
 
         responseCommonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
-        fundResponse = productsExpService.isServiceHour(corrId, fundResponse);
+        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
         Assert.assertNotNull(responseCommonRs);
         Assert.assertNotNull(fundResponse);
     }
@@ -567,7 +566,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        fundResponse = productsExpService.isServiceHour(corrId, fundResponse);
+        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
         Assert.assertNotNull(fundResponse);
     }
 
@@ -587,7 +586,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(corrId, fundPaymentDetailRequest);
+        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest);
         Assert.assertNull(serviceRes);
     }
 
@@ -606,7 +605,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundAccountResponse result = productsExpService.getFundAccountDetail(corrId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
         Assert.assertNull(result);
     }
 
@@ -618,7 +617,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundSummaryBody getFundSummary = productsExpService.getFundSummary(corrId, crmId);
+        FundSummaryBody getFundSummary = productsExpService.getFundSummary(correlationId, crmId);
         Assert.assertNull(getFundSummary);
     }
 
@@ -638,7 +637,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        boolean getFundSummary = productsExpService.isBusinessClose(corrId, fundAccountRequest);
+        boolean getFundSummary = productsExpService.isBusinessClose(correlationId, fundAccountRequest);
         Assert.assertTrue(getFundSummary);
     }
 
@@ -658,7 +657,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        boolean getFundSummary = productsExpService.isCASADormant(corrId, fundAccountRequest);
+        boolean getFundSummary = productsExpService.isCASADormant(correlationId, fundAccountRequest);
         Assert.assertTrue(getFundSummary);
     }
 
@@ -732,7 +731,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrId, ffsRequestBody);
+        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -781,7 +780,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrId, ffsRequestBody);
+        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -843,9 +842,9 @@ public class ProductExpServiceTest {
         ffsRequestBody.setCrmId(alternativeRequest.getCrmId());
         FundResponse fundResponse = new FundResponse();
 
-        productsExpService.validateAlternativeSellAndSwitch(corrId, alternativeRequest);
+        productsExpService.validateAlternativeSellAndSwitch(correlationId, alternativeRequest);
         String flatcaFlag = "0";
-        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(corrId, ffsRequestBody, fundResponse, flatcaFlag);
+        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(correlationId, ffsRequestBody, fundResponse, flatcaFlag);
         Assert.assertNotNull(fundResponse);
     }
 
@@ -859,7 +858,7 @@ public class ProductExpServiceTest {
 
     @Test
     public void testCreateHeader() {
-        Map<String, Object> header = UtilMap.createHeader(corrId, 10, 1);
+        Map<String, Object> header = UtilMap.createHeader(correlationId, 10, 1);
         Assert.assertNotNull(header);
     }
 
@@ -891,7 +890,7 @@ public class ProductExpServiceTest {
         alternativeRequest.setUnitHolderNumber(ffsRequestBody.getUnitHolderNumber());
         alternativeRequest.setFundHouseCode(ffsRequestBody.getFundHouseCode());
 
-        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrId,
+        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
 
@@ -915,7 +914,7 @@ public class ProductExpServiceTest {
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
         String responseCustomerExp;
-        Map<String, String> headers = createHeader(corrId);
+        Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -934,13 +933,13 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        boolean isBusClose = productsExpService.isBusinessClose(corrId, ffsRequestBody);
+        boolean isBusClose = productsExpService.isBusinessClose(correlationId, ffsRequestBody);
         Assert.assertEquals(false, isBusClose);
 
-        boolean isCASADormant = productsExpService.isCASADormant(corrId, ffsRequestBody);
+        boolean isCASADormant = productsExpService.isCASADormant(correlationId, ffsRequestBody);
         Assert.assertEquals(false, isCASADormant);
 
-        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(corrId, ffsRequestBody);
+        FfsRsAndValidation serviceRes = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -990,11 +989,10 @@ public class ProductExpServiceTest {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
-        fundListRequest.setCrmId("12343455555");
         fundListRequest.setUnitHolderNumber(unitStr);
 
         Assert.assertNotNull(listFund);
-        List<FundClassListInfo> result = productsExpService.getFundList(corrId, fundListRequest);
+        List<FundClassListInfo> result = productsExpService.getFundList(correlationId, crmId, fundListRequest);
         Assert.assertNotNull(result);
     }
 
@@ -1011,10 +1009,9 @@ public class ProductExpServiceTest {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
-        fundListRequest.setCrmId("12343455555");
         fundListRequest.setUnitHolderNumber(unitStr);
 
-        List<FundClassListInfo> result = productsExpService.getFundList(corrId, fundListRequest);
+        List<FundClassListInfo> result = productsExpService.getFundList(correlationId, crmId, fundListRequest);
         Assert.assertNotNull(result);
     }
 
@@ -1032,7 +1029,7 @@ public class ProductExpServiceTest {
         response.setData(fundAllocationResponse);
         when(investmentRequestClient.callInvestmentFundAllocation(any(), any())).thenReturn(ResponseEntity.ok(response));
         SuggestAllocationDTO suggestAllocationDTOMock = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation_dto.json").toFile(), SuggestAllocationDTO.class);
-        SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(corrId, crmId);
+        SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(correlationId, crmId);
         Assert.assertNotNull(suggestAllocationDTO);
         Assert.assertEquals(suggestAllocationDTOMock, suggestAllocationDTO);
     }
@@ -1041,7 +1038,7 @@ public class ProductExpServiceTest {
     public void should_return_null_when_get_suggest_allocation_given_correlationId_and_crmId() {
         String crmId = "00000018592884";
         when(accountRequestClient.getPortList(any(), anyString())).thenThrow(RuntimeException.class);
-        SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(corrId, crmId);
+        SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(correlationId, crmId);
         Assert.assertNull(suggestAllocationDTO);
     }
 

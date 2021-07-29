@@ -633,12 +633,13 @@ public class ProductsExpService {
     /**
      * Generic Method to call MF Service getFundList
      *
-     * @param fundListRequest
      * @param correlationId
+     * @param crmId
+     * @param fundListRequest
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, FundListRequest fundListRequest) {
+    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
         Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
@@ -649,7 +650,7 @@ public class ProductsExpService {
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
                     productExpAsyncService.fetchFundListInfo(invHeaderReqParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
             CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(invHeaderReqParameter, unitHolder);
-            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, fundListRequest.getCrmId());
+            CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(invHeaderReqParameter, crmId);
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();

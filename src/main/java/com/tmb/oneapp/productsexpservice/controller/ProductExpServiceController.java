@@ -101,7 +101,7 @@ public class ProductExpServiceController {
      * Gets fund summary.
      *
      * @param correlationId the correlation id
-     * @param crmId the crm id
+     * @param crmId         the crm id
      * @return the fund summary
      */
     @ApiOperation(value = "Fetch Fund Summary and Port List based on Unit Holder No and CRMID")
@@ -295,7 +295,9 @@ public class ProductExpServiceController {
     /**
      * Description:- Inquiry MF Service
      *
-     * @param correlationId the correlation id
+     * @param correlationId   the correlation id
+     * @param crmId           the crm id
+     * @param fundListRequest the fund list request
      * @return return fund list info
      */
     @ApiOperation(value = "Fetch Fund list from MF Service and add more flag, then return to front-end")
@@ -305,13 +307,14 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody FundListRequest fundListRequest) {
 
         TmbOneServiceResponse<List<FundClassListInfo>> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
-            List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, fundListRequest);
+            List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, crmId, fundListRequest);
             if (!StringUtils.isEmpty(fundAccountRs)) {
                 oneServiceResponse.setData(fundAccountRs);
                 oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
