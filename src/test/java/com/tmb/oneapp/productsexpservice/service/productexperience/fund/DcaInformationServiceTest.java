@@ -28,8 +28,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,8 +59,7 @@ public class DcaInformationServiceTest {
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
-        when(productsExpService.getPortList(any(),any(),anyBoolean()))
-                .thenReturn(List.of("222222"));
+        when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
 
         TmbOneServiceResponse<FundSummaryResponse> tmbFundsummaryResponse = new TmbOneServiceResponse<>();
         FundSummaryBody fundSummaryBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/fundsummarybody.json").toFile(), FundSummaryBody.class);
@@ -78,29 +76,27 @@ public class DcaInformationServiceTest {
         when(dcaInformationMapper.fundClassInfoToDcaInformationModel(any())).thenReturn(dcaInformationModel);
 
         //When
-        TmbOneServiceResponse<DcaInformationDto> actual = dcaInformationService.getDcaInformation(correlationId,crmId);
+        TmbOneServiceResponse<DcaInformationDto> actual = dcaInformationService.getDcaInformation(correlationId, crmId);
 
         //Then
         DcaInformationDto dcaInformationDto = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/dcainformationdto.json").toFile(), DcaInformationDto.class);
-        assertEquals(TmbStatusUtil.successStatus().getCode(),actual.getStatus().getCode());
+        assertEquals(TmbStatusUtil.successStatus().getCode(), actual.getStatus().getCode());
         assertEquals(dcaInformationDto, actual.getData());
     }
 
     @Test
     void should_return_null_when_call_get_dca_information_given_correlation_id_and_crmid() throws JsonProcessingException {
         //Given
-        ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-        String crmId = "001100000000000000000001184383";;
+        String crmId = "001100000000000000000001184383";
 
-        when(productsExpService.getPortList(any(),any(),anyBoolean()))
+        when(productsExpService.getPortList(any(), anyString(), anyBoolean()))
                 .thenThrow(new RuntimeException("Error"));
         //When
-        TmbOneServiceResponse<DcaInformationDto> actual = dcaInformationService.getDcaInformation(correlationId,crmId);
+        TmbOneServiceResponse<DcaInformationDto> actual = dcaInformationService.getDcaInformation(correlationId, crmId);
 
         //Then
         assertNull(actual.getStatus());
         assertNull(actual.getData());
     }
-
 }

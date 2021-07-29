@@ -161,7 +161,7 @@ public class ProductsExpService {
         ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
 
         try {
-            List<String> ports = getPortList(crmId, header, true);
+            List<String> ports = getPortList(header, crmId, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             logger.info(unitHolder.toString());
@@ -189,7 +189,7 @@ public class ProductsExpService {
         }
     }
 
-    public List<String> getPortList(String crmId, Map<String, String> header, boolean isIncludePtesPortfolio) throws JsonProcessingException {
+    public List<String> getPortList(Map<String, String> header, String crmId, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
         String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), UtilMap.halfCrmIdFormat(crmId));
@@ -205,7 +205,7 @@ public class ProductsExpService {
             });
         }
         if (isIncludePtesPortfolio) {
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, crmId);
+            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, UtilMap.halfCrmIdFormat(crmId));
 
             Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptesDetailResult)
                     .map(ResponseEntity::getBody)
