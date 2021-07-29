@@ -640,34 +640,18 @@ public class ProductExpServiceTest {
 
     @Test
     public void isCASADormantException() {
-        FundFactSheetRequestBody fundAccountRequest = new FundFactSheetRequestBody();
-        fundAccountRequest.setCrmId("001100000000000000000012025950");
-        fundAccountRequest.setFundCode("SCBTMF");
-        fundAccountRequest.setFundHouseCode("SCBAM");
-        fundAccountRequest.setLanguage("en");
-        fundAccountRequest.setProcessFlag("Y");
-        fundAccountRequest.setOrderType("1");
-
         try {
             when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        boolean getFundSummary = productsExpService.isCASADormant(correlationId, fundAccountRequest);
+        boolean getFundSummary = productsExpService.isCASADormant(correlationId, crmId);
         Assert.assertTrue(getFundSummary);
     }
 
     @Test
     public void isCustomerIdExpired() {
-        FundFactSheetRequestBody fundAccountRequest = new FundFactSheetRequestBody();
-        fundAccountRequest.setCrmId("001100000000000000000012025950");
-        fundAccountRequest.setFundCode("SCBTMF");
-        fundAccountRequest.setFundHouseCode("SCBAM");
-        fundAccountRequest.setLanguage("en");
-        fundAccountRequest.setProcessFlag("Y");
-        fundAccountRequest.setOrderType("1");
-
         try {
             CustGeneralProfileResponse fundHolidayBody;
             ObjectMapper mapper = new ObjectMapper();
@@ -678,7 +662,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        boolean getFundSummary = productsExpService.isCustIDExpired(fundAccountRequest);
+        boolean getFundSummary = productsExpService.isCustomerIdExpired(crmId);
         Assert.assertFalse(getFundSummary);
     }
 
@@ -728,7 +712,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -777,7 +761,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -786,7 +770,6 @@ public class ProductExpServiceTest {
         AlternativeRequest alternativeRequest = new AlternativeRequest();
         alternativeRequest.setFundCode("SCBTMF");
         alternativeRequest.setFundHouseCode("SCBAM");
-        alternativeRequest.setCrmId("001100000000000000000012025950");
         alternativeRequest.setProcessFlag("Y");
         alternativeRequest.setOrderType("1");
 
@@ -835,13 +818,10 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
-        fundFactSheetRequestBody.setCrmId(alternativeRequest.getCrmId());
         FundResponse fundResponse = new FundResponse();
-
-        productsExpService.validateAlternativeSellAndSwitch(correlationId, alternativeRequest);
+        productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
         String flatcaFlag = "0";
-        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(correlationId, fundFactSheetRequestBody, fundResponse, flatcaFlag);
+        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, flatcaFlag);
         Assert.assertNotNull(fundResponse);
     }
 
@@ -900,7 +880,6 @@ public class ProductExpServiceTest {
         fundFactSheetRequestBody.setFundCode("AAAAA");
         fundFactSheetRequestBody.setFundHouseCode("SCBAM");
         fundFactSheetRequestBody.setLanguage("en");
-        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
         fundFactSheetRequestBody.setProcessFlag("N");
         fundFactSheetRequestBody.setOrderType("1");
 
@@ -924,7 +903,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            when(accountRequestClient.callCustomerExpService(headers, "00000012025950")).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -933,10 +912,10 @@ public class ProductExpServiceTest {
         boolean isBusClose = productsExpService.isBusinessClose(correlationId, fundFactSheetRequestBody);
         Assert.assertEquals(false, isBusClose);
 
-        boolean isCASADormant = productsExpService.isCASADormant(correlationId, fundFactSheetRequestBody);
+        boolean isCASADormant = productsExpService.isCASADormant(correlationId, crmId);
         Assert.assertEquals(false, isCASADormant);
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -1045,6 +1024,6 @@ public class ProductExpServiceTest {
         TmbOneServiceResponse<List<CustomerSearchResponse>> customerSearchResponse = new TmbOneServiceResponse<>();
         customerSearchResponse.setData(List.of(CustomerSearchResponse.builder().fatcaFlag("0").build()));
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
-        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.customerSearch(anyString(), anyString(), any())).thenReturn(mockResponse);
     }
 }

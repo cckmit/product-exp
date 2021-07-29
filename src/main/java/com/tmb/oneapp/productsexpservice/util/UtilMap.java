@@ -220,11 +220,10 @@ public class UtilMap {
     public static boolean isBusinessClose(String startTime, String endTime) {
         boolean isClose = false;
         try {
-            if (!StringUtils.isEmpty(startTime)
-                    && !StringUtils.isEmpty(endTime)) {
-                Calendar calCurrent = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM);
-                String getCurrentTime = sdf.format(calCurrent.getTime());
+            if (!StringUtils.isEmpty(startTime) && !StringUtils.isEmpty(endTime)) {
+                Calendar currentDate = Calendar.getInstance();
+                SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM);
+                String getCurrentTime = simpleDateTimeFormat.format(currentDate.getTime());
                 if (isTimeBetweenTwoTime(startTime, endTime, getCurrentTime)) {
                     isClose = true;
                 }
@@ -475,12 +474,13 @@ public class UtilMap {
     /**
      * Generic Method to mappingRequestStmtByPort
      *
+     * @param crmId
      * @param fundFactSheetRequestBody
-     * @return AlternativeRq
+     * @return AlternativeRequest
      */
-    public static AlternativeRequest mappingRequestAlternative(FundFactSheetRequestBody fundFactSheetRequestBody) {
+    public static AlternativeRequest mappingRequestAlternative(String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setCrmId(fundFactSheetRequestBody.getCrmId());
+        alternativeRequest.setCrmId(UtilMap.fullCrmIdFormat(crmId));
         alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
         alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
         alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());

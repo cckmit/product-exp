@@ -25,10 +25,9 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.respo
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
-import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
@@ -52,7 +51,7 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund rule service response entity.
      *
-     * @param headers             callAccountService method consume account details from core banking
+     * @param headers             the headers
      * @param fundRuleRequestBody the fund rule request body
      * @return response entity
      */
@@ -65,14 +64,14 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund acc detail service response entity.
      *
-     * @param headers       callAccountService method consume account details from core banking
-     * @param fundAccountRq the fund account rq
+     * @param headers                the headers
+     * @param fundAccountRequestBody the fund account request body
      * @return response entity
      */
     @PostMapping(value = "${investment.service.account.detail.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> callInvestmentFundAccDetailService(
-            @RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRq);
+            @RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRequestBody);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -149,14 +148,15 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund summary service fund summary response.
      *
-     * @param headers         the headers
-     * @param suitabilityBody the rmID
+     * @param headers the headers
+     * @param crmId   the crm id
      * @return the Suitability response
      */
     @PostMapping(value = "${investment.service.fund.suitability.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> callInvestmentFundSuitabilityService(
-            @RequestHeader Map<String, String> headers, @RequestBody SuitabilityBody suitabilityBody);
+            @RequestHeader Map<String, String> headers,
+            @RequestHeader("x-crmid") String crmId);
 
 
     /**

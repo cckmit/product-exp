@@ -83,7 +83,7 @@ public class OpenPortfolioValidationService {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
             ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoFuture =
-                    customerServiceClient.customerSearch(crmId, correlationId, CrmSearchBody.builder().searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmId).build());
+                    customerServiceClient.customerSearch(correlationId, crmId, CrmSearchBody.builder().searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmId).build());
             validateCustomerService(customerInfoFuture);
             CustomerSearchResponse customerInfo = customerInfoFuture.getBody().getData().get(0);
 

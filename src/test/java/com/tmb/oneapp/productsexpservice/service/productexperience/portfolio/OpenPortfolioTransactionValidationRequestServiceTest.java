@@ -138,7 +138,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         }
 
         CustomerInformation customerInformation = objectMapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(), CustomerInformation.class);
-        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(response);
+        when(customerServiceClient.customerSearch(anyString(), anyString(), any())).thenReturn(response);
         when(customerInformationMapper.map(any())).thenReturn(customerInformation);
     }
 

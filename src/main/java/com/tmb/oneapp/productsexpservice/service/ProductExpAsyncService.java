@@ -18,7 +18,6 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
-import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
@@ -192,15 +191,15 @@ public class ProductExpAsyncService {
     /**
      * Method fetchCustomerProfile to get customer profile
      *
-     * @param crmID
+     * @param crmId
      * @return CompletableFuture<CustomerProfileResponseData>
      */
     @LogAround
     @Async
-    public CompletableFuture<CustGeneralProfileResponse> fetchCustomerProfile(String crmID) throws TMBCommonException {
+    public CompletableFuture<CustGeneralProfileResponse> fetchCustomerProfile(String crmId) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseResponseEntity = customerServiceClient.
-                    getCustomerProfile(crmID);
+                    getCustomerProfile(crmId);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
@@ -272,18 +271,16 @@ public class ProductExpAsyncService {
     /**
      * Method fetchFundFavorite to get fund favorite
      *
-     * @param invHeaderReqParameter
+     * @param investmentHeaderRequest
      * @param crmId
      * @return CompletableFuture<SuitabilityInfo>
      */
     @LogAround
     @Async
-    public CompletableFuture<SuitabilityInfo> fetchSuitabilityInquiry(Map<String, String> invHeaderReqParameter, String crmId) throws TMBCommonException {
+    public CompletableFuture<SuitabilityInfo> fetchSuitabilityInquiry(Map<String, String> investmentHeaderRequest, String crmId) throws TMBCommonException {
         try {
-            SuitabilityBody suitabilityBody = new SuitabilityBody();
-            suitabilityBody.setRmNumber(crmId);
             ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundSuitabilityService(invHeaderReqParameter, suitabilityBody);
+                    investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

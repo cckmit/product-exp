@@ -37,18 +37,28 @@ import static org.mockito.Mockito.*;
 
 public class ProductExpServiceCloseTest {
 
-    private InvestmentRequestClient investmentRequestClient;
     private ProductsExpService productsExpService;
-    private AccountRequestClient accountRequestClient;
-    private KafkaProducerService kafkaProducerService;
-    private CommonServiceClient commonServiceClient;
+
     private ProductExpAsyncService productExpAsyncService;
+
+    private AccountRequestClient accountRequestClient;
+
+    private CommonServiceClient commonServiceClient;
+
     private CustomerExpServiceClient customerExpServiceClient;
+
     private CustomerServiceClient customerServiceClient;
+
+    private InvestmentRequestClient investmentRequestClient;
+
+    private KafkaProducerService kafkaProducerService;
+
     private ObjectMapper mapper;
 
     private FundRuleBody fundRuleBody = null;
-    private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+
+    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+    private final String crmId = "001100000000000000000000028365";
 
     @BeforeEach
     public void setUp() {
@@ -88,7 +98,7 @@ public class ProductExpServiceCloseTest {
 
         String responseCustomerExp;
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
-        Map<String, String> headers = createHeader(corrID);
+        Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -107,9 +117,9 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        boolean isBusClose = productsExpService.isBusinessClose(corrID, fundFactSheetRequestBody);
+        boolean isBusClose = productsExpService.isBusinessClose(correlationId, fundFactSheetRequestBody);
         Assert.assertEquals(false, isBusClose);
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(corrID, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -146,7 +156,7 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(corrID, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -156,7 +166,6 @@ public class ProductExpServiceCloseTest {
         fundFactSheetRequestBody.setFundCode("ABSM");
         fundFactSheetRequestBody.setFundHouseCode("ABERDEEN");
         fundFactSheetRequestBody.setLanguage("en");
-        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
         fundFactSheetRequestBody.setProcessFlag("N");
         fundFactSheetRequestBody.setOrderType("1");
 
@@ -167,7 +176,7 @@ public class ProductExpServiceCloseTest {
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
         String responseCustomerExp;
-        Map<String, String> headers = createHeader(corrID);
+        Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -187,9 +196,9 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        boolean isBusClose = productsExpService.isCASADormant(corrID, fundFactSheetRequestBody);
+        boolean isBusClose = productsExpService.isCASADormant(correlationId, crmId);
         Assert.assertEquals(true, isBusClose);
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(corrID, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -199,7 +208,7 @@ public class ProductExpServiceCloseTest {
         TmbOneServiceResponse<List<CustomerSearchResponse>> customerSearchResponse = new TmbOneServiceResponse<>();
         customerSearchResponse.setData(List.of(CustomerSearchResponse.builder().fatcaFlag("0").build()));
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
-        when(customerServiceClient.customerSearch(any(), any(), any())).thenReturn(mockResponse);
+        when(customerServiceClient.customerSearch(anyString(), anyString(), any())).thenReturn(mockResponse);
     }
 
     @Test
@@ -228,7 +237,7 @@ public class ProductExpServiceCloseTest {
         TmbOneServiceResponse<FundFactSheetResponse> responseFfs = new TmbOneServiceResponse<>();
         String responseCustomerExp;
         FundFactSheetResponse fundFactSheetResponse;
-        Map<String, String> headers = createHeader(corrID);
+        Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -254,7 +263,7 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(corrID, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -283,7 +292,7 @@ public class ProductExpServiceCloseTest {
         String responseCustomerExp;
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundFactSheetResponse> responseFfs = new TmbOneServiceResponse<>();
-        Map<String, String> headers = createHeader(corrID);
+        Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -308,7 +317,7 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(corrID, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -328,7 +337,7 @@ public class ProductExpServiceCloseTest {
         alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
         alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
-        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
+        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
 
@@ -352,7 +361,7 @@ public class ProductExpServiceCloseTest {
         alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
         alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
-        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
+        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
         doNothing().when(kafkaProducerService).sendMessageAsync(anyString(), any());
@@ -377,7 +386,7 @@ public class ProductExpServiceCloseTest {
         alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
         alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
-        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(corrID,
+        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
 
