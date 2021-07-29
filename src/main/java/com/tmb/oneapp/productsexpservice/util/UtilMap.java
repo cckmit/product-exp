@@ -16,7 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -475,18 +475,18 @@ public class UtilMap {
     /**
      * Generic Method to mappingRequestStmtByPort
      *
-     * @param ffsRequestBody
+     * @param fundFactSheetRequestBody
      * @return AlternativeRq
      */
-    public static AlternativeRequest mappingRequestAlternative(FfsRequestBody ffsRequestBody) {
+    public static AlternativeRequest mappingRequestAlternative(FundFactSheetRequestBody fundFactSheetRequestBody) {
         AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setCrmId(ffsRequestBody.getCrmId());
-        alternativeRequest.setFundCode(ffsRequestBody.getFundCode());
-        alternativeRequest.setProcessFlag(ffsRequestBody.getProcessFlag());
-        alternativeRequest.setUnitHolderNumber(ffsRequestBody.getUnitHolderNumber());
-        alternativeRequest.setFundHouseCode(ffsRequestBody.getFundHouseCode());
-        alternativeRequest.setOrderType(ffsRequestBody.getOrderType());
-        alternativeRequest.setFundClassThaiHubName(ffsRequestBody.getFundClassThaiHubName());
+        alternativeRequest.setCrmId(fundFactSheetRequestBody.getCrmId());
+        alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
+        alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
+        alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
+        alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
+        alternativeRequest.setOrderType(fundFactSheetRequestBody.getOrderType());
+        alternativeRequest.setFundClassThaiHubName(fundFactSheetRequestBody.getFundClassThaiHubName());
         return alternativeRequest;
     }
 

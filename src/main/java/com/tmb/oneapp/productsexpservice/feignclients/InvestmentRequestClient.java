@@ -22,13 +22,13 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickn
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
@@ -137,14 +137,14 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund summary service fund summary response.
      *
-     * @param headers        the headers
-     * @param ffsRequestBody the unit holder
+     * @param headers                  the headers
+     * @param fundFactSheetRequestBody the unit holder
      * @return the fund fact sheet response
      */
     @PostMapping(value = "${investment.service.fund.fact.sheet.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<FfsResponse>> callInvestmentFundFactSheetService(
-            @RequestHeader Map<String, String> headers, @RequestBody FfsRequestBody ffsRequestBody);
+    ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> callInvestmentFundFactSheetService(
+            @RequestHeader Map<String, String> headers, @RequestBody FundFactSheetRequestBody fundFactSheetRequestBody);
 
     /**
      * Call investment fund summary service fund summary response.

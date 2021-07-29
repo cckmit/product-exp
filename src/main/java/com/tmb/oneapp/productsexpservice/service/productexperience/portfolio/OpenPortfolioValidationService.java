@@ -16,7 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;

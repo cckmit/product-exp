@@ -13,12 +13,12 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -180,46 +180,46 @@ public class ProductExpServiceController {
     /**
      * Description:- Inquiry MF Service
      *
-     * @param correlationId  the correlation id
-     * @param ffsRequestBody the fund account rq
+     * @param correlationId            the correlation id
+     * @param fundFactSheetRequestBody the fund fact sheet request body
      * @return return fund sheet
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")
     @LogAround
     @PostMapping(value = "/alternative/validation")
-    public ResponseEntity<TmbOneServiceResponse<FfsResponse>> getFundFFSAndValidation(
+    public ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> getFundFactSheetValidation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody FfsRequestBody ffsRequestBody) {
+            @Valid @RequestBody FundFactSheetRequestBody fundFactSheetRequestBody) {
 
-        TmbOneServiceResponse<FfsResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundFactSheetResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FfsRsAndValidation ffsRsAndValidation;
+        FundFactSheetValidationResponse fundFactSheetValidationResponse;
 
         try {
             String trackingStatus = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
-            AlternativeRequest alternativeRequest = UtilMap.mappingRequestAlternative(ffsRequestBody);
-            if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
-                ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
-                if (ffsRsAndValidation.isError()) {
+            AlternativeRequest alternativeRequest = UtilMap.mappingRequestAlternative(fundFactSheetRequestBody);
+            if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(fundFactSheetRequestBody.getProcessFlag())) {
+                fundFactSheetValidationResponse = productsExpService.getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
+                if (fundFactSheetValidationResponse.isError()) {
                     productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                             ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
                             trackingStatus, alternativeRequest));
 
-                    oneServiceResponse.setStatus(new TmbStatus(ffsRsAndValidation.getErrorCode(),
-                            ffsRsAndValidation.getErrorMsg(),
-                            ProductsExpServiceConstant.SERVICE_NAME, ffsRsAndValidation.getErrorDesc()));
+                    oneServiceResponse.setStatus(new TmbStatus(fundFactSheetValidationResponse.getErrorCode(),
+                            fundFactSheetValidationResponse.getErrorMsg(),
+                            ProductsExpServiceConstant.SERVICE_NAME, fundFactSheetValidationResponse.getErrorDesc()));
                     oneServiceResponse.setData(null);
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
                 } else {
                     productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                             ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeRequest));
 
-                    FfsResponse ffsResponse = new FfsResponse();
-                    ffsResponse.setBody(ffsRsAndValidation.getBody());
-                    oneServiceResponse.setData(ffsResponse);
+                    FundFactSheetResponse fundFactSheetResponse = new FundFactSheetResponse();
+                    fundFactSheetResponse.setBody(fundFactSheetValidationResponse.getBody());
+                    oneServiceResponse.setData(fundFactSheetResponse);
                     oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                             ProductsExpServiceConstant.SUCCESS_MESSAGE,
                             ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));

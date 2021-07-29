@@ -9,13 +9,13 @@ import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAll
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsData;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
@@ -278,89 +278,89 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundFFSAndValidation() {
-        FfsRequestBody ffsRequestBody = new FfsRequestBody();
-        ffsRequestBody.setFundCode("SCBTMF");
-        ffsRequestBody.setFundHouseCode("SCBAM");
-        ffsRequestBody.setLanguage("en");
-        ffsRequestBody.setCrmId("001100000000000000000012025950");
-        ffsRequestBody.setProcessFlag("Y");
-        ffsRequestBody.setOrderType("1");
+    public void getFundFactSheetAndValidation() {
+        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
+        fundFactSheetRequestBody.setFundCode("SCBTMF");
+        fundFactSheetRequestBody.setFundHouseCode("SCBAM");
+        fundFactSheetRequestBody.setLanguage("en");
+        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
+        fundFactSheetRequestBody.setProcessFlag("Y");
+        fundFactSheetRequestBody.setOrderType("1");
 
-        FfsRsAndValidation fundRsAndValidation;
+        FundFactSheetValidationResponse fundRsAndValidation;
 
         try {
-            fundRsAndValidation = new FfsRsAndValidation();
-            FfsData body = new FfsData();
+            fundRsAndValidation = new FundFactSheetValidationResponse();
+            FundFactSheetData body = new FundFactSheetData();
             body.setFactSheetData("fdg;klghbdf;jbneoa;khnd'flbkndflkhnreoid;bndzfklbnoresibndlzfk[bnseriohnbodkzfvndsogb");
             fundRsAndValidation.setBody(body);
-            when(productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody)).thenReturn(fundRsAndValidation);
+            when(productsExpService.getFundFactSheetValidation(correlationId, fundFactSheetRequestBody)).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
-                .getFundFFSAndValidation(correlationId, ffsRequestBody);
+        ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> actualResult = productExpServiceController
+                .getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
     }
 
     @Test
-    public void getFundFFSAndValidationFail() {
-        FfsRequestBody ffsRequestBody = new FfsRequestBody();
-        ffsRequestBody.setFundCode("SCBTMF");
-        ffsRequestBody.setFundHouseCode("SCBAM");
-        ffsRequestBody.setLanguage("en");
-        ffsRequestBody.setCrmId("001100000000000000000012025950");
-        ffsRequestBody.setProcessFlag("Y");
-        ffsRequestBody.setOrderType("1");
+    public void getFundFactSheetAndValidationFail() {
+        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
+        fundFactSheetRequestBody.setFundCode("SCBTMF");
+        fundFactSheetRequestBody.setFundHouseCode("SCBAM");
+        fundFactSheetRequestBody.setLanguage("en");
+        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
+        fundFactSheetRequestBody.setProcessFlag("Y");
+        fundFactSheetRequestBody.setOrderType("1");
 
-        FfsRsAndValidation fundRsAndValidation;
+        FundFactSheetValidationResponse fundRsAndValidation;
         try {
-            fundRsAndValidation = new FfsRsAndValidation();
+            fundRsAndValidation = new FundFactSheetValidationResponse();
             fundRsAndValidation.setError(true);
             fundRsAndValidation.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
             fundRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
             fundRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
 
-            when(productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody)).thenReturn(fundRsAndValidation);
+            when(productsExpService.getFundFactSheetValidation(correlationId, fundFactSheetRequestBody)).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
-                .getFundFFSAndValidation(correlationId, ffsRequestBody);
+        ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> actualResult = productExpServiceController
+                .getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
         assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
     }
 
     @Test
-    public void getFundFFSAndValidationError() {
-        FfsRequestBody ffsRequestBody = new FfsRequestBody();
-        ffsRequestBody.setFundCode("SCBTMF");
-        ffsRequestBody.setFundHouseCode("SCBAM");
-        ffsRequestBody.setLanguage("en");
-        ffsRequestBody.setCrmId("001100000000000000000012025950");
-        ffsRequestBody.setProcessFlag("N");
-        ffsRequestBody.setOrderType("1");
+    public void getFundFactSheetAndValidationError() {
+        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
+        fundFactSheetRequestBody.setFundCode("SCBTMF");
+        fundFactSheetRequestBody.setFundHouseCode("SCBAM");
+        fundFactSheetRequestBody.setLanguage("en");
+        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
+        fundFactSheetRequestBody.setProcessFlag("N");
+        fundFactSheetRequestBody.setOrderType("1");
 
-        ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
-                .getFundFFSAndValidation(correlationId, ffsRequestBody);
+        ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> actualResult = productExpServiceController
+                .getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
         assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
     }
 
     @Test
-    public void getFundFFSAndValidationException() {
-        FfsRequestBody ffsRequestBody = new FfsRequestBody();
-        ffsRequestBody.setFundCode("SCBTMF");
-        ffsRequestBody.setFundHouseCode("SCBAM");
-        ffsRequestBody.setLanguage("en");
-        ffsRequestBody.setCrmId("001100000000000000000012025950");
-        ffsRequestBody.setProcessFlag("Y");
-        ffsRequestBody.setOrderType("1");
+    public void getFundFactSheetAndValidationException() {
+        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
+        fundFactSheetRequestBody.setFundCode("SCBTMF");
+        fundFactSheetRequestBody.setFundHouseCode("SCBAM");
+        fundFactSheetRequestBody.setLanguage("en");
+        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
+        fundFactSheetRequestBody.setProcessFlag("Y");
+        fundFactSheetRequestBody.setOrderType("1");
 
-        when(productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody)).thenThrow(MockitoException.class);
+        when(productsExpService.getFundFactSheetValidation(correlationId, fundFactSheetRequestBody)).thenThrow(MockitoException.class);
 
-        ResponseEntity<TmbOneServiceResponse<FfsResponse>> actualResult = productExpServiceController
-                .getFundFFSAndValidation(correlationId, ffsRequestBody);
+        ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> actualResult = productExpServiceController
+                .getFundFactSheetValidation(correlationId, fundFactSheetRequestBody);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 

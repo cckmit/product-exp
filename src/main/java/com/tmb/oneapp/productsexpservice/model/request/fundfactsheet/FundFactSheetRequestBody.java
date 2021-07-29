@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.request.fundffs;
+package com.tmb.oneapp.productsexpservice.model.request.fundfactsheet;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FfsRequestBody extends AlternativeRequest {
+public class FundFactSheetRequestBody extends AlternativeRequest {
 
     @NotNull
     private String language;

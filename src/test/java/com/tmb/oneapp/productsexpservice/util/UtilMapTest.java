@@ -8,7 +8,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
@@ -275,7 +275,7 @@ public class UtilMapTest {
 
     @Test
     public void testMappingRequestAlternative() {
-        FfsRequestBody body = new FfsRequestBody();
+        FundFactSheetRequestBody body = new FundFactSheetRequestBody();
         body.setFundCode("1234");
         AlternativeRequest result = UtilMap.mappingRequestAlternative(body);
         AlternativeRequest alternativeRequest = new AlternativeRequest();
