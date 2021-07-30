@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OpenPortfolioValidationRequest {
-    @JsonProperty(value = "rmId")
-    private String crmId;
     @JsonAlias({"existingCustomer", "isExistingCustomer"})
     private boolean existingCustomer;
 }
