@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +49,8 @@ class OpenPortfolioControllerTest {
 
     @Mock
     private OpenPortfolioValidationService openPortfolioValidationService;
+
+    private final String crmId = "23423423423423";
 
     @Test
     void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException {
@@ -69,8 +72,7 @@ class OpenPortfolioControllerTest {
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
-        request.setCrmId("23423423423423");
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request.getCrmId(), request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
                 .thenReturn(responseService);
 
         // When
@@ -103,8 +105,7 @@ class OpenPortfolioControllerTest {
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
-        request.setCrmId("23423423423423");
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request.getCrmId(), request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", request))
                 .thenReturn(responseService);
 
         // When
