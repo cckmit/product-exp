@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +50,8 @@ class OpenPortfolioControllerTest {
     @Mock
     private OpenPortfolioValidationService openPortfolioValidationService;
 
+    private final String crmId = "23423423423423";
+
     @Test
     void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException {
         // Given
@@ -57,8 +60,8 @@ class OpenPortfolioControllerTest {
         ValidateOpenPortfolioResponse validateOpenPortfolioResponse = new ValidateOpenPortfolioResponse();
         validateOpenPortfolioResponse.setTermsConditions(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/termandcondition.json").toFile(),
                 TermAndConditionResponseBody.class));
-        validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
-                CustomerInfo.class));
+        validateOpenPortfolioResponse.setCustomerInformation(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
+                CustomerInformation.class));
         List<DepositAccount> depositAccountList = new ArrayList<>();
         depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(), DepositAccount.class));
         validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
@@ -69,8 +72,7 @@ class OpenPortfolioControllerTest {
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
-        request.setCrmId("23423423423423");
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request.getCrmId(), request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
                 .thenReturn(responseService);
 
         // When
@@ -88,8 +90,8 @@ class OpenPortfolioControllerTest {
         ValidateOpenPortfolioResponse validateOpenPortfolioResponse = new ValidateOpenPortfolioResponse();
         validateOpenPortfolioResponse.setTermsConditions(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/termandcondition.json").toFile(),
                 TermAndConditionResponseBody.class));
-        validateOpenPortfolioResponse.setCustomerInfo(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
-                CustomerInfo.class));
+        validateOpenPortfolioResponse.setCustomerInformation(mapper.readValue(Paths.get("src/test/resources/investment/portfolio/customer_info.json").toFile(),
+                CustomerInformation.class));
         List<DepositAccount> depositAccountList = new ArrayList<>();
         depositAccountList.add(mapper.readValue(Paths.get("src/test/resources/investment/account/deposit_account.json").toFile(), DepositAccount.class));
         validateOpenPortfolioResponse.setDepositAccountList(depositAccountList);
@@ -103,8 +105,7 @@ class OpenPortfolioControllerTest {
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
-        request.setCrmId("23423423423423");
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request.getCrmId(), request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", request))
                 .thenReturn(responseService);
 
         // When
@@ -122,7 +123,6 @@ class OpenPortfolioControllerTest {
     void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws IOException {
         // Given
         CustomerRequest customerRequest = CustomerRequest.builder()
-                .crmId("00000007924129")
                 .wealthCrmId("D0000000988")
                 .phoneNumber("0948096953")
                 .dateOfBirth("2019-04-03T09:23:45")
@@ -165,7 +165,6 @@ class OpenPortfolioControllerTest {
     void should_return_portfolio_response_when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
         // Given
         OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
-                .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
                 .preferredRedemptionAccountName("นาง สุนิสา ผลงาม 00000632964227 (SDA)")

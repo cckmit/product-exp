@@ -11,7 +11,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.client.response
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
@@ -42,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -206,11 +206,10 @@ class InvestmentAsyncServiceTest {
         tmbOneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
-        AccountRedeemRequest accountRedeemRequest = AccountRedeemRequest.builder().crmId("00000007924129").build();
-        when(investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, accountRedeemRequest)).thenReturn(response);
+        when(investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, "00000007924129")).thenReturn(response);
 
         //When
-        CompletableFuture<AccountRedeemResponseBody> actual = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, accountRedeemRequest);
+        CompletableFuture<AccountRedeemResponseBody> actual = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, "00000007924129");
 
         //Then
         CompletableFuture<AccountRedeemResponseBody> expected = CompletableFuture.completedFuture(accountPurposeResponse.getData());
@@ -224,7 +223,7 @@ class InvestmentAsyncServiceTest {
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.fetchAccountRedeem(any(), any());
+            investmentAsyncService.fetchAccountRedeem(any(), anyString());
         });
 
         //Then
@@ -253,7 +252,6 @@ class InvestmentAsyncServiceTest {
         ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
         RelationshipRequest relationshipRequest = RelationshipRequest.builder()
-                .crmId("00000000002914")
                 .jointType("Single")
                 .preferredRedemptionAccountCode("0632964227")
                 .preferredRedemptionAccountName("นาง สุนิสา ผลงาม 00000632964227 (SDA)")
@@ -265,10 +263,11 @@ class InvestmentAsyncServiceTest {
                 .preferredAddressType("Contact")
                 .status("Active")
                 .build();
-        when(investmentRequestClient.updateClientRelationship(investmentRequestHeader, relationshipRequest)).thenReturn(response);
+        when(investmentRequestClient.updateClientRelationship(investmentRequestHeader, "00000000002914", relationshipRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<RelationshipResponseBody> actual = investmentAsyncService.updateClientRelationship(investmentRequestHeader, relationshipRequest);
+        CompletableFuture<RelationshipResponseBody> actual = investmentAsyncService.updateClientRelationship(
+                investmentRequestHeader, "00000000002914", relationshipRequest);
 
         //Then
         CompletableFuture<RelationshipResponseBody> expected = CompletableFuture.completedFuture(relationshipResponse.getData());
@@ -278,11 +277,11 @@ class InvestmentAsyncServiceTest {
     @Test
     void should_return_null_when_call_update_client_relationship_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.updateClientRelationship(any(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.updateClientRelationship(any(), anyString(), any())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.updateClientRelationship(any(), any());
+            investmentAsyncService.updateClientRelationship(any(), anyString(), any());
         });
 
         //Then
@@ -311,15 +310,15 @@ class InvestmentAsyncServiceTest {
         ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
         OpenPortfolioRequest openPortfolioRequest = OpenPortfolioRequest.builder()
-                .crmId("00000000002914")
                 .suitabilityScore("5")
                 .portfolioType("TMB_ADVTYPE_10_ADVISORY")
                 .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
                 .build();
-        when(investmentRequestClient.openPortfolio(investmentRequestHeader, openPortfolioRequest)).thenReturn(response);
+        when(investmentRequestClient.openPortfolio(investmentRequestHeader, "00000000002914", openPortfolioRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<OpenPortfolioResponseBody> actual = investmentAsyncService.openPortfolio(investmentRequestHeader, openPortfolioRequest);
+        CompletableFuture<OpenPortfolioResponseBody> actual = investmentAsyncService.openPortfolio(
+                investmentRequestHeader, "00000000002914", openPortfolioRequest);
 
         //Then
         CompletableFuture<OpenPortfolioResponseBody> expected = CompletableFuture.completedFuture(openPortfolioResponse.getData());
@@ -329,11 +328,11 @@ class InvestmentAsyncServiceTest {
     @Test
     void should_return_null_when_call_open_portfolio_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.openPortfolio(any(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.openPortfolio(any(), anyString(), any())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.openPortfolio(any(), any());
+            investmentAsyncService.openPortfolio(any(), anyString(), any());
         });
 
         //Then
@@ -378,11 +377,11 @@ class InvestmentAsyncServiceTest {
     @Test
     void should_return_null_when_call_update_portfolio_nickname_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.openPortfolio(any(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.openPortfolio(any(), anyString(), any())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.openPortfolio(any(), any());
+            investmentAsyncService.openPortfolio(any(), anyString(), any());
         });
 
         //Then

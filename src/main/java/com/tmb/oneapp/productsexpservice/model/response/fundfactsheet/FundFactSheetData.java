@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.fundffs;
+package com.tmb.oneapp.productsexpservice.model.response.fundfactsheet;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FfsData {
+public class FundFactSheetData {
+
     @JsonProperty("factsheetData")
     private String factSheetData;
 }

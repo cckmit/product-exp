@@ -10,7 +10,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class CustomerInfo extends CustomerModel {
+public class CustomerInformation extends CustomerModel {
+
     private String customerFirstNameEn;
 
     private String customerLastNameEn;

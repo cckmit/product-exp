@@ -13,8 +13,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FundListRequest {
 
-    private String crmId;
-
     @NotNull
     @JsonProperty(value = "unitHolderNo")
     private List<String> unitHolderNumber;

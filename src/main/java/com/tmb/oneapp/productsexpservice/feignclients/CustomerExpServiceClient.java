@@ -16,7 +16,7 @@ public interface CustomerExpServiceClient {
     @GetMapping(value = "/apis/customer/accounts/saving")
     String getAccountSaving(
             @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
-            @RequestHeader("X-CRMID") String crmId
+            @RequestHeader("x-crmid") String crmId
     );
 
     @GetMapping(value = "/apis/customer/accounts/saving")

@@ -26,8 +26,10 @@ public class FundFilterService {
 
     private static final TMBLogger<FundFilterService> logger = new TMBLogger<>(FundFilterService.class);
     private final InvestmentRequestClient investmentRequestClient;
+
     /**
      * Instantiates a new Fund Filter Controller.
+     *
      * @param investmentRequestClient the investment Request Client
      */
     @Autowired
@@ -35,42 +37,43 @@ public class FundFilterService {
 
         this.investmentRequestClient = investmentRequestClient;
     }
+
     /**
      * Get Fund List By SuitScore Body Response
      *
-     * @param correlationId the correlation id
-     * @param rq            the rq
+     * @param correlationId              the correlation id
+     * @param fundListBySuitScoreRequest the fund list by suit score request
      * @return the  response
      */
 
-    public FundListBySuitScoreBody getFundListBySuitScore(String correlationId,FundListBySuitScoreRequest rq )
-    {
+    public FundListBySuitScoreBody getFundListBySuitScore(String correlationId, FundListBySuitScoreRequest fundListBySuitScoreRequest) {
         FundListBySuitScoreBody response = new FundListBySuitScoreBody();
-        Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
+
         try {
-            String suitScore = rq.getSuitScore();
+            String suitScore = fundListBySuitScoreRequest.getSuitScore();
             ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> fundListBySuitScoreBodyResponse =
-                    investmentRequestClient.callInvestmentListFundInfoService(invHeaderReqParameter);
+                    investmentRequestClient.callInvestmentListFundInfoService(investmentHeaderRequest);
 
             List<FundClassListInfo> fundList = fundListBySuitScoreBodyResponse.getBody().getData().getFundClassList();
-            return filterFundListBasedOnSuitScore(fundList,suitScore);
+            return filterFundListBasedOnSuitScore(fundList, suitScore);
         } catch (Exception ex) {
             logger.info("error : {}", ex);
             response.setFundClassList(null);
             return response;
         }
     }
+
     /**
      * Get Filtered Fund List By SuitScore Body Response
      *
-     * @param fundList the fund List
-     * @param  suitScore        the suitScore
+     * @param fundList  the fund List
+     * @param suitScore the suitScore
      * @return the fund List By SuitScore Body Responses
      */
     private FundListBySuitScoreBody filterFundListBasedOnSuitScore(List<FundClassListInfo> fundList, String suitScore) {
         FundListBySuitScoreBody fundListBySuitScoreBodyResponses = new FundListBySuitScoreBody();
-        switch(suitScore)
-        {
+        switch (suitScore) {
             case "1":
                 fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("01"))
                         .collect(Collectors.toList()));
@@ -84,7 +87,7 @@ public class FundFilterService {
                         .collect(Collectors.toList()));
                 break;
             case "4":
-                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("06")|| t.getRiskRate().equals("07"))
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("06") || t.getRiskRate().equals("07"))
                         .collect(Collectors.toList()));
                 break;
             case "5":

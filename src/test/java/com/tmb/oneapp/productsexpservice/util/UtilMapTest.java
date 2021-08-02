@@ -8,7 +8,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
@@ -275,9 +275,9 @@ public class UtilMapTest {
 
     @Test
     public void testMappingRequestAlternative() {
-        FfsRequestBody body = new FfsRequestBody();
+        FundFactSheetRequestBody body = new FundFactSheetRequestBody();
         body.setFundCode("1234");
-        AlternativeRequest result = UtilMap.mappingRequestAlternative(body);
+        AlternativeRequest result = UtilMap.mappingRequestAlternative("001100000000000000000000002914", body);
         AlternativeRequest alternativeRequest = new AlternativeRequest();
         alternativeRequest.setFundCode("1234");
         Assert.assertEquals(alternativeRequest.getFundCode(), result.getFundCode());
@@ -307,5 +307,25 @@ public class UtilMapTest {
 
         // Then
         assertEquals("001100000000000000000000002914", actual);
+    }
+
+    @Test
+    void should_return_half_format_of_crm_id_when_call_half_crm_id_format_given_half_crm_id() {
+        // Given
+        // When
+        String actual = UtilMap.halfCrmIdFormat("00000000002914");
+
+        // Then
+        assertEquals("00000000002914", actual);
+    }
+
+    @Test
+    void should_return_half_format_of_crm_id_when_call_half_crm_id_format_given_full_crm_id() {
+        // Given
+        // When
+        String actual = UtilMap.halfCrmIdFormat("001100000000000000000000002914");
+
+        // Then
+        assertEquals("00000000002914", actual);
     }
 }

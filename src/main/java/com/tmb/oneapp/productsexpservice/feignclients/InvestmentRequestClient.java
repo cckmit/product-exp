@@ -8,7 +8,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.request.AccountRedeemRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
@@ -23,13 +22,12 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickn
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
-import com.tmb.oneapp.productsexpservice.model.request.suitability.SuitabilityBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
@@ -53,26 +51,27 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund rule service response entity.
      *
-     * @param headers             callAccountService method consume account details from core banking
+     * @param headers             the headers
      * @param fundRuleRequestBody the fund rule request body
      * @return response entity
      */
     @PostMapping(value = "${investment.service.fund.rule.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundRuleBody>> callInvestmentFundRuleService(
-            @RequestHeader Map<String, String> headers, @RequestBody FundRuleRequestBody fundRuleRequestBody);
+            @RequestHeader Map<String, String> headers,
+            @RequestBody FundRuleRequestBody fundRuleRequestBody);
 
     /**
      * Call investment fund acc detail service response entity.
      *
-     * @param headers       callAccountService method consume account details from core banking
-     * @param fundAccountRq the fund account rq
+     * @param headers                the headers
+     * @param fundAccountRequestBody the fund account request body
      * @return response entity
      */
     @PostMapping(value = "${investment.service.account.detail.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> callInvestmentFundAccDetailService(
-            @RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRq);
+            @RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRequestBody);
 
     /**
      * Call investment fund summary service fund summary response.
@@ -137,26 +136,27 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund summary service fund summary response.
      *
-     * @param headers        the headers
-     * @param ffsRequestBody the unit holder
+     * @param headers                  the headers
+     * @param fundFactSheetRequestBody the unit holder
      * @return the fund fact sheet response
      */
     @PostMapping(value = "${investment.service.fund.fact.sheet.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<FfsResponse>> callInvestmentFundFactSheetService(
-            @RequestHeader Map<String, String> headers, @RequestBody FfsRequestBody ffsRequestBody);
+    ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> callInvestmentFundFactSheetService(
+            @RequestHeader Map<String, String> headers, @RequestBody FundFactSheetRequestBody fundFactSheetRequestBody);
 
     /**
      * Call investment fund summary service fund summary response.
      *
-     * @param headers         the headers
-     * @param suitabilityBody the rmID
+     * @param headers the headers
+     * @param crmId   the crm id
      * @return the Suitability response
      */
     @PostMapping(value = "${investment.service.fund.suitability.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> callInvestmentFundSuitabilityService(
-            @RequestHeader Map<String, String> headers, @RequestBody SuitabilityBody suitabilityBody);
+            @RequestHeader Map<String, String> headers,
+            @RequestHeader("x-crmid") String crmId);
 
 
     /**
@@ -239,7 +239,9 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.customer.create.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> createCustomer(
-            @RequestHeader Map<String, String> header, @RequestBody CustomerRequest customerRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId,
+            @RequestBody CustomerRequest customerRequest);
 
     /**
      * Call investment account purpose service to get account purpose response.
@@ -255,14 +257,15 @@ public interface InvestmentRequestClient {
     /**
      * Call investment account redeem service to get account redeem response.
      *
-     * @param header               the headers
-     * @param accountRedeemRequest the accountRedeemRequest
+     * @param header the headers
+     * @param crmId  the crm id
      * @return the account redeem response
      */
     @PostMapping(value = "${investment.service.customer.account.redeem.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> getCustomerAccountRedeem(
-            @RequestHeader Map<String, String> header, @RequestBody AccountRedeemRequest accountRedeemRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId);
 
     /**
      * Call investment client relationship service to update client relationship.
@@ -274,7 +277,9 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.client.relationship.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> updateClientRelationship(
-            @RequestHeader Map<String, String> header, @RequestBody RelationshipRequest relationshipRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId,
+            @RequestBody RelationshipRequest relationshipRequest);
 
     /**
      * Call investment open portfolio service to open portfolio.
@@ -286,7 +291,9 @@ public interface InvestmentRequestClient {
     @PostMapping(value = "${investment.service.open.portfolio.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> openPortfolio(
-            @RequestHeader Map<String, String> header, @RequestBody OpenPortfolioRequest openPortfolioRequest);
+            @RequestHeader Map<String, String> header,
+            @RequestHeader("x-crmid") String crmId,
+            @RequestBody OpenPortfolioRequest openPortfolioRequest);
 
     /**
      * Call investment portfolio nickname service to create or update portfolio nickname.
@@ -302,7 +309,8 @@ public interface InvestmentRequestClient {
 
     /**
      * Call investment fund ListFundInfo service fund list response.
-     * @param headers    the headers
+     *
+     * @param headers the headers
      * @return the FundListBody response
      */
 

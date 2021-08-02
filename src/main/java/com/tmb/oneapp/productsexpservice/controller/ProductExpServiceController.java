@@ -8,17 +8,16 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
-import com.tmb.oneapp.productsexpservice.model.fundallocation.request.SuggestAllocationBodyRequest;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundffs.FfsRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FfsRsAndValidation;
-import com.tmb.oneapp.productsexpservice.model.response.fundffs.FundResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -101,7 +100,7 @@ public class ProductExpServiceController {
      * Gets fund summary.
      *
      * @param correlationId the correlation id
-     * @param crmId the crm id
+     * @param crmId         the crm id
      * @return the fund summary
      */
     @ApiOperation(value = "Fetch Fund Summary and Port List based on Unit Holder No and CRMID")
@@ -112,8 +111,8 @@ public class ProductExpServiceController {
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
-
         TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
+
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         FundSummaryBody fundSummaryResponse = productsExpService.getFundSummary(correlationId, crmId);
@@ -136,8 +135,9 @@ public class ProductExpServiceController {
      * Description:- Inquiry MF Service
      *
      * @param correlationId            the correlation id
-     * @param fundPaymentDetailRequest the fund account rq
-     * @return return  list of port, list of account, fund rule and list of holiday
+     * @param crmId                    the crm id
+     * @param fundPaymentDetailRequest the fund payment detail request
+     * @return return list of port, list of account, fund rule and list of holiday
      */
     @ApiOperation(value = "Get all payment detail info than return list of port, list of account, fund rule and list of holiday")
     @LogAround
@@ -146,12 +146,13 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody FundPaymentDetailRequest fundPaymentDetailRequest) {
 
         TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundPaymentDetailResponse fundPaymentDetailResponse = productsExpService.getFundPrePaymentDetail(correlationId, fundPaymentDetailRequest);
+        FundPaymentDetailResponse fundPaymentDetailResponse = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         if (fundPaymentDetailResponse != null) {
             oneServiceResponse.setData(fundPaymentDetailResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -178,46 +179,50 @@ public class ProductExpServiceController {
     /**
      * Description:- Inquiry MF Service
      *
-     * @param correlationId  the correlation id
-     * @param ffsRequestBody the fund account rq
+     * @param correlationId            the correlation id
+     * @param crmId                    the crm id
+     * @param fundFactSheetRequestBody the fund fact sheet request body
      * @return return fund sheet
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")
     @LogAround
     @PostMapping(value = "/alternative/validation")
-    public ResponseEntity<TmbOneServiceResponse<FfsResponse>> getFundFFSAndValidation(
+    public ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> getFundFactSheetValidation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody FfsRequestBody ffsRequestBody) {
+            @Valid @RequestHeader("x-crmid") String crmId,
+            @Valid @RequestBody FundFactSheetRequestBody fundFactSheetRequestBody) {
 
-        TmbOneServiceResponse<FfsResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundFactSheetResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FfsRsAndValidation ffsRsAndValidation;
+        FundFactSheetValidationResponse fundFactSheetValidationResponse;
 
         try {
             String trackingStatus = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
-            AlternativeRequest alternativeRequest = UtilMap.mappingRequestAlternative(ffsRequestBody);
-            if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(ffsRequestBody.getProcessFlag())) {
-                ffsRsAndValidation = productsExpService.getFundFFSAndValidation(correlationId, ffsRequestBody);
-                if (ffsRsAndValidation.isError()) {
+            AlternativeRequest alternativeRequest = UtilMap.mappingRequestAlternative(crmId, fundFactSheetRequestBody);
+
+            if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(fundFactSheetRequestBody.getProcessFlag())) {
+                fundFactSheetValidationResponse = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+
+                if (fundFactSheetValidationResponse.isError()) {
                     productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                             ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
                             trackingStatus, alternativeRequest));
 
-                    oneServiceResponse.setStatus(new TmbStatus(ffsRsAndValidation.getErrorCode(),
-                            ffsRsAndValidation.getErrorMsg(),
-                            ProductsExpServiceConstant.SERVICE_NAME, ffsRsAndValidation.getErrorDesc()));
+                    oneServiceResponse.setStatus(new TmbStatus(fundFactSheetValidationResponse.getErrorCode(),
+                            fundFactSheetValidationResponse.getErrorMsg(),
+                            ProductsExpServiceConstant.SERVICE_NAME, fundFactSheetValidationResponse.getErrorDesc()));
                     oneServiceResponse.setData(null);
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
                 } else {
                     productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                             ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeRequest));
 
-                    FfsResponse ffsResponse = new FfsResponse();
-                    ffsResponse.setBody(ffsRsAndValidation.getBody());
-                    oneServiceResponse.setData(ffsResponse);
+                    FundFactSheetResponse fundFactSheetResponse = new FundFactSheetResponse();
+                    fundFactSheetResponse.setBody(fundFactSheetValidationResponse.getBody());
+                    oneServiceResponse.setData(fundFactSheetResponse);
                     oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                             ProductsExpServiceConstant.SUCCESS_MESSAGE,
                             ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -246,8 +251,8 @@ public class ProductExpServiceController {
     /**
      * Description:- Inquiry MF Service
      *
-     * @param correlationId      the correlation id
-     * @param alternativeRequest the fund alternative case rq
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
      * @return return fund sheet
      */
     @ApiOperation(value = "Validation alternative case for Sale and Switch")
@@ -257,14 +262,14 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody AlternativeRequest alternativeRequest) {
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
 
         TmbOneServiceResponse<FundResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         FundResponse fundResponse;
         try {
-            fundResponse = productsExpService.validateAlternativeSellAndSwitch(correlationId, alternativeRequest);
+            fundResponse = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
             if (fundResponse.isError()) {
                 return errorResponse(oneServiceResponse, fundResponse);
             } else {
@@ -295,7 +300,9 @@ public class ProductExpServiceController {
     /**
      * Description:- Inquiry MF Service
      *
-     * @param correlationId the correlation id
+     * @param correlationId   the correlation id
+     * @param crmId           the crm id
+     * @param fundListRequest the fund list request
      * @return return fund list info
      */
     @ApiOperation(value = "Fetch Fund list from MF Service and add more flag, then return to front-end")
@@ -305,13 +312,14 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody FundListRequest fundListRequest) {
 
         TmbOneServiceResponse<List<FundClassListInfo>> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
-            List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, fundListRequest);
+            List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, crmId, fundListRequest);
             if (!StringUtils.isEmpty(fundAccountRs)) {
                 oneServiceResponse.setData(fundAccountRs);
                 oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
@@ -335,19 +343,26 @@ public class ProductExpServiceController {
         }
     }
 
+    /**
+     * Description:- Inquiry MF Service
+     *
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @return return suggest allocation data
+     */
     @ApiOperation(value = "Fetch Fund Suggest Allocation")
     @PostMapping(value = "/suggested/allocation")
     public ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> getFundSuggestAllocation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody SuggestAllocationBodyRequest suggestAllocationBodyRequest) {
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
 
         TmbOneServiceResponse<SuggestAllocationDTO> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
-            SuggestAllocationDTO suggestAllocationDto = productsExpService.getSuggestAllocation(correlationId, suggestAllocationBodyRequest.getCrmId());
+            SuggestAllocationDTO suggestAllocationDto = productsExpService.getSuggestAllocation(correlationId, crmId);
             if (!StringUtils.isEmpty(suggestAllocationDto)) {
                 oneServiceResponse.setData(suggestAllocationDto);
                 oneServiceResponse.setStatus(getStatusSuccess());
