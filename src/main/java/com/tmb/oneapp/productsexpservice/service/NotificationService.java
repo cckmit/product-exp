@@ -852,6 +852,7 @@ public class NotificationService {
 		}
 	}
 
+	@Async
 	public void doNotifySuccessForApplyEStatement(String correlationId, String crmId,
 			UpdateEStatmentRequest updateEstatementReq) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", correlationId);
