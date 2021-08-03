@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,14 @@ public class ApplyEStatementService {
 	private AccountRequestClient accountReqClient;
 	public static final String CREDIT_CARD_TYPE = "1";
 	public static final String FLASH_CARD_TYPE = "2";
+	
+	@Value("label.product-group.creditcard.th")
+	private String groupCreditCardTh ;
+	@Value("label.product-group.flashcard.th")
+	private String groupFlashCardTh ;
+	@Value("label.product-group.loan.th")
+	private String groupLoanProductTh ;
+	
 
 	public ApplyEStatementService(CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
 			AccountRequestClient accountReqClient) {
@@ -62,9 +71,10 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @return 
 	 * @throws TMBCommonException
 	 */
-	public void updateEstatement(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq)
+	public ApplyEStatementResponse updateEstatement(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq)
 			throws TMBCommonException {
 		ApplyEStatementResponse currentEstatementResponse = getEStatement(crmId, correlationId);
 		Map<String, String> requestHeaders = new HashMap<>();
@@ -73,12 +83,13 @@ public class ApplyEStatementService {
 
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
-		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq);
+		String productGrpupName = constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq);
 
 		updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
-
+		currentEstatementResponse.setAccountTypeLabel(productGrpupName);
+		
 		try {
-
+			
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
 					.updateEStatement(requestHeaders, statementFlag);
 			if (!ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
@@ -89,6 +100,7 @@ public class ApplyEStatementService {
 			rollBackSilverlake(crmId, correlationId,updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
 		}
+		return currentEstatementResponse;
 	}
 
 	/**
@@ -99,16 +111,19 @@ public class ApplyEStatementService {
 	 * @param statementFlag
 	 * @param updateEstatementReq
 	 */
-	private void constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
+	private String constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
 			UpdateEStatmentRequest updateEstatementReq) {
 
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
-
+		
+		String groupName = null;
+		
 		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
 		if (CollectionUtils.isNotEmpty(loanProducts)) {
 			statementFlag.setECashToGoStatementFlag("Y");
+			groupName = groupLoanProductTh;
 		}
 		ResponseEntity<GetCardsBalancesResponse> cardBalanceResponse = creditCardClient
 				.getCreditCardBalance(requestHeaders, crmId);
@@ -118,13 +133,16 @@ public class ApplyEStatementService {
 		if (hasCreditcard) {
 			statementFlag.setECreditcardStatementFlag("Y");
 			generatedFillUpProductype(updateEstatementReq, "CC");
+			groupName = groupCreditCardTh;
 		}
 		boolean hasFlashCard = lookUpCardbyType(cardBalanceResponse.getBody(), FLASH_CARD_TYPE,
 				updateEstatementReq.getAccountId());
 		if (hasFlashCard) {
 			generatedFillUpProductype(updateEstatementReq, "FL");
 			statementFlag.setEReadyCashStatementFlag("Y");
+			groupName = groupFlashCardTh;
 		}
+		return groupName;
 
 	}
 
