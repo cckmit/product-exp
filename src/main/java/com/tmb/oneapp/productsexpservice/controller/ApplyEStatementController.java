@@ -102,7 +102,8 @@ public class ApplyEStatementController {
 			oneServiceResponse.setData(estatementResponse);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-			notificationService.doNotifySuccessForApplyEStatement(correlationId, crmId, updateEstatementReq);
+			notificationService.doNotifySuccessForApplyEStatement(correlationId, crmId, updateEstatementReq,
+					estatementResponse);
 			return ResponseEntity.ok(oneServiceResponse);
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);
