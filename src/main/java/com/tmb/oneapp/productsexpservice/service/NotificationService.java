@@ -18,6 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
@@ -854,7 +855,7 @@ public class NotificationService {
 
 	@Async
 	public void doNotifySuccessForApplyEStatement(String correlationId, String crmId,
-			UpdateEStatmentRequest updateEstatementReq) {
+			UpdateEStatmentRequest updateEstatementReq, ApplyEStatementResponse estatementResponse) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", correlationId);
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = customerClient
 				.getCustomerProfile(crmId);
@@ -865,9 +866,8 @@ public class NotificationService {
 			if (Objects.nonNull(cardInfoResponse.getBody())
 					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
 
-				ProductCodeData productCodeData = generateProductCodeData(cardInfoResponse, correlationId);
 				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
-						defaultChannelTh, productCodeData.getProductNameEN(), productCodeData.getProductNameTH(),
+						defaultChannelTh, estatementResponse.getProductGroupEN(), estatementResponse.getProductGroupTH(),
 						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 				notifyCommon.setAccountId(updateEstatementReq.getAccountId());

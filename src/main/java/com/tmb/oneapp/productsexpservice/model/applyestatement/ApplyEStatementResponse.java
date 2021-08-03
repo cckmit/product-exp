@@ -25,5 +25,7 @@ public class ApplyEStatementResponse {
 	private Status status;
 	private Customer customer;
 	private String accountTypeLabel;
+	private String productGroupTH;
+	private String productGroupEN;
 	
 }

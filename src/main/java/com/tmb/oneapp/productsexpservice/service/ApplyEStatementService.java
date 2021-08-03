@@ -37,13 +37,18 @@ public class ApplyEStatementService {
 	public static final String CREDIT_CARD_TYPE = "1";
 	public static final String FLASH_CARD_TYPE = "2";
 	
-	@Value("label.product-group.creditcard.th")
+	@Value("${label.product-group.creditcard.th}")
 	private String groupCreditCardTh ;
-	@Value("label.product-group.flashcard.th")
+	@Value("${label.product-group.flashcard.th}")
 	private String groupFlashCardTh ;
-	@Value("label.product-group.loan.th")
+	@Value("${label.product-group.loan.th}")
 	private String groupLoanProductTh ;
-	
+	@Value("${label.product-group.creditcard.en}")
+	private String groupCreditCardEn ;
+	@Value("${label.product-group.flashcard.en}")
+	private String groupFlashCardEn ;
+	@Value("${label.product-group.loan.en}")
+	private String groupLoanProductEn ;
 
 	public ApplyEStatementService(CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
 			AccountRequestClient accountReqClient) {
@@ -71,10 +76,13 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @param productGroupTH
+	 * @param productGroupEN
 	 * @return 
 	 * @throws TMBCommonException
 	 */
-	public ApplyEStatementResponse updateEstatement(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq)
+	public ApplyEStatementResponse updateEstatement(String crmId, String correlationId,
+			UpdateEStatmentRequest updateEstatementReq)
 			throws TMBCommonException {
 		ApplyEStatementResponse currentEstatementResponse = getEStatement(crmId, correlationId);
 		Map<String, String> requestHeaders = new HashMap<>();
@@ -83,13 +91,10 @@ public class ApplyEStatementService {
 
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
-		String productGrpupName = constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq);
+		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
 
 		updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
-		currentEstatementResponse.setAccountTypeLabel(productGrpupName);
-		
 		try {
-			
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
 					.updateEStatement(requestHeaders, statementFlag);
 			if (!ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
@@ -111,19 +116,19 @@ public class ApplyEStatementService {
 	 * @param statementFlag
 	 * @param updateEstatementReq
 	 */
-	private String constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
-			UpdateEStatmentRequest updateEstatementReq) {
+	private void constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
+			UpdateEStatmentRequest updateEstatementReq, ApplyEStatementResponse currentEstatementResponse) {
 
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
 		
-		String groupName = null;
-		
 		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
 		if (CollectionUtils.isNotEmpty(loanProducts)) {
 			statementFlag.setECashToGoStatementFlag("Y");
-			groupName = groupLoanProductTh;
+			currentEstatementResponse.setProductGroupTH(groupLoanProductTh);
+			currentEstatementResponse.setProductGroupEN(groupLoanProductEn);
+			currentEstatementResponse.setAccountTypeLabel(groupLoanProductTh);
 		}
 		ResponseEntity<GetCardsBalancesResponse> cardBalanceResponse = creditCardClient
 				.getCreditCardBalance(requestHeaders, crmId);
@@ -133,17 +138,19 @@ public class ApplyEStatementService {
 		if (hasCreditcard) {
 			statementFlag.setECreditcardStatementFlag("Y");
 			generatedFillUpProductype(updateEstatementReq, "CC");
-			groupName = groupCreditCardTh;
+			currentEstatementResponse.setProductGroupTH(groupCreditCardTh);
+			currentEstatementResponse.setProductGroupEN(groupCreditCardEn);
+			currentEstatementResponse.setAccountTypeLabel(groupCreditCardTh);
 		}
 		boolean hasFlashCard = lookUpCardbyType(cardBalanceResponse.getBody(), FLASH_CARD_TYPE,
 				updateEstatementReq.getAccountId());
 		if (hasFlashCard) {
 			generatedFillUpProductype(updateEstatementReq, "FL");
 			statementFlag.setEReadyCashStatementFlag("Y");
-			groupName = groupFlashCardTh;
+			currentEstatementResponse.setProductGroupTH(groupFlashCardTh);
+			currentEstatementResponse.setProductGroupEN(groupFlashCardEn);
+			currentEstatementResponse.setAccountTypeLabel(groupFlashCardTh);
 		}
-		return groupName;
-
 	}
 
 	/**
