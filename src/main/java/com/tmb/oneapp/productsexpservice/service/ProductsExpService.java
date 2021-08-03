@@ -817,6 +817,7 @@ public class ProductsExpService {
      * @param alternativeRequest
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId,
+                                                                  String crmId,
                                                                   String activityType,
                                                                   String trackingStatus,
                                                                   AlternativeRequest alternativeRequest) {
@@ -829,7 +830,7 @@ public class ProductsExpService {
         activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_APP_VERSION);
         activityData.setFailReason(failReason);
         activityData.setActivityType(activityType);
-        activityData.setCrmId(alternativeRequest.getCrmId());
+        activityData.setCrmId(crmId);
         activityData.setVerifyFlag(alternativeRequest.getProcessFlag());
         activityData.setReason(failReason);
         activityData.setFundCode(alternativeRequest.getFundCode());

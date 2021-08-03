@@ -181,7 +181,7 @@ public class ProductExpServiceController {
      *
      * @param correlationId            the correlation id
      * @param crmId                    the crm id
-     * @param fundFactSheetRequestBody the fund fact sheet request body
+     * @param alternativeRequest the fund fact sheet request body
      * @return return fund sheet
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")
@@ -191,8 +191,8 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestHeader("x-crmid") String crmId,
-            @Valid @RequestBody FundFactSheetRequestBody fundFactSheetRequestBody) {
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestBody AlternativeRequest alternativeRequest) {
 
         TmbOneServiceResponse<FundFactSheetResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -201,13 +201,14 @@ public class ProductExpServiceController {
 
         try {
             String trackingStatus = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
-            AlternativeRequest alternativeRequest = UtilMap.mappingRequestAlternative(crmId, fundFactSheetRequestBody);
 
-            if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(fundFactSheetRequestBody.getProcessFlag())) {
-                fundFactSheetValidationResponse = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+            if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRequest.getProcessFlag())) {
+                fundFactSheetValidationResponse = productsExpService.getFundFactSheetValidation(
+                        correlationId, crmId, UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmId),alternativeRequest));
 
                 if (fundFactSheetValidationResponse.isError()) {
                     productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                            crmId,
                             ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
                             trackingStatus, alternativeRequest));
 
@@ -218,6 +219,7 @@ public class ProductExpServiceController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
                 } else {
                     productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                            crmId,
                             ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeRequest));
 
                     FundFactSheetResponse fundFactSheetResponse = new FundFactSheetResponse();
@@ -230,6 +232,7 @@ public class ProductExpServiceController {
                 }
             } else {
                 productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                        crmId,
                         ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeRequest));
 
                 oneServiceResponse.setData(null);

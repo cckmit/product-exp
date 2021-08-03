@@ -293,7 +293,7 @@ public class ProductExpServiceControllerTest {
             FundFactSheetData body = new FundFactSheetData();
             body.setFactSheetData("fdg;klghbdf;jbneoa;khnd'flbkndflkhnreoid;bndzfklbnoresibndlzfk[bnseriohnbodkzfvndsogb");
             fundRsAndValidation.setBody(body);
-            when(productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody)).thenReturn(fundRsAndValidation);
+            when(productsExpService.getFundFactSheetValidation(any(), any(), any())).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -321,7 +321,7 @@ public class ProductExpServiceControllerTest {
             fundRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
             fundRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
 
-            when(productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody)).thenReturn(fundRsAndValidation);
+            when(productsExpService.getFundFactSheetValidation(any(),any(),any())).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
