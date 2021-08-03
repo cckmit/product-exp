@@ -275,9 +275,10 @@ public class UtilMapTest {
 
     @Test
     public void testMappingRequestAlternative() {
+        String crmid = "4488";
         FundFactSheetRequestBody body = new FundFactSheetRequestBody();
         body.setFundCode("1234");
-        AlternativeRequest result = UtilMap.mappingRequestAlternative("001100000000000000000000002914", body);
+        AlternativeRequest result = UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmid),body);
         AlternativeRequest alternativeRequest = new AlternativeRequest();
         alternativeRequest.setFundCode("1234");
         Assert.assertEquals(alternativeRequest.getFundCode(), result.getFundCode());

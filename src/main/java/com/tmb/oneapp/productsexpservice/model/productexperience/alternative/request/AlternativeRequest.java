@@ -16,9 +16,6 @@ import javax.validation.constraints.NotNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AlternativeRequest {
 
-    @NotNull
-    private String crmId;
-
     private String fundHouseCode;
 
     private String fundCode;

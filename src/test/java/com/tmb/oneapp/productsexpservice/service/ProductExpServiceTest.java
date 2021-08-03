@@ -861,13 +861,13 @@ public class ProductExpServiceTest {
         fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
 
         AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setCrmId(fundFactSheetRequestBody.getCrmId());
         alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
         alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
         alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
         alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                crmId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
 

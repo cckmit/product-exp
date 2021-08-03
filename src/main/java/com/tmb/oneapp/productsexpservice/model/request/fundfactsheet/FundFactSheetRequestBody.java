@@ -17,5 +17,8 @@ import javax.validation.constraints.NotNull;
 public class FundFactSheetRequestBody extends AlternativeRequest {
 
     @NotNull
+    private String crmId;
+
+    @NotNull
     private String language;
 }

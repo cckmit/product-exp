@@ -472,22 +472,21 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingRequestStmtByPort
+     * Generic Method to mappingRequestFundFactSheet
      *
-     * @param crmId
-     * @param fundFactSheetRequestBody
-     * @return AlternativeRequest
+     * @param alternativeRequest
+     * @return fundFactSheetRequestBody
      */
-    public static AlternativeRequest mappingRequestAlternative(String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
-        AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setCrmId(UtilMap.fullCrmIdFormat(crmId));
-        alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
-        alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
-        alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
-        alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
-        alternativeRequest.setOrderType(fundFactSheetRequestBody.getOrderType());
-        alternativeRequest.setFundClassThaiHubName(fundFactSheetRequestBody.getFundClassThaiHubName());
-        return alternativeRequest;
+    public static FundFactSheetRequestBody mappingRequestAlternative(String crmId,AlternativeRequest alternativeRequest) {
+        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
+        fundFactSheetRequestBody.setCrmId(crmId);
+        fundFactSheetRequestBody.setFundCode(alternativeRequest.getFundCode());
+        fundFactSheetRequestBody.setProcessFlag(alternativeRequest.getProcessFlag());
+        fundFactSheetRequestBody.setUnitHolderNumber(alternativeRequest.getUnitHolderNumber());
+        fundFactSheetRequestBody.setFundHouseCode(alternativeRequest.getFundHouseCode());
+        fundFactSheetRequestBody.setOrderType(alternativeRequest.getOrderType());
+        fundFactSheetRequestBody.setFundClassThaiHubName(alternativeRequest.getFundClassThaiHubName());
+        return fundFactSheetRequestBody;
     }
 
     @SuppressWarnings("all")
