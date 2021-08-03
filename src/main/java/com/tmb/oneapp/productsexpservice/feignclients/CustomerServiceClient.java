@@ -108,7 +108,7 @@ public interface CustomerServiceClient {
      * @param requestBody   CustomerCaseSubmitBody
      * @return Map<String, String>
      */
-    @PostMapping(value = "/apis/customers/search")
+    @PostMapping(value = "/apis/customers/ecprofile")
     ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerSearch(
             @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
