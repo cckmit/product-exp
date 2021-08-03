@@ -3,18 +3,24 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.google.common.base.Strings;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardEmail;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.EStatementDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.Payment;
 import com.tmb.oneapp.productsexpservice.model.loan.Rates;
+import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import io.swagger.annotations.Api;
@@ -49,6 +55,8 @@ public class LoanDetailsController {
 	private final AccountRequestClient accountRequestClient;
 	private final CommonServiceClient commonServiceClient;
 	private final CreditCardLogService creditCardLogService;
+	private final CustomerServiceClient customerServiceClient;
+	private final ApplyEStatementService applyEStatementService;
 
 	/**
 	 * Constructor
@@ -59,10 +67,13 @@ public class LoanDetailsController {
 	 */
 	@Autowired
 	public LoanDetailsController(AccountRequestClient accountRequestClient, CommonServiceClient commonServiceClient,
-			CreditCardLogService creditCardLogService) {
+			CreditCardLogService creditCardLogService, CustomerServiceClient customerServiceClient,
+			ApplyEStatementService applyEStatementService) {
 		this.accountRequestClient = accountRequestClient;
 		this.commonServiceClient = commonServiceClient;
 		this.creditCardLogService = creditCardLogService;
+		this.customerServiceClient = customerServiceClient;
+		this.applyEStatementService = applyEStatementService;
 	}
 
 	/**
@@ -85,6 +96,7 @@ public class LoanDetailsController {
 		TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
 		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		String activityDate = Long.toString(System.currentTimeMillis());
 		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN;
 		CreditCardEvent creditCardEvent = new CreditCardEvent(
@@ -103,7 +115,7 @@ public class LoanDetailsController {
 				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
 					return getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders,
-							oneServiceResponse, correlationId, creditCardEvent, loanResponse);
+							oneServiceResponse, crmId, correlationId, creditCardEvent, loanResponse);
 				} else {
 					return getFailedResponse(responseHeaders, oneServiceResponse);
 
@@ -123,7 +135,7 @@ public class LoanDetailsController {
 
 	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getTmbOneServiceResponseResponseEntity(
 			Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders,
-			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse, String correlationId,
+			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse, String crmId, String correlationId,
 			CreditCardEvent creditCardEvent,
 			ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse) {
 		HomeLoanFullInfoResponse loanDetails = loanResponse.getBody().getData();
@@ -156,7 +168,8 @@ public class LoanDetailsController {
 				loanDetails.setProductConfig(productConfig);
 			}
 		}
-
+		processSetEStatementDetail(loanDetails, crmId, correlationId);
+		
 		/* Activity log */
 		creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,
 				loanDetails);
@@ -165,6 +178,27 @@ public class LoanDetailsController {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		oneServiceResponse.setData(loanDetails);
 		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+	}
+
+	private void processSetEStatementDetail(HomeLoanFullInfoResponse loanDetails, String crmId,
+			String correlationId) {
+		EStatementDetail result = new EStatementDetail();
+		CardEmail cardEmail = new CardEmail();
+		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
+				.getCustomerProfile(crmId);
+		CustGeneralProfileResponse profileResponse = responseWorkingProfileInfo.getBody().getData();
+		if (profileResponse != null) {
+			result.setEmailAddress(profileResponse.getEmailAddress());
+			result.setEmailVerifyFlag(profileResponse.getEmailVerifyFlag());
+			cardEmail.setEmailAddress(profileResponse.getEmailAddress());
+		}
+		ApplyEStatementResponse applyEStatementResponse = applyEStatementService.getEStatement(crmId, correlationId);
+		if (applyEStatementResponse != null) {
+			cardEmail.setEmaileStatementFlag(
+					applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag());
+		}
+		loanDetails.setCardEmail(cardEmail);
+		loanDetails.setEstatementDetail(result);
 	}
 
 	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getFailedResponse(HttpHeaders responseHeaders,

@@ -1,15 +1,22 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 import com.tmb.oneapp.productsexpservice.model.loan.*;
+import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -30,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
@@ -45,12 +53,17 @@ public class LoanDetailsControllerTest {
     CommonServiceClient commonServiceClient;
     @Mock
     CreditCardLogService creditCardLogService;
+    @Mock
+    CustomerServiceClient customerServiceClient;
+    @Mock
+	ApplyEStatementService applyEStatementService;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        homeLoanController = new LoanDetailsController(accountRequestClient, commonServiceClient, creditCardLogService);
-    }
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+		homeLoanController = new LoanDetailsController(accountRequestClient, commonServiceClient, creditCardLogService,
+				customerServiceClient, applyEStatementService);
+	}
 
     @Test
     public void testGetLoanAccountDetail() {
@@ -446,6 +459,7 @@ public class LoanDetailsControllerTest {
         oneServiceResponse.setData(data);
         Map<String, String> requestHeadersParameter = headerRequestParameter("1234");
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        String crmId = "001100000000000000000018593707";
         CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, "", "");
         HomeLoanFullInfoResponse loanDetails = new HomeLoanFullInfoResponse();
         loanDetails.setAccount(account);
@@ -470,11 +484,27 @@ public class LoanDetailsControllerTest {
         resp.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = new ResponseEntity<>(resp, HttpStatus.OK);
         when(commonServiceClient.getProductConfig(any())).thenReturn(response);
+        TmbOneServiceResponse<CustGeneralProfileResponse> customerModuleResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
+		CustGeneralProfileResponse profile = new CustGeneralProfileResponse();
+		profile.setEmailAddress("A@B.com");
+		profile.setEmailVerifyFlag("Y");
+		customerModuleResponse.setData(profile);
+		customerModuleResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
+		
+        ApplyEStatementResponse applyEStatementResponse = new ApplyEStatementResponse();
+        Customer customer = new Customer();
+        StatementFlag statementFlag = new StatementFlag();
+        statementFlag.setECashToGoStatementFlag("Y");
+        customer.setStatementFlag(statementFlag);
+        applyEStatementResponse.setCustomer(customer);
+        when(applyEStatementService.getEStatement(any(),any())).thenReturn(applyEStatementResponse);
         TmbOneServiceResponse<HomeLoanFullInfoResponse> res = new TmbOneServiceResponse<>();
         res.setStatus(tmbStatus);
         res.setData(data);
         ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse = new ResponseEntity<>(res, HttpStatus.OK);
-        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, correlationId, creditCardEvent, loanResponse);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, crmId, correlationId, creditCardEvent, loanResponse);
         assertNotNull(responseEntity);
     }
 }
