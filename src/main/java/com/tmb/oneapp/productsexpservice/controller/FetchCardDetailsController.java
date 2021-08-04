@@ -119,9 +119,10 @@ public class FetchCardDetailsController {
 						fetchCardResponse.setProductCodeData(productCodeData);
 					}
 
-					EStatementDetail eStatementDetail = getEStatementDetail(fetchCardResponse, crmId, correlationId);
+					EStatementDetail eStatementDetail = getEStatementDetail(fetchCardResponse, crmId, correlationId,
+							accountId);
 					fetchCardResponse.setEStatementDetail(eStatementDetail);
-										
+					
 					creditCardEvent = creditCardLogService.loadCardDetailsEvent(creditCardEvent,
 							requestHeadersParameter, fetchCardResponse);
 					creditCardLogService.logActivity(creditCardEvent);
@@ -156,7 +157,7 @@ public class FetchCardDetailsController {
 	}
 
 	private EStatementDetail getEStatementDetail(FetchCardResponse fetchCardResponse, String crmId,
-			String correlationId) {
+			String correlationId, String accountId) {
 		EStatementDetail result = new EStatementDetail();
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
 				.getCustomerProfile(crmId);
@@ -168,37 +169,11 @@ public class FetchCardDetailsController {
 		}
 		ApplyEStatementResponse applyEStatementResponse = applyEStatementService.getEStatement(crmId, correlationId);
 		if (applyEStatementResponse != null) {
-			processMappingEStatementFlag(fetchCardResponse, applyEStatementResponse);
+			String emaileStatementFlag = applyEStatementService.getEmailStatementFlag(crmId, correlationId, accountId,
+					applyEStatementResponse);
+			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(emaileStatementFlag);
 		}
 		return result;
 	}
 	
-	private void processMappingEStatementFlag(FetchCardResponse fetchCardResponse,
-			ApplyEStatementResponse applyEStatementResponse) {
-		switch (fetchCardResponse.getCreditCard().getProductId()) {
-		case "VABSIN":
-		case "VBKDSI":
-		case "VABSSN":
-		case "VSOFAS":
-		case "VTOPBR":
-		case "VTTBCP":
-		case "VSOSMT":
-		case "VSOCHI":
-		case "MSCHIL":
-			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(
-					applyEStatementResponse.getCustomer().getStatementFlag().getECreditcardStatementFlag());
-			break;
-		case "VFPSTD":
-			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(
-					applyEStatementResponse.getCustomer().getStatementFlag().getEReadyCashStatementFlag());
-			break;
-		case "C2G":
-			fetchCardResponse.getCreditCard().getCardEmail().setEmaileStatementFlag(
-					applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag());
-			break;
-		default:
-			break;
-		}
-	}
-
 }
