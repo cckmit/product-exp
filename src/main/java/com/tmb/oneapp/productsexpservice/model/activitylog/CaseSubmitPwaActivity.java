@@ -17,6 +17,9 @@ public class CaseSubmitPwaActivity extends BaseEvent {
         super(correlationId, activityDate, activityTypeId);
     }
 
+    @JsonProperty("screen_name")
+    private String screenName;
+
     @JsonProperty("case_number")
     private String caseNumber;
 

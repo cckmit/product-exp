@@ -188,6 +188,9 @@ public class ProductsExpServiceConstant {
     public static final String SEARCH_TYPE = "rm-id";
     public static final String MIB_CUSTOMER_STATIC_ID = "D0000000988";
 
+    /* PWA Screen Name */
+    public static final String PWA_LEAVE_NOTE_SCREEN_NAME = "Send Note Success";
+
     /* ACTIVITY IDs */
     public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
@@ -196,8 +199,8 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "101000702";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_CLICK_CONFIRM = "101000703";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_ENTER_CORRECT_PIN = "101000704";
-    public static final String CASE_SUBMIT_PWA_BY_EMAIL_ACTIVITY_ID = "101500503";
-    public static final String CASE_SUBMIT_PWA_BY_CALL_ACTIVITY_ID = "101500504";
+    public static final String CASE_SUBMIT_PWA_BY_EMAIL_ACTIVITY_ID = "101500502";
+    public static final String CASE_SUBMIT_PWA_BY_CALL_ACTIVITY_ID = "101500503";
     public static final String CASE_SUBMIT_PWA_BY_LEAVE_MSG_ACTIVITY_ID = "101500505";
 
     /* ACTIVITY LOG MESSAGE */
