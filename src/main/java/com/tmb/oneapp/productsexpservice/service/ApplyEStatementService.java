@@ -221,4 +221,32 @@ public class ApplyEStatementService {
 		creditCardClient.updateEnableEStatement(headers, updateEstatementReq);
 	}
 
+	public String getEmailStatementFlag(String crmId, String correlationId, String accountId,
+			ApplyEStatementResponse applyEStatementResponse) {
+		String result = "";
+		Map<String, String> requestHeaders = new HashMap<>();
+		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
+		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
+
+		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
+				.getProductHoldingService(requestHeaders, crmId);
+
+		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
+		if (CollectionUtils.isNotEmpty(loanProducts)) {
+			result = applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag();
+		}
+		ResponseEntity<GetCardsBalancesResponse> cardBalanceResponse = creditCardClient
+				.getCreditCardBalance(requestHeaders, crmId);
+
+		boolean hasCreditcard = lookUpCardbyType(cardBalanceResponse.getBody(), CREDIT_CARD_TYPE, accountId);
+		if (hasCreditcard) {
+			result = applyEStatementResponse.getCustomer().getStatementFlag().getECreditcardStatementFlag();
+		}
+		boolean hasFlashCard = lookUpCardbyType(cardBalanceResponse.getBody(), FLASH_CARD_TYPE, accountId);
+		if (hasFlashCard) {
+			result = applyEStatementResponse.getCustomer().getStatementFlag().getEReadyCashStatementFlag();
+		}
+		return result;
+	}
+
 }
