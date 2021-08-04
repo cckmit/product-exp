@@ -29,5 +29,6 @@ public class StatementTransaction {
     private String transactionType;
     @JsonProperty("transaction_key")
     private String transactionKey;
+    private String account;
 }
 
