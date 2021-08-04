@@ -53,12 +53,14 @@ public class CrmSubmitCaseService {
         String correlationId = requestHeaders.get(HEADER_X_CORRELATION_ID);
         String crmId = requestHeaders.get(X_CRMID);
         String activityId = "";
+        String screenName = "";
         if(serviceTypeMatrixCode.equals(SERVICE_TYPE_MATRIC_CODE_PWA_SEND_EMAIL_TO_ADVISOR)) {
             activityId = CASE_SUBMIT_PWA_BY_EMAIL_ACTIVITY_ID;
         } else if(serviceTypeMatrixCode.equals(SERVICE_TYPE_MATRIC_CODE_PWA_CALL_TO_ADVISOR)) {
             activityId = CASE_SUBMIT_PWA_BY_CALL_ACTIVITY_ID;
         } else if(serviceTypeMatrixCode.equals(SERVICE_TYPE_MATRIC_CODE_PWA_SEND_MESSAGE_TO_ADVISOR)) {
             activityId = CASE_SUBMIT_PWA_BY_LEAVE_MSG_ACTIVITY_ID;
+            screenName = PWA_LEAVE_NOTE_SCREEN_NAME;
         }
 
         try {
@@ -86,6 +88,7 @@ public class CrmSubmitCaseService {
             caseService.logActivityCST(new CaseSubmitPwaActivity(correlationId,
                             String.valueOf(System.currentTimeMillis()),
                             activityId)
+                            .setScreenName(screenName)
                             .setCaseNumber(caseNumber)
                             .setRequestDate(requestDate),
                     requestHeaders,
@@ -98,6 +101,7 @@ public class CrmSubmitCaseService {
             caseService.logActivityCST(new CaseSubmitPwaActivity(correlationId,
                             String.valueOf(System.currentTimeMillis()),
                             activityId)
+                            .setScreenName("")
                             .setCaseNumber("")
                             .setRequestDate(""),
                     requestHeaders,
@@ -107,6 +111,7 @@ public class CrmSubmitCaseService {
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+
         }
     }
 }
