@@ -222,7 +222,7 @@ public class BilledStatementControllerTest {
         SilverlakeErrorStatus silverlakeErrorStatus = new SilverlakeErrorStatus("errorCode", "description");
         SilverlakeStatus silverlakeStatus = new SilverlakeStatus(Integer.valueOf(0), Arrays.asList(silverlakeErrorStatus));
         BigDecimal totalUnbilledAmounts = new BigDecimal(0);
-        StatementTransaction statementTransaction = new StatementTransaction(Integer.valueOf(0), totalUnbilledAmounts, "postedDate", "transactionDate", "mccCode", "transactionDescription", "transactionCurrency", "transactionType", "transactionKey");
+        StatementTransaction statementTransaction = new StatementTransaction(Integer.valueOf(0), totalUnbilledAmounts, "postedDate", "transactionDate", "mccCode", "transactionDescription", "transactionCurrency", "transactionType", "transactionKey","account");
         CardStatement cardStatement = new CardStatement(totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, Integer.valueOf(0), Integer.valueOf(0), "dueDate", "statementDate", "promotionFlag", totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, totalUnbilledAmounts, "expiryDate", Arrays.asList(statementTransaction));
         BilledStatementResponse billedStatementResponse = new BilledStatementResponse(silverlakeStatus, cardStatement, Integer.valueOf(0), Integer.valueOf(0), "moreRecords", "searchKeys");
 
