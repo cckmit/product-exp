@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.FundListBySuitScoreBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
@@ -107,7 +108,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> callInvestmentCountProcessOrderService(
             @RequestHeader Map<String, String> headers,
-            @RequestHeader("x-crmid") String crmId,
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @RequestBody CountToBeProcessOrderRequestBody countToBeProcessOrderRequestBody);
 
     /**
@@ -156,7 +157,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> callInvestmentFundSuitabilityService(
             @RequestHeader Map<String, String> headers,
-            @RequestHeader("x-crmid") String crmId);
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId);
 
 
     /**
@@ -195,7 +196,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> getPtesPort(
             @RequestHeader Map<String, String> headers,
-            @RequestHeader("x-crmid") String crmId);
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId);
 
     /**
      * Call investment fund information service to get fund information response.
@@ -240,7 +241,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> createCustomer(
             @RequestHeader Map<String, String> header,
-            @RequestHeader("x-crmid") String crmId,
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @RequestBody CustomerRequest customerRequest);
 
     /**
@@ -265,7 +266,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> getCustomerAccountRedeem(
             @RequestHeader Map<String, String> header,
-            @RequestHeader("x-crmid") String crmId);
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId);
 
     /**
      * Call investment client relationship service to update client relationship.
@@ -278,7 +279,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> updateClientRelationship(
             @RequestHeader Map<String, String> header,
-            @RequestHeader("x-crmid") String crmId,
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @RequestBody RelationshipRequest relationshipRequest);
 
     /**
@@ -292,7 +293,7 @@ public interface InvestmentRequestClient {
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> openPortfolio(
             @RequestHeader Map<String, String> header,
-            @RequestHeader("x-crmid") String crmId,
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @RequestBody OpenPortfolioRequest openPortfolioRequest);
 
     /**
