@@ -191,7 +191,7 @@ public interface InvestmentRequestClient {
      * @param crmId
      * @return
      */
-    @PostMapping(value = "${investment.service.fund.get.ptes.url}")
+    @GetMapping(value = "${investment.service.fund.get.ptes.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> getPtesPort(
             @RequestHeader Map<String, String> headers,
