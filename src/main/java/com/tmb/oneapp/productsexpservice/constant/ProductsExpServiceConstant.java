@@ -101,7 +101,7 @@ public class ProductsExpServiceConstant {
     public static final String ACTIVITY_ID_TEMP = "00700200";
     public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "00700201";
     public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "00700203";
-    public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "00700700";
+    public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "100700701";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
     public static final String SUCCESS = "Success";
     public static final String FAILED = "Failed";
