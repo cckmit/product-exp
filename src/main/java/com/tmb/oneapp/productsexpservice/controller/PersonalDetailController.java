@@ -4,10 +4,13 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
+import com.tmb.oneapp.productsexpservice.service.PersonalDetailSaveInfoService;
 import com.tmb.oneapp.productsexpservice.service.PersonalDetailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,10 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -33,6 +33,7 @@ public class PersonalDetailController {
     private static final TMBLogger<ProductsVerifyCvvController> logger = new TMBLogger<>(ProductsVerifyCvvController.class);
     private static final HttpHeaders responseHeaders = new HttpHeaders();
     private final PersonalDetailService personalDetailService;
+    private final PersonalDetailSaveInfoService personalDetailSaveInfoService;
 
     @GetMapping(value = "/personalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
@@ -51,6 +52,24 @@ public class PersonalDetailController {
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get personal detail: {}", e);
+            oneTmbOneServiceResponse.setStatus(getStatusFailed());
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+    }
+
+    @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    @ApiOperation("Update Personal Detail")
+    public ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> savePersonalDetail(
+            @RequestBody PersonalDetailSaveInfoRequest request) {
+        TmbOneServiceResponse<ResponseIndividual> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            personalDetailSaveInfoService.updatePersonalDetailInfo(request);
+            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
+            setHeader();
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+            logger.error("error while update personal customer detail: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatusFailed());
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
