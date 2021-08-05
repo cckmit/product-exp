@@ -203,4 +203,115 @@ public class ApplyEStatementServiceTest {
 	}
 
 
+	@Test
+	void testGetEmailStatementFlagProductGroupFlashCard() throws Exception {
+		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+		String crmId = ProductsExpServiceConstant.X_CRMID;
+		String accountId = "5213323";
+		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		Customer customer = new Customer();
+		StatementFlag statementFlag = new StatementFlag();
+		statementFlag.setEReadyCashStatementFlag("Y");
+		customer.setStatementFlag(statementFlag);
+		data.setCustomer(customer);
+
+		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
+		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
+		List<Object> loanAccounts = new ArrayList<Object>();
+		productHoldingsResp.setLoanAccounts(loanAccounts);
+		accountResponse.setData(productHoldingsResp);
+		accountResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		when(accountReqClient.getProductHoldingService(any(), any())).thenReturn(ResponseEntity.ok(accountResponse));
+
+		GetCardsBalancesResponse cardsBalancesResponse = new GetCardsBalancesResponse();
+		List<CreditCardDetail> creditCard = new ArrayList<CreditCardDetail>();
+		CreditCardDetail cd = new CreditCardDetail();
+		CardStatus cardStatus = new CardStatus();
+		cardStatus.setCardPloanFlag("2");
+		cd.setAccountId("5213323");
+		cd.setCardStatus(cardStatus);
+		creditCard.add(cd);
+		cardsBalancesResponse.setCreditCard(creditCard);
+		when(creditCardClient.getCreditCardBalance(any(), any())).thenReturn(ResponseEntity.ok(cardsBalancesResponse));
+
+		String result = applyEStatementService.getEmailStatementFlag(crmId, correlationId, accountId, data);
+		Assert.assertEquals("Y", result);
+	}
+	
+	@Test
+	void testGetEmailStatementFlagProductGroupCreditCard() throws Exception {
+		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+		String crmId = ProductsExpServiceConstant.X_CRMID;
+		String accountId = "5213323";
+		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		Customer customer = new Customer();
+		StatementFlag statementFlag = new StatementFlag();
+		statementFlag.setECreditcardStatementFlag("Y");
+		customer.setStatementFlag(statementFlag);
+		data.setCustomer(customer);
+
+		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
+		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
+		List<Object> loanAccounts = new ArrayList<Object>();
+		productHoldingsResp.setLoanAccounts(loanAccounts);
+		accountResponse.setData(productHoldingsResp);
+		accountResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		when(accountReqClient.getProductHoldingService(any(), any())).thenReturn(ResponseEntity.ok(accountResponse));
+
+		GetCardsBalancesResponse cardsBalancesResponse = new GetCardsBalancesResponse();
+		List<CreditCardDetail> creditCard = new ArrayList<CreditCardDetail>();
+		CreditCardDetail cd = new CreditCardDetail();
+		CardStatus cardStatus = new CardStatus();
+		cardStatus.setCardPloanFlag("1");
+		cd.setAccountId("5213323");
+		cd.setCardStatus(cardStatus);
+		creditCard.add(cd);
+		cardsBalancesResponse.setCreditCard(creditCard);
+		when(creditCardClient.getCreditCardBalance(any(), any())).thenReturn(ResponseEntity.ok(cardsBalancesResponse));
+
+		String result = applyEStatementService.getEmailStatementFlag(crmId, correlationId, accountId, data);
+		Assert.assertEquals("Y", result);
+	}
+	
+	@Test
+	void testGetEmailStatementFlagProductGroupLoan() throws Exception {
+		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+		String crmId = ProductsExpServiceConstant.X_CRMID;
+		String accountId = "5213323";
+		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		Customer customer = new Customer();
+		StatementFlag statementFlag = new StatementFlag();
+		statementFlag.setECashToGoStatementFlag("Y");
+		customer.setStatementFlag(statementFlag);
+		data.setCustomer(customer);
+
+		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
+		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
+		List<Object> loanAccounts = new ArrayList<Object>(); 
+		Account acc = new Account();
+		acc.setAccountNo("5213323");
+		loanAccounts.add(acc);
+		productHoldingsResp.setLoanAccounts(loanAccounts);
+		accountResponse.setData(productHoldingsResp);
+		accountResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+		when(accountReqClient.getProductHoldingService(any(), any())).thenReturn(ResponseEntity.ok(accountResponse));
+		
+		GetCardsBalancesResponse cardsBalancesResponse = new GetCardsBalancesResponse();
+		List<CreditCardDetail> creditCard = new ArrayList<CreditCardDetail>();
+		CreditCardDetail cd = new CreditCardDetail();
+		CardStatus cardStatus = new CardStatus();
+		cardStatus.setCardPloanFlag("1");
+		cd.setAccountId("5213324");
+		cd.setCardStatus(cardStatus);
+		creditCard.add(cd);
+		cardsBalancesResponse.setCreditCard(creditCard);
+		when(creditCardClient.getCreditCardBalance(any(), any())).thenReturn(ResponseEntity.ok(cardsBalancesResponse));
+
+		String result = applyEStatementService.getEmailStatementFlag(crmId, correlationId, accountId, data);
+		Assert.assertEquals("Y", result);
+	}
+
 }
