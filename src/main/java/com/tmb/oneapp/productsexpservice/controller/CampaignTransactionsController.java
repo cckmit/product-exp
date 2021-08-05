@@ -68,9 +68,7 @@ public class CampaignTransactionsController {
         TmbOneServiceResponse<CampaignTransactionResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         String accountId = requestBodyParameter.getAccountId();
         String moreRecords = requestBodyParameter.getMoreRecords();
-
-
-        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 
         try {
             if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(moreRecords)) {
