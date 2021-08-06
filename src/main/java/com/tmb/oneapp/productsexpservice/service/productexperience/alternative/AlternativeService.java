@@ -181,7 +181,7 @@ public class AlternativeService {
     }
 
     // validate customer not us and not restriced in 30 nationality
-    private TmbStatus validateNationality(String correlationId, String mainNationality, String secondNationality, TmbStatus status) {
+    public TmbStatus validateNationality(String correlationId, String mainNationality, String secondNationality, TmbStatus status) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
                 commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
@@ -201,7 +201,7 @@ public class AlternativeService {
     }
 
     // validate customer risk level
-    private TmbStatus validateCustomerRiskLevel(String customerRiskLevel, TmbStatus status) {
+    public TmbStatus validateCustomerRiskLevel(String customerRiskLevel, TmbStatus status) {
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
             String[] values = {"C3", "B3"};
