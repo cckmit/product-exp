@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,4 +53,6 @@ public class Account {
     private CreditLimit creditLimit;
     @JsonProperty("rates")
     private Rates rates;
+    @JsonProperty("direct_debit")
+    private DirectDebit directDebit;
 }
