@@ -1,8 +1,12 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -14,8 +18,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
@@ -29,6 +38,9 @@ public class AlternativeServiceTest {
     @Mock
     public ProductsExpService productsExpService;
 
+    @Mock
+    public CommonServiceClient commonServiceClient;
+
     @InjectMocks
     public AlternativeService alternativeService;
 
@@ -36,10 +48,13 @@ public class AlternativeServiceTest {
 
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
-    private void mockPassServiceHour() {
-        FundResponse fundResponse = new FundResponse();
-        fundResponse.setError(false);
-        when(productsExpService.isServiceHour(any(), any())).thenReturn(fundResponse);
+    private void mockCommonConfig() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<CommonData> list = new ArrayList<>();
+        TmbOneServiceResponse<List<CommonData>> response = new TmbOneServiceResponse<List<CommonData>>();
+        list.add(objectMapper.readValue(Paths.get("src/test/resources/investment/common/investment_config.json").toFile(), CommonData.class));
+        response.setData(list);
+        when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(response));
     }
 
     private void mockNotPassServiceHour() {
@@ -119,13 +134,17 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000018_when_call_validate_customer_nationality() throws Exception {
+
+        // given
+        mockCommonConfig();
+
         // When
         TmbStatus actual = alternativeService.validateNationality(correlationId,"TH","US",TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc(), actual.getDescription());
+        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getCode());
+        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(), actual.getMessage());
+        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc(), actual.getDescription());
     }
 
     @Test
