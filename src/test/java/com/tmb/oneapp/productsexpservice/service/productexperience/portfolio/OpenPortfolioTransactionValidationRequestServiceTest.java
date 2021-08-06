@@ -233,7 +233,8 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(true).build();
         mockCustomerResponse(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY);
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(
+        mockSuccessAllAlternative();
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(
                 mockTmbStatusError(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
                         OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
                         OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc()));
