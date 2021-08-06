@@ -68,7 +68,7 @@ public class CampaignTransactionsControllerTest {
         when(creditCardClient.getCampaignTransactionsDetails(anyString(), any())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 
         Map<String, String> requestHeadersParameter = new HashMap();
-        requestHeadersParameter.put(correlationId, "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da");
+        requestHeadersParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da");
         ResponseEntity<TmbOneServiceResponse<CampaignTransactionResponse>> result = campaignTransactionsController.campaignTransactionResponse(requestBodyParameter, requestHeadersParameter);
         Assert.assertEquals(200, result.getStatusCodeValue());
     }
