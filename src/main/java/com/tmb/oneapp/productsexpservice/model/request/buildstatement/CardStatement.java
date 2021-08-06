@@ -34,4 +34,5 @@ public class CardStatement {
     private BigDecimal expiryPoints;
     private String expiryDate;
     private List<StatementTransaction> statementTransactions;
+    private String totalSpendingThisCycle;
 }
