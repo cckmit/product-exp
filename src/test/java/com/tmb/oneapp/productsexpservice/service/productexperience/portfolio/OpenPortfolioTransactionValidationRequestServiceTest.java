@@ -18,9 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.CustomerInformation;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.ValidateOpenPortfolioResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import org.junit.jupiter.api.Test;
@@ -41,8 +39,8 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,9 +56,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
     @Mock
     private CommonServiceClient commonServiceClient;
-
-    @Mock
-    private ProductsExpService productsExpService;
 
     @Mock
     private EligibleDepositAccountService eligibleDepositAccountService;
@@ -80,18 +75,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
     private final String crmId = "001100000000000000000012035644";
 
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-
-    private void mockPassServiceHour() {
-        FundResponse fundResponse = new FundResponse();
-        fundResponse.setError(false);
-        when(productsExpService.isServiceHour(any(), any())).thenReturn(fundResponse);
-    }
-
-    private void mockNotPassServiceHour() {
-        FundResponse fundResponse = new FundResponse();
-        fundResponse.setError(true);
-        when(productsExpService.isServiceHour(any(), any())).thenReturn(fundResponse);
-    }
 
     private void mockCommonConfig() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -177,7 +160,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCommonConfig();
         mockCustomerResponse(null);
         mockSuccessAllAlternative();
@@ -210,7 +192,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(true).build();
-        mockPassServiceHour();
         mockCustomerResponse(null);
         mockCommonConfig();
 
@@ -231,7 +212,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(true).build();
-        mockNotPassServiceHour();
         mockCustomerResponse(null);
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(
                 mockTmbStatusError(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
@@ -252,7 +232,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(true).build();
-        mockPassServiceHour();
         mockCustomerResponse(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY);
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(
                 mockTmbStatusError(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
@@ -281,7 +260,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCustomerResponse(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT);
 
         DepositAccount depositAccount = new DepositAccount();
@@ -314,7 +292,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCommonConfig();
         mockCustomerResponse(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3);
 
@@ -350,7 +327,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCommonConfig();
         mockCustomerResponse(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL);
 
@@ -385,7 +361,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCommonConfig();
         mockCustomerResponse(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED);
 
@@ -421,7 +396,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCommonConfig();
         mockCustomerResponse(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);
 
@@ -457,7 +431,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCustomerResponse(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC);
 
         DepositAccount depositAccount = new DepositAccount();
@@ -491,7 +464,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
-        mockPassServiceHour();
         mockCustomerResponse(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC);
 
         DepositAccount depositAccount = new DepositAccount();
