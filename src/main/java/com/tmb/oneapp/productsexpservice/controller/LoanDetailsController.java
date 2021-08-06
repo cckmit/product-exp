@@ -169,7 +169,7 @@ public class LoanDetailsController {
 			}
 		}
 		processSetEStatementDetail(loanDetails, crmId, correlationId);
-		
+		processSetAccountID(loanDetails);
 		/* Activity log */
 		creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,
 				loanDetails);
@@ -178,6 +178,17 @@ public class LoanDetailsController {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		oneServiceResponse.setData(loanDetails);
 		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+	}
+
+	private void processSetAccountID(HomeLoanFullInfoResponse loanDetails) {
+		if (loanDetails.getAccount() != null) {
+			if (loanDetails.getAccount().getDirectDebit() != null) {
+				if (!"01".equals(loanDetails.getAccount().getDirectDebit().getAffiliateSequenceNo())
+						&& !"1".equals(loanDetails.getAccount().getDirectDebit().getSequenceNo())) {
+					loanDetails.getAccount().getDirectDebit().setAccountId("");
+				}
+			}
+		}
 	}
 
 	private void processSetEStatementDetail(HomeLoanFullInfoResponse loanDetails, String crmId,
