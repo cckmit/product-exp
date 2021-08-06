@@ -182,11 +182,10 @@ public class LoanDetailsController {
 
 	private void processSetAccountID(HomeLoanFullInfoResponse loanDetails) {
 		if (loanDetails.getAccount() != null) {
-			if (loanDetails.getAccount().getDirectDebit() != null) {
-				if (!"01".equals(loanDetails.getAccount().getDirectDebit().getAffiliateSequenceNo())
-						&& !"1".equals(loanDetails.getAccount().getDirectDebit().getSequenceNo())) {
-					loanDetails.getAccount().getDirectDebit().setAccountId("");
-				}
+			if (loanDetails.getAccount().getDirectDebit() != null
+					&& !"01".equals(loanDetails.getAccount().getDirectDebit().getAffiliateSequenceNo())
+					&& !"1".equals(loanDetails.getAccount().getDirectDebit().getSequenceNo())) {
+				loanDetails.getAccount().getDirectDebit().setAccountId("");
 			}
 		}
 	}
