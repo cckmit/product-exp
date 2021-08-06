@@ -92,12 +92,7 @@ public class OpenPortfolioValidationService {
                 depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId);
             }
 
-            String[] bypassCrmId = {"001100000000000000000012035598", "00000018592884"};
-            if (Arrays.stream(bypassCrmId).noneMatch(crmId::equals)) {
-                validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
-            } else {
-                tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            }
+            validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
 
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
