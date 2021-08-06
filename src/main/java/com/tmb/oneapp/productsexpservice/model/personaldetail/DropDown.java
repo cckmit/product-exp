@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Dropdown {
+public class DropDown {
     private String entryCode;
     private BigDecimal entryId;
     private String entryNameEng;
