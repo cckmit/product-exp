@@ -5,15 +5,11 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.DropDown;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
