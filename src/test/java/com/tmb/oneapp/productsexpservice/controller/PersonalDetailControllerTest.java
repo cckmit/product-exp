@@ -10,7 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.Resident;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.Dropdown;
 import com.tmb.oneapp.productsexpservice.service.PersonalDetailSaveInfoService;
 import com.tmb.oneapp.productsexpservice.service.PersonalDetailService;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,7 +75,7 @@ public class PersonalDetailControllerTest {
 
         PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();
         com.tmb.oneapp.productsexpservice.model.personaldetail.Address address = new com.tmb.oneapp.productsexpservice.model.personaldetail.Address();
-        Resident resident = new Resident();
+        Dropdown resident = new Dropdown();
         address.setCountry("TH");
         address.setNo("111");
         address.setRoomNo("1111");

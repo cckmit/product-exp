@@ -8,7 +8,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.Address;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.Resident;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.Dropdown;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,8 +79,8 @@ public class PersonalDetailServiceTest {
 
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
-        List<Resident> residentList = new ArrayList<>();
-        Resident resident = new Resident();
+        List<Dropdown> residentList = new ArrayList<>();
+        Dropdown resident = new Dropdown();
         address.setAmphur("แขงวังทองหลาง");
         address.setCountry("TH");
         address.setBuildingName("มบ.ปรีชา 3");
@@ -111,7 +111,7 @@ public class PersonalDetailServiceTest {
         response.setNationality("TH");
         response.setThaiName("ทีทีบี");
         response.setThaiSurName("แบงค์");
-        response.setThaiSalutationCode("1800272993728");
+        response.setThaiSalutationCode(residentList);
         response.setAddress(address);
         response.setResidentFlag(residentList);
 
