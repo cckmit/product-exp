@@ -2,6 +2,7 @@
    "port": 8080,
    "protocol": "http",
    "name": "proxy",
+   "allowCORS":true,
    "stubs": [
      <% include predicates/set-credit-limit.ejs %>,
      <% include predicates/fetch-reason-list.ejs %>,
@@ -18,12 +19,15 @@
      <% include predicates/internal-address.ejs %>,
      <% include predicates/get-preload-data.ejs %>,
      <% include predicates/create-instant-loan-application.ejs %>,
-    <% include predicates/get-loan-submission-personal-detail.ejs %>,
+     <% include predicates/get-loan-submission-personal-detail.ejs %>,
+     <% include predicates/get-work-detail.ejs %>,
+     <% include predicates/get-work-detail-self-employed.ejs %>,
+     <% include predicates/get-dropdown-work-detail.ejs %>,
 
     {
        "responses": [{
          "proxy": {
-           "to": "http://localhost",
+           "to": "https://oneapp-dev1.tau2904.com",
            "mode": "proxyAlways",
            "predicateGenerators": [{ "matches": { "path": true } }]
          }

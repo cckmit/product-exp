@@ -1,0 +1,202 @@
+{
+  "predicates": [
+    {
+      "equals": {
+        "path": "/apis/products/lending/loanOnlineSubmission/dropdown/workingDetail",
+        "query": {},
+        "method": "GET"
+      }
+    }
+  ],
+  "responses": [
+    {
+      "is": {
+        "statusCode": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        "body": {
+          "status": {
+            "code": "0000",
+            "message": "success",
+            "service": "products-exp-service",
+            "description": "success"
+          },
+          "data": {
+            "rmOccupation": [
+              {
+                "code": "01",
+                "name": "พนักงานประจำและลูกจ้างบริษัทสถาบันการเงิน",
+                "occupation": [
+                  {
+                    "code": "01",
+                    "name": "วิศวกร"
+                  },
+                  {
+                    "code": "02",
+                    "name": "พนักงานบัญชี"
+                  },
+                  {
+                    "code": "03",
+                    "name": "เจ้าหน้าที่สินเชื่อ"
+                  },
+                  {
+                    "code": "04",
+                    "name": "อื่นๆ"
+                  }
+                ]
+              },
+              {
+                "code": "02",
+                "name": "พนักงานบริษัทขนส่งและการบริการ",
+                "occupation": [
+                  {
+                    "code": "01",
+                    "name": "พนักงานขับรถ"
+                  },
+                  {
+                    "code": "02",
+                    "name": "พนักงานขนส่ง"
+                  },
+                  {
+                    "code": "03",
+                    "name": "พนักงานตรวจคลังสินค้า"
+                  },
+                  {
+                    "code": "04",
+                    "name": "อื่นๆ"
+                  }
+                ]
+              },
+              {
+                "code": "03",
+                "name": "พนักงานโรงงานอุตสาหกรรม",
+                "occupation": [
+                  {
+                    "code": "01",
+                    "name": "วิศวกร"
+                  },
+                  {
+                    "code": "02",
+                    "name": "พนักงานฝ่ายผลิต"
+                  },
+                  {
+                    "code": "03",
+                    "name": "อื่นๆ"
+                  }
+                ]
+              },
+              {
+                "code": "04",
+                "name": "เจ้าของ/หุ้นส่วนสถาบันการเงิน",
+                "occupation": [
+                  {
+                    "code": "01",
+                    "name": "เจ้าของกิจการ"
+                  },
+                  {
+                    "code": "02",
+                    "name": "หุ้นส่วน/ผู้บริหาร"
+                  },
+                  {
+                    "code": "05",
+                    "name": "อื่นๆ"
+                  }
+                ]
+              }
+            ],
+            "businessType": [
+              {
+                "code": "01",
+                "name": "G - กิจกรรมทางการเงินและการประกัน",
+                "businessSubType": [
+                  {
+                    "code": "01",
+                    "name": "การบริการให้คำปรึกษาทางการเงิน"
+                  },
+                  {
+                    "code": "02",
+                    "name": "ธนาคารพานิชย์"
+                  },
+                  {
+                    "code": "03",
+                    "name": "ธุรกิจประกันภัย"
+                  }
+                ]
+              },
+              {
+                "code": "02",
+                "name": "R - กิจกาจค้าปลีก",
+                "businessSubType": [
+                  {
+                    "code": "01",
+                    "name": "ขายอาหาร"
+                  },
+                  {
+                    "code": "02",
+                    "name": "ขายสินค้าเครื่องใช้ในบ้าน"
+                  },
+                  {
+                    "code": "03",
+                    "name": "ขายอุปกรณ์ก่อสร้าง"
+                  }
+                ]
+              },
+              {
+                "code": "03",
+                "name": "S - กิจกรรมการให้บริการ",
+                "businessSubType": [
+                  {
+                    "code": "01",
+                    "name": "ให้บริการขนส่ง"
+                  },
+                  {
+                    "code": "02",
+                    "name": "ให้บริการซ่อมแซมอุปกรณ์และที่พักอาศัย"
+                  },
+                  {
+                    "code": "03",
+                    "name": "ให้บริการทำความสะอาด"
+                  }
+                ]
+              }
+            ],
+            "incomeBank": [
+              {
+                "code": "01",
+                "name": "ทหารไทยธนชาติ"
+              },
+              {
+                "code": "02",
+                "name": "ไทยพาณิชย์"
+              },
+              {
+                "code": "03",
+                "name": "กสิกรไทย"
+              },
+              {
+                "code": "02",
+                "name": "อื่นๆ"
+              }
+            ],
+            "incomeType": [
+              {
+                "code": "01",
+                "name": "ไทย"
+              },
+              {
+                "code": "02",
+                "name": "อเมริกา"
+              },
+              {
+                "code": "03",
+                "name": "อื่นๆ"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
