@@ -19,9 +19,9 @@ public class PersonalDetailService {
     private final LendingServiceClient lendingServiceClient;
 
     public PersonalDetailResponse getPersonalDetailInfo(String crmid, PersonalDetailRequest request) throws TMBCommonException {
-
         try {
             TmbOneServiceResponse<PersonalDetailResponse> responseEntity = lendingServiceClient.getPersonalDetail(crmid,request.getCaId()).getBody();
+
             if (responseEntity.getStatus().getCode().equals("0000")) {
                 return responseEntity.getData();
             } else {

@@ -8,7 +8,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.Address;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.Dropdown;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.DropDown;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -79,8 +80,8 @@ public class PersonalDetailServiceTest {
 
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
-        List<Dropdown> residentList = new ArrayList<>();
-        Dropdown resident = new Dropdown();
+        List<DropDown> residentList = new ArrayList<>();
+        DropDown resident = new DropDown();
         address.setAmphur("แขงวังทองหลาง");
         address.setCountry("TH");
         address.setBuildingName("มบ.ปรีชา 3");
@@ -101,16 +102,16 @@ public class PersonalDetailServiceTest {
         residentList.add(resident);
 
 
-        response.setBirthDate("11/10/33");
+        response.setBirthDate(Calendar.getInstance());
         response.setEmail("kk@gmail.com");
         response.setEngName("Test");
-        response.setEngSurName("Ja");
-        response.setExpiryDate("11/11/63");
+        response.setEngSurname("Ja");
+        response.setExpiryDate(Calendar.getInstance());
         response.setIdIssueCtry1("dd");
         response.setMobileNo("0987654321");
         response.setNationality("TH");
         response.setThaiName("ทีทีบี");
-        response.setThaiSurName("แบงค์");
+        response.setThaiSurname("แบงค์");
         response.setThaiSalutationCode(residentList);
         response.setAddress(address);
         response.setResidentFlag(residentList);
