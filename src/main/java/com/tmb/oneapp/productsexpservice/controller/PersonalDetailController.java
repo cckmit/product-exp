@@ -35,7 +35,7 @@ public class PersonalDetailController {
     private final PersonalDetailService personalDetailService;
     private final PersonalDetailSaveInfoService personalDetailSaveInfoService;
 
-    @GetMapping(value = "/personalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/personalDetail")
     @LogAround
     @ApiOperation("Get Personal Detail")
     @ApiImplicitParams({

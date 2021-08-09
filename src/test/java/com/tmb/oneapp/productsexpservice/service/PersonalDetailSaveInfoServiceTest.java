@@ -8,7 +8,7 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseInd
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.Resident;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.DropDown;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ public class PersonalDetailSaveInfoServiceTest {
 
         PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();
         com.tmb.oneapp.productsexpservice.model.personaldetail.Address address = new com.tmb.oneapp.productsexpservice.model.personaldetail.Address();
-        Resident resident = new Resident();
+        DropDown resident = new DropDown();
         address.setCountry("TH");
         address.setNo("111");
         address.setRoomNo("1111");
