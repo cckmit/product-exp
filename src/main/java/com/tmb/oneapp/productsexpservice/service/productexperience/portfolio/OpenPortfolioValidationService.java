@@ -164,7 +164,7 @@ public class OpenPortfolioValidationService {
         }
 
         // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(customerInfo.getCustomerRiskLevel(), status));
+        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(customerInfo, status));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
             return tmbOneServiceResponse;

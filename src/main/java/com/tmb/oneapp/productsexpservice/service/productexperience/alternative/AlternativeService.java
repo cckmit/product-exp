@@ -7,6 +7,8 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -34,10 +36,16 @@ public class AlternativeService {
 
     private CommonServiceClient commonServiceClient;
 
+    private CustomerServiceClient customerServiceClient;
+
     @Autowired
-    public AlternativeService(ProductsExpService productsExpService, CommonServiceClient commonServiceClient) {
+    public AlternativeService(ProductsExpService productsExpService,
+                              CommonServiceClient commonServiceClient,
+                              CustomerServiceClient customerServiceClient
+    ) {
         this.productsExpService = productsExpService;
         this.commonServiceClient = commonServiceClient;
+        this.customerServiceClient = customerServiceClient;
     }
 
     // validate service hour
@@ -201,7 +209,8 @@ public class AlternativeService {
     }
 
     // validate customer risk level
-    public TmbStatus validateCustomerRiskLevel(String customerRiskLevel, TmbStatus status) {
+    public TmbStatus validateCustomerRiskLevel(CustomerSearchResponse customerInfo, TmbStatus status) {
+        String customerRiskLevel = calculateRiskLevel(customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
             String[] values = {"C3", "B3"};
@@ -218,6 +227,12 @@ public class AlternativeService {
             return status;
         }
         return status;
+    }
+
+    // todo
+    private String calculateRiskLevel(CustomerSearchResponse customerInfo) {
+        customerServiceClient.customerSearch()
+        return null;
     }
 
 }
