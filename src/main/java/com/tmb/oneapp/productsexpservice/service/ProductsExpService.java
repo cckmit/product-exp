@@ -9,7 +9,6 @@ import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.*;
-import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
@@ -367,16 +366,6 @@ public class ProductsExpService {
             }
         }
         return fundResponse;
-    }
-
-    private String getFatcaFlag(String correlationId, String crmId) {
-        CrmSearchBody request = CrmSearchBody.builder()
-                .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
-                .searchValue(crmId)
-                .build();
-        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
-                customerServiceClient.customerSearch(correlationId, crmId, request);
-        return response.getBody().getData().get(0).getFatcaFlag();
     }
 
     private CustomerSearchResponse getCustomerInfo(String correlationId, String crmId) {
