@@ -39,7 +39,7 @@ public class CustomerService {
      * @param crmId
      * @return String
      */
-    public String getPortFolioMutualFund(String correlationId, String crmId){
+    public String getAccountSaving(String correlationId, String crmId){
         try {
             return customerExpServiceClient.getAccountSaving(correlationId, UtilMap.halfCrmIdFormat(crmId));
         }catch (Exception ex){

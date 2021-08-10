@@ -50,8 +50,6 @@ public class AlternativeServiceTest {
     @InjectMocks
     public AlternativeService alternativeService;
 
-    private final String crmId = "001100000000000000000012035644";
-
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     private void mockCommonConfig() throws IOException {

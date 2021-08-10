@@ -3,29 +3,28 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
-import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
+import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -36,6 +35,7 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class ProductsExpServiceTest {
 
     @Mock
@@ -45,15 +45,10 @@ public class ProductsExpServiceTest {
     private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    private CustomerExpServiceClient customerExpServiceClient;
+    private CustomerService customerService;
 
     @InjectMocks
     private ProductsExpService productsExpService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testGetFundSummary() {
@@ -104,7 +99,7 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
+            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
@@ -173,7 +168,7 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
-            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
+            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
@@ -227,7 +222,7 @@ public class ProductsExpServiceTest {
 
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(customerExpServiceClient.getAccountSaving(anyString(), anyString())).thenReturn(data);
+            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(

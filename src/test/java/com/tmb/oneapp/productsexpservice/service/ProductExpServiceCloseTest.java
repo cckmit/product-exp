@@ -6,58 +6,67 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.*;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.exceptions.base.MockitoException;
-import org.springframework.http.HttpStatus;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class ProductExpServiceCloseTest {
 
-    private ProductsExpService productsExpService;
-
-    private ProductExpAsyncService productExpAsyncService;
-
+    @Mock
     private AccountRequestClient accountRequestClient;
 
-    private CommonServiceClient commonServiceClient;
-
-    private CustomerExpServiceClient customerExpServiceClient;
-
-    private CustomerServiceClient customerServiceClient;
-
+    @Mock
     private InvestmentRequestClient investmentRequestClient;
 
+    @Mock
     private AlternativeService alternativeService;
 
+    @Mock
     private KafkaProducerService kafkaProducerService;
 
+    @Mock
+    private CustomerService customerService;
+
+    @Mock
     private ObjectMapper mapper;
+
+    @InjectMocks
+    private ProductsExpService productsExpService;
 
     private FundRuleBody fundRuleBody = null;
 
@@ -66,17 +75,7 @@ public class ProductExpServiceCloseTest {
 
     @BeforeEach
     public void setUp() {
-        investmentRequestClient = mock(InvestmentRequestClient.class);
-        accountRequestClient = mock(AccountRequestClient.class);
-        productsExpService = mock(ProductsExpService.class);
-        kafkaProducerService = mock(KafkaProducerService.class);
-        commonServiceClient = mock(CommonServiceClient.class);
-        productExpAsyncService = mock(ProductExpAsyncService.class);
-        customerServiceClient = mock(CustomerServiceClient.class);
-        alternativeService = mock(AlternativeService.class);
-        mapper = mock(ObjectMapper.class);
-        productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient,
-                productExpAsyncService, customerExpServiceClient, customerServiceClient,alternativeService);
+
     }
 
     private Map<String, String> createHeader(String correlationId) {
@@ -217,12 +216,8 @@ public class ProductExpServiceCloseTest {
     }
 
     private void mockGetFlatcaResponseFromCustomerSearch() {
-        Map<String, String> response = new HashMap<>();
-        response.put(ProductsExpServiceConstant.FATCA_FLAG, "0");
-        TmbOneServiceResponse<List<CustomerSearchResponse>> customerSearchResponse = new TmbOneServiceResponse<>();
-        customerSearchResponse.setData(List.of(CustomerSearchResponse.builder().fatcaFlag("0").build()));
-        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> mockResponse = new ResponseEntity<>(customerSearchResponse, HttpStatus.OK);
-        when(customerServiceClient.customerSearch(anyString(), anyString(), any())).thenReturn(mockResponse);
+        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
+        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
     }
 
     @Test
@@ -412,7 +407,6 @@ public class ProductExpServiceCloseTest {
 
     @Test
     public void validateTMBResponse() {
-        UtilMap utilMap = new UtilMap();
         FundAccountResponse fundAccountResponse = UtilMap.validateTMBResponse(null, null, null);
         Assert.assertNull(fundAccountResponse);
     }
@@ -426,49 +420,42 @@ public class ProductExpServiceCloseTest {
 
     @Test
     public void isCASADormant() {
-        UtilMap utilMap = new UtilMap();
         boolean fundAccountRs = UtilMap.isCASADormant(null);
         Assert.assertTrue(fundAccountRs);
     }
 
     @Test
     public void convertAccountType() {
-        UtilMap utilMap = new UtilMap();
         String fundAccountRs = UtilMap.convertAccountType("AAAA");
         Assert.assertEquals("", fundAccountRs);
     }
 
     @Test
     public void isCASADormantException() {
-        UtilMap utilMap = new UtilMap();
         boolean fundAccountRs = UtilMap.isCASADormant("data not found");
         Assert.assertFalse(fundAccountRs);
     }
 
     @Test
     public void isBusinessCloseException() {
-        UtilMap utilMap = new UtilMap();
         boolean fundAccountRs = UtilMap.isBusinessClose("06:00", "08:00");
         Assert.assertFalse(fundAccountRs);
     }
 
     @Test
     public void addColonDateFormat() {
-        UtilMap utilMap = new UtilMap();
         String fundAccountRs = UtilMap.deleteColonDateFormat("06:00");
         Assert.assertEquals("0600", fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatStart() {
-        UtilMap utilMap = new UtilMap();
         String fundAccountRs = UtilMap.deleteColonDateFormat("23:30");
         Assert.assertEquals("2330", fundAccountRs);
     }
 
     @Test
     public void addColonDateFormatFail() {
-        UtilMap utilMap = new UtilMap();
         String fundAccountRs = UtilMap.deleteColonDateFormat("");
         Assert.assertEquals("", fundAccountRs);
     }
