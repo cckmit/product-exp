@@ -145,7 +145,6 @@ public class CashForUServiceTest {
 		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
 		rateRequest.setAmount("10000");
 		requestBody.setAmount(rateRequest.getAmount());
-		cashForUservice.setRateCashForUInfo(configInfo);
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
 		Assert.assertNull(cashResponse.getInstallmentData());
 	}
