@@ -14,6 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class Information {
 
+    private String thaiFundName;
+
+    private String englishFundName;
+
     private String fundHouseCode;
 
     private String fundClassCode;
@@ -31,6 +35,10 @@ public class Information {
     private String shareClassNetAssets;
 
     private String distributionStatus;
+
+    private String dayEndNav;
+
+    private String dayEndNavDate;
 
     private String switchingInFeePercent;
 

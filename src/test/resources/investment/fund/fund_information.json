@@ -7,6 +7,8 @@
   },
   "data": {
     "fund": {
+      "thaiFundName": "ทหารไทย China Opportunity",
+      "englishFundName": "TMB China Opportunity Fund",
       "fundHouseCode": "TMBAM",
       "fundClassCode": "500",
       "thaiClassName": "กองทุนหุ้นที่ลงทุนในต่างประเทศ",
@@ -16,6 +18,8 @@
       "inceptionDate": "2014-10-13",
       "shareClassNetAssets": "7766541447.61",
       "distributionStatus": "Accumulated",
+      "dayEndNav": "23.6943",
+      "dayEndNavDate": "2021-05-10",
       "switchingInFeePercent": "1.500000",
       "actual": {
         "frontLoad": "1.500000",
