@@ -542,7 +542,7 @@ public class ProductsExpService {
                 CommonData commonData = commonDataList.get(0);
                 CommonTime noneServiceHour = commonData.getNoneServiceHour();
                 if (UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
-                    fundResponseData(fundResponse, noneServiceHour);
+                    fundResponseData(fundResponse);
                 }
             }
             return fundResponse;
@@ -558,9 +558,8 @@ public class ProductsExpService {
 
     /**
      * @param fundResponse
-     * @param noneServiceHour
      */
-    void fundResponseData(FundResponse fundResponse, CommonTime noneServiceHour) {
+    void fundResponseData(FundResponse fundResponse) {
         fundResponse.setError(true);
         fundResponse.setErrorCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         fundResponse.setErrorMsg(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());

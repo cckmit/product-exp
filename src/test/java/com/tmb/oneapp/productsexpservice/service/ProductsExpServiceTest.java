@@ -267,16 +267,6 @@ public class ProductsExpServiceTest {
     }
 
     @Test
-    void testFundResponseData() {
-        FundResponse fundResponse = getFundResponse();
-        CommonTime noneServiceHour = new CommonTime();
-        noneServiceHour.setStart("00:00");
-        noneServiceHour.setEnd("12:00");
-        productsExpService.fundResponseData(fundResponse, noneServiceHour);
-        assertNotNull(noneServiceHour);
-    }
-
-    @Test
     void testErrorResponse() {
         FundFactSheetValidationResponse validation = new FundFactSheetValidationResponse();
         validation.setError(true);
