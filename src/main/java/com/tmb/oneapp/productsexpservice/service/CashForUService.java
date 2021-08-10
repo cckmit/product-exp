@@ -25,8 +25,6 @@ public class CashForUService {
 
 	private CreditCardClient creditCardClient;
 
-	private CashForUConfigInfo rateCashForUInfo = null;
-
 	public CashForUService(CreditCardClient creditCardClient) {
 		this.creditCardClient = creditCardClient;
 	}
@@ -47,11 +45,9 @@ public class CashForUService {
 			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
 					.getInstallmentRate(correlationId, rateRequest);
 			InstallmentRateResponse installmentRateResponse = loanResponse.getBody().getData();
-			if (Objects.isNull(rateCashForUInfo)) {
-				ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
-						.getCurrentCashForYouRate();
-				rateCashForUInfo = response.getBody().getData();
-			}
+			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
+					.getCurrentCashForYouRate();
+			CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
 			responseModelInfo.setCashVatRate(formateDigit(rateCashForUInfo.getCashTransferVat()));
 			responseModelInfo.setCashFeeRate(formateDigit(rateCashForUInfo.getCashTransferFee()));
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
@@ -118,14 +114,9 @@ public class CashForUService {
 		CreditCardDetail cardDetail = fetchCardResponse.getBody().getCreditCard();
 		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
 
-		if (Objects.isNull(rateCashForUInfo)) {
-			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
-					.getCurrentCashForYouRate();
-			if(Objects.nonNull(response.getBody())) {
-				rateCashForUInfo = response.getBody().getData();
-			}
-		}
-
+		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
+				.getCurrentCashForYouRate();
+		CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
 		if (!allowWaiveFeeProduct(rateCashForUInfo, cardDetail.getProductId())) {
 			BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))
 					.multiply(new BigDecimal(requestBody.getAmount()));
@@ -206,10 +197,6 @@ public class CashForUService {
 		BigDecimal cashVatRate = new BigDecimal(responseModelInfo.getCashVatRate());
 		BigDecimal totalVatAmt = cashVatRate.multiply(cashFeeRate);
 		return formateDigit(totalVatAmt.toString());
-	}
-
-	public void setRateCashForUInfo(CashForUConfigInfo rateCashForUInfo) {
-		this.rateCashForUInfo = rateCashForUInfo;
 	}
 
 }
