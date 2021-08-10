@@ -56,12 +56,17 @@ public class CustomerService {
      * @return CustomerSearchResponse
      */
     public CustomerSearchResponse getCustomerInfo(String correlationId, String crmId) {
-        CrmSearchBody request = CrmSearchBody.builder()
-                .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
-                .searchValue(crmId)
-                .build();
-        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
-                customerServiceClient.customerSearch(correlationId, crmId, request);
-        return response.getBody().getData().get(0);
+        try {
+            CrmSearchBody request = CrmSearchBody.builder()
+                    .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
+                    .searchValue(UtilMap.halfCrmIdFormat(crmId))
+                    .build();
+            ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
+                    customerServiceClient.customerSearch(correlationId, crmId, request);
+            return response.getBody().getData().get(0);
+        }catch (Exception ex){
+            logger.error("error fetch customerSearch : {}",ex);
+        }
+        return null;
     }
 }

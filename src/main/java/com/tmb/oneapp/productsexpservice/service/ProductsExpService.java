@@ -49,6 +49,7 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetail
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,13 +87,11 @@ public class ProductsExpService {
 
     private final ProductExpAsyncService productExpAsyncService;
 
-    private final CustomerExpServiceClient customerExpServiceClient;
-
-    private final CustomerServiceClient customerServiceClient;
-
     private final KafkaProducerService kafkaProducerService;
 
     private final AlternativeService alternativeService;
+
+    private final CustomerService customerService;
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
@@ -100,18 +99,16 @@ public class ProductsExpService {
                               KafkaProducerService kafkaProducerService,
                               CommonServiceClient commonServiceClient,
                               ProductExpAsyncService productExpAsyncService,
-                              CustomerExpServiceClient customerExpServiceClient,
-                              CustomerServiceClient customerServiceClient,
-                              AlternativeService alternativeService) {
+                              AlternativeService alternativeService,
+                              CustomerService customerService) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
         this.commonServiceClient = commonServiceClient;
         this.productExpAsyncService = productExpAsyncService;
-        this.customerExpServiceClient = customerExpServiceClient;
-        this.customerServiceClient = customerServiceClient;
         this.alternativeService = alternativeService;
+        this.customerService = customerService;
 
     }
 
@@ -196,8 +193,7 @@ public class ProductsExpService {
     public List<String> getPortList(Map<String, String> header, String crmId, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
-        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), UtilMap.halfCrmIdFormat(crmId));
-
+        String portData = customerService.getPortFolioMutualFund(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID),crmId);
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
         if (!StringUtils.isEmpty(portData)) {
@@ -325,7 +321,7 @@ public class ProductsExpService {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
-            CustomerSearchResponse customerSearchResponse = getCustomerInfo(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
             fundFactSheetValidationResponse = validationAlternativeFlow(
                     correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, customerSearchResponse );
         } else {
@@ -359,7 +355,10 @@ public class ProductsExpService {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
-            CustomerSearchResponse customerSearchResponse = getCustomerInfo(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
+            if(StringUtils.isEmpty(customerSearchResponse)){
+                return responseNetWorkError(fundResponse);
+            }
             String fatcaFlag = customerSearchResponse.getFatcaFlag();
             fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, fatcaFlag);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
@@ -369,14 +368,12 @@ public class ProductsExpService {
         return fundResponse;
     }
 
-    private CustomerSearchResponse getCustomerInfo(String correlationId, String crmId) {
-        CrmSearchBody request = CrmSearchBody.builder()
-                .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
-                .searchValue(crmId)
-                .build();
-        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
-                customerServiceClient.customerSearch(correlationId, crmId, request);
-        return response.getBody().getData().get(0);
+    private FundResponse responseNetWorkError(FundResponse fundResponse){
+        fundResponse.setError(true);
+        fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+        fundResponse.setErrorMsg(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+        fundResponse.setErrorDesc(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+        return fundResponse;
     }
 
     /**
@@ -396,7 +393,7 @@ public class ProductsExpService {
      * @param crmId
      * @param fundFactSheetRequestBody
      * @param fundFactSheetValidationResponse
-     * @param fatcaFlag
+     * @param customerInfo
      * @return FundFactSheetValidationResponse
      */
     @LogAround
