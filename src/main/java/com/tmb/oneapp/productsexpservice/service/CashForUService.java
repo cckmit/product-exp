@@ -135,7 +135,21 @@ public class CashForUService {
 				.setCashInterestRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
 		responseModelInfo
 				.setCashVatRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
+		
+		responseModelInfo.setCashVatTotal(calculationVatTotalNoneLead(responseModelInfo));
 
+	}
+	
+	/**
+	 * Calculation vat total None lead 
+	 * @param responseModelInfo
+	 * @return
+	 */
+	private String calculationVatTotalNoneLead(CashForYourResponse responseModelInfo) {
+		BigDecimal cashFeeRate = new BigDecimal(responseModelInfo.getCashFeeRate());
+		BigDecimal cashVatRate = new BigDecimal(responseModelInfo.getCashVatRate());
+		BigDecimal totalVatAmt = cashVatRate.multiply(cashFeeRate);
+		return formateDigit(totalVatAmt.toString());
 	}
 
 	public void setRateCashForUInfo(CashForUConfigInfo rateCashForUInfo) {
