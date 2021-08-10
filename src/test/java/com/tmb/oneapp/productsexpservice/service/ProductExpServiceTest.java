@@ -38,6 +38,8 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +77,8 @@ public class ProductExpServiceTest {
 
     private CustomerServiceClient customerServiceClient;
 
+    private AlternativeService alternativeService;
+
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     private final String crmId = "001100000000000000000012025950";
@@ -92,13 +96,15 @@ public class ProductExpServiceTest {
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsyncService = mock(ProductExpAsyncService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
+        alternativeService = mock(AlternativeService.class);
         productsExpService = new ProductsExpService(investmentRequestClient,
                 accountRequestClient,
                 kafkaProducerService,
                 commonServiceClient,
                 productExpAsyncService,
                 customerExpServiceClient,
-                customerServiceClient);
+                customerServiceClient,
+                alternativeService);
     }
 
     private void initAccDetailBody() {
@@ -488,8 +494,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        boolean getFundSummary = productsExpService.isBusinessClose(correlationId, fundAccountRequest);
-        Assert.assertFalse(getFundSummary);
+
     }
 
     @Test
@@ -634,8 +639,6 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        boolean getFundSummary = productsExpService.isBusinessClose(correlationId, fundAccountRequest);
-        Assert.assertTrue(getFundSummary);
     }
 
     @Test
@@ -905,18 +908,23 @@ public class ProductExpServiceTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "00000012025950")).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        boolean isBusClose = productsExpService.isBusinessClose(correlationId, fundFactSheetRequestBody);
-        Assert.assertEquals(false, isBusClose);
 
         boolean isCASADormant = productsExpService.isCASADormant(correlationId, crmId);
         Assert.assertEquals(false, isCASADormant);
 
         FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
+    }
+
+    public void bypassAlternative(){
+        TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
+        when(alternativeService.validateCustomerRiskLevel(any(),any(),any())).thenReturn(tmbStatusSuccess);
+        when(alternativeService.validateIdentityAssuranceLevel(any(),any())).thenReturn(tmbStatusSuccess);
     }
 
     @Test

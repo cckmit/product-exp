@@ -17,6 +17,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSh
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +53,8 @@ public class ProductExpServiceCloseTest {
 
     private InvestmentRequestClient investmentRequestClient;
 
+    private AlternativeService alternativeService;
+
     private KafkaProducerService kafkaProducerService;
 
     private ObjectMapper mapper;
@@ -69,9 +73,10 @@ public class ProductExpServiceCloseTest {
         commonServiceClient = mock(CommonServiceClient.class);
         productExpAsyncService = mock(ProductExpAsyncService.class);
         customerServiceClient = mock(CustomerServiceClient.class);
+        alternativeService = mock(AlternativeService.class);
         mapper = mock(ObjectMapper.class);
         productsExpService = new ProductsExpService(investmentRequestClient, accountRequestClient, kafkaProducerService, commonServiceClient,
-                productExpAsyncService, customerExpServiceClient, customerServiceClient);
+                productExpAsyncService, customerExpServiceClient, customerServiceClient,alternativeService);
     }
 
     private Map<String, String> createHeader(String correlationId) {
@@ -113,15 +118,22 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        boolean isBusClose = productsExpService.isBusinessClose(correlationId, fundFactSheetRequestBody);
-        Assert.assertEquals(false, isBusClose);
         FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
+
+    public void bypassAlternative(){
+        TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
+        when(alternativeService.validateCustomerRiskLevel(any(),any(),any())).thenReturn(tmbStatusSuccess);
+        when(alternativeService.validateIdentityAssuranceLevel(any(),any())).thenReturn(tmbStatusSuccess);
+    }
+
+
 
     @Test
     public void getFundFactSheetAndValidationOfBusinessClose() {
@@ -152,6 +164,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -192,6 +205,7 @@ public class ProductExpServiceCloseTest {
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
 
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -259,6 +273,7 @@ public class ProductExpServiceCloseTest {
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFfs));
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -313,6 +328,7 @@ public class ProductExpServiceCloseTest {
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenThrow(MockitoException.class);
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -432,7 +448,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void isBusinessCloseException() {
         UtilMap utilMap = new UtilMap();
-        boolean fundAccountRs = UtilMap.isBusinessClose("yyy", "xxx");
+        boolean fundAccountRs = UtilMap.isBusinessClose("06:00", "08:00");
         Assert.assertFalse(fundAccountRs);
     }
 

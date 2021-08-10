@@ -8,10 +8,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.CustGeneralProfileResponse;
-import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.*;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
@@ -50,6 +48,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryB
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,6 +92,7 @@ public class ProductsExpService {
 
     private final KafkaProducerService kafkaProducerService;
 
+    private final AlternativeService alternativeService;
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
@@ -100,7 +101,8 @@ public class ProductsExpService {
                               CommonServiceClient commonServiceClient,
                               ProductExpAsyncService productExpAsyncService,
                               CustomerExpServiceClient customerExpServiceClient,
-                              CustomerServiceClient customerServiceClient) {
+                              CustomerServiceClient customerServiceClient,
+                              AlternativeService alternativeService) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
@@ -109,6 +111,7 @@ public class ProductsExpService {
         this.productExpAsyncService = productExpAsyncService;
         this.customerExpServiceClient = customerExpServiceClient;
         this.customerServiceClient = customerServiceClient;
+        this.alternativeService = alternativeService;
 
     }
 
@@ -322,9 +325,9 @@ public class ProductsExpService {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
-            String fatcaFlag = getFatcaFlag(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            CustomerSearchResponse customerSearchResponse = getCustomerInfo(correlationId, UtilMap.halfCrmIdFormat(crmId));
             fundFactSheetValidationResponse = validationAlternativeFlow(
-                    correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, fatcaFlag);
+                    correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, customerSearchResponse );
         } else {
             errorData(fundFactSheetValidationResponse, fundResponse);
         }
@@ -356,7 +359,8 @@ public class ProductsExpService {
         FundResponse fundResponse = new FundResponse();
         fundResponse = isServiceHour(correlationId, fundResponse);
         if (!fundResponse.isError()) {
-            String fatcaFlag = getFatcaFlag(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            CustomerSearchResponse customerSearchResponse = getCustomerInfo(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            String fatcaFlag = customerSearchResponse.getFatcaFlag();
             fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, fatcaFlag);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
                 fundResponseSuccess(fundResponse);
@@ -373,6 +377,16 @@ public class ProductsExpService {
         ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
                 customerServiceClient.customerSearch(correlationId, crmId, request);
         return response.getBody().getData().get(0).getFatcaFlag();
+    }
+
+    private CustomerSearchResponse getCustomerInfo(String correlationId, String crmId) {
+        CrmSearchBody request = CrmSearchBody.builder()
+                .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
+                .searchValue(crmId)
+                .build();
+        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
+                customerServiceClient.customerSearch(correlationId, crmId, request);
+        return response.getBody().getData().get(0);
     }
 
     /**
@@ -399,10 +413,30 @@ public class ProductsExpService {
     public FundFactSheetValidationResponse validationAlternativeFlow(String correlationId, String crmId,
                                                                      FundFactSheetRequestBody fundFactSheetRequestBody,
                                                                      FundFactSheetValidationResponse fundFactSheetValidationResponse,
-                                                                     String fatcaFlag) {
+                                                                     CustomerSearchResponse customerInfo) {
         boolean isStopped = false;
         final boolean isNotValid = true;
-        if (isCASADormant(correlationId, crmId)) {
+
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId,customerInfo,tmbStatus);
+        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
+            fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
+            fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
+            isStopped = true;
+        }
+
+        tmbStatus = alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(),tmbStatus);
+        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
+            fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
+            fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
+            isStopped = true;
+        }
+
+        if (!isStopped && isCASADormant(correlationId, crmId)) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
             fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
@@ -421,6 +455,7 @@ public class ProductsExpService {
             isStopped = true;
         }
 
+        String fatcaFlag = customerInfo.getFatcaFlag();
         if (!isStopped && fatcaFlag.equalsIgnoreCase("0")) {
             funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
