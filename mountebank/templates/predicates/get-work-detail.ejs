@@ -1,0 +1,66 @@
+{
+  "predicates": [
+    {
+      "equals": {
+        "path": "/apis/products/lending/loanOnlineSubmission/workingDetail",
+        "query": {
+            "caId": "2021071404188196"
+        },
+        "method": "GET"
+      }
+    }
+  ],
+  "responses": [
+    {
+      "is": {
+        "statusCode": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        "body": {
+          "status": {
+            "code": "0000",
+            "message": "success",
+            "service": "products-exp-service",
+            "description": "success"
+          },
+          "data": {
+            "employmentStatus": "01",
+            "rmOccupation": "02",
+            "occupation": "03",
+            "contractEmployedFlag": "Y",
+            "businessType": "",
+            "businessSubType": "",
+            "employmentName": "บริษัท ออดอี จำกัด",
+            "address": {
+              "buildingName": "อาคารปรีชา",
+              "no": "12/34",
+              "floor": "7",
+              "moo": "",
+              "streetName": "รัชดา 24",
+              "road": "รัชดาภิเษก",
+              "postalCode": "10900",
+              "province": "กรุงเทพมหานคร",
+              "country": "ไทย",
+              "tumbol": "ลาดยาว",
+              "amphur": "จตุจักร"
+            },
+            "tel": "021234567",
+            "exTel": "330",
+            "incomeBasicSalary": "21000",
+            "incomeOtherIncome": "3000",
+            "incomeBank": "01",
+            "incomeBankAccoutNumber": "1231212124",
+            "incomeSharedHolderPercent": "",
+            "incomeDeclared": "",
+            "incometotalLastMthCreditAcct1": "",
+            "incomeType": "01",
+            "cardDelivery": "H",
+            "emailStatementFlag": "Y"
+          }
+        }
+      }
+    }
+  ]
+}
