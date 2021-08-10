@@ -2,11 +2,14 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
@@ -30,13 +33,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +52,11 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ProductExpServiceCloseTest {
+
+    @Mock
+    private CommonServiceClient commonServiceClient;
 
     @Mock
     private AccountRequestClient accountRequestClient;
@@ -116,6 +127,7 @@ public class ProductExpServiceCloseTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            mockCommonService();
             mockGetFlatcaResponseFromCustomerSearch();
             bypassAlternative();
         } catch (Exception ex) {
@@ -124,6 +136,26 @@ public class ProductExpServiceCloseTest {
 
         FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
+    }
+
+    private void mockCommonService() {
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommonRs;
+        CommonData commonData = new CommonData();
+        CommonTime commonTime = new CommonTime();
+        List<CommonData> commonDataList = new ArrayList<>();
+
+        commonTime.setStart("00:00");
+        commonTime.setEnd("00:00");
+        commonData.setNoneServiceHour(commonTime);
+        commonDataList.add(commonData);
+
+        responseCommon.setData(commonDataList);
+        responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+        when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
     }
 
     public void bypassAlternative(){
@@ -163,6 +195,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
+            mockCommonService();
             bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
