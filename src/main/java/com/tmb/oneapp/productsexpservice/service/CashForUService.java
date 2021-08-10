@@ -121,7 +121,9 @@ public class CashForUService {
 		if (Objects.isNull(rateCashForUInfo)) {
 			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
 					.getCurrentCashForYouRate();
-			rateCashForUInfo = response.getBody().getData();
+			if(Objects.nonNull(response.getBody())) {
+				rateCashForUInfo = response.getBody().getData();
+			}
 		}
 
 		if (!allowWaiveFeeProduct(rateCashForUInfo, cardDetail.getProductId())) {
