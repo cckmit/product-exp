@@ -7,9 +7,13 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.calculatecustomerrisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +44,9 @@ public class AlternativeServiceTest {
 
     @Mock
     public CommonServiceClient commonServiceClient;
+
+    @Mock
+    public CustomerServiceClient customerServiceClient;
 
     @InjectMocks
     public AlternativeService alternativeService;
@@ -111,8 +118,20 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000018_when_call_validate_risk_level_not_valid() throws Exception {
+        //given
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+        response.setData("B3");
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
+
         // When
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel("B3",  TmbStatusUtil.successStatus());
+        CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
+                .builder()
+                .businessTypeCode("22")
+                .officeAddressData(AddressWithPhone.builder().build())
+                .registeredAddressData(AddressWithPhone.builder().build())
+                .primaryAddressData(AddressWithPhone.builder().build())
+                .build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());

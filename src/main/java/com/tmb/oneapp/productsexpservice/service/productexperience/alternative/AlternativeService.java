@@ -12,6 +12,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.calculatecustomerrisk.request.AddressModel;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.calculatecustomerrisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -209,8 +211,8 @@ public class AlternativeService {
     }
 
     // validate customer risk level
-    public TmbStatus validateCustomerRiskLevel(CustomerSearchResponse customerInfo, TmbStatus status) {
-        String customerRiskLevel = calculateRiskLevel(customerInfo);
+    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status) {
+        String customerRiskLevel = calculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
             String[] values = {"C3", "B3"};
@@ -229,10 +231,72 @@ public class AlternativeService {
         return status;
     }
 
-    // todo
-    private String calculateRiskLevel(CustomerSearchResponse customerInfo) {
-        customerServiceClient.customerSearch()
-        return null;
+    private String calculateRiskLevel(String correlationId,CustomerSearchResponse customerInfo) {
+        EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
+        ResponseEntity<TmbOneServiceResponse<String>> customerRiskResponse =
+                customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
+        return customerRiskResponse.getBody().getData();
+    }
+
+    private EkycRiskCalculateRequest mappingFieldToRequestEkycRiskCalculate(CustomerSearchResponse customerInfo) {
+
+        return EkycRiskCalculateRequest.builder()
+                .businessCode(customerInfo.getBusinessTypeCode())
+                .cardId(customerInfo.getIdNumber())
+                .dob(customerInfo.getBirthDate())
+                .dobCountry(customerInfo.getNationality())
+                .firstName(customerInfo.getCustomerThaiFirstName())
+                .firstNameEng(customerInfo.getCustomerEnglishFirstName())
+                .lastName(customerInfo.getCustomerThaiLastName())
+                .lastNameEng(customerInfo.getCustomerEnglishLastName())
+                .occupationCode(customerInfo.getOccupationCode())
+                .officeAddress(
+                        AddressModel.builder()
+                                .building(customerInfo.getOfficeAddressData().getBuildVillageName())
+                                .companyName(customerInfo.getOfficeAddressData().getWorkingPlace())
+                                .country(customerInfo.getOfficeAddressData().getCountry())
+                                .district(customerInfo.getOfficeAddressData().getDistrict())
+                                .moo(customerInfo.getOfficeAddressData().getMoo())
+                                .no(customerInfo.getOfficeAddressData().getAddressNo())
+                                .phoneExtension(customerInfo.getOfficeAddressData().getPhoneExtension())
+                                .phoneNo(customerInfo.getOfficeAddressData().getPhoneNo())
+                                .postalCode(customerInfo.getOfficeAddressData().getPostalCode())
+                                .province(customerInfo.getOfficeAddressData().getProvince())
+                                .road(customerInfo.getOfficeAddressData().getRoad())
+                                .soi(customerInfo.getOfficeAddressData().getSoi())
+                                .subDistrict(customerInfo.getOfficeAddressData().getSubDistrict())
+                                .build()
+                )
+                .primaryAddress(
+                        AddressModel.builder()
+                                .building(customerInfo.getPrimaryAddressData().getBuildVillageName())
+                                .country(customerInfo.getPrimaryAddressData().getCountry())
+                                .district(customerInfo.getPrimaryAddressData().getDistrict())
+                                .moo(customerInfo.getPrimaryAddressData().getMoo())
+                                .no(customerInfo.getPrimaryAddressData().getAddressNo())
+                                .postalCode(customerInfo.getPrimaryAddressData().getPostalCode())
+                                .province(customerInfo.getPrimaryAddressData().getProvince())
+                                .road(customerInfo.getPrimaryAddressData().getRoad())
+                                .soi(customerInfo.getPrimaryAddressData().getSoi())
+                                .subDistrict(customerInfo.getPrimaryAddressData().getSubDistrict())
+                                .build()
+                )
+                .registeredAddress(
+                        AddressModel.builder()
+                                .building(customerInfo.getRegisteredAddressData().getBuildVillageName())
+                                .country(customerInfo.getRegisteredAddressData().getCountry())
+                                .district(customerInfo.getRegisteredAddressData().getDistrict())
+                                .moo(customerInfo.getRegisteredAddressData().getMoo())
+                                .no(customerInfo.getRegisteredAddressData().getAddressNo())
+                                .postalCode(customerInfo.getRegisteredAddressData().getPostalCode())
+                                .province(customerInfo.getRegisteredAddressData().getProvince())
+                                .road(customerInfo.getRegisteredAddressData().getRoad())
+                                .soi(customerInfo.getRegisteredAddressData().getSoi())
+                                .subDistrict(customerInfo.getRegisteredAddressData().getSubDistrict())
+                                .build()
+                )
+                .build();
+
     }
 
 }
