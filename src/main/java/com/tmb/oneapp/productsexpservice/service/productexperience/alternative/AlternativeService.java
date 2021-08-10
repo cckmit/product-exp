@@ -8,18 +8,17 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
-import com.tmb.oneapp.productsexpservice.service.productexperience.customer.calculatecustomerrisk.request.AddressModel;
-import com.tmb.oneapp.productsexpservice.service.productexperience.customer.calculatecustomerrisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -237,7 +236,6 @@ public class AlternativeService {
                 customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
         return customerRiskResponse.getBody().getData();
     }
-
     private EkycRiskCalculateRequest mappingFieldToRequestEkycRiskCalculate(CustomerSearchResponse customerInfo) {
 
         return EkycRiskCalculateRequest.builder()

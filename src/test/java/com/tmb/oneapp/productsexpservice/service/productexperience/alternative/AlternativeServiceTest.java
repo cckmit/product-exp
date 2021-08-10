@@ -13,7 +13,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
-import com.tmb.oneapp.productsexpservice.service.productexperience.customer.calculatecustomerrisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

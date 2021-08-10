@@ -10,7 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
-import com.tmb.oneapp.productsexpservice.service.productexperience.customer.calculatecustomerrisk.request.EkycRiskCalculateRequest;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
