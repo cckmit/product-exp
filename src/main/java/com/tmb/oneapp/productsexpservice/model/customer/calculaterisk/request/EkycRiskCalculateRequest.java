@@ -12,42 +12,42 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EkycRiskCalculateRequest {
     @JsonProperty("business_code")
-    public String businessCode;
+    private String businessCode;
 
     @JsonProperty("card_id")
-    public String cardId;
+    private String cardId;
 
     @JsonProperty("dob")
-    public String dob;
+    private String dob;
 
     @JsonProperty("dob_country")
-    public String dobCountry;
+    private String dobCountry;
 
     @JsonProperty("first_name")
-    public String firstName;
+    private String firstName;
 
     @JsonProperty("first_name_eng")
-    public String firstNameEng;
+    private String firstNameEng;
 
     @JsonProperty("income_source_country")
-    public String incomeSourceCountry;
+    private String incomeSourceCountry;
 
     @JsonProperty("last_name")
-    public String lastName;
+    private String lastName;
 
     @JsonProperty("last_name_eng")
-    public String lastNameEng;
+    private String lastNameEng;
 
     @JsonProperty("occupation_code")
-    public String occupationCode;
+    private String occupationCode;
 
     @JsonProperty("office_address")
-    public AddressModel officeAddress;
+    private AddressModel officeAddress;
 
     @JsonProperty("primary_address")
-    public AddressModel primaryAddress;
+    private AddressModel primaryAddress;
 
     @JsonProperty("registered_address")
-    public AddressModel registeredAddress;
+    private AddressModel registeredAddress;
 
 }

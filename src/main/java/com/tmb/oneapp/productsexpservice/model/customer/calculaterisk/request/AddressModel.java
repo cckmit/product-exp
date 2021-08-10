@@ -12,35 +12,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddressModel {
 
-    public String building;
+    private String building;
 
     @JsonProperty("company_name")
-    public String companyName;
+    private String companyName;
 
-    public String country;
+    private String country;
 
-    public String district;
+    private String district;
 
-    public String moo;
+    private String moo;
 
-    public String no;
+    private String no;
 
     @JsonProperty("phone_extension")
-    public String phoneExtension;
+    private String phoneExtension;
 
     @JsonProperty("phone_no")
-    public String phoneNo;
+    private String phoneNo;
 
     @JsonProperty("postal_code")
-    public String postalCode;
+    private String postalCode;
 
-    public String province;
+    private String province;
 
-    public String road;
+    private String road;
 
-    public String soi;
+    private String soi;
 
     @JsonProperty("sub_district")
-    public String subDistrict;
+    private String subDistrict;
 
 }

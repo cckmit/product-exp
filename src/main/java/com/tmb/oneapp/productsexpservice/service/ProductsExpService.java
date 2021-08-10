@@ -50,6 +50,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryB
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,6 +93,8 @@ public class ProductsExpService {
 
     private final KafkaProducerService kafkaProducerService;
 
+    private final AlternativeService alternativeService;
+
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
@@ -99,7 +102,8 @@ public class ProductsExpService {
                               CommonServiceClient commonServiceClient,
                               ProductExpAsyncService productExpAsyncService,
                               CustomerExpServiceClient customerExpServiceClient,
-                              CustomerServiceClient customerServiceClient) {
+                              CustomerServiceClient customerServiceClient,
+                              AlternativeService alternativeService) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
@@ -108,6 +112,8 @@ public class ProductsExpService {
         this.productExpAsyncService = productExpAsyncService;
         this.customerExpServiceClient = customerExpServiceClient;
         this.customerServiceClient = customerServiceClient;
+        this.alternativeService = alternativeService;
+
     }
 
     /**
@@ -418,10 +424,7 @@ public class ProductsExpService {
             fundResponseError(fundFactSheetValidationResponse, isNotValid);
             isStopped = true;
         }
-        if (!isStopped && isBusinessClose(correlationId, fundFactSheetRequestBody)) {
-            errorResponse(fundFactSheetValidationResponse, isNotValid);
-            isStopped = true;
-        }
+
         if (!isStopped && fatcaFlag.equalsIgnoreCase("0")) {
             funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
