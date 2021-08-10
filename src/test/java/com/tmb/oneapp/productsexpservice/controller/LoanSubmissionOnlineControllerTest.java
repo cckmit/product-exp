@@ -5,10 +5,13 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 class LoanSubmissionOnlineControllerTest {
 
+    @InjectMocks
     LoanSubmissionOnlineController loanSubmissionOnlineController;
 
     @Mock
@@ -27,10 +31,12 @@ class LoanSubmissionOnlineControllerTest {
     @Mock
     LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
 
+    @Mock
+    LoanSubmissionOnlineService loanSubmissionOnlineService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanSubmissionOnlineController = new LoanSubmissionOnlineController(loanSubmissionIncomeInfoService, loanSubmissionCreateApplicationService);
     }
 
     @Test
@@ -61,6 +67,21 @@ class LoanSubmissionOnlineControllerTest {
     public void testCreateApplicationFail() throws  TMBCommonException {
         when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.createApplication("rmid",new LoanSubmissionCreateApplicationReq());
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
+    public void testGetDropdownLoanSubmissionWorkingDetailSuccess() throws  TMBCommonException {
+        DropdownsLoanSubmissionWorkingDetail dropdownWorkingDetail = new DropdownsLoanSubmissionWorkingDetail();
+        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(any(),any())).thenReturn(dropdownWorkingDetail);
+        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid");
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testGetDropdownLoanSubmissionWorkingDetailFail() throws  TMBCommonException {
+        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(any(),any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid");
         assertTrue(responseEntity.getStatusCode().isError());
     }
 

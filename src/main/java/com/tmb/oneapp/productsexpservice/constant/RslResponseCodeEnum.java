@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
-public enum LegacyResponseCodeEnum implements Serializable {
+public enum RslResponseCodeEnum implements Serializable {
 	SUCCESS("MSG_000", "Success");
 	
 	private final String code;
