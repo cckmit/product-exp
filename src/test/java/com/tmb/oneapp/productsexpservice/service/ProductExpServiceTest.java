@@ -7,6 +7,7 @@ import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -490,10 +491,14 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
+
+            mockIsHourClose();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
+        FundFactSheetValidationResponse actual = productsExpService.getFundFactSheetValidation(correlationId,crmId,fundAccountRequest);
+        Assert.assertEquals(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),actual.getErrorCode() );
 
     }
 
@@ -526,6 +531,25 @@ public class ProductExpServiceTest {
         fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
         Assert.assertNotNull(responseCommonRs);
         Assert.assertNotNull(fundResponse);
+    }
+
+    private void mockIsHourClose(){
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommonRs;
+        CommonData commonData = new CommonData();
+        CommonTime commonTime = new CommonTime();
+        List<CommonData> commonDataList = new ArrayList<>();
+        commonTime.setStart("06:00");
+        commonTime.setEnd("23:00");
+        commonData.setNoneServiceHour(commonTime);
+        commonDataList.add(commonData);
+
+        responseCommon.setData(commonDataList);
+        responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+        when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
     }
 
     @Test
@@ -634,10 +658,13 @@ public class ProductExpServiceTest {
         fundAccountRequest.setOrderType("1");
 
         try {
-            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
+            when(commonServiceClient.getCommonConfigByModule(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+        FundFactSheetValidationResponse actual = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundAccountRequest);
+        Assert.assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY,actual.getErrorCode());
 
     }
 

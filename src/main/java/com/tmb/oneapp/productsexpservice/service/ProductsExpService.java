@@ -11,6 +11,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.*;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -561,9 +562,9 @@ public class ProductsExpService {
      */
     void fundResponseData(FundResponse fundResponse, CommonTime noneServiceHour) {
         fundResponse.setError(true);
-        fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
-        fundResponse.setErrorMsg(noneServiceHour.getStart());
-        fundResponse.setErrorDesc(noneServiceHour.getEnd());
+        fundResponse.setErrorCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+        fundResponse.setErrorMsg(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        fundResponse.setErrorDesc(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
     }
 
     /**

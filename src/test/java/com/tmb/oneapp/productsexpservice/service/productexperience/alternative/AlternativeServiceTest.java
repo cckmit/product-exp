@@ -5,7 +5,7 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
@@ -77,9 +77,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateServiceHour(correlationId, TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc(), actual.getDescription());
     }
 
     @Test
@@ -88,9 +88,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateDateNotOverTwentyYearOld("2010-07-08", TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getDescription());
     }
 
     @Test
@@ -110,9 +110,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateCasaAccountActiveOnce(newArrayList(depositAccount), TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc(), actual.getDescription());
     }
 
     @Test
@@ -133,9 +133,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc(), actual.getDescription());
     }
 
     @Test
@@ -145,9 +145,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateIdentityAssuranceLevel("100",  TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc(), actual.getDescription());
     }
 
     @Test
@@ -160,9 +160,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateNationality(correlationId,"TH","US",TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc(), actual.getDescription());
     }
 
     @Test
@@ -171,9 +171,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateFatcaFlagNotValid("0",TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc(), actual.getDescription());
     }
 
     @Test
@@ -182,9 +182,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0","2021-07-08",TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());
-        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getMessage());
-        assertEquals(OpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc(), actual.getDescription());
+        assertEquals(AlternativeErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());
+        assertEquals(AlternativeErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getMessage());
+        assertEquals(AlternativeErrorEnums.FAILED_VERIFY_KYC.getDesc(), actual.getDescription());
     }
 
 
