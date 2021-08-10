@@ -45,4 +45,10 @@ public class AddressWithPhone {
     @JsonProperty("working_place")
     public String workingPlace;
 
+    @JsonProperty("phone_extension")
+    public String phoneExtension;
+
+    @JsonProperty("phone_no")
+    public String phoneNo;
+
 }
