@@ -50,7 +50,6 @@ import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryB
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
-import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,7 +92,6 @@ public class ProductsExpService {
 
     private final KafkaProducerService kafkaProducerService;
 
-    private final AlternativeService alternativeService;
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
@@ -102,8 +100,7 @@ public class ProductsExpService {
                               CommonServiceClient commonServiceClient,
                               ProductExpAsyncService productExpAsyncService,
                               CustomerExpServiceClient customerExpServiceClient,
-                              CustomerServiceClient customerServiceClient,
-                              AlternativeService alternativeService) {
+                              CustomerServiceClient customerServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
@@ -112,7 +109,6 @@ public class ProductsExpService {
         this.productExpAsyncService = productExpAsyncService;
         this.customerExpServiceClient = customerExpServiceClient;
         this.customerServiceClient = customerServiceClient;
-        this.alternativeService = alternativeService;
 
     }
 
