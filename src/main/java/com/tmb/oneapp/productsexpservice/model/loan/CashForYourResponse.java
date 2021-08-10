@@ -20,6 +20,8 @@ public class CashForYourResponse {
 	private String cashInterestRate;
 	@JsonProperty("cash_vat_rate")
 	private String cashVatRate;
+	@JsonProperty("cash_vat_total")
+	private String cashVatTotal;
 	@JsonProperty("max_transfer_amt")
 	private String maximumTransferAmt;
 
