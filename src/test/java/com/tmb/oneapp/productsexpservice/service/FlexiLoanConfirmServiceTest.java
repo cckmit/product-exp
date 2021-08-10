@@ -19,7 +19,7 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.common.model.response.notification.NotificationResponse;
-import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
+import com.tmb.oneapp.productsexpservice.constant.RslResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -130,7 +130,7 @@ public class FlexiLoanConfirmServiceTest {
         ResponseFacility response = new ResponseFacility();
 
         Header header = new Header();
-        header.setResponseCode(LegacyResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
         response.setHeader(header);
 
         Body body = new Body();
@@ -160,7 +160,7 @@ public class FlexiLoanConfirmServiceTest {
         ResponseIndividual response = new ResponseIndividual();
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
-        header.setResponseCode(LegacyResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
@@ -176,9 +176,9 @@ public class FlexiLoanConfirmServiceTest {
         ResponseCreditcard response = new ResponseCreditcard();
 
         com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header header = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header();
-        header.setResponseCode(LegacyResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
         response.setHeader(header);
-        response.getHeader().setResponseCode(LegacyResponseCodeEnum.SUCCESS.getCode());
+        response.getHeader().setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
 
         com.tmb.common.model.legacy.rsl.ws.creditcard.response.Body body = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Body();
         response.setBody(body);
@@ -193,7 +193,7 @@ public class FlexiLoanConfirmServiceTest {
         ResponseApplication response = new ResponseApplication();
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
-        header.setResponseCode(LegacyResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
@@ -208,7 +208,7 @@ public class FlexiLoanConfirmServiceTest {
         ResponseInstantLoanCalUW response = new ResponseInstantLoanCalUW();
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header();
-        header.setResponseCode(LegacyResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body();
@@ -236,7 +236,7 @@ public class FlexiLoanConfirmServiceTest {
         ResponseInstantLoanSubmit response = new ResponseInstantLoanSubmit();
 
         com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Header();
-        header.setResponseCode(LegacyResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Body();
