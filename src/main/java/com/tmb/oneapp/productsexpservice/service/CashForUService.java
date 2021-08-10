@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -117,31 +118,85 @@ public class CashForUService {
 				requestBody.getAccountId());
 		CreditCardDetail cardDetail = fetchCardResponse.getBody().getCreditCard();
 		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
-		BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))
-				.multiply(new BigDecimal(requestBody.getAmount()));
-		BigDecimal summaryFeee = cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt();
-		if ("1".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
-			if (feeAmt.compareTo(cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt()) > 0) {
-				summaryFeee = feeAmt;
-			}
-			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(summaryFeee)));
-		} else if ("2".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
-			BigDecimal totalFee = feeAmt.add(summaryFeee);
-			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(totalFee)));
-		} else {
-			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(feeAmt)));
+
+		if (Objects.isNull(rateCashForUInfo)) {
+			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
+					.getCurrentCashForYouRate();
+			rateCashForUInfo = response.getBody().getData();
 		}
-		responseModelInfo
-				.setCashInterestRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
-		responseModelInfo
-				.setCashVatRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
-		
-		responseModelInfo.setCashVatTotal(calculationVatTotalNoneLead(responseModelInfo));
+
+		if (!allowWaiveFeeProduct(rateCashForUInfo, cardDetail.getProductId())) {
+			BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))
+					.multiply(new BigDecimal(requestBody.getAmount()));
+			BigDecimal summaryFeee = cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt();
+			if ("1".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
+				if (feeAmt.compareTo(cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt()) > 0) {
+					summaryFeee = feeAmt;
+				}
+				responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(summaryFeee)));
+			} else if ("2".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
+				BigDecimal totalFee = feeAmt.add(summaryFeee);
+				responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(totalFee)));
+			} else {
+				responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(feeAmt)));
+			}
+		} else {
+			responseModelInfo.setCashFeeRate(formateDigit("0"));
+		}
+
+		if (!allowWaiveVatProduct(rateCashForUInfo, cardDetail.getProductId())) {
+			responseModelInfo.setCashInterestRate(
+					formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
+			responseModelInfo.setCashVatRate(
+					formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
+			responseModelInfo.setCashVatTotal(calculationVatTotalNoneLead(responseModelInfo));
+		} else {
+			responseModelInfo.setCashInterestRate(formateDigit("0"));
+			responseModelInfo.setCashVatRate(formateDigit("0"));
+			responseModelInfo.setCashVatTotal(formateDigit("0"));
+		}
 
 	}
-	
+
 	/**
-	 * Calculation vat total None lead 
+	 * Validate product for waive fee zero
+	 * 
+	 * @param rateCashForUInfo
+	 * @param productId
+	 * @return
+	 */
+	private boolean allowWaiveVatProduct(CashForUConfigInfo rateCashForUInfo, String productId) {
+		List<String> waiveVatProducts = rateCashForUInfo.getWaiveVatProducts();
+		boolean isAllow = false;
+		for (String code : waiveVatProducts) {
+			if (productId.equals(code)) {
+				isAllow = true;
+			}
+		}
+		return isAllow;
+	}
+
+	/**
+	 * Validate product for waive vat zero
+	 * 
+	 * @param rateCashForUInfo
+	 * @param productId
+	 * @return
+	 */
+	private boolean allowWaiveFeeProduct(CashForUConfigInfo rateCashForUInfo, String productId) {
+		List<String> waiveFeeProducts = rateCashForUInfo.getWaiveFeeProducts();
+		boolean isAllow = false;
+		for (String code : waiveFeeProducts) {
+			if (productId.equals(code)) {
+				isAllow = true;
+			}
+		}
+		return isAllow;
+	}
+
+	/**
+	 * Calculation vat total None lead
+	 * 
 	 * @param responseModelInfo
 	 * @return
 	 */
