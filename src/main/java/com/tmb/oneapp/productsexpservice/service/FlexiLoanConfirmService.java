@@ -16,7 +16,7 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.oneapp.productsexpservice.constant.LegacyResponseCodeEnum;
+import com.tmb.oneapp.productsexpservice.constant.RslResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.RSLProductCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -114,7 +114,7 @@ public class FlexiLoanConfirmService {
 
     private Facility getFacility(Long caID) throws ServiceException, RemoteException {
         ResponseFacility response = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
-        if (LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
+        if (RslResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
             return response.getBody().getFacilities()[0];
         }
         throw new ExportException("get facility fail");
@@ -122,7 +122,7 @@ public class FlexiLoanConfirmService {
 
     private Individual getCustomer(Long caID) throws ServiceException, RemoteException {
         ResponseIndividual response = getCustomerInfoClient.searchCustomerInfoByCaID(caID);
-        if (LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
+        if (RslResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
             return response.getBody().getIndividuals()[0];
         }
         throw new ExportException("get individual fail");
@@ -131,7 +131,7 @@ public class FlexiLoanConfirmService {
     private CreditCard getCreditCard(Long caID, String productCode) throws ServiceException, RemoteException {
         if (ProductsExpServiceConstant.CREDIT_CARDS_CODE.contains(productCode)) {
             ResponseCreditcard response = getCreditCardInfoClient.searchCreditcardInfoByCaID(caID);
-            if (LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
+            if (RslResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
                 return response.getBody().getCreditCards()[0];
             }
             throw new ExportException("get credit card fail");
@@ -266,7 +266,7 @@ public class FlexiLoanConfirmService {
 
     private ResponseApplication getApplicationInfo(long caID) throws ServiceException, RemoteException {
         ResponseApplication response = getApplicationInfoClient.getApplicationInfo(caID);
-        if (LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
+        if (RslResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
             return response;
         }
         throw new ExportException("get application info fail");
@@ -280,7 +280,7 @@ public class FlexiLoanConfirmService {
         request.setBody(body);
 
         ResponseInstantLoanCalUW response = instantLoanCalUWClient.getCalculateUnderwriting(request);
-        if (LegacyResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
+        if (RslResponseCodeEnum.SUCCESS.getCode().equals(response.getHeader().getResponseCode())) {
             return response;
         }
         throw new ExportException("get instantLoanCalUW fail");
