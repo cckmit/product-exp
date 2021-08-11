@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -227,7 +226,7 @@ public class AlternativeService {
 
     // validate customer risk level
     public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status) {
-        String customerRiskLevel = calculateRiskLevel(correlationId,customerInfo);
+        String customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
             String[] values = {"C3", "B3"};
@@ -246,11 +245,16 @@ public class AlternativeService {
         return status;
     }
 
-    private String calculateRiskLevel(String correlationId,CustomerSearchResponse customerInfo) {
-        EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
-        ResponseEntity<TmbOneServiceResponse<String>> customerRiskResponse =
-                customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
-        return customerRiskResponse.getBody().getData();
+    private String fetchApiculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
+        try{
+            EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
+            ResponseEntity<TmbOneServiceResponse<String>> customerRiskResponse =
+                    customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
+            return customerRiskResponse.getBody().getData();
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE,ex);
+        }
+        return null;
     }
     private EkycRiskCalculateRequest mappingFieldToRequestEkycRiskCalculate(CustomerSearchResponse customerInfo) {
 

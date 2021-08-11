@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -151,6 +152,25 @@ public class AlternativeServiceTest {
         assertEquals(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
         assertEquals(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getMessage());
         assertEquals(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_success_code_when_call_validate_risk_level_not_valid() throws Exception {
+        //given
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenThrow(MockitoException.class);
+
+        // When
+        CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
+                .builder()
+                .businessTypeCode("22")
+                .officeAddressData(AddressWithPhone.builder().build())
+                .registeredAddressData(AddressWithPhone.builder().build())
+                .primaryAddressData(AddressWithPhone.builder().build())
+                .build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
     }
 
     @Test
