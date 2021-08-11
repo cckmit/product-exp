@@ -8,13 +8,15 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.*;
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
@@ -84,8 +86,6 @@ public class ProductsExpService {
 
     private final AccountRequestClient accountRequestClient;
 
-    private final CommonServiceClient commonServiceClient;
-
     private final ProductExpAsyncService productExpAsyncService;
 
     private final KafkaProducerService kafkaProducerService;
@@ -98,7 +98,6 @@ public class ProductsExpService {
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
-                              CommonServiceClient commonServiceClient,
                               ProductExpAsyncService productExpAsyncService,
                               AlternativeService alternativeService,
                               CustomerService customerService) {
@@ -106,7 +105,6 @@ public class ProductsExpService {
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
-        this.commonServiceClient = commonServiceClient;
         this.productExpAsyncService = productExpAsyncService;
         this.alternativeService = alternativeService;
         this.customerService = customerService;
