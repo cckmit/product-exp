@@ -2,8 +2,10 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -32,6 +34,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,10 +65,24 @@ public class AlternativeServiceTest {
     }
 
     private void mockNotPassServiceHour() {
+        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
         FundResponse fundResponse = new FundResponse();
         fundResponse.setError(true);
-        when(productsExpService.isServiceHour(any(), any(), TmbStatusUtil.successStatus())).thenReturn(fundResponse);
-    }
+        CommonData commonData = new CommonData();
+        CommonTime commonTime = new CommonTime();
+        List<CommonData> commonDataList = new ArrayList<>();
+
+        commonTime.setStart("00:00");
+        commonTime.setEnd("00:00");
+        commonData.setNoneServiceHour(commonTime);
+        commonDataList.add(commonData);
+
+        responseCommon.setData(commonDataList);
+        responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+        when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));    }
 
     @Test
     void should_return_status_code_2000001_when_call_validate_service_hour() throws Exception {
