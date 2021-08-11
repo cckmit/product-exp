@@ -400,9 +400,7 @@ public class ProductsExpService {
                                                                      FundFactSheetRequestBody fundFactSheetRequestBody,
                                                                      FundFactSheetValidationResponse fundFactSheetValidationResponse,
                                                                      CustomerSearchResponse customerInfo) {
-        boolean isStopped = false;
         final boolean isNotValid = true;
-
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
 
         // validate age should > 20
@@ -453,18 +451,20 @@ public class ProductsExpService {
         }
 
         String fatcaFlag = customerInfo.getFatcaFlag();
-        if (!isStopped && fatcaFlag.equalsIgnoreCase("0")) {
+        if (fatcaFlag.equalsIgnoreCase("0")) {
             funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-        } else if (!isStopped && !fatcaFlag.equalsIgnoreCase("N")) {
+            return  fundFactSheetValidationResponse;
+        } else if (!fatcaFlag.equalsIgnoreCase("N")) {
             funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.USNATIONAL.getCode(),
                     FatcaErrorEnums.USNATIONAL.getMsg(),
                     FatcaErrorEnums.USNATIONAL.getDesc());
+            return  fundFactSheetValidationResponse;
         }
-        return fundFactSheetValidationResponse;
+        return  fundFactSheetValidationResponse;
     }
 
     void errorResponse(FundFactSheetValidationResponse fundFactSheetValidationResponse, boolean isNotValid) {
