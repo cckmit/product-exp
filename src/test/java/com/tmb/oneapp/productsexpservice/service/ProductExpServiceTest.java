@@ -492,7 +492,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse actual = productsExpService.getFundFactSheetValidation(correlationId,crmId,fundAccountRequest);
+        FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId,crmId,fundAccountRequest);
         Assert.assertEquals(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),actual.getErrorCode() );
 
     }
@@ -556,7 +556,7 @@ public class ProductExpServiceTest {
         mockExceptionServiceHour();
 
         // then
-        FundFactSheetValidationResponse actual = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundAccountRequest);
+        FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundAccountRequest);
         Assert.assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY,actual.getErrorCode());
 
     }
@@ -622,7 +622,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -658,7 +658,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -703,8 +703,7 @@ public class ProductExpServiceTest {
 
         FundResponse fundResponse = new FundResponse();
         productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
-        String flatcaFlag = "0";
-        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, flatcaFlag);
+        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, CustomerSearchResponse.builder().build());
         Assert.assertNotNull(fundResponse);
     }
 
@@ -819,7 +818,7 @@ public class ProductExpServiceTest {
         boolean isCASADormant = productsExpService.isCASADormant(correlationId, crmId);
         Assert.assertEquals(false, isCASADormant);
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 

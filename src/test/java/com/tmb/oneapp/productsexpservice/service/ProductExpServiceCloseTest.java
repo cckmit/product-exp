@@ -130,7 +130,7 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -183,7 +183,7 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -226,7 +226,7 @@ public class ProductExpServiceCloseTest {
 
         boolean isBusClose = productsExpService.isCASADormant(correlationId, crmId);
         Assert.assertEquals(true, isBusClose);
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -289,7 +289,7 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -345,7 +345,7 @@ public class ProductExpServiceCloseTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse serviceRes = productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
+        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
 

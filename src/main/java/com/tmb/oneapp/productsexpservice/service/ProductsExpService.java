@@ -315,7 +315,7 @@ public class ProductsExpService {
      * @return FundFactSheetValidationResponse
      */
     @LogAround
-    public FundFactSheetValidationResponse getFundFactSheetValidation(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
+    public FundFactSheetValidationResponse validateAlternativeBuyFlow(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         FundFactSheetValidationResponse fundFactSheetValidationResponse = new FundFactSheetValidationResponse();
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
         FundResponse fundResponse = isServiceHour(correlationId,tmbStatus);
@@ -359,8 +359,7 @@ public class ProductsExpService {
             if(StringUtils.isEmpty(customerSearchResponse)){
                 return responseNetWorkError(fundResponse);
             }
-            String fatcaFlag = customerSearchResponse.getFatcaFlag();
-            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, fatcaFlag);
+            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, customerSearchResponse);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
                 fundResponseSuccess(fundResponse);
             }
@@ -405,41 +404,52 @@ public class ProductsExpService {
         final boolean isNotValid = true;
 
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+
+        // validate age should > 20
+        tmbStatus = alternativeService.validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), tmbStatus);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
+            fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
+            fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
+            return  fundFactSheetValidationResponse;
+        }
+
         tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId,customerInfo,tmbStatus);
         if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
             fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
             fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
 
         tmbStatus = alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(),tmbStatus);
-        if(!isStopped && !ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
             fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
             fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
 
-        if (!isStopped && isCASADormant(correlationId, crmId)) {
+        if (isCASADormant(correlationId, crmId)) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
             fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
             fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
-        if (!isStopped && isSuitabilityExpired(correlationId, crmId)) {
+        if (isSuitabilityExpired(correlationId, crmId)) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
             fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
             fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
-        if (!isStopped && isCustomerIdExpired(crmId)) {
+        if (isCustomerIdExpired(crmId)) {
             fundResponseError(fundFactSheetValidationResponse, isNotValid);
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
 
         String fatcaFlag = customerInfo.getFatcaFlag();
@@ -470,15 +480,27 @@ public class ProductsExpService {
      * @param correlationId
      * @param crmId
      * @param fundResponse
-     * @param fatcaFlag
+     * @param customerInfo
      * @return FundResponse
      */
     @LogAround
     public FundResponse validationAlternativeSellAndSwitchFlow(String correlationId,
                                                                String crmId,
                                                                FundResponse fundResponse,
-                                                               String fatcaFlag) {
+                                                               CustomerSearchResponse customerInfo) {
         final boolean isNotValid = true;
+
+        // validate age should > 20
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+        tmbStatus = alternativeService.validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), tmbStatus);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
+            fundResponse.setError(isNotValid);
+            fundResponse.setErrorCode(tmbStatus.getCode());
+            fundResponse.setErrorMsg(tmbStatus.getMessage());
+            fundResponse.setErrorDesc(tmbStatus.getDescription());
+            return  fundResponse;
+        }
+
         if (isSuitabilityExpired(correlationId, crmId)) {
             fundResponse.setError(isNotValid);
             fundResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
@@ -491,6 +513,7 @@ public class ProductsExpService {
             return fundResponse;
         }
 
+        String fatcaFlag = customerInfo.getFatcaFlag();
         if (fatcaFlag.equalsIgnoreCase("0")) {
             funResponseMapping(fundResponse,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
