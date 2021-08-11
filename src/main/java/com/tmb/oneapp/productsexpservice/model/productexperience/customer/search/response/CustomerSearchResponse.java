@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.model.productexperience.customer.searc
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tmb.oneapp.productsexpservice.model.response.customer.SearchSourceOfIncome;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -168,5 +169,17 @@ public class CustomerSearchResponse {
 
     @JsonAlias({"nationality_2"})
     private String nationalitySecond;
+
+    @JsonProperty("business_type_code")
+    private String businessTypeCode;
+
+    @JsonProperty("office_address_data")
+    private AddressWithPhone officeAddressData;
+
+    @JsonProperty("primary_address_data")
+    private AddressWithPhone primaryAddressData;
+
+    @JsonProperty("registered_addressData")
+    private AddressWithPhone registeredAddressData;
 
 }

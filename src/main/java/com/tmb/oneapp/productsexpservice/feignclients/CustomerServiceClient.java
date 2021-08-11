@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -137,4 +138,17 @@ public interface CustomerServiceClient {
     @PostMapping(value = "/apis/customers/profile/update-e-statement")
     ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
             @RequestHeader Map<String, String> requestHeaders, @RequestBody StatementFlag statementFlag);
+
+    /**
+     * Post submit ekyc calculate customer risk level
+     *
+     * @param correlationId correlationId
+     * @param requestBody   EkycRiskCalculateRequest
+     * @return String
+     */
+    @PostMapping(value = "/apis/customers/ekyc/risk/calculate")
+    ResponseEntity<TmbOneServiceResponse<String>> customerEkycRiskCalculate(
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @RequestBody EkycRiskCalculateRequest requestBody
+    );
 }

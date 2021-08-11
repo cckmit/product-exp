@@ -6,7 +6,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.enums.OpenPortfolioErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponse;
@@ -98,10 +98,10 @@ class OpenPortfolioControllerTest {
 
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> responseService = new TmbOneServiceResponse<ValidateOpenPortfolioResponse>();
         responseService.setStatus(new TmbStatus(
-                OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
-                OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
+                AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
+                AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
                 ProductsExpServiceConstant.SERVICE_NAME,
-                OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc()));
+                AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getDesc()));
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
@@ -113,9 +113,9 @@ class OpenPortfolioControllerTest {
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
-        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getBody().getStatus().getCode());
-        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getBody().getStatus().getMessage());
-        assertEquals(OpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getBody().getStatus().getDescription());
+        assertEquals(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getBody().getStatus().getCode());
+        assertEquals(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getBody().getStatus().getMessage());
+        assertEquals(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getBody().getStatus().getDescription());
         assertNull(actual.getBody().getData());
     }
 

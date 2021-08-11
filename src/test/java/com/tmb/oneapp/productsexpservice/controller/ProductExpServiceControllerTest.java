@@ -293,7 +293,7 @@ public class ProductExpServiceControllerTest {
             FundFactSheetData body = new FundFactSheetData();
             body.setFactSheetData("fdg;klghbdf;jbneoa;khnd'flbkndflkhnreoid;bndzfklbnoresibndlzfk[bnseriohnbodkzfvndsogb");
             fundRsAndValidation.setBody(body);
-            when(productsExpService.getFundFactSheetValidation(any(), any(), any())).thenReturn(fundRsAndValidation);
+            when(productsExpService.validateAlternativeBuyFlow(any(), any(), any())).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -321,7 +321,7 @@ public class ProductExpServiceControllerTest {
             fundRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
             fundRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
 
-            when(productsExpService.getFundFactSheetValidation(any(),any(),any())).thenReturn(fundRsAndValidation);
+            when(productsExpService.validateAlternativeBuyFlow(any(),any(),any())).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -356,7 +356,7 @@ public class ProductExpServiceControllerTest {
         fundFactSheetRequestBody.setProcessFlag("Y");
         fundFactSheetRequestBody.setOrderType("1");
 
-        when(productsExpService.getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody)).thenThrow(MockitoException.class);
+        when(productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody)).thenThrow(MockitoException.class);
 
         ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> actualResult = productExpServiceController
                 .getFundFactSheetValidation(correlationId, crmId, fundFactSheetRequestBody);
