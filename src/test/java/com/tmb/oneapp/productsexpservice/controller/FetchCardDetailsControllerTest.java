@@ -1,19 +1,16 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.model.CustGeneralProfileResponse;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
-import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -23,16 +20,21 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardEmail;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 
 @RunWith(JUnit4.class)
 public class FetchCardDetailsControllerTest {
@@ -48,14 +50,11 @@ public class FetchCardDetailsControllerTest {
     @Mock
     CustomerServiceClient customerServiceClient;
     
-    @Mock
-	ApplyEStatementService applyEStatementService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
         fetchCardDetailsController = new FetchCardDetailsController(creditCardClient, commonServiceClient, 
-        		creditCardLogService, customerServiceClient, applyEStatementService);
+        		creditCardLogService, customerServiceClient);
 
     }
 
@@ -69,7 +68,9 @@ public class FetchCardDetailsControllerTest {
         CreditCardDetail creditCardDetail = new CreditCardDetail();
         creditCardDetail.setAccountId("0000000050078360018000167");
         creditCardDetail.setProductId("12345");
-        creditCardDetail.setCardEmail(new CardEmail());
+        CardEmail cardEmail = new CardEmail();
+        cardEmail.setEmaileStatementFlag("");
+        creditCardDetail.setCardEmail(cardEmail);
         FetchCardResponse fetchCardResponse = new FetchCardResponse();
         fetchCardResponse.setStatus(silverlakeStatus);
         fetchCardResponse.setCreditCard(creditCardDetail);
@@ -92,13 +93,6 @@ public class FetchCardDetailsControllerTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
 		
-        ApplyEStatementResponse applyEStatementResponse = new ApplyEStatementResponse();
-        Customer customer = new Customer();
-        StatementFlag statementFlag = new StatementFlag();
-        statementFlag.setECashToGoStatementFlag("Y");
-        customer.setStatementFlag(statementFlag);
-        applyEStatementResponse.setCustomer(customer);
-        when(applyEStatementService.getEStatement(any(),any())).thenReturn(applyEStatementResponse);
         ResponseEntity<TmbOneServiceResponse<FetchCardResponse>> response = fetchCardDetailsController.fetchCardDetails(req,
                 reqHeaders);
         assertEquals(200, response.getStatusCodeValue());
@@ -115,7 +109,9 @@ public class FetchCardDetailsControllerTest {
         CreditCardDetail creditCardDetail = new CreditCardDetail();
         creditCardDetail.setAccountId("0000000050078360018000167");
         creditCardDetail.setProductId("12345");
-        creditCardDetail.setCardEmail(new CardEmail());
+        CardEmail cardEmail = new CardEmail();
+        cardEmail.setEmaileStatementFlag("");
+        creditCardDetail.setCardEmail(cardEmail);
         FetchCardResponse fetchCardResponse = new FetchCardResponse();
         fetchCardResponse.setStatus(silverlakeStatus);
         fetchCardResponse.setCreditCard(creditCardDetail);
@@ -137,13 +133,6 @@ public class FetchCardDetailsControllerTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
 		
-        ApplyEStatementResponse applyEStatementResponse = new ApplyEStatementResponse();
-        Customer customer = new Customer();
-        StatementFlag statementFlag = new StatementFlag();
-        statementFlag.setECashToGoStatementFlag("Y");
-        customer.setStatementFlag(statementFlag);
-        applyEStatementResponse.setCustomer(customer);
-        when(applyEStatementService.getEStatement(any(),any())).thenReturn(applyEStatementResponse);
         ResponseEntity<TmbOneServiceResponse<FetchCardResponse>> response = fetchCardDetailsController.fetchCardDetails(req,
                 reqHeaders);
         assertEquals(200, response.getStatusCodeValue());
