@@ -317,9 +317,8 @@ public class ProductsExpService {
     @LogAround
     public FundFactSheetValidationResponse getFundFactSheetValidation(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         FundFactSheetValidationResponse fundFactSheetValidationResponse = new FundFactSheetValidationResponse();
-        FundResponse fundResponse = new FundResponse();
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
-        fundResponse = isServiceHour(correlationId,tmbStatus);
+        FundResponse fundResponse = isServiceHour(correlationId,tmbStatus);
         if (!fundResponse.isError()) {
             TmbStatusUtil.successStatus();
             CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
@@ -353,9 +352,8 @@ public class ProductsExpService {
      */
     @LogAround
     public FundResponse validateAlternativeSellAndSwitch(String correlationId, String crmId) {
-        FundResponse fundResponse = new FundResponse();
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
-        fundResponse = isServiceHour(correlationId, tmbStatus);
+        FundResponse fundResponse = isServiceHour(correlationId, tmbStatus);
         if (!fundResponse.isError()) {
             CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
             if(StringUtils.isEmpty(customerSearchResponse)){

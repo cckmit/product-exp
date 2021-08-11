@@ -9,5 +9,5 @@ import lombok.EqualsAndHashCode;
 public class FundFactSheetValidationResponse extends FundResponse {
 
     private FundFactSheetData body;
-    
+
 }
