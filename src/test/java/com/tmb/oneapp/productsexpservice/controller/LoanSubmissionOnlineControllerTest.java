@@ -5,6 +5,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
+import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
@@ -16,8 +17,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import java.math.BigDecimal;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 class LoanSubmissionOnlineControllerTest {
@@ -82,6 +84,21 @@ class LoanSubmissionOnlineControllerTest {
     public void testGetDropdownLoanSubmissionWorkingDetailFail() throws  TMBCommonException {
         when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(any(),any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid");
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
+    public void testGetLoanSubmissionWorkingDetailSuccess() throws  TMBCommonException {
+        WorkingDetail workingDetail = new WorkingDetail();
+        when(loanSubmissionOnlineService.getWorkingDetail(any(),any(), anyLong())).thenReturn(workingDetail);
+        ResponseEntity<TmbOneServiceResponse<WorkingDetail>> responseEntity = loanSubmissionOnlineController.getWorkingDetail("correlationId", "crmid", 1L);
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testGetLoanSubmissionWorkingDetailFail() throws  TMBCommonException {
+        when(loanSubmissionOnlineService.getWorkingDetail(any(),any(), anyLong())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<WorkingDetail>> responseEntity = loanSubmissionOnlineController.getWorkingDetail("correlationId", "crmid", 1L);
         assertTrue(responseEntity.getStatusCode().isError());
     }
 

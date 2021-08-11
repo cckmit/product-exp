@@ -3,13 +3,9 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
-import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
-import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
-import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.oneapp.productsexpservice.constant.RslResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.Dropdowns;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +17,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 class LoanSubmissionOnlineServiceTest {
@@ -58,7 +53,28 @@ class LoanSubmissionOnlineServiceTest {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
         when(lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
         assertThrows(Exception.class, () ->
-              loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId")
+                loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId")
+        );
+    }
+
+    @Test
+    public void testGetLoanSubmissionWorkingDetailSuccess() throws TMBCommonException {
+        WorkingDetail workingDetail = new WorkingDetail();
+        TmbOneServiceResponse<WorkingDetail> oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
+        oneServiceResponse.setData(workingDetail);
+        when(lendingServiceClient.getLoanSubmissionWorkingDetail(any(), any(), anyLong())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        WorkingDetail result = loanSubmissionOnlineService.getWorkingDetail("correlationId", "crmId", 1L);
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testGetLoanSubmissionWorkingDetailFailed() {
+        TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+        when(lendingServiceClient.getLoanSubmissionWorkingDetail(any(), any(), anyLong())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        assertThrows(Exception.class, () ->
+                loanSubmissionOnlineService.getWorkingDetail("correlationId", "crmId", 1L)
         );
     }
 
