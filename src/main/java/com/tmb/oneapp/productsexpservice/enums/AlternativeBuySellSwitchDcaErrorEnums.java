@@ -11,7 +11,8 @@ public enum AlternativeBuySellSwitchDcaErrorEnums {
     CUSTOMER_IN_LEVEL_C3_AND_B3(AlternativeBuySellSwitchDcaErrorEnums.ERROR_CODE_200018,"Customer is in risk level C3 ,B3", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     CUSTOMER_IDENTIFY_ASSURANCE_LEVEL(AlternativeBuySellSwitchDcaErrorEnums.ERROR_CODE_200018,"If IAL level >= 210 and IAL <> Null then allow", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     CUSTOMER_IN_RESTRICTED_LIST(AlternativeBuySellSwitchDcaErrorEnums.ERROR_CODE_200018,"Customer is in restricted list", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
-    CUSTOMER_NOT_FILL_FATCA_FORM("2000032","Customer has not filled in the FATCA form", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),;
+    CUSTOMER_NOT_FILL_FATCA_FORM("2000032","Customer has not filled in the FATCA form", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
+    CUSTOMER_SUIT_EXIRED("2000004","Customer Suitability Expired", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC);
 
     private static final String ERROR_DESC = "error";
     private static final String ERROR_CODE_200018 = "2000018";
