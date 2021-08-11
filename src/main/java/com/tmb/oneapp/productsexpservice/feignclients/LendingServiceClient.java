@@ -9,6 +9,7 @@ import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
@@ -164,6 +165,9 @@ public interface LendingServiceClient {
 	ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> getDropdownLoanSubmissionWorkingDetail(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestHeader(HEADER_X_CRM_ID) String  crmId);
+
+    @PutMapping(value = "/apis/lending-service/workingDetail")
+    ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateWorkingDetail(@RequestBody UpdateWorkingDetailReq request);
 
     @GetMapping(value = "/apis/lending-service/loanSubmission/documents")
     ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(
