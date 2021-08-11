@@ -2,8 +2,6 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
@@ -41,9 +39,7 @@ import org.springframework.http.ResponseEntity;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;

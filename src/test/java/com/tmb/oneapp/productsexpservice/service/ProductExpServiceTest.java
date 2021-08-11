@@ -2,13 +2,15 @@ package com.tmb.oneapp.productsexpservice.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.model.*;
+import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -76,9 +78,6 @@ public class ProductExpServiceTest {
 
     @Mock
     private AccountRequestClient accountRequestClient;
-
-    @Mock
-    private CommonServiceClient commonServiceClient;
 
     @Mock
     private InvestmentRequestClient investmentRequestClient;
