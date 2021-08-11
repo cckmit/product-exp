@@ -40,6 +40,7 @@ public class LoanSubmissionOnlineController {
     private final WorkingDetailUpdateInfoService workingDetailUpdateInfoService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
+    private String TIME_STAMP = "Timestamp";
     @GetMapping("/getIncomeInfo")
     @LogAround
     @ApiOperation(value = "get income info")
@@ -55,7 +56,7 @@ public class LoanSubmissionOnlineController {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
+            responseHeaders.set(TIME_STAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while getConfig: {}", e);
@@ -82,7 +83,7 @@ public class LoanSubmissionOnlineController {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
+            responseHeaders.set(TIME_STAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
 
@@ -136,7 +137,7 @@ public class LoanSubmissionOnlineController {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
+            responseHeaders.set(TIME_STAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while update working detail : {}", e);
