@@ -356,7 +356,8 @@ public class ProductsExpService {
     @LogAround
     public FundResponse validateAlternativeSellAndSwitch(String correlationId, String crmId) {
         FundResponse fundResponse = new FundResponse();
-        fundResponse = isServiceHour(correlationId, fundResponse, tmbSuccessStatus);
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+        fundResponse = isServiceHour(correlationId, fundResponse, tmbStatus);
         if (!fundResponse.isError()) {
             CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
             if(StringUtils.isEmpty(customerSearchResponse)){

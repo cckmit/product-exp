@@ -127,7 +127,7 @@ public class ProductExpServiceCloseTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
-            mockCommonService();
+            bypassServiceHour();
             mockGetFlatcaResponseFromCustomerSearch();
             bypassAlternative();
         } catch (Exception ex) {
@@ -138,25 +138,11 @@ public class ProductExpServiceCloseTest {
         Assert.assertNotNull(serviceRes);
     }
 
-    private void mockCommonService() {
-        TmbOneServiceResponse<List<CommonData>> responseCommon = new TmbOneServiceResponse<>();
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommonRs;
-        CommonData commonData = new CommonData();
-        CommonTime commonTime = new CommonTime();
-        List<CommonData> commonDataList = new ArrayList<>();
-
-        commonTime.setStart("00:00");
-        commonTime.setEnd("00:00");
-        commonData.setNoneServiceHour(commonTime);
-        commonDataList.add(commonData);
-
-        responseCommon.setData(commonDataList);
-        responseCommon.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-        when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+    private void bypassServiceHour(){
+        when(alternativeService.validateServiceHour(any(),any())).thenReturn(TmbStatusUtil.successStatus());
     }
+
+
 
     public void bypassAlternative(){
         TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
@@ -195,7 +181,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
-            mockCommonService();
+            bypassServiceHour();
             bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -235,7 +221,7 @@ public class ProductExpServiceCloseTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
-
+            bypassServiceHour();
             mockGetFlatcaResponseFromCustomerSearch();
             bypassAlternative();
         } catch (Exception ex) {
@@ -301,6 +287,7 @@ public class ProductExpServiceCloseTest {
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFfs));
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassServiceHour();
             bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -356,6 +343,7 @@ public class ProductExpServiceCloseTest {
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenThrow(MockitoException.class);
             mockGetFlatcaResponseFromCustomerSearch();
+            bypassServiceHour();
             bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
