@@ -319,7 +319,7 @@ public class ProductsExpService {
         FundFactSheetValidationResponse fundFactSheetValidationResponse = new FundFactSheetValidationResponse();
         FundResponse fundResponse = new FundResponse();
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
-        fundResponse = isServiceHour(correlationId, fundResponse,tmbStatus);
+        fundResponse = isServiceHour(correlationId,tmbStatus);
         if (!fundResponse.isError()) {
             TmbStatusUtil.successStatus();
             CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
@@ -355,7 +355,7 @@ public class ProductsExpService {
     public FundResponse validateAlternativeSellAndSwitch(String correlationId, String crmId) {
         FundResponse fundResponse = new FundResponse();
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
-        fundResponse = isServiceHour(correlationId, fundResponse, tmbStatus);
+        fundResponse = isServiceHour(correlationId, tmbStatus);
         if (!fundResponse.isError()) {
             CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
             if(StringUtils.isEmpty(customerSearchResponse)){
@@ -528,13 +528,12 @@ public class ProductsExpService {
     /**
      * Method isServiceHour Query service hour from common-service
      *  @param correlationId
-     * @param fundResponse
      * @param tmbStatus
      */
-    public FundResponse isServiceHour(String correlationId, FundResponse fundResponse, TmbStatus tmbStatus) {
+    public FundResponse isServiceHour(String correlationId, TmbStatus tmbStatus) {
         tmbStatus = alternativeService.validateServiceHour(correlationId,tmbStatus);
         return FundResponse.builder()
-                .isError(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())?true:false)
+                .isError(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode()))
                 .errorCode(tmbStatus.getCode())
                 .errorDesc(tmbStatus.getDescription())
                 .errorMsg(tmbStatus.getMessage())
