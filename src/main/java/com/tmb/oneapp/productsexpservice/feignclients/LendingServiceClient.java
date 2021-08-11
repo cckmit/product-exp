@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -157,6 +158,11 @@ public interface LendingServiceClient {
     @PostMapping(value = "/apis/lending-service/loanOnlineSubmission")
     ResponseEntity<TmbOneServiceResponse<ResponseApplication>> createApplication(
             @RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestBody LoanSubmissionCreateApplicationReq request);
+
+	@GetMapping(value = "/apis/lending-service/dropdown/loanSubmission/workingDetail")
+	ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> getDropdownLoanSubmissionWorkingDetail(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
+			@RequestHeader(HEADER_X_CRM_ID) String  crmId);
 
     @GetMapping(value = "/apis/lending-service/loanSubmission/documents")
     ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(

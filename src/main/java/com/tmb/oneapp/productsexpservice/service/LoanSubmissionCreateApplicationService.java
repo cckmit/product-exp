@@ -22,7 +22,7 @@ public class LoanSubmissionCreateApplicationService {
         try {
             ResponseEntity<TmbOneServiceResponse<ResponseApplication>> response = lendingServiceClient.createApplication(crmId, req);
             if (response.getBody().getData().getHeader().getResponseCode().equals("MSG_000")) {
-                return lendingServiceClient.createApplication(crmId, req).getBody().getData();
+                return response.getBody().getData();
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         response.getBody().getData().getHeader().getResponseDescriptionEN(),

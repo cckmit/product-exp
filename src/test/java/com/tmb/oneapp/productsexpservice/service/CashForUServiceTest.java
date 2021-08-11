@@ -72,7 +72,18 @@ public class CashForUServiceTest {
 
 		cardResponse.setCreditCard(creditCardDetail);
 		requestBody.setAmount("10000");
+		
+		TmbOneServiceResponse<CashForUConfigInfo> serviceResponse = new TmbOneServiceResponse<CashForUConfigInfo>();
+		CashForUConfigInfo configInfo = new CashForUConfigInfo();
+		
+		List<String> productList = new ArrayList<String>();
+		
+		configInfo.setWaiveFeeProducts(productList);
+		configInfo.setWaiveVatProducts(productList);
+		serviceResponse.setData(configInfo);
+		
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
+		when(creditCardClient.getCurrentCashForYouRate()).thenReturn(ResponseEntity.ok().body(serviceResponse));
 		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId,
 				requestBody);
@@ -120,17 +131,20 @@ public class CashForUServiceTest {
 
 		cardResponse.setCreditCard(creditCardDetail);
 
-		CashForUConfigInfo resp = new CashForUConfigInfo();
-		TmbOneServiceResponse<CashForUConfigInfo> serverResponse = new TmbOneServiceResponse<>();
-		serverResponse.setData(resp);
-		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = new ResponseEntity<>(serverResponse,
-				HttpStatus.OK);
+		TmbOneServiceResponse<CashForUConfigInfo> serviceResponse = new TmbOneServiceResponse<CashForUConfigInfo>();
+		CashForUConfigInfo configInfo = new CashForUConfigInfo();
+		
+		List<String> productList = new ArrayList<String>();
+		
+		configInfo.setWaiveFeeProducts(productList);
+		configInfo.setWaiveVatProducts(productList);
+		serviceResponse.setData(configInfo);
+		
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
-		when(creditCardClient.getCurrentCashForYouRate()).thenReturn(response);
+		when(creditCardClient.getCurrentCashForYouRate()).thenReturn(ResponseEntity.ok(serviceResponse));
 		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
 		rateRequest.setAmount("10000");
 		requestBody.setAmount(rateRequest.getAmount());
-		cashForUservice.setRateCashForUInfo(resp);
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
 		Assert.assertNull(cashResponse.getInstallmentData());
 	}
