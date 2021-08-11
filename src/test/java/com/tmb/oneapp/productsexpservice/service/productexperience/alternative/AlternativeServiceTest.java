@@ -64,7 +64,7 @@ public class AlternativeServiceTest {
     private void mockNotPassServiceHour() {
         FundResponse fundResponse = new FundResponse();
         fundResponse.setError(true);
-        when(productsExpService.isServiceHour(any(), any())).thenReturn(fundResponse);
+        when(productsExpService.isServiceHour(any(), any(), tmbSuccessStatus)).thenReturn(fundResponse);
     }
 
     @Test

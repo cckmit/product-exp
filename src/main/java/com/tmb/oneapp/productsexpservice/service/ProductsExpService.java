@@ -320,8 +320,10 @@ public class ProductsExpService {
     public FundFactSheetValidationResponse getFundFactSheetValidation(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         FundFactSheetValidationResponse fundFactSheetValidationResponse = new FundFactSheetValidationResponse();
         FundResponse fundResponse = new FundResponse();
-        fundResponse = isServiceHour(correlationId, fundResponse);
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+        fundResponse = isServiceHour(correlationId, fundResponse,tmbStatus);
         if (!fundResponse.isError()) {
+            TmbStatusUtil.successStatus();
             CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
             fundFactSheetValidationResponse = validationAlternativeFlow(
                     correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, customerSearchResponse );
@@ -354,7 +356,7 @@ public class ProductsExpService {
     @LogAround
     public FundResponse validateAlternativeSellAndSwitch(String correlationId, String crmId) {
         FundResponse fundResponse = new FundResponse();
-        fundResponse = isServiceHour(correlationId, fundResponse);
+        fundResponse = isServiceHour(correlationId, fundResponse, tmbSuccessStatus);
         if (!fundResponse.isError()) {
             CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
             if(StringUtils.isEmpty(customerSearchResponse)){
@@ -416,7 +418,7 @@ public class ProductsExpService {
         }
 
         tmbStatus = alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(),tmbStatus);
-        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+        if(!isStopped && !ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
             fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
@@ -526,32 +528,18 @@ public class ProductsExpService {
 
     /**
      * Method isServiceHour Query service hour from common-service
-     *
-     * @param correlationId
+     *  @param correlationId
      * @param fundResponse
+     * @param tmbStatus
      */
-    public FundResponse isServiceHour(String correlationId, FundResponse fundResponse) {
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
-        try {
-            responseCommon = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
-            if (!StringUtils.isEmpty(responseCommon)) {
-                List<CommonData> commonDataList = responseCommon.getBody().getData();
-                CommonData commonData = commonDataList.get(0);
-                CommonTime noneServiceHour = commonData.getNoneServiceHour();
-                if (UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
-                    fundResponseData(fundResponse);
-                }
-            }
-            return fundResponse;
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            fundResponse.setError(true);
-            fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            fundResponse.setErrorMsg(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            fundResponse.setErrorDesc(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
-            return fundResponse;
-        }
+    public FundResponse isServiceHour(String correlationId, FundResponse fundResponse, TmbStatus tmbStatus) {
+        tmbStatus = alternativeService.validateServiceHour(correlationId,tmbStatus);
+        return FundResponse.builder()
+                .isError(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())?true:false)
+                .errorCode(tmbStatus.getCode())
+                .errorDesc(tmbStatus.getDescription())
+                .errorMsg(tmbStatus.getMessage())
+                .build();
     }
 
     /**

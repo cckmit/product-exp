@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
+import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -15,6 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundRespon
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
+import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,16 +53,30 @@ public class AlternativeService {
 
     // validate service hour
     public TmbStatus validateServiceHour(String correlationId, TmbStatus status) {
-        FundResponse fundResponse = new FundResponse();
-        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
-        if (fundResponse.isError()) {
-            status.setCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-            status.setDescription(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-            status.setMessage(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
+        try {
+            responseCommon = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
+            if (!StringUtils.isEmpty(responseCommon)) {
+                List<CommonData> commonDataList = responseCommon.getBody().getData();
+                CommonData commonData = commonDataList.get(0);
+                CommonTime noneServiceHour = commonData.getNoneServiceHour();
+                if (UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
+                    status.setCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+                    status.setDescription(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+                    status.setMessage(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+                    status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                }
+            }
+            return status;
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
-        return status;
     }
 
     // validate age should > 20

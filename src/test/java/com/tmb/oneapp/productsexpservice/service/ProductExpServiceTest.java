@@ -525,7 +525,7 @@ public class ProductExpServiceTest {
         }
 
         responseCommonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
-        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
+        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse, tmbSuccessStatus);
         Assert.assertNotNull(responseCommonRs);
         Assert.assertNotNull(fundResponse);
     }
@@ -575,7 +575,7 @@ public class ProductExpServiceTest {
         }
 
         responseCommonRs = commonServiceClient.getCommonConfigByModule(anyString(), anyString());
-        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
+        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse, tmbSuccessStatus);
         Assert.assertNotNull(responseCommonRs);
         Assert.assertNotNull(fundResponse);
     }
@@ -590,7 +590,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse);
+        fundResponse = productsExpService.isServiceHour(correlationId, fundResponse, tmbSuccessStatus);
         Assert.assertNotNull(fundResponse);
     }
 
