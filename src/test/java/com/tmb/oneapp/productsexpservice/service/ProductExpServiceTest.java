@@ -707,8 +707,47 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(fundResponse);
     }
 
+    @Test
+    public void should_return_error_age_not_over_twenty_when_call_validateAlternativeSellAndSwitch() {
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode("9999");
+
+        // when
+        bypassServiceHour();
+        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
+        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(),any())).thenReturn(tmbStatus);
+
+        // then
+        FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),actual.getErrorCode());
+    }
+
+    @Test
+    public void should_return_error_suitability_expired_when_call_validateAlternativeSellAndSwitch() {
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode("9999");
+
+        // when
+        bypassServiceHour();
+        bypassAgeNotOverTwenty();
+        TmbOneServiceResponse<SuitabilityInfo> suitabilityResponse = new TmbOneServiceResponse<>();
+        suitabilityResponse.setData(SuitabilityInfo.builder().suitabilityScore("2").suitValidation("2").build());
+        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
+        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
+        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenReturn(ResponseEntity.ok(suitabilityResponse));
+
+        // then
+        FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(),actual.getErrorCode());
+    }
+
     private void bypassServiceHour(){
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(TmbStatusUtil.successStatus());
+    }
+
+    private void bypassAgeNotOverTwenty(){
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(),any())).thenReturn(TmbStatusUtil.successStatus());
     }
 
     private void mockExceptionServiceHour(){
