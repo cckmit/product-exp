@@ -9,7 +9,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -493,7 +493,7 @@ public class ProductExpServiceTest {
         }
 
         FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId,crmId,fundAccountRequest);
-        Assert.assertEquals(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),actual.getErrorCode() );
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),actual.getErrorCode() );
 
     }
 
@@ -721,9 +721,9 @@ public class ProductExpServiceTest {
 
     private void mockIsHourClose(){
         TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        status.setDescription(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-        status.setMessage(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
     }

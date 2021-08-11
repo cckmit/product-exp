@@ -14,7 +14,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
@@ -549,9 +549,9 @@ public class ProductsExpService {
      */
     void fundResponseData(FundResponse fundResponse) {
         fundResponse.setError(true);
-        fundResponse.setErrorCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        fundResponse.setErrorMsg(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
-        fundResponse.setErrorDesc(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+        fundResponse.setErrorCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+        fundResponse.setErrorMsg(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        fundResponse.setErrorDesc(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
     }
 
     /**

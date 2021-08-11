@@ -6,7 +6,7 @@ import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
@@ -58,9 +58,9 @@ public class AlternativeService {
                 CommonData commonData = commonDataList.get(0);
                 CommonTime noneServiceHour = commonData.getNoneServiceHour();
                 if (UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
-                    status.setCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-                    status.setDescription(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-                    status.setMessage(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+                    status.setCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+                    status.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+                    status.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
                     status.setService(ProductsExpServiceConstant.SERVICE_NAME);
                 }
             }
@@ -89,9 +89,9 @@ public class AlternativeService {
             LocalDate now = LocalDate.now();
             Period diff = Period.between(birthDateLocalDate, now);
             if (diff.getYears() < 20) {
-                status.setCode(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
-                status.setDescription(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
-                status.setMessage(AlternativeErrorEnums.AGE_NOT_OVER_TWENTY.getMsg());
+                status.setCode(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
+                status.setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
+                status.setMessage(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return status;
             }
@@ -113,9 +113,9 @@ public class AlternativeService {
                 }
             }
             if (!isAccountActiveOnce || depositAccountList.isEmpty()) {
-                status.setCode(AlternativeErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
-                status.setDescription(AlternativeErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc());
-                status.setMessage(AlternativeErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg());
+                status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
+                status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc());
+                status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return status;
             }
@@ -131,9 +131,9 @@ public class AlternativeService {
         }
 
         if (!isFatcaFlagValid) {
-            status.setCode(AlternativeErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-            status.setDescription(AlternativeErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
-            status.setMessage(AlternativeErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
+            status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -150,9 +150,9 @@ public class AlternativeService {
         }
 
         if (!isKycAndIdCardExpiredValid) {
-            status.setCode(AlternativeErrorEnums.FAILED_VERIFY_KYC.getCode());
-            status.setDescription(AlternativeErrorEnums.FAILED_VERIFY_KYC.getDesc());
-            status.setMessage(AlternativeErrorEnums.FAILED_VERIFY_KYC.getMsg());
+            status.setCode(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -182,9 +182,9 @@ public class AlternativeService {
         }
 
         if (!isAssuranceLevelValid) {
-            status.setCode(AlternativeErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
-            status.setDescription(AlternativeErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc());
-            status.setMessage(AlternativeErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg());
+            status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -212,9 +212,9 @@ public class AlternativeService {
         if (StringUtils.isEmpty(mainNationality) ||
                 blackList.stream().anyMatch(mainNationality::equals) ||
                 !StringUtils.isEmpty(secondNationality) && blackList.stream().anyMatch(secondNationality::equals)) {
-            status.setCode(AlternativeErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode());
-            status.setDescription(AlternativeErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc());
-            status.setMessage(AlternativeErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
+            status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -233,9 +233,9 @@ public class AlternativeService {
         }
 
         if (isCustomerRiskLevelNotValid) {
-            status.setCode(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-            status.setDescription(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
-            status.setMessage(AlternativeErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
+            status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
