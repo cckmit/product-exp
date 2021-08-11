@@ -170,7 +170,7 @@ public interface LendingServiceClient {
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestParam(value = "caId") Long caId);
 
-    @GetMapping(value = "/apis/lending-service/loanSubmission/workingDetail")
+    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/getWorkingDetail")
     ResponseEntity<TmbOneServiceResponse<WorkingDetail>> getLoanSubmissionWorkingDetail(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
             @RequestHeader(HEADER_X_CRM_ID) String  crmId,
