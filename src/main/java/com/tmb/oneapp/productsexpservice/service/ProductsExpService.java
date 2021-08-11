@@ -508,23 +508,6 @@ public class ProductsExpService {
             fundResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
             return fundResponse;
         }
-        if (isCustomerIdExpired(crmId)) {
-            fundResponseError(fundResponse, isNotValid);
-            return fundResponse;
-        }
-
-        String fatcaFlag = customerInfo.getFatcaFlag();
-        if (fatcaFlag.equalsIgnoreCase("0")) {
-            funResponseMapping(fundResponse,
-                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
-                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
-                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-        } else if (!fatcaFlag.equalsIgnoreCase("N")) {
-            funResponseMapping(fundResponse,
-                    FatcaErrorEnums.USNATIONAL.getCode(),
-                    FatcaErrorEnums.USNATIONAL.getMsg(),
-                    FatcaErrorEnums.USNATIONAL.getDesc());
-        }
         return fundResponse;
     }
 
