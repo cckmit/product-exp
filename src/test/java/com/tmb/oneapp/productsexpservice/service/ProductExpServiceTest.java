@@ -617,7 +617,7 @@ public class ProductExpServiceTest {
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             bypassServiceHour();
             mockGetFlatcaResponseFromCustomerSearch();
-            bypassAlternative();
+            mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -653,7 +653,7 @@ public class ProductExpServiceTest {
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             bypassServiceHour();
             mockGetFlatcaResponseFromCustomerSearch();
-            bypassAlternative();
+            mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -694,7 +694,7 @@ public class ProductExpServiceTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
-            bypassServiceHour();
+            mockSuccessAllAlternative();
             when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseResponseEntity));
             mockGetFlatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
@@ -809,7 +809,7 @@ public class ProductExpServiceTest {
             when(accountRequestClient.callCustomerExpService(headers, "00000012025950")).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
             bypassServiceHour();
-            bypassAlternative();
+            mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -826,6 +826,25 @@ public class ProductExpServiceTest {
         TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
         when(alternativeService.validateCustomerRiskLevel(any(),any(),any())).thenReturn(tmbStatusSuccess);
         when(alternativeService.validateIdentityAssuranceLevel(any(),any())).thenReturn(tmbStatusSuccess);
+    }
+
+    private TmbStatus mockTmbStatusError(String code,String message,String desc) {
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(code);
+        tmbStatus.setDescription(desc);
+        tmbStatus.setMessage(message);
+        return tmbStatus;
+    }
+
+    private void mockSuccessAllAlternative(){
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 
     @Test

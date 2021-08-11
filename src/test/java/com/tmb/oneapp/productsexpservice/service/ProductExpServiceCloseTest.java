@@ -7,7 +7,6 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
@@ -51,8 +50,6 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ProductExpServiceCloseTest {
 
-    @Mock
-    private CommonServiceClient commonServiceClient;
 
     @Mock
     private AccountRequestClient accountRequestClient;
@@ -123,9 +120,8 @@ public class ProductExpServiceCloseTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
-            bypassServiceHour();
             mockGetFlatcaResponseFromCustomerSearch();
-            bypassAlternative();
+            mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -133,20 +129,6 @@ public class ProductExpServiceCloseTest {
         FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
         Assert.assertNotNull(serviceRes);
     }
-
-    private void bypassServiceHour(){
-        when(alternativeService.validateServiceHour(any(),any())).thenReturn(TmbStatusUtil.successStatus());
-    }
-
-
-
-    public void bypassAlternative(){
-        TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
-        when(alternativeService.validateCustomerRiskLevel(any(),any(),any())).thenReturn(tmbStatusSuccess);
-        when(alternativeService.validateIdentityAssuranceLevel(any(),any())).thenReturn(tmbStatusSuccess);
-    }
-
-
 
     @Test
     public void getFundFactSheetAndValidationOfBusinessClose() {
@@ -177,8 +159,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
             mockGetFlatcaResponseFromCustomerSearch();
-            bypassServiceHour();
-            bypassAlternative();
+            mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -217,9 +198,8 @@ public class ProductExpServiceCloseTest {
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
-            bypassServiceHour();
+            mockSuccessAllAlternative();
             mockGetFlatcaResponseFromCustomerSearch();
-            bypassAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -283,8 +263,7 @@ public class ProductExpServiceCloseTest {
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFfs));
             mockGetFlatcaResponseFromCustomerSearch();
-            bypassServiceHour();
-            bypassAlternative();
+            mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -339,8 +318,7 @@ public class ProductExpServiceCloseTest {
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenThrow(MockitoException.class);
             mockGetFlatcaResponseFromCustomerSearch();
-            bypassServiceHour();
-            bypassAlternative();
+            mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -475,5 +453,23 @@ public class ProductExpServiceCloseTest {
     public void addColonDateFormatFail() {
         String fundAccountRs = UtilMap.deleteColonDateFormat("");
         Assert.assertEquals("", fundAccountRs);
+    }
+
+    private TmbStatus mockTmbStatusError(String code,String message,String desc) {
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(code);
+        tmbStatus.setDescription(desc);
+        tmbStatus.setMessage(message);
+        return tmbStatus;
+    }
+    private void mockSuccessAllAlternative(){
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 }
