@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,22 @@ public class LoanSubmissionOnlineService {
             }
         } catch (Exception e) {
             logger.error("getDropdownLoanSubmissionWorkingDetail got exception:{}", e);
+            throw e;
+        }
+    }
+
+    public WorkingDetail getWorkingDetail(String correlationId, String crmId, long caId) throws TMBCommonException {
+        try {
+            TmbOneServiceResponse<WorkingDetail> responseEntity = lendingServiceClient.getLoanSubmissionWorkingDetail(correlationId, crmId, caId).getBody();
+            if (responseEntity.getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+                return responseEntity.getData();
+            } else {
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                        ResponseCode.FAILED.getMessage(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+            }
+        } catch (Exception e) {
+            logger.error("getLoanSubmissionWorkingDetail got exception:{}", e);
             throw e;
         }
     }
