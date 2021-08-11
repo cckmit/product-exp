@@ -5,7 +5,6 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,9 +19,9 @@ public class ChecklistService {
     private static final TMBLogger<LoanSubmissionInstantLoanCalUWService> logger = new TMBLogger<>(LoanSubmissionInstantLoanCalUWService.class);
     private final LendingServiceClient lendingServiceClient;
 
-    public List<ChecklistResponse> getDocuments(String crmid, ChecklistRequest request) throws TMBCommonException {
+    public List<ChecklistResponse> getDocuments(String crmId, Long caId) throws TMBCommonException {
         try {
-            TmbOneServiceResponse<List<ChecklistResponse>> responseEntity = lendingServiceClient.getDocuments(crmid,request.getCaId()).getBody();
+            TmbOneServiceResponse<List<ChecklistResponse>> responseEntity = lendingServiceClient.getDocuments(crmId,caId).getBody();
 
             if (responseEntity.getStatus().getCode().equals("0000")) {
                 return responseEntity.getData();

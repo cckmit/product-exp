@@ -44,7 +44,7 @@ public class ChecklistController {
             @Valid ChecklistRequest request) {
         TmbOneServiceResponse<List<ChecklistResponse>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            List<ChecklistResponse> checklistResponses = checklistService.getDocuments(crmid, request);
+            List<ChecklistResponse> checklistResponses = checklistService.getDocuments(crmid, request.getCaId());
             oneTmbOneServiceResponse.setData(checklistResponses);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();

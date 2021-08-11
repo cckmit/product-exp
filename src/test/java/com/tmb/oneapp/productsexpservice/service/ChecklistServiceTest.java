@@ -51,7 +51,7 @@ public class ChecklistServiceTest {
 
         when(lendingServiceClient.getDocuments(crmid,request.getCaId())).thenReturn(ResponseEntity.ok(mockChecklistResponseData()));
 
-        List<ChecklistResponse> actualResult = checklistService.getDocuments(crmid,request);
+        List<ChecklistResponse> actualResult = checklistService.getDocuments(crmid,request.getCaId());
 
         Assert.assertNotNull(actualResult);
 
@@ -71,7 +71,7 @@ public class ChecklistServiceTest {
         when(lendingServiceClient.getDocuments(anyString(),anyLong())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
-                checklistService.getDocuments(crmid,request));
+                checklistService.getDocuments(crmid,request.getCaId()));
 
     }
 
