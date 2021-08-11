@@ -13,13 +13,13 @@ import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.Ad
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -34,18 +34,15 @@ public class AlternativeService {
 
     private static final TMBLogger<AlternativeService> logger = new TMBLogger<>(AlternativeService.class);
 
-    private ProductsExpService productsExpService;
-
     private CommonServiceClient commonServiceClient;
 
     private CustomerServiceClient customerServiceClient;
 
     @Autowired
-    public AlternativeService(ProductsExpService productsExpService,
+    public AlternativeService(
                               CommonServiceClient commonServiceClient,
                               CustomerServiceClient customerServiceClient
     ) {
-        this.productsExpService = productsExpService;
         this.commonServiceClient = commonServiceClient;
         this.customerServiceClient = customerServiceClient;
     }
