@@ -26,6 +26,7 @@ public class Dropdowns {
         private String code;
         private String name;
         private String name2;
+        private String refEntryCode;
     }
 
     @Getter
@@ -36,6 +37,8 @@ public class Dropdowns {
         private String code;
         private String name;
         private String name2;
+        private String refEntryCode;
+        private String groupId;
         private List<Occupation> occupation;
     }
 
@@ -88,6 +91,7 @@ public class Dropdowns {
         private String code;
         private String name;
         private String name2;
+        private String extValue2;
     }
 
     @Getter
