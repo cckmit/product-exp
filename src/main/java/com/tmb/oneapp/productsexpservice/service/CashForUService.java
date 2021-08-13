@@ -48,8 +48,7 @@ public class CashForUService {
 			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
 					.getCurrentCashForYouRate();
 			CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
-			responseModelInfo.setCashVatRate(formateDigit(rateCashForUInfo.getCashTransferVat()));
-			responseModelInfo.setCashFeeRate(formateDigit(rateCashForUInfo.getCashTransferFee()));
+
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
@@ -58,6 +57,19 @@ public class CashForUService {
 			responseModelInfo.setCashInterestRate(formateDigit(leadRate));
 			responseModelInfo.setMaximumTransferAmt(
 					formateDigit(String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer())));
+
+			if (allowWaiveFeeProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
+				responseModelInfo.setCashFeeRate(formateDigit("0"));
+			} else {
+				responseModelInfo.setCashFeeRate(formateDigit(rateCashForUInfo.getCashTransferFee()));
+			}
+
+			if (allowWaiveVatProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
+				responseModelInfo.setCashVatRate(formateDigit("0"));
+			} else {
+				responseModelInfo.setCashVatRate(formateDigit(rateCashForUInfo.getCashTransferVat()));
+			}
+
 		} else {
 			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody);
 		}
@@ -114,39 +126,26 @@ public class CashForUService {
 		CreditCardDetail cardDetail = fetchCardResponse.getBody().getCreditCard();
 		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
 
-		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
-				.getCurrentCashForYouRate();
-		CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
-		if (!allowWaiveFeeProduct(rateCashForUInfo, cardDetail.getProductId())) {
-			BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))
-					.multiply(new BigDecimal(requestBody.getAmount()));
-			BigDecimal summaryFeee = cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt();
-			if ("1".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
-				if (feeAmt.compareTo(cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt()) > 0) {
-					summaryFeee = feeAmt;
-				}
-				responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(summaryFeee)));
-			} else if ("2".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
-				BigDecimal totalFee = feeAmt.add(summaryFeee);
-				responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(totalFee)));
-			} else {
-				responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(feeAmt)));
+		BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))
+				.multiply(new BigDecimal(requestBody.getAmount()));
+		BigDecimal summaryFeee = cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt();
+		if ("1".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
+			if (feeAmt.compareTo(cardDetail.getCardCashAdvance().getCashAdvFeeFixedAmt()) > 0) {
+				summaryFeee = feeAmt;
 			}
+			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(summaryFeee)));
+		} else if ("2".equals(cardDetail.getCardCashAdvance().getCashAdvFeeModel())) {
+			BigDecimal totalFee = feeAmt.add(summaryFeee);
+			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(totalFee)));
 		} else {
-			responseModelInfo.setCashFeeRate(formateDigit("0"));
+			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(feeAmt)));
 		}
 
-		if (!allowWaiveVatProduct(rateCashForUInfo, cardDetail.getProductId())) {
-			responseModelInfo.setCashInterestRate(
-					formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
-			responseModelInfo.setCashVatRate(
-					formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
-			responseModelInfo.setCashVatTotal(calculationVatTotalNoneLead(responseModelInfo));
-		} else {
-			responseModelInfo.setCashInterestRate(formateDigit("0"));
-			responseModelInfo.setCashVatRate(formateDigit("0"));
-			responseModelInfo.setCashVatTotal(formateDigit("0"));
-		}
+		responseModelInfo
+				.setCashInterestRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
+		responseModelInfo
+				.setCashVatRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
+		responseModelInfo.setCashVatTotal(calculationVatTotalNoneLead(responseModelInfo));
 
 	}
 
