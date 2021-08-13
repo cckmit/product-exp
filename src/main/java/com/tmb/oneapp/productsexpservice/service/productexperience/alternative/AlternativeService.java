@@ -29,6 +29,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * AlternativeService class will handle all of alternative of investment
+ */
 @Service
 public class AlternativeService {
 
@@ -47,7 +50,12 @@ public class AlternativeService {
         this.customerServiceClient = customerServiceClient;
     }
 
-    // validate service hour
+    /**
+     * Method validateServiceHour method  validate working hour for customer
+     * @param correlationId
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateServiceHour(String correlationId, TmbStatus status) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
         try {
@@ -75,7 +83,13 @@ public class AlternativeService {
         }
     }
 
-    // validate age should > 20
+
+    /**
+     * Method validateDateNotOverTwentyYearOld method vaidate age of customer
+     * @param birthDate
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateDateNotOverTwentyYearOld(String birthDate, TmbStatus status) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -102,7 +116,13 @@ public class AlternativeService {
         }
     }
 
-    // validate account active at least one
+
+    /**
+     * Method validateCasaAccountActiveOnce method validate customer active casa account
+     * @param depositAccountList
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList, TmbStatus status) {
         if (depositAccountList != null) {
             boolean isAccountActiveOnce = false;
@@ -123,7 +143,13 @@ public class AlternativeService {
         return status;
     }
 
-    // validate complete flatca form
+
+    /**
+     * Method validateFatcaFlagNotValid method validate customer fatcaFlag
+     * @param fatcaFlag
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status) {
         boolean isFatcaFlagValid = false;
         if (!StringUtils.isEmpty(fatcaFlag) && !fatcaFlag.equals("0")) {
@@ -140,7 +166,13 @@ public class AlternativeService {
         return status;
     }
 
-    // validate customer pass kyc (U,Blank) allow  and id card has not expired
+    /**
+     * Method validateKycAndIdCardExpire method validate ekyc and cardid expired
+     * @param kycLimitFlag
+     * @param expireDate
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String expireDate, TmbStatus status) {
         boolean isKycAndIdCardExpiredValid = false;
         if ((kycLimitFlag != null && expireDate != null) &&
@@ -173,7 +205,12 @@ public class AlternativeService {
         return false;
     }
 
-    // validate customer assurange level
+    /**
+     * Method validateIdentityAssuranceLevel method validate customer assurance level
+     * @param ekycIdentifyAssuranceLevel
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status) {
         boolean isAssuranceLevelValid = false;
 
@@ -201,7 +238,14 @@ public class AlternativeService {
         }
     }
 
-    // validate customer not us and not restriced in 30 nationality
+    /**
+     * Method validateNationality method validate customer nationality
+     * @param correlationId
+     * @param mainNationality
+     * @param secondNationality
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateNationality(String correlationId, String mainNationality, String secondNationality, TmbStatus status) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
                 commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
@@ -221,7 +265,13 @@ public class AlternativeService {
         return status;
     }
 
-    // validate customer risk level
+    /**
+     * Method validateCustomerRiskLevel method validate customer risk level
+     * @param correlationId
+     * @param customerInfo
+     * @param status
+     * @return TmbStatus
+     */
     public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status) {
         String customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
