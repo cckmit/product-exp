@@ -9,13 +9,16 @@ import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.feignclients.*;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
@@ -29,7 +32,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countproce
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundSuggestAllocationList;
-import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
@@ -50,6 +52,9 @@ import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryB
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,32 +87,29 @@ public class ProductsExpService {
 
     private final AccountRequestClient accountRequestClient;
 
-    private final CommonServiceClient commonServiceClient;
-
     private final ProductExpAsyncService productExpAsyncService;
 
-    private final CustomerExpServiceClient customerExpServiceClient;
-
-    private final CustomerServiceClient customerServiceClient;
-
     private final KafkaProducerService kafkaProducerService;
+
+    private final AlternativeService alternativeService;
+
+    private final CustomerService customerService;
 
     @Autowired
     public ProductsExpService(InvestmentRequestClient investmentRequestClient,
                               AccountRequestClient accountRequestClient,
                               KafkaProducerService kafkaProducerService,
-                              CommonServiceClient commonServiceClient,
                               ProductExpAsyncService productExpAsyncService,
-                              CustomerExpServiceClient customerExpServiceClient,
-                              CustomerServiceClient customerServiceClient) {
+                              AlternativeService alternativeService,
+                              CustomerService customerService) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.kafkaProducerService = kafkaProducerService;
         this.accountRequestClient = accountRequestClient;
-        this.commonServiceClient = commonServiceClient;
         this.productExpAsyncService = productExpAsyncService;
-        this.customerExpServiceClient = customerExpServiceClient;
-        this.customerServiceClient = customerServiceClient;
+        this.alternativeService = alternativeService;
+        this.customerService = customerService;
+
     }
 
     /**
@@ -191,8 +193,7 @@ public class ProductsExpService {
     public List<String> getPortList(Map<String, String> header, String crmId, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
-        String portData = customerExpServiceClient.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), UtilMap.halfCrmIdFormat(crmId));
-
+        String portData = customerService.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID),crmId);
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
         if (!StringUtils.isEmpty(portData)) {
@@ -315,14 +316,15 @@ public class ProductsExpService {
      * @return FundFactSheetValidationResponse
      */
     @LogAround
-    public FundFactSheetValidationResponse getFundFactSheetValidation(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
+    public FundFactSheetValidationResponse validateAlternativeBuyFlow(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         FundFactSheetValidationResponse fundFactSheetValidationResponse = new FundFactSheetValidationResponse();
-        FundResponse fundResponse = new FundResponse();
-        fundResponse = isServiceHour(correlationId, fundResponse);
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+        FundResponse fundResponse = isServiceHour(correlationId,tmbStatus);
         if (!fundResponse.isError()) {
-            String fatcaFlag = getFatcaFlag(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            TmbStatusUtil.successStatus();
+            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
             fundFactSheetValidationResponse = validationAlternativeFlow(
-                    correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, fatcaFlag);
+                    correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, customerSearchResponse );
         } else {
             errorData(fundFactSheetValidationResponse, fundResponse);
         }
@@ -351,11 +353,14 @@ public class ProductsExpService {
      */
     @LogAround
     public FundResponse validateAlternativeSellAndSwitch(String correlationId, String crmId) {
-        FundResponse fundResponse = new FundResponse();
-        fundResponse = isServiceHour(correlationId, fundResponse);
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+        FundResponse fundResponse = isServiceHour(correlationId, tmbStatus);
         if (!fundResponse.isError()) {
-            String fatcaFlag = getFatcaFlag(correlationId, UtilMap.halfCrmIdFormat(crmId));
-            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, fatcaFlag);
+            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
+            if(StringUtils.isEmpty(customerSearchResponse)){
+                return responseNetWorkError(fundResponse);
+            }
+            fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, customerSearchResponse);
             if (!StringUtils.isEmpty(fundResponse) && !fundResponse.isError()) {
                 fundResponseSuccess(fundResponse);
             }
@@ -363,14 +368,12 @@ public class ProductsExpService {
         return fundResponse;
     }
 
-    private String getFatcaFlag(String correlationId, String crmId) {
-        CrmSearchBody request = CrmSearchBody.builder()
-                .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
-                .searchValue(crmId)
-                .build();
-        ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
-                customerServiceClient.customerSearch(correlationId, crmId, request);
-        return response.getBody().getData().get(0).getFatcaFlag();
+    private FundResponse responseNetWorkError(FundResponse fundResponse){
+        fundResponse.setError(true);
+        fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+        fundResponse.setErrorMsg(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+        fundResponse.setErrorDesc(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+        return fundResponse;
     }
 
     /**
@@ -390,50 +393,79 @@ public class ProductsExpService {
      * @param crmId
      * @param fundFactSheetRequestBody
      * @param fundFactSheetValidationResponse
-     * @param fatcaFlag
+     * @param customerInfo
      * @return FundFactSheetValidationResponse
      */
     @LogAround
     public FundFactSheetValidationResponse validationAlternativeFlow(String correlationId, String crmId,
                                                                      FundFactSheetRequestBody fundFactSheetRequestBody,
                                                                      FundFactSheetValidationResponse fundFactSheetValidationResponse,
-                                                                     String fatcaFlag) {
-        boolean isStopped = false;
+                                                                     CustomerSearchResponse customerInfo) {
         final boolean isNotValid = true;
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+
+        // validate age should > 20
+        tmbStatus = alternativeService.validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), tmbStatus);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
+            fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
+            fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
+            return  fundFactSheetValidationResponse;
+        }
+
+        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId,customerInfo,tmbStatus);
+        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
+            fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
+            fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
+            return  fundFactSheetValidationResponse;
+        }
+
+        tmbStatus = alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(),tmbStatus);
+        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+            fundFactSheetValidationResponse.setError(isNotValid);
+            fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
+            fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
+            fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
+            return  fundFactSheetValidationResponse;
+        }
+
         if (isCASADormant(correlationId, crmId)) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
             fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
             fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
-        if (!isStopped && isSuitabilityExpired(correlationId, crmId)) {
+        if (isSuitabilityExpired(correlationId, crmId)) {
             fundFactSheetValidationResponse.setError(isNotValid);
-            fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
+            fundFactSheetValidationResponse.setErrorCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode());
             fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
             fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
-        if (!isStopped && isCustomerIdExpired(crmId)) {
+        if (isCustomerIdExpired(crmId)) {
             fundResponseError(fundFactSheetValidationResponse, isNotValid);
-            isStopped = true;
+            return  fundFactSheetValidationResponse;
         }
-        if (!isStopped && isBusinessClose(correlationId, fundFactSheetRequestBody)) {
-            errorResponse(fundFactSheetValidationResponse, isNotValid);
-            isStopped = true;
-        }
-        if (!isStopped && fatcaFlag.equalsIgnoreCase("0")) {
+
+        String fatcaFlag = customerInfo.getFatcaFlag();
+        if (fatcaFlag.equalsIgnoreCase("0")) {
             funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-        } else if (!isStopped && !fatcaFlag.equalsIgnoreCase("N")) {
+            return  fundFactSheetValidationResponse;
+        } else if (!fatcaFlag.equalsIgnoreCase("N")) {
             funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.USNATIONAL.getCode(),
                     FatcaErrorEnums.USNATIONAL.getMsg(),
                     FatcaErrorEnums.USNATIONAL.getDesc());
+            return  fundFactSheetValidationResponse;
         }
-        return fundFactSheetValidationResponse;
+        return  fundFactSheetValidationResponse;
     }
 
     void errorResponse(FundFactSheetValidationResponse fundFactSheetValidationResponse, boolean isNotValid) {
@@ -449,37 +481,33 @@ public class ProductsExpService {
      * @param correlationId
      * @param crmId
      * @param fundResponse
-     * @param fatcaFlag
+     * @param customerInfo
      * @return FundResponse
      */
     @LogAround
     public FundResponse validationAlternativeSellAndSwitchFlow(String correlationId,
                                                                String crmId,
                                                                FundResponse fundResponse,
-                                                               String fatcaFlag) {
+                                                               CustomerSearchResponse customerInfo) {
         final boolean isNotValid = true;
+
+        // validate age should > 20
+        TmbStatus tmbStatus = TmbStatusUtil.successStatus();
+        tmbStatus = alternativeService.validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), tmbStatus);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
+            fundResponse.setError(isNotValid);
+            fundResponse.setErrorCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
+            fundResponse.setErrorMsg(tmbStatus.getMessage());
+            fundResponse.setErrorDesc(tmbStatus.getDescription());
+            return  fundResponse;
+        }
+
         if (isSuitabilityExpired(correlationId, crmId)) {
             fundResponse.setError(isNotValid);
-            fundResponse.setErrorCode(ProductsExpServiceConstant.SUITABILITY_EXPIRED_CODE);
+            fundResponse.setErrorCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode());
             fundResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
             fundResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
             return fundResponse;
-        }
-        if (isCustomerIdExpired(crmId)) {
-            fundResponseError(fundResponse, isNotValid);
-            return fundResponse;
-        }
-
-        if (fatcaFlag.equalsIgnoreCase("0")) {
-            funResponseMapping(fundResponse,
-                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
-                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
-                    FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-        } else if (!fatcaFlag.equalsIgnoreCase("N")) {
-            funResponseMapping(fundResponse,
-                    FatcaErrorEnums.USNATIONAL.getCode(),
-                    FatcaErrorEnums.USNATIONAL.getMsg(),
-                    FatcaErrorEnums.USNATIONAL.getDesc());
         }
         return fundResponse;
     }
@@ -504,43 +532,27 @@ public class ProductsExpService {
 
     /**
      * Method isServiceHour Query service hour from common-service
-     *
-     * @param correlationId
-     * @param fundResponse
+     *  @param correlationId
+     * @param tmbStatus
      */
-    public FundResponse isServiceHour(String correlationId, FundResponse fundResponse) {
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
-        try {
-            responseCommon = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
-            if (!StringUtils.isEmpty(responseCommon)) {
-                List<CommonData> commonDataList = responseCommon.getBody().getData();
-                CommonData commonData = commonDataList.get(0);
-                CommonTime noneServiceHour = commonData.getNoneServiceHour();
-                if (UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
-                    fundResponseData(fundResponse, noneServiceHour);
-                }
-            }
-            return fundResponse;
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            fundResponse.setError(true);
-            fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            fundResponse.setErrorMsg(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            fundResponse.setErrorDesc(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
-            return fundResponse;
-        }
+    public FundResponse isServiceHour(String correlationId, TmbStatus tmbStatus) {
+        tmbStatus = alternativeService.validateServiceHour(correlationId,tmbStatus);
+        return FundResponse.builder()
+                .isError(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode()))
+                .errorCode(tmbStatus.getCode())
+                .errorDesc(tmbStatus.getDescription())
+                .errorMsg(tmbStatus.getMessage())
+                .build();
     }
 
     /**
      * @param fundResponse
-     * @param noneServiceHour
      */
-    void fundResponseData(FundResponse fundResponse, CommonTime noneServiceHour) {
+    void fundResponseData(FundResponse fundResponse) {
         fundResponse.setError(true);
-        fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_OUR_CLOSE);
-        fundResponse.setErrorMsg(noneServiceHour.getStart());
-        fundResponse.setErrorDesc(noneServiceHour.getEnd());
+        fundResponse.setErrorCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+        fundResponse.setErrorMsg(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        fundResponse.setErrorDesc(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
     }
 
     /**

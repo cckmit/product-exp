@@ -1,12 +1,13 @@
 package com.tmb.oneapp.productsexpservice.model.response.fundfactsheet;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class FundFactSheetValidationResponse extends FundResponse {
 
     private FundFactSheetData body;
+
 }

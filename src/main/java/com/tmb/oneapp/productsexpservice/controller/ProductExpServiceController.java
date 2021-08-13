@@ -202,7 +202,7 @@ public class ProductExpServiceController {
             String trackingStatus = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
 
             if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRequest.getProcessFlag())) {
-                fundFactSheetValidationResponse = productsExpService.getFundFactSheetValidation(
+                fundFactSheetValidationResponse = productsExpService.validateAlternativeBuyFlow(
                         correlationId, crmId, UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmId),alternativeRequest));
 
                 if (fundFactSheetValidationResponse.isError()) {

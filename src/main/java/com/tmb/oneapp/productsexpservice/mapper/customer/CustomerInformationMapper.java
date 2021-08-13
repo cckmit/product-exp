@@ -22,6 +22,7 @@ public class CustomerInformationMapper {
         try {
             SimpleDateFormat openPortFormat = new SimpleDateFormat(openPortFolioDateFormat);
             return CustomerInformation.builder()
+                    .crmId(customerResponse.getCrmId())
                     .wealthCrmId(ProductsExpServiceConstant.MIB_CUSTOMER_STATIC_ID)
                     .phoneNumber(customerResponse.getMobileNumber())
                     .dateOfBirth(formatDateForOpenPortFolio(customerResponse.getBirthDate()))
