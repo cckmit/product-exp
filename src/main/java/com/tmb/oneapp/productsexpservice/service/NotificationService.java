@@ -861,21 +861,15 @@ public class NotificationService {
 				.getCustomerProfile(crmId);
 		if (validCustomerResponse(response)) {
 			CustGeneralProfileResponse customerProfileInfo = response.getBody().getData();
-			ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
-					updateEstatementReq.getAccountId());
-			if (Objects.nonNull(cardInfoResponse.getBody())
-					&& SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-
-				NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
-						defaultChannelTh, estatementResponse.getProductGroupEN(), estatementResponse.getProductGroupTH(),
-						customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
-						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
-				notifyCommon.setAccountId(updateEstatementReq.getAccountId());
-				notifyCommon.setCrmId(crmId);
-
-				sendNotificationEmailForApplyEStatement(notifyCommon, updateEstatementReq.getEmail(),
-						customerProfileInfo.getPhoneNoFull());
-			}
+			NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
+					defaultChannelTh, estatementResponse.getProductGroupEN(), estatementResponse.getProductGroupTH(),
+					customerProfileInfo.getEngFname() + " " + customerProfileInfo.getEngLname(),
+					customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
+			notifyCommon.setAccountId(updateEstatementReq.getAccountId());
+			notifyCommon.setCrmId(crmId);
+			
+			sendNotificationEmailForApplyEStatement(notifyCommon, updateEstatementReq.getEmail(),
+					customerProfileInfo.getPhoneNoFull());
 		}
 	}
 
