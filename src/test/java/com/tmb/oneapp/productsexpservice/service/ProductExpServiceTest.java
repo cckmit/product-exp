@@ -9,7 +9,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -493,7 +493,7 @@ public class ProductExpServiceTest {
         }
 
         FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId,crmId,fundAccountRequest);
-        Assert.assertEquals(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),actual.getErrorCode() );
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),actual.getErrorCode() );
 
     }
 
@@ -707,8 +707,47 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(fundResponse);
     }
 
+    @Test
+    public void should_return_error_age_not_over_twenty_when_call_validateAlternativeSellAndSwitch() {
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode("9999");
+
+        // when
+        bypassServiceHour();
+        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
+        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(),any())).thenReturn(tmbStatus);
+
+        // then
+        FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),actual.getErrorCode());
+    }
+
+    @Test
+    public void should_return_error_suitability_expired_when_call_validateAlternativeSellAndSwitch() {
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode("9999");
+
+        // when
+        bypassServiceHour();
+        bypassAgeNotOverTwenty();
+        TmbOneServiceResponse<SuitabilityInfo> suitabilityResponse = new TmbOneServiceResponse<>();
+        suitabilityResponse.setData(SuitabilityInfo.builder().suitabilityScore("2").suitValidation("2").build());
+        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
+        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
+        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenReturn(ResponseEntity.ok(suitabilityResponse));
+
+        // then
+        FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(),actual.getErrorCode());
+    }
+
     private void bypassServiceHour(){
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(TmbStatusUtil.successStatus());
+    }
+
+    private void bypassAgeNotOverTwenty(){
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(),any())).thenReturn(TmbStatusUtil.successStatus());
     }
 
     private void mockExceptionServiceHour(){
@@ -721,9 +760,9 @@ public class ProductExpServiceTest {
 
     private void mockIsHourClose(){
         TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        status.setDescription(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-        status.setMessage(AlternativeErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
     }
