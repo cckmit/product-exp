@@ -88,7 +88,7 @@ public class CardInstallmentController {
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
             @RequestBody CardInstallmentQuery requestBodyParameter,
             @RequestHeader Map<String, String> requestHeadersParameter) throws TMBCommonException {
-        logger.info("Get Campaign Transactions request body parameter: {}", requestBodyParameter);
+        logger.info("Card installment confirm request body parameter: {}", requestBodyParameter);
         String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
         String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
         String activityDate = Long.toString(System.currentTimeMillis());
@@ -132,7 +132,7 @@ public class CardInstallmentController {
             creditCardEvent.setFailReason(e.getMessage());
             creditCardLogService.logActivity(creditCardEvent);
 
-            logger.error("Error while getBlockCardDetails: {}", e);
+            logger.error("Error while confirmCardInstallment: {}", e);
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.OK, null);
         }
