@@ -66,6 +66,21 @@ public class BuyAlternativeServiceTest {
     }
 
     @Test
+    public void should_return_failed_cant_buy_fund_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+
+        // when
+        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("N").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg(),
+                actual.getStatus().getMessage());
+
+    }
+
+    @Test
     public void should_return_failed_validate_service_hour_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
