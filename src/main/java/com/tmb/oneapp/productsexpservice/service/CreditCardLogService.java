@@ -27,8 +27,9 @@ import java.util.Objects;
 @Service
 public class CreditCardLogService {
 	private static final TMBLogger<CreditCardLogService> logger = new TMBLogger<>(CreditCardLogService.class);
-	private final String topicName;
-	private final KafkaProducerService kafkaProducerService;
+	@Value("${com.tmb.oneapp.service.activity.topic.name}")
+	private String topicName = "activity";
+	private KafkaProducerService kafkaProducerService;
 
 	/**
 	 * constructor
@@ -36,7 +37,7 @@ public class CreditCardLogService {
 	 * @param topicName
 	 * @param kafkaProducerService
 	 */
-	public CreditCardLogService(@Value("activity") String topicName, KafkaProducerService kafkaProducerService) {
+	public CreditCardLogService(String topicName, KafkaProducerService kafkaProducerService) {
 		this.topicName = topicName;
 		this.kafkaProducerService = kafkaProducerService;
 	}
