@@ -4,6 +4,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -39,6 +40,22 @@ public class BuyAlternativeService {
 
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
 
+            String trackingId = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
+            productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
+                    crmId,
+                    ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
+                    trackingId,
+                    alternativeRequest));
+
+            // process flag = Y = Can'y By fund
+            if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRequest.getProcessFlag())){
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                return tmbOneServiceResponse;
+            }
+
             // validate service hour
             tmbOneServiceResponse.setStatus(alternativeService.validateServiceHour(correlationId, status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
@@ -48,18 +65,14 @@ public class BuyAlternativeService {
             // validate age should > 20
             tmbOneServiceResponse.setStatus(alternativeService.validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
                 return tmbOneServiceResponse;
             }
 
             // validate customer risk level
             tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                return tmbOneServiceResponse;
-            }
-
-            // validate customer assurange level
-            tmbOneServiceResponse.setStatus(alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(), status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
                 return tmbOneServiceResponse;
             }
 
@@ -78,21 +91,16 @@ public class BuyAlternativeService {
             // validate id card expired
             tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired( crmId, status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
                 return tmbOneServiceResponse;
             }
 
             // validate flatca flag not valid
             tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid( customerInfo.getFatcaFlag(), status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
                 return tmbOneServiceResponse;
             }
-
-            String trackingId = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
-            productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-                    crmId,
-                    ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
-                    trackingId,
-                    alternativeRequest));
 
             return tmbOneServiceResponse;
 
