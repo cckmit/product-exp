@@ -6,7 +6,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDto;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.DcaValidationErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
@@ -119,62 +118,10 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
     public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId,String processFlag) {
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
+            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-
-            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
-
-            // process flag != Y = Can'y By fund
-            if(!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(processFlag)){
-                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg());
-                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-                return tmbOneServiceResponse;
-            }
-
-            // validate service hour
-            tmbOneServiceResponse.setStatus(alternativeService.validateServiceHour(correlationId, status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-                return tmbOneServiceResponse;
-            }
-
-            // validate age should > 20
-            tmbOneServiceResponse.setStatus(alternativeService.validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
-                return tmbOneServiceResponse;
-            }
-
-            // validate customer risk level
-            tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-                return tmbOneServiceResponse;
-            }
-
-            // validate casa dormant
-            tmbOneServiceResponse.setStatus(alternativeService.validateCASADormant(correlationId, crmId, status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                return tmbOneServiceResponse;
-            }
-
-            // validate id card expired
-            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired( crmId, status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-                return tmbOneServiceResponse;
-            }
-
-            // validate flatca flag not valid
-            tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid( customerInfo.getFatcaFlag(), status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-                return tmbOneServiceResponse;
-            }
-
-            return tmbOneServiceResponse;
+            return validateBuyAndDca(correlationId,crmId,customerInfo,processFlag,tmbOneServiceResponse,status);
 
         } catch (Exception ex) {
             logger.error("error : {}", ex);
