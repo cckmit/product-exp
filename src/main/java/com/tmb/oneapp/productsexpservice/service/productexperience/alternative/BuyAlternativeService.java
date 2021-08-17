@@ -47,8 +47,8 @@ public class BuyAlternativeService {
                     trackingId,
                     alternativeRequest));
 
-            // process flag = Y = Can'y By fund
-            if(ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRequest.getProcessFlag())){
+            // process flag != Y = Can'y By fund
+            if(!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRequest.getProcessFlag())){
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getDesc());
                 status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg());
@@ -59,6 +59,7 @@ public class BuyAlternativeService {
             // validate service hour
             tmbOneServiceResponse.setStatus(alternativeService.validateServiceHour(correlationId, status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
                 return tmbOneServiceResponse;
             }
 
