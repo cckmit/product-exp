@@ -27,7 +27,7 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
 
-            tmbOneServiceResponse = validateSellAndSwitch(correlationId,crmId,customerInfo,tmbOneServiceResponse,status);
+            tmbOneServiceResponse = validateSellAndSwitch(correlationId,customerInfo,tmbOneServiceResponse,status);
             if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
                 return tmbOneServiceResponse;
             }

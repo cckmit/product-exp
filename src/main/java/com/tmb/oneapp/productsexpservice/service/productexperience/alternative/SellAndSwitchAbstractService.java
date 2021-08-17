@@ -21,7 +21,6 @@ public abstract class SellAndSwitchAbstractService {
     }
 
     protected TmbOneServiceResponse<String> validateSellAndSwitch(String correlationId,
-                                                              String crmId,
                                                               CustomerSearchResponse customerInfo,
                                                               TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                               TmbStatus status){
