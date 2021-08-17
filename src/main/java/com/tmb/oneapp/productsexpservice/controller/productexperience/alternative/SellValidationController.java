@@ -34,7 +34,6 @@ public class SellValidationController {
      *
      * @param correlationId            the correlation id
      * @param crmId                    the crm id
-     * @param alternativeRequest
      * @return return valid status code
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")

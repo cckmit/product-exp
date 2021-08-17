@@ -12,22 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SellAlternativeService {
+public class SwitchAlternativeService {
 
-    private static final TMBLogger<SellAlternativeService> logger = new TMBLogger<>(SellAlternativeService.class);
+    private static final TMBLogger<SwitchAlternativeService> logger = new TMBLogger<>(SwitchAlternativeService.class);
 
     private final AlternativeService alternativeService;
 
     private final CustomerService customerService;
 
     @Autowired
-    public SellAlternativeService(AlternativeService alternativeService,
-                                  CustomerService customerService) {
+    public SwitchAlternativeService(AlternativeService alternativeService,
+                                    CustomerService customerService) {
         this.alternativeService = alternativeService;
         this.customerService = customerService;
     }
 
-    public TmbOneServiceResponse<String> validationSell(String correlationId, String crmId) {
+    public TmbOneServiceResponse<String> validationSwitch(String correlationId, String crmId) {
 
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
@@ -54,12 +54,6 @@ public class SellAlternativeService {
             tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-                return tmbOneServiceResponse;
-            }
-
-            // validate suitability expired
-            tmbOneServiceResponse.setStatus(alternativeService.validateSuitabilityExpired(correlationId, crmId, status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }
 

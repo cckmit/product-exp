@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +24,7 @@ public class BuyAlternativeService {
 
     private final ProductsExpService productsExpService;
 
+    @Autowired
     public BuyAlternativeService(AlternativeService alternativeService,
                                  CustomerService customerService,
                                  ProductsExpService productsExpService) {
