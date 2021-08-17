@@ -12,7 +12,11 @@ public enum AlternativeBuySellSwitchDcaErrorEnums {
     CUSTOMER_IDENTIFY_ASSURANCE_LEVEL(AlternativeBuySellSwitchDcaErrorEnums.ERROR_CODE_200018,"If IAL level >= 210 and IAL <> Null then allow", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     CUSTOMER_IN_RESTRICTED_LIST(AlternativeBuySellSwitchDcaErrorEnums.ERROR_CODE_200018,"Customer is in restricted list", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     CUSTOMER_NOT_FILL_FATCA_FORM("2000032","Customer has not filled in the FATCA form", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
-    CUSTOMER_SUIT_EXIRED("2000004","Customer Suitability Expired", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC);
+    CUSTOMER_SUIT_EXIRED("2000004","Customer Suitability Expired", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
+    CASA_DORMANT("msg_alt_03","ACCOUNT NOT FOUND OR NOT READY TO DO THE TRANSACTION", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
+    ID_CARD_EXPIRED("msg_alt_09","ID CARD EXPIRED", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC);
+
+
 
     private static final String ERROR_DESC = "error";
     private static final String ERROR_CODE_200018 = "2000018";
