@@ -58,29 +58,15 @@ public class CardInstallmentController {
         this.creditCardLogService = creditCardLogService;
         this.notificationService = notificationService;
     }
-
+    
     /**
-     * campaign transaction api
-     *
+     * Confirm campaign transaction
+     * @param correlationId
      * @param requestBodyParameter
-     * @return campaign transaction response
+     * @param requestHeadersParameter
+     * @return
+     * @throws TMBCommonException
      */
-
-    /**
-     * Constructor
-     *
-     * @param
-     * @param creditCardClient
-     * @param creditCardLogService
-     */
-
-    /**
-     * campaign transaction api
-     *
-     * @param requestBodyParameter
-     * @return campaign transaction response
-     */
-
     @LogAround
     @ApiOperation(value = "Campaign Transactions Api")
     @PostMapping(value = "/creditcard/card-installment-confirm")
