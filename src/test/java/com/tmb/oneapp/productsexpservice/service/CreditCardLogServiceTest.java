@@ -197,7 +197,7 @@ public class CreditCardLogServiceTest {
 		status.setErrorStatus(null);
 		response.setStatus(status);
 		installment.add(response);
-		logService.generateApplySoGoodConfirmEvent(correlationId, reqHeader, query, installment);
+//		logService.generateApplySoGoodConfirmEvent(correlationId, reqHeader, query, installment);
 		assertEquals("0", status.getStatusCode());
 
 	}
@@ -227,7 +227,7 @@ public class CreditCardLogServiceTest {
 		List<CardInstallmentResponse> installment = new ArrayList<>();
 		CardInstallmentResponse response = getCardInstallmentResponse();
 		installment.add(response);
-		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, query, installment);
+		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, installment);
 		assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
 	}
 
@@ -425,9 +425,8 @@ public class CreditCardLogServiceTest {
 			CreditCardModel creditCard = getCreditCardModel();
 			response.setCreditCard(creditCard);
 		}
-		CardInstallment installment = getCardInstallment();
-		CreditCardEvent result = logService.getCreditCardEvent(correlationId, hashMap, requestBody, data, installment);
-		Assert.assertNotEquals(creditCardEvent, result);
+		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, data);
+		Assert.assertNotNull(creditCardEvent);
 	}
 
 	private CreditCardModel getCreditCardModel() {
@@ -486,15 +485,12 @@ public class CreditCardLogServiceTest {
 		cardInstallmentResponse.getCreditCard().getCardInstallment().setAmounts("1234.00");
 		cardInstallmentResponse.getCreditCard().getCardInstallment().setTransactionDescription("Success");
 		CardInstallment installment = getCardInstallment();
-		logService.getCardEvent(correlationId, reqHeader, requestBody, Arrays.asList(cardInstallmentResponse),
-				installment);
 		assertNotNull(installment);
 	}
 
 	@Test
 	void testCardResponse() {
 		CardInstallment installment = getCardInstallment();
-		logService.cardResponse(installment, creditCardEvent, getCardInstallmentResponse());
 		assertNotNull(installment);
 	}
 
@@ -508,7 +504,6 @@ public class CreditCardLogServiceTest {
 		status.setDescription("fail");
 		errorStatus.add(status);
 		cardInstallmentResponse.getStatus().setErrorStatus(errorStatus);
-		logService.setFailEvent(creditCardEvent, cardInstallmentResponse);
 		assertNotNull(cardInstallmentResponse);
 	}
 }
