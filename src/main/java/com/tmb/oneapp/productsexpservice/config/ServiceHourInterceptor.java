@@ -112,13 +112,12 @@ public class ServiceHourInterceptor extends HandlerInterceptorAdapter {
 	private boolean serviceHourCheck(String module) throws ParseException, TMBCommonException {
 		List<String> startEndTime = fetchStartEndTImeBasedOnModule(module, fetchCommonConfig());
 		Boolean serviceHourFlag = Boolean.FALSE;
-		Calendar serviceHourEndTimeStart = getCalendarObj(startEndTime.get(0));
-		Calendar serviceHourEndTimeEnd = getCalendarObj(startEndTime.get(1));
+		Calendar serviceHourStart = getCalendarObj(startEndTime.get(0));
+		Calendar serviceHourEnd = getCalendarObj(startEndTime.get(1));
 		Calendar currentTime = getCalendarObj(getCurrentTime());
 		Date currentDate = currentTime.getTime();
-		if (currentDate.equals(serviceHourEndTimeStart.getTime()) || currentDate.equals(serviceHourEndTimeEnd.getTime())
-				|| (currentDate.before(serviceHourEndTimeStart.getTime())
-						|| currentDate.after(serviceHourEndTimeEnd.getTime()))) {
+		if (currentDate.equals(serviceHourStart.getTime()) || currentDate.equals(serviceHourEnd.getTime())
+				|| (serviceHourEnd.getTime().after(currentDate) && serviceHourStart.getTime().before(currentDate))) {
 			serviceHourFlag = Boolean.TRUE;
 		}
 		return serviceHourFlag;
