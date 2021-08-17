@@ -1,18 +1,20 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.*;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * AlternativeService class will handle all of alternative of investment
@@ -37,17 +37,29 @@ public class AlternativeService {
 
     private static final TMBLogger<AlternativeService> logger = new TMBLogger<>(AlternativeService.class);
 
-    private CommonServiceClient commonServiceClient;
+    private final CommonServiceClient commonServiceClient;
 
-    private CustomerServiceClient customerServiceClient;
+    private final CustomerServiceClient customerServiceClient;
+
+    private final AccountRequestClient accountRequestClient;
+
+    private final InvestmentRequestClient investmentRequestClient;
+
+    private final ProductExpAsyncService productExpAsyncService;
 
     @Autowired
     public AlternativeService(
                               CommonServiceClient commonServiceClient,
-                              CustomerServiceClient customerServiceClient
+                              CustomerServiceClient customerServiceClient,
+                              AccountRequestClient accountRequestClient,
+                              InvestmentRequestClient investmentRequestClient,
+                              ProductExpAsyncService productExpAsyncService
     ) {
         this.commonServiceClient = commonServiceClient;
         this.customerServiceClient = customerServiceClient;
+        this.accountRequestClient = accountRequestClient;
+        this.investmentRequestClient = investmentRequestClient;
+        this.productExpAsyncService = productExpAsyncService;
     }
 
     /**
@@ -114,6 +126,93 @@ public class AlternativeService {
             logger.info("birthdate is invalid format");
             return TmbStatusUtil.notFoundStatus();
         }
+    }
+
+
+    /**
+     * Method isCASADormant get Customer account and check dormant status
+     *
+     * @param correlationId
+     * @param crmId
+     * @return TmbStatus
+     */
+    public TmbStatus validateCASADormant(String correlationId, String crmId,TmbStatus status) {
+        try {
+            Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
+            String responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
+            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
+            if(UtilMap.isCASADormant(responseCustomerExp)){
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            }
+        } catch (Exception e) {
+            logger.error("========== accountRequestClient error ==========");
+            status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        }
+        return status;
+    }
+
+    /**
+     * Method isSuitabilityExpired Call MF service to check suitability is expire.
+     *
+     * @param correlationId
+     * @param crmId
+     * @return TmbStatus
+     */
+    public TmbStatus validateSuitabilityExpired(String correlationId, String crmId,TmbStatus status) {
+
+        try {
+            Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
+            ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity = investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
+            if(UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData())){
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            }
+        } catch (Exception e) {
+            logger.error("========== investment callInvestmentFundSuitabilityService error ==========");
+            status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        }
+        return status;
+    }
+
+    /**
+     * Method validateCustomerIdExpired call to customer-info and get id_expire_date to verify with current date
+     *
+     * @param crmId
+     * @return TmbStatus
+     */
+    public TmbStatus validateIdCardExpired(String crmId,TmbStatus status) {
+        CompletableFuture<CustGeneralProfileResponse> responseResponseEntity;
+        try {
+            responseResponseEntity = productExpAsyncService.fetchCustomerProfile(UtilMap.halfCrmIdFormat(crmId));
+            CompletableFuture.allOf(responseResponseEntity);
+            CustGeneralProfileResponse responseData = responseResponseEntity.get();
+            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
+            if(UtilMap.isCustIDExpired(responseData)){
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            }
+        } catch (Exception e) {
+            logger.error("========== investment callInvestmentFundSuitabilityService error ==========");
+            status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        }
+        return status;
     }
 
 
