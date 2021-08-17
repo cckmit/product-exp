@@ -43,7 +43,7 @@ public class CreditCardLogServiceTest {
 		creditCardEvent.setActivityDate("28-03-2021");
 		creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
 		kafkaProducerService = mock(KafkaProducerService.class);
-		logService = new CreditCardLogService("testTopic", kafkaProducerService);
+		logService = new CreditCardLogService( kafkaProducerService);
 		headers.put("account-id", "0000000050078360018000167");
 		headers.put("activity-type-id", 00700101);
 		headers.put("x-forward-for", "20.0.0.1");
