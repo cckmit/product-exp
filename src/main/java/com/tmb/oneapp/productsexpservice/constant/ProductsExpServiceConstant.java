@@ -13,7 +13,7 @@ public class ProductsExpServiceConstant {
 	private ProductsExpServiceConstant() {
 	}
 
-	public static final String SERVICE_NAME = "product-exp-service";
+	public static final String SERVICE_NAME = "products-exp-service";
 
 	public static final String INVESTMENT_MODULE_VALUE = "investment_module";
 
