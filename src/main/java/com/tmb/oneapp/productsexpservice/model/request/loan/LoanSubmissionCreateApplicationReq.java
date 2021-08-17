@@ -12,6 +12,7 @@ public class LoanSubmissionCreateApplicationReq {
     private String employmentStatus;
     private BigDecimal incomeBasicSalary;
     private BigDecimal inTotalIncome;
+    private BigDecimal incomeDeclared;
     private BigDecimal incomeOtherIncome;
     private String paymentMethod;
     private String debitAccountNo;
