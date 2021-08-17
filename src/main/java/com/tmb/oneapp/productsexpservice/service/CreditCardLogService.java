@@ -36,8 +36,7 @@ public class CreditCardLogService {
 	 * @param topicName
 	 * @param kafkaProducerService
 	 */
-	public CreditCardLogService(String topicName, KafkaProducerService kafkaProducerService) {
-		this.topicName = topicName;
+	public CreditCardLogService(KafkaProducerService kafkaProducerService) {
 		this.kafkaProducerService = kafkaProducerService;
 	}
 
