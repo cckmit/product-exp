@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -86,7 +87,20 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    public void should_return_failed_cant_buy_fund_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_status_null_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
+
+        // when
+        when(customerService.getCustomerInfo(any(),any())).thenThrow(MockitoException.class);
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId, "Y");
+
+        // then
+        assertNull(actual.getStatus());
+        assertNull(actual.getData());
+
+    }
+
+    @Test
+    public void should_return_failed_cant_buy_fund_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // when
         TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId, "N");

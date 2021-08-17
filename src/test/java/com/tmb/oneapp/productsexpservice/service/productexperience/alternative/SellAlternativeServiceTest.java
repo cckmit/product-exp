@@ -11,11 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +59,20 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_service_hour_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_status_null_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
+
+        // when
+        when(customerService.getCustomerInfo(any(),any())).thenThrow(MockitoException.class);
+        TmbOneServiceResponse<String>  actual = sellAlternativeService.validationSell(correlationId,crmId);
+
+        // then
+        assertNull(actual.getStatus());
+        assertNull(actual.getData());
+
+    }
+
+    @Test
+    public void should_return_failed_validate_service_hour_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         TmbStatus status = new TmbStatus();
@@ -79,7 +94,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
@@ -103,7 +118,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_customer_risk_level_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_failed_customer_risk_level_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
@@ -127,7 +142,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_customer_suitaility_expired_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_failed_customer_suitaility_expired_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED);

@@ -13,11 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +65,19 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired( any(), any())).thenReturn(successStatus);
         when(alternativeService.validateFatcaFlagNotValid( any(), any())).thenReturn(successStatus);
+    }
+
+    @Test
+    public void should_return_status_null_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+
+        // when
+        when(customerService.getCustomerInfo(any(),any())).thenThrow(MockitoException.class);
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
+
+        // then
+        assertNull(actual.getStatus());
+        assertNull(actual.getData());
+
     }
 
     @Test

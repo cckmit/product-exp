@@ -11,11 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +32,7 @@ public class SwitchAlternativeServiceTest {
     public CustomerService customerService;
 
     @InjectMocks
-    public SellAlternativeService sellAlternativeService;
+    public SwitchAlternativeService switchAlternativeService;
 
     public static final String correlationId = "correlationID";
 
@@ -57,7 +59,20 @@ public class SwitchAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_service_hour_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_status_null_when_call_validation_switch_given_correlation_id_and_crm_id_and_alternative_request(){
+
+        // when
+        when(customerService.getCustomerInfo(any(),any())).thenThrow(MockitoException.class);
+        TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);
+
+        // then
+        assertNull(actual.getStatus());
+        assertNull(actual.getData());
+
+    }
+
+    @Test
+    public void should_return_failed_validate_service_hour_when_call_validation_switch_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         TmbStatus status = new TmbStatus();
@@ -68,7 +83,7 @@ public class SwitchAlternativeServiceTest {
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
 
         // when
-        TmbOneServiceResponse<String>  actual = sellAlternativeService.validationSell(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
@@ -79,7 +94,7 @@ public class SwitchAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_switch_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
@@ -92,7 +107,7 @@ public class SwitchAlternativeServiceTest {
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(status);
 
         // when
-        TmbOneServiceResponse<String>  actual = sellAlternativeService.validationSell(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
@@ -103,7 +118,7 @@ public class SwitchAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_customer_risk_level_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_failed_customer_risk_level_when_call_validation_switch_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
@@ -116,7 +131,7 @@ public class SwitchAlternativeServiceTest {
         when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(status);
 
         // when
-        TmbOneServiceResponse<String>  actual = sellAlternativeService.validationSell(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
@@ -126,28 +141,6 @@ public class SwitchAlternativeServiceTest {
 
     }
 
-    @Test
-    public void should_return_failed_customer_suitaility_expired_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
 
-        // given
-        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED);
-        byPassAllAlternative();
-        TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg());
-        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(status);
-
-        // when
-        TmbOneServiceResponse<String>  actual = sellAlternativeService.validationSell(correlationId,crmId);
-
-        // then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(),
-                actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg(),
-                actual.getStatus().getMessage());
-
-    }
 
 }
