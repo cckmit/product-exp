@@ -8,23 +8,15 @@ import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorE
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SellAlternativeService {
+public class SellAlternativeService extends SellAndSwitchAbstractService {
 
     private static final TMBLogger<SellAlternativeService> logger = new TMBLogger<>(SellAlternativeService.class);
 
-    private final AlternativeService alternativeService;
-
-    private final CustomerService customerService;
-
-    @Autowired
-    public SellAlternativeService(AlternativeService alternativeService,
-                                  CustomerService customerService) {
-        this.alternativeService = alternativeService;
-        this.customerService = customerService;
+    public SellAlternativeService(AlternativeService alternativeService, CustomerService customerService) {
+        super(alternativeService, customerService);
     }
 
     public TmbOneServiceResponse<String> validationSell(String correlationId, String crmId) {

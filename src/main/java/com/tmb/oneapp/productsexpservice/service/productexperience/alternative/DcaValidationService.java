@@ -17,10 +17,10 @@ import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
+import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,23 +33,12 @@ import java.util.Optional;
  * DcaValidationService class will validate for dca fund and get fund fact sheet
  */
 @Service
-public class DcaValidationService {
+public class DcaValidationService extends BuyAndDcaAbstractService {
 
     private static final TMBLogger<DcaValidationService> logger = new TMBLogger<>(DcaValidationService.class);
 
-    private final InvestmentRequestClient investmentRequestClient;
-
-    private final CustomerService customerService;
-
-    private final AlternativeService alternativeService;
-
-    @Autowired
-    public DcaValidationService(InvestmentRequestClient investmentRequestClient,
-                                CustomerService customerService,
-                                AlternativeService alternativeService) {
-        this.investmentRequestClient = investmentRequestClient;
-        this.customerService = customerService;
-        this.alternativeService = alternativeService;
+    public DcaValidationService(AlternativeService alternativeService, CustomerService customerService, ProductsExpService productsExpService, InvestmentRequestClient investmentRequestClient) {
+        super(alternativeService, customerService, productsExpService, investmentRequestClient);
     }
 
     /**

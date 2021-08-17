@@ -5,32 +5,21 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BuyAlternativeService {
+public class BuyAlternativeService extends BuyAndDcaAbstractService {
 
     private static final TMBLogger<BuyAlternativeService> logger = new TMBLogger<>(BuyAlternativeService.class);
 
-    private final AlternativeService alternativeService;
-
-    private final CustomerService customerService;
-
-    private final ProductsExpService productsExpService;
-
-    @Autowired
-    public BuyAlternativeService(AlternativeService alternativeService,
-                                 CustomerService customerService,
-                                 ProductsExpService productsExpService) {
-        this.alternativeService = alternativeService;
-        this.customerService = customerService;
-        this.productsExpService = productsExpService;
+    public BuyAlternativeService(AlternativeService alternativeService, CustomerService customerService, ProductsExpService productsExpService, InvestmentRequestClient investmentRequestClient) {
+        super(alternativeService, customerService, productsExpService, investmentRequestClient);
     }
 
     public TmbOneServiceResponse<String> validationBuy(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest) {
