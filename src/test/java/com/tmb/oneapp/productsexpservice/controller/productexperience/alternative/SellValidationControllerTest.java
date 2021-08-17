@@ -31,7 +31,7 @@ public class SellValidationControllerTest {
     public static final String crmId = "crmId";
 
     @Test
-    public void should_return_success_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_success_status_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
@@ -48,7 +48,7 @@ public class SellValidationControllerTest {
     }
 
     @Test
-    public void should_return_bad_request_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_bad_request_status_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
@@ -68,7 +68,7 @@ public class SellValidationControllerTest {
     }
 
     @Test
-    public void should_return_not_found_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_not_found_status_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();

@@ -29,6 +29,7 @@ public class BuyValidationControllerTest {
     public BuyValidationController buyValidationController;
 
     public static final String correlationId = "correlationID";
+
     public static final String crmId = "crmId";
 
     @Test
