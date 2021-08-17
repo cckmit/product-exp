@@ -4,7 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -69,8 +69,8 @@ public class BuyAlternativeServiceTest {
     public void should_return_failed_cant_buy_fund_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("N").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("N").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode(),
@@ -92,8 +92,8 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
@@ -117,8 +117,8 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
@@ -142,8 +142,8 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
@@ -167,8 +167,8 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(),
@@ -192,8 +192,8 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(),
@@ -217,8 +217,8 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateIdCardExpired( any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
@@ -242,8 +242,8 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateFatcaFlagNotValid( any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
+        TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),

@@ -19,7 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
@@ -664,11 +664,11 @@ public class ProductExpServiceTest {
 
     @Test
     public void validateAlternativeSellAndSwitch() {
-        AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setFundCode("SCBTMF");
-        alternativeRequest.setFundHouseCode("SCBAM");
-        alternativeRequest.setProcessFlag("Y");
-        alternativeRequest.setOrderType("1");
+        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
+        alternativeBuyRequest.setFundCode("SCBTMF");
+        alternativeBuyRequest.setFundHouseCode("SCBAM");
+        alternativeBuyRequest.setProcessFlag("Y");
+        alternativeBuyRequest.setOrderType("1");
 
         TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<SuitabilityInfo> responseResponseEntity = new TmbOneServiceResponse<>();
@@ -802,16 +802,16 @@ public class ProductExpServiceTest {
         fundFactSheetRequestBody.setFundCode("TMONEY");
         fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
 
-        AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
-        alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
-        alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
-        alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
+        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
+        alternativeBuyRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
+        alternativeBuyRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
+        alternativeBuyRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
+        alternativeBuyRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 crmId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeBuyRequest);
 
         Assert.assertNotNull(activityLogs);
     }

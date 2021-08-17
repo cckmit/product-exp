@@ -9,7 +9,7 @@ import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDt
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.DcaValidationErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.dca.request.AlternativeDcaRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
@@ -18,6 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSh
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.DcaValidationService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
@@ -240,8 +241,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
@@ -265,8 +265,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
@@ -290,8 +289,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
@@ -315,8 +313,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(),
@@ -340,8 +337,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateIdCardExpired( any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
@@ -365,8 +361,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateFatcaFlagNotValid( any(), any())).thenReturn(status);
 
         // when
-        AlternativeRequest alternativeRequest = AlternativeRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId);
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
 
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),

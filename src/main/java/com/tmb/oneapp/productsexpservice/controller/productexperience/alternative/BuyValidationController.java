@@ -4,7 +4,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.BuyAlternativeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +37,7 @@ public class BuyValidationController {
      *
      * @param correlationId            the correlation id
      * @param crmId                    the crm id
-     * @param alternativeRequest the fund fact sheet request body
+     * @param alternativeBuyRequest the fund fact sheet request body
      * @return return valid status code
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")
@@ -46,9 +46,9 @@ public class BuyValidationController {
     public ResponseEntity<TmbOneServiceResponse<String>> validationBuy(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody AlternativeRequest alternativeRequest) {
+            @Valid @RequestBody AlternativeBuyRequest alternativeBuyRequest) {
 
-        TmbOneServiceResponse<String> oneServiceResponse = buyAlternativeService.validationBuy(correlationId,crmId,alternativeRequest);
+        TmbOneServiceResponse<String> oneServiceResponse = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
                return ResponseEntity.ok(oneServiceResponse);

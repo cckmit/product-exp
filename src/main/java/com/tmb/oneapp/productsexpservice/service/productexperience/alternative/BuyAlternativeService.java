@@ -5,7 +5,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -33,7 +33,7 @@ public class BuyAlternativeService {
         this.productsExpService = productsExpService;
     }
 
-    public TmbOneServiceResponse<String> validationBuy(String correlationId, String crmId, AlternativeRequest alternativeRequest) {
+    public TmbOneServiceResponse<String> validationBuy(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest) {
 
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
@@ -47,10 +47,10 @@ public class BuyAlternativeService {
                     crmId,
                     ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
                     trackingId,
-                    alternativeRequest));
+                    alternativeBuyRequest));
 
             // process flag != Y = Can'y By fund
-            if(!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeRequest.getProcessFlag())){
+            if(!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeBuyRequest.getProcessFlag())){
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getDesc());
                 status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg());

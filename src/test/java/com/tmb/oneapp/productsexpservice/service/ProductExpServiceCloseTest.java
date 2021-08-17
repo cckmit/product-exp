@@ -10,7 +10,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -335,16 +335,16 @@ public class ProductExpServiceCloseTest {
         fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
         fundFactSheetRequestBody.setUnitHolderNumber("PT000000000000587870");
 
-        AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
-        alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
-        alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
-        alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
+        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
+        alternativeBuyRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
+        alternativeBuyRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
+        alternativeBuyRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
+        alternativeBuyRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 crmId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
-                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeBuyRequest);
 
         productsExpService.logActivity(activityLogs);
         Assert.assertNotNull(activityLogs);
@@ -359,16 +359,16 @@ public class ProductExpServiceCloseTest {
         fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
         fundFactSheetRequestBody.setUnitHolderNumber("PT000000000000587870");
 
-        AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
-        alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
-        alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
-        alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
+        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
+        alternativeBuyRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
+        alternativeBuyRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
+        alternativeBuyRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
+        alternativeBuyRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 crmId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
-                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeBuyRequest);
         doNothing().when(kafkaProducerService).sendMessageAsync(anyString(), any());
         when(mapper.writeValueAsString(anyString())).thenThrow(MockitoException.class);
 
@@ -384,16 +384,16 @@ public class ProductExpServiceCloseTest {
         fundFactSheetRequestBody.setFundCode("TMONEY");
         fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
 
-        AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
-        alternativeRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
-        alternativeRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
-        alternativeRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
+        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
+        alternativeBuyRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
+        alternativeBuyRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
+        alternativeBuyRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
+        alternativeBuyRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
 
         ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
                 crmId,
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeRequest);
+                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeBuyRequest);
 
         productsExpService.logActivity(activityLogs);
         Assert.assertNotNull(activityLogs);

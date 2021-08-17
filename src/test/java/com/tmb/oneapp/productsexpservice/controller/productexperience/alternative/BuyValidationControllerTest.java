@@ -4,7 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.BuyAlternativeService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ public class BuyValidationControllerTest {
         when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
 
         // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeRequest.builder().build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
 
         // then
         assertEquals(HttpStatus.OK,actual.getStatusCode());
@@ -60,7 +60,7 @@ public class BuyValidationControllerTest {
         when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
 
         // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeRequest.builder().build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
 
         // then
         assertEquals(HttpStatus.BAD_REQUEST,actual.getStatusCode());
@@ -79,7 +79,7 @@ public class BuyValidationControllerTest {
         when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
 
         // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeRequest.builder().build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
 
         // then
         assertEquals(HttpStatus.NOT_FOUND,actual.getStatusCode());

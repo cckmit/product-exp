@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
+package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
@@ -17,7 +17,6 @@ import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -128,13 +127,22 @@ public class DcaValidationService {
         return tmbStatus;
     }
 
-    public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId) {
+    public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId,String processFlag) {
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
 
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
+
+            // process flag != Y = Can'y By fund
+            if(!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(processFlag)){
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                return tmbOneServiceResponse;
+            }
 
             // validate service hour
             tmbOneServiceResponse.setStatus(alternativeService.validateServiceHour(correlationId, status));

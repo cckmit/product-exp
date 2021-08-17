@@ -4,8 +4,9 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDto;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.dca.request.AlternativeDcaRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
-import com.tmb.oneapp.productsexpservice.service.productexperience.fund.DcaValidationService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.DcaValidationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -69,9 +70,10 @@ public class DcaValidationController {
     @PostMapping(value = "/alternative/dca")
     public ResponseEntity<TmbOneServiceResponse<String>> validationDca(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestBody AlternativeDcaRequest alternativeDcaRequest) {
 
-        TmbOneServiceResponse<String> oneServiceResponse = dcaValidationService.validationAlternativeDca(correlationId,crmId);
+        TmbOneServiceResponse<String> oneServiceResponse = dcaValidationService.validationAlternativeDca(correlationId,crmId,alternativeDcaRequest.getProcessFlag());
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
                 return ResponseEntity.ok(oneServiceResponse);
