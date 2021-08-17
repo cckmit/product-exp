@@ -227,7 +227,7 @@ public class CreditCardLogServiceTest {
 		List<CardInstallmentResponse> installment = new ArrayList<>();
 		CardInstallmentResponse response = getCardInstallmentResponse();
 		installment.add(response);
-		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, query, installment);
+		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, installment);
 		assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
 	}
 
@@ -425,7 +425,7 @@ public class CreditCardLogServiceTest {
 			CreditCardModel creditCard = getCreditCardModel();
 			response.setCreditCard(creditCard);
 		}
-		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, requestBody, data);
+		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, data);
 		Assert.assertNotNull(creditCardEvent);
 	}
 

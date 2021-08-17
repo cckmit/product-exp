@@ -277,7 +277,7 @@ public class CardInstallmentControllerTest {
 		}
 		cardInstallmentResp.setStatus(status);
 		cardInstallmentResp.setData(res);
-		assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId, requestHeadersParameter,
+		assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId,
 				responseHeaders, data, data, res));
 
 	}
@@ -322,7 +322,7 @@ public class CardInstallmentControllerTest {
 		status.setStatusCode("0");
 		status.setErrorStatus(errorStatusList);
 		data.setStatus(status);
-		boolean result = cardInstallmentController.ifSuccessCaseMatch("correlationId", requestBodyParameter,
+		boolean result = cardInstallmentController.ifSuccessCaseMatch("correlationId",
 				requestHeadersParameter, oneServiceResponse, oneServiceResponse, Arrays.asList(data));
 		Assert.assertEquals(false, result);
 	}

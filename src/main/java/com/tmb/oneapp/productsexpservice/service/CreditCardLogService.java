@@ -9,7 +9,6 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
@@ -171,12 +170,10 @@ public class CreditCardLogService {
 	 * @param data
 	 */
 	public void generateApplySoGoodConfirmEvent(String correlationId, Map<String, String> reqHeader,
-			CardInstallmentQuery requestBody, List<CardInstallmentResponse> data) {
+			List<CardInstallmentResponse> data) {
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			data.forEach(e -> {
-				constructCardEvent(correlationId, reqHeader, e);
-			});
+			data.forEach(e -> constructCardEvent(correlationId, reqHeader, e));
 		}
 
 	}
@@ -191,21 +188,21 @@ public class CreditCardLogService {
 	private void constructCardEvent(String correlationId, Map<String, String> reqHeader, CardInstallmentResponse e) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
 				ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
-		
-		creditCardEvent.setCardNumber("xx"+e.getCreditCard().getAccountId().substring(21, 25));
+
+		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
 		populateBaseEvents(creditCardEvent, reqHeader);
 		if (Objects.nonNull(e.getStatus()) && "0".equals(e.getStatus().getStatusCode())) {
-			CardInstallment cardInstallment =  e.getCreditCard().getCardInstallment();
+			CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
 			creditCardEvent.setPlan(cardInstallment.getPromotionModelNo());
 			creditCardEvent.setTransactionDescription(cardInstallment.getTransactionDescription());
-			
+
 			Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
 			Double installmentInDouble = ConversionUtil.stringToDouble(cardInstallment.getMonthlyInstallments());
 			Double installmentPlusAmount = amountInDouble + installmentInDouble;
 
 			Double interestInDouble = ConversionUtil.stringToDouble(cardInstallment.getInterest());
 			Double amountPlusTotalInterest = amountInDouble + interestInDouble;
-			
+
 			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
 			String amountPlusMonthlyInstallment = ConversionUtil.doubleToString(installmentPlusAmount);
