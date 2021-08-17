@@ -16,6 +16,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.accoun
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
@@ -104,6 +106,15 @@ class OpenPortfolioServiceTest {
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
         when(investmentAsyncService.fetchAccountRedeem(any(), anyString())).thenReturn(CompletableFuture.completedFuture(oneServiceAccountRedeemResponse.getData()));
 
+        OccupationInquiryResponse occupationInquiryResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_inquiry.json").toFile(),
+                OccupationInquiryResponse.class);
+        TmbOneServiceResponse<OccupationInquiryResponseBody> oneServiceOccupationInquiryResponse = new TmbOneServiceResponse<>();
+        oneServiceOccupationInquiryResponse.setData(occupationInquiryResponse.getData());
+        oneServiceOccupationInquiryResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentAsyncService.fetchOccupationInquiry(any(), anyString())).thenReturn(CompletableFuture.completedFuture(oneServiceOccupationInquiryResponse.getData()));
+
         CustomerRequest customerRequest = CustomerRequest.builder()
                 .wealthCrmId("D0000000988")
                 .phoneNumber("0948096953")
@@ -133,6 +144,15 @@ class OpenPortfolioServiceTest {
         depositAccount.setAccountTypeShort("SDA");
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
+        OccupationInquiryResponseBody occupationInquiry = OccupationInquiryResponseBody.builder()
+                .crmId("00000018592884")
+                .occupationCode("308")
+                .occupationDescription("308 - พนักงานและลูกจ้างบริษัทห้างร้านกิจการอื่นๆ")
+                .positionDescription(null)
+                .requirePosition("Y")
+                .requireUpdate("Y")
+                .build();
+
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
 
         // When
@@ -142,6 +162,7 @@ class OpenPortfolioServiceTest {
         OpenPortfolioValidationResponse expected = OpenPortfolioValidationResponse.builder()
                 .accountPurposeResponse(accountPurposeResponse.getData())
                 .depositAccount(depositAccount)
+                .occupationInquiryResponse(occupationInquiry)
                 .build();
 
         assertNotNull(actual);
