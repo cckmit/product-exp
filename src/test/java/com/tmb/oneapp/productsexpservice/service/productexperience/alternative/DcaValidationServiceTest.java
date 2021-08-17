@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
+package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -9,6 +9,7 @@ import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDt
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.DcaValidationErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.dca.request.AlternativeDcaRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
@@ -82,6 +83,20 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired( any(), any())).thenReturn(successStatus);
         when(alternativeService.validateFatcaFlagNotValid( any(), any())).thenReturn(successStatus);
+    }
+
+    @Test
+    public void should_return_failed_cant_buy_fund_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+
+        // when
+        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId, "N");
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg(),
+                actual.getStatus().getMessage());
+
     }
 
     @Test
