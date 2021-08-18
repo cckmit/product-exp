@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
@@ -103,6 +104,21 @@ public class InvestmentAsyncService {
     public CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem(Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, crmId);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            throw getTmbCommonException();
+        }
+    }
+
+    /**
+     * Method fetchCustomerOccupationInquiry to get customer occupation requiry
+     *
+     * @return CompletableFuture<OccupationInquiryResponseBody>
+     */
+    public CompletableFuture<OccupationInquiryResponseBody> fetchOccupationInquiry(Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<OccupationInquiryResponseBody>> response = investmentRequestClient.getCustomerOccupationInquiry(investmentRequestHeader, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

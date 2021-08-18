@@ -13,6 +13,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.accoun
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
@@ -193,7 +195,7 @@ class InvestmentAsyncServiceTest {
     }
 
     @Test
-    void should_return_account_redeem_body_when_call_fetch_account_redeem_given_header_and_account_redeem_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
+    void should_return_account_redeem_body_when_call_fetch_account_redeem_given_header_and_crm_id() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> investmentRequestHeader = Map.of("test", "test");
@@ -219,11 +221,56 @@ class InvestmentAsyncServiceTest {
     @Test
     void should_return_null_when_call_fetch_account_redeem_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.getCustomerAccountRedeem(any(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.getCustomerAccountRedeem(any(), anyString())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
             investmentAsyncService.fetchAccountRedeem(any(), anyString());
+        });
+
+        //Then
+        TMBCommonException expected = new TMBCommonException(
+                ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(),
+                HttpStatus.OK,
+                null);
+
+        assertEquals(expected.getClass(), actual.getClass());
+    }
+
+    @Test
+    void should_return_occupation_inquiry_body_when_call_fetch_occupation_inquiry_given_header_and_crm_id() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
+        //Given
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> investmentRequestHeader = Map.of("test", "test");
+        OccupationInquiryResponse occupationInquiryResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_inquiry.json").toFile(),
+                OccupationInquiryResponse.class);
+        TmbOneServiceResponse<OccupationInquiryResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        tmbOneServiceResponse.setData(occupationInquiryResponse.getData());
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setService("products-exp-async-service");
+        tmbOneServiceResponse.setStatus(tmbStatus);
+        ResponseEntity<TmbOneServiceResponse<OccupationInquiryResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
+
+        when(investmentRequestClient.getCustomerOccupationInquiry(investmentRequestHeader, "00000007924129")).thenReturn(response);
+
+        //When
+        CompletableFuture<OccupationInquiryResponseBody> actual = investmentAsyncService.fetchOccupationInquiry(investmentRequestHeader, "00000007924129");
+
+        //Then
+        CompletableFuture<OccupationInquiryResponseBody> expected = CompletableFuture.completedFuture(occupationInquiryResponse.getData());
+        assertEquals(expected.get(), actual.get());
+    }
+
+    @Test
+    void should_return_null_when_call_fetch_occupation_inquiry_given_throw_exception_from_api() {
+        //Given
+        when(investmentRequestClient.getCustomerOccupationInquiry(any(), anyString())).thenThrow(RuntimeException.class);
+
+        //When
+        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
+            investmentAsyncService.fetchOccupationInquiry(any(), anyString());
         });
 
         //Then
