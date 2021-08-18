@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
+package com.tmb.oneapp.productsexpservice.service.productexperience.alternative.abstractservice;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -7,6 +7,7 @@ import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorE
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 
