@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
+package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
@@ -8,6 +8,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDto;
 import com.tmb.oneapp.productsexpservice.enums.DcaValidationErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -15,6 +16,9 @@ import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
+import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.abstractservice.BuyAndDcaAbstractService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.http.HttpStatus;
@@ -26,17 +30,15 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * DcaInformationService class will validate for dca fund and get fund fact sheet
+ * DcaValidationService class will validate for dca fund and get fund fact sheet
  */
 @Service
-public class DcaValidationService {
+public class DcaValidationService extends BuyAndDcaAbstractService {
 
     private static final TMBLogger<DcaValidationService> logger = new TMBLogger<>(DcaValidationService.class);
 
-    private InvestmentRequestClient investmentRequestClient;
-
-    public DcaValidationService(InvestmentRequestClient investmentRequestClient) {
-        this.investmentRequestClient = investmentRequestClient;
+    public DcaValidationService(AlternativeService alternativeService, CustomerService customerService, ProductsExpService productsExpService, InvestmentRequestClient investmentRequestClient) {
+        super(alternativeService, customerService, productsExpService, investmentRequestClient);
     }
 
     /**
@@ -97,24 +99,36 @@ public class DcaValidationService {
     }
 
     private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) {
-        try {
-            ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter, crmId);
-            List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
-            Optional<PtesDetail> ptesPortOptional = ptesPortList.stream()
-                    .filter(t -> t.getPortfolioFlag().equals(ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG) &&
-                            t.getPortfolioNumber().equals(dcaValidationRequest.getPortfolioNumber()))
-                    .findFirst();
-            if (ptesPortOptional.isPresent()) {
-                tmbStatus.setCode(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode());
-                tmbStatus.setMessage(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg());
-                tmbStatus.setDescription(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc());
-                return tmbStatus;
-            }
 
-        } catch (Exception ex) {
-            logger.info("Fetch Ptes Failed");
+        ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter, crmId);
+        List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
+        Optional<PtesDetail> ptesPortOptional = ptesPortList.stream()
+                .filter(t -> t.getPortfolioFlag().equals(ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG) &&
+                        t.getPortfolioNumber().equals(dcaValidationRequest.getPortfolioNumber()))
+                .findFirst();
+        if (ptesPortOptional.isPresent()) {
+            tmbStatus.setCode(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode());
+            tmbStatus.setMessage(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg());
+            tmbStatus.setDescription(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc());
+            return tmbStatus;
         }
+
         return tmbStatus;
     }
 
+    public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId,String processFlag) {
+        TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
+        try {
+            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
+            TmbStatus status = TmbStatusUtil.successStatus();
+            tmbOneServiceResponse.setStatus(status);
+            return validateBuyAndDca(correlationId,crmId,customerInfo,processFlag,tmbOneServiceResponse,status);
+
+        } catch (Exception ex) {
+            logger.error("error : {}", ex);
+            tmbOneServiceResponse.setStatus(null);
+            tmbOneServiceResponse.setData(null);
+            return tmbOneServiceResponse;
+        }
+    }
 }

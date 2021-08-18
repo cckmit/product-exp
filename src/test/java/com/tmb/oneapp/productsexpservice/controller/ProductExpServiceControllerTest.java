@@ -7,7 +7,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
@@ -374,12 +374,12 @@ public class ProductExpServiceControllerTest {
 
     @Test
     public void validateAlternativeSaleAndSwitchError() {
-        AlternativeRequest alternativeRequest = new AlternativeRequest();
-        alternativeRequest.setFundCode("SCBTMF");
-        alternativeRequest.setFundHouseCode("SCBAM");
-        alternativeRequest.setProcessFlag("Y");
-        alternativeRequest.setOrderType("2");
-        alternativeRequest.setUnitHolderNumber("PT00000000000");
+        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
+        alternativeBuyRequest.setFundCode("SCBTMF");
+        alternativeBuyRequest.setFundHouseCode("SCBAM");
+        alternativeBuyRequest.setProcessFlag("Y");
+        alternativeBuyRequest.setOrderType("2");
+        alternativeBuyRequest.setUnitHolderNumber("PT00000000000");
 
         ResponseEntity<TmbOneServiceResponse<FundResponse>> actualResult = productExpServiceController
                 .validateAlternativeSellAndSwitch(correlationId, crmId);

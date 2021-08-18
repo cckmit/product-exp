@@ -25,7 +25,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
@@ -826,14 +826,14 @@ public class ProductsExpService {
      * @param correlationId
      * @param activityType
      * @param trackingStatus
-     * @param alternativeRequest
+     * @param alternativeBuyRequest
      */
     public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId,
                                                                   String crmId,
                                                                   String activityType,
                                                                   String trackingStatus,
-                                                                  AlternativeRequest alternativeRequest) {
-        String failReason = alternativeRequest.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
+                                                                  AlternativeBuyRequest alternativeBuyRequest) {
+        String failReason = alternativeBuyRequest.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
                 ProductsExpServiceConstant.SUCCESS_MESSAGE : ProductsExpServiceConstant.FAILED_MESSAGE;
 
         ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()), trackingStatus);
@@ -843,12 +843,12 @@ public class ProductsExpService {
         activityData.setFailReason(failReason);
         activityData.setActivityType(activityType);
         activityData.setCrmId(crmId);
-        activityData.setVerifyFlag(alternativeRequest.getProcessFlag());
+        activityData.setVerifyFlag(alternativeBuyRequest.getProcessFlag());
         activityData.setReason(failReason);
-        activityData.setFundCode(alternativeRequest.getFundCode());
-        activityData.setFundClass(alternativeRequest.getFundClassThaiHubName());
-        if (!StringUtils.isEmpty(alternativeRequest.getUnitHolderNumber())) {
-            activityData.setUnitHolderNo(alternativeRequest.getUnitHolderNumber());
+        activityData.setFundCode(alternativeBuyRequest.getFundCode());
+        activityData.setFundClass(alternativeBuyRequest.getFundClassThaiHubName());
+        if (!StringUtils.isEmpty(alternativeBuyRequest.getUnitHolderNumber())) {
+            activityData.setUnitHolderNo(alternativeBuyRequest.getUnitHolderNumber());
         } else {
             activityData.setUnitHolderNo(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_UNIT_HOLDER);
         }
