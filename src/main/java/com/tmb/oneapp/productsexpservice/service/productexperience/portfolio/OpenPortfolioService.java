@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
@@ -83,7 +84,8 @@ public class OpenPortfolioService {
             if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
                 CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
-                CompletableFuture.allOf(fetchAccountPurpose, fetchAccountRedeem);
+                CompletableFuture<OccupationInquiryResponseBody> occupationInquiry = investmentAsyncService.fetchOccupationInquiry(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
+                CompletableFuture.allOf(fetchAccountPurpose, fetchAccountRedeem, occupationInquiry);
 
                 AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.get();
                 List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId());
@@ -98,6 +100,7 @@ public class OpenPortfolioService {
                 return OpenPortfolioValidationResponse.builder()
                         .accountPurposeResponse(fetchAccountPurpose.get())
                         .depositAccount(account.isPresent() ? account.get() : null)
+                        .occupationInquiryResponse(occupationInquiry.get())
                         .build();
             }
         } catch (Exception ex) {
