@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PersonalDetailResponse {
-    private List<DropDown> thaiSalutationCode;
+    private String prefix;
     private String citizenId;
     private String engName;
     private String engSurname;
@@ -25,5 +25,6 @@ public class PersonalDetailResponse {
     private String nationality;
     private Address address;
     private String mobileNo;
+    private List<DropDown> thaiSalutationCode;
     private List<DropDown> residentFlag;
 }
