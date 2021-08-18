@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.client.response
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
@@ -116,7 +117,9 @@ public class OpenPortfolioService {
      * @param openPortfolioRequestBody
      */
     public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
+        OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
+
         try {
             RelationshipRequest relationshipRequest = openPortfolioMapper.openPortfolioRequestBodyToRelationshipRequest(openPortfolioRequestBody);
             CompletableFuture<RelationshipResponseBody> relationship = investmentAsyncService.updateClientRelationship(
@@ -126,7 +129,15 @@ public class OpenPortfolioService {
             CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(
                     investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), openPortfolioRequest);
 
-            CompletableFuture.allOf(relationship, openPortfolio);
+            if (openPortfolioRequestBody.getOccupationRequest() == null) {
+                CompletableFuture.allOf(relationship, openPortfolio);
+            } else {
+                CompletableFuture<OccupationResponseBody> occupation = investmentAsyncService.updateOccupation(
+                        investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), openPortfolioRequestBody.getOccupationRequest());
+                CompletableFuture.allOf(relationship, openPortfolio, occupation);
+                occupationResponseBody = occupation.get();
+            }
+
             openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
@@ -140,6 +151,7 @@ public class OpenPortfolioService {
                     .relationshipResponse(relationship.get())
                     .openPortfolioResponse(openPortfolio.get())
                     .portfolioNicknameResponse(portfolioNickname.getBody().getData())
+                    .occupationResponse(occupationResponseBody != null ? occupationResponseBody : null)
                     .build();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
