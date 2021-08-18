@@ -1,0 +1,13 @@
+{
+  "status": {
+    "code": "0000",
+    "message": "success",
+    "service": "investment-service",
+    "description": "success"
+  },
+  "data": {
+    "crmId": "00000018592884",
+    "occupationCode": "406",
+    "positionDescription": "ผู้ช่วยผู้จัดการ"
+  }
+}

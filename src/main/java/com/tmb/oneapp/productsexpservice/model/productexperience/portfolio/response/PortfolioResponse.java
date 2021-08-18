@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response;
 
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +19,6 @@ public class PortfolioResponse {
     private OpenPortfolioResponseBody openPortfolioResponse;
 
     private PortfolioNicknameResponseBody portfolioNicknameResponse;
+
+    private OccupationResponseBody occupationResponse;
 }
