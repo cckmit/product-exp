@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailR
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
+import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInfoApplicationInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
@@ -179,5 +180,11 @@ public interface LendingServiceClient {
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
             @RequestHeader(HEADER_X_CRM_ID) String  crmId,
             @RequestParam(value = "caId") Long caId);
+    
+    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/get-customer-info-application-info")
+    ResponseEntity<TmbOneServiceResponse<CustomerInfoApplicationInfo>> getCustomerInfoAndApplicationInfo(
+    		@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
+            @RequestHeader(HEADER_X_CRM_ID) String  crmId,
+            @RequestParam(value = "caId") String caId);
 
 }
