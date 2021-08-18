@@ -28,10 +28,10 @@ public class CreditCardEvent extends BaseEvent {
     private String newLimit;
     @JsonProperty("plan")
     private String plan;
-    @JsonProperty("monthly_installment")
-    private String amountPlusMonthlyInstallment;
-    @JsonProperty("amount")
-    private String totalAmountPlusTotalIntrest;
+    @JsonProperty("amount_monthly_installment")
+    private String amountMonthlyInstallment;
+    @JsonProperty("total_interest_total_amount")
+    private String totalAmountTotalIntrest;
     @JsonProperty("reason_code")
     private String reasonCode;
     @JsonProperty("transaction_description")
