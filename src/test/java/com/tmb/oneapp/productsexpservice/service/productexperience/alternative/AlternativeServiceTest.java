@@ -1,10 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
@@ -13,12 +10,12 @@ import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
@@ -36,6 +33,7 @@ import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
@@ -61,6 +59,9 @@ public class AlternativeServiceTest {
 
     @Mock
     public InvestmentRequestClient investmentRequestClient;
+
+    @Mock
+    public ProductExpAsyncService productExpAsyncService;
 
     @InjectMocks
     public AlternativeService alternativeService;
@@ -163,7 +164,7 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000004_when_call_validatesuitability_expired() throws Exception {
+    void should_return_status_code_2000004_when_call_validate_suitability_expired() throws Exception {
         // given
         TmbOneServiceResponse<SuitabilityInfo> suitabilityInfo = new TmbOneServiceResponse<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -179,6 +180,23 @@ public class AlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(), actual.getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg(), actual.getMessage());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000009_when_call_validate_id_card_expired() throws Exception {
+        // given
+        CustGeneralProfileResponse fundHolidayBody;
+        ObjectMapper mapper = new ObjectMapper();
+        fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customer/customers_profile_idcard_expired.json").toFile(), CustGeneralProfileResponse.class);
+
+        when(productExpAsyncService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+        // When
+        TmbStatus actual = alternativeService.validateIdCardExpired("00000018592884", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc(), actual.getDescription());
     }
 
     @Test
