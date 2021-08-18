@@ -16,6 +16,8 @@ import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentRe
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
 import java.time.Instant;
 import java.util.List;
@@ -69,12 +74,16 @@ public class CardInstallmentController {
 	 * @throws TMBCommonException
 	 */
 	@LogAround
-	@ApiOperation(value = "Campaign Transactions Api")
+	@ApiOperation(value = "Confirm card installment")
 	@PostMapping(value = "/creditcard/card-installment-confirm")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000000611330", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<List<CardInstallmentResponse>>> confirmCardInstallment(
-			@ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @RequestHeader("X-Correlation-ID") String correlationId,
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestBody CardInstallmentQuery requestBodyParameter,
-			@RequestHeader Map<String, String> requestHeadersParameter) throws TMBCommonException {
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeadersParameter)
+			throws TMBCommonException {
 		logger.info("Card installment confirm request body parameter: {}", requestBodyParameter);
 		String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
