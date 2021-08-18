@@ -168,6 +168,7 @@ public class AlternativeServiceTest {
         TmbOneServiceResponse<SuitabilityInfo> suitabilityInfo = new TmbOneServiceResponse<>();
         ObjectMapper mapper = new ObjectMapper();
         SuitabilityInfo suitabilityInfoResponse = mapper.readValue(Paths.get("src/test/resources/investment/suitability/suitabilityinfo.json").toFile(), SuitabilityInfo.class);
+        suitabilityInfo.setData(suitabilityInfoResponse);
 
         when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenReturn(ResponseEntity.ok(suitabilityInfo));
 
