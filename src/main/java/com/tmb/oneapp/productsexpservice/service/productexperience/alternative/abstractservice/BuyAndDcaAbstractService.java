@@ -9,9 +9,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class BuyAndDcaAbstractService {
+public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractService {
 
     protected final AlternativeService alternativeService;
 
@@ -22,11 +21,11 @@ public abstract class BuyAndDcaAbstractService {
     protected final InvestmentRequestClient investmentRequestClient;
 
 
-    @Autowired
-    protected BuyAndDcaAbstractService(AlternativeService alternativeService,
-                                 CustomerService customerService,
-                                 ProductsExpService productsExpService,
-                                InvestmentRequestClient investmentRequestClient) {
+    public BuyAndDcaAbstractService(AlternativeService alternativeService,
+                                    CustomerService customerService,
+                                    ProductsExpService productsExpService,
+                                    InvestmentRequestClient investmentRequestClient) {
+        super(alternativeService);
         this.alternativeService = alternativeService;
         this.customerService = customerService;
         this.productsExpService = productsExpService;
@@ -50,24 +49,8 @@ public abstract class BuyAndDcaAbstractService {
             return tmbOneServiceResponse;
         }
 
-        // validate service hour
-        tmbOneServiceResponse.setStatus(alternativeService.validateServiceHour(correlationId, status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-            return tmbOneServiceResponse;
-        }
-
-        // validate age should > 20
-        tmbOneServiceResponse.setStatus(alternativeService.validateDateNotOverTwentyYearOld(customerInfo.getBirthDate(), status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
-            return tmbOneServiceResponse;
-        }
-
-        // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
+        tmbOneServiceResponse = validateServiceHourAgeAndRisk(correlationId,customerInfo,tmbOneServiceResponse,status);
+        if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
             return tmbOneServiceResponse;
         }
 
