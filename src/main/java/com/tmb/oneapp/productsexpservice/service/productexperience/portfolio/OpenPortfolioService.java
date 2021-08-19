@@ -115,7 +115,7 @@ public class OpenPortfolioService {
         if (account.isEmpty()) {
             throwTmbException("========== failed account return 0 in list for exisitng user ==========");
         }
-        return account.get();
+        return account.isPresent()? account.get():null;
     }
 
     /**
