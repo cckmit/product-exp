@@ -79,7 +79,7 @@ class OpenPortfolioServiceTest {
     private OpenPortfolioService openPortfolioService;
 
     @Test
-    void should_return_status_0000_and_body_not_null_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
+    void should_return_status_0000_and_body_not_null_when_call_create_existing_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         CustomerResponse customerResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/create_customer.json").toFile(),
@@ -107,7 +107,7 @@ class OpenPortfolioServiceTest {
         oneServiceAccountRedeemResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-        when(investmentAsyncService.fetchAccountRedeem(any(), anyString())).thenReturn(CompletableFuture.completedFuture(oneServiceAccountRedeemResponse.getData()));
+        when(investmentRequestClient.getCustomerAccountRedeem(any(), anyString())).thenReturn(ResponseEntity.ok(oneServiceAccountRedeemResponse));
 
         OccupationInquiryResponse occupationInquiryResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_inquiry.json").toFile(),
                 OccupationInquiryResponse.class);
@@ -136,6 +136,7 @@ class OpenPortfolioServiceTest {
                 .nationalDocumentIdentificationType("TMB_CITIZEN_ID")
                 .customerThaiName("นาย นัท")
                 .customerEnglishName("MR NUT")
+                .existingCustomer(true)
                 .build();
 
         DepositAccount depositAccount = new DepositAccount();
@@ -165,6 +166,82 @@ class OpenPortfolioServiceTest {
         OpenPortfolioValidationResponse expected = OpenPortfolioValidationResponse.builder()
                 .accountPurposeResponse(accountPurposeResponse.getData())
                 .depositAccount(depositAccount)
+                .occupationInquiryResponse(occupationInquiry)
+                .build();
+
+        assertNotNull(actual);
+        assertEquals(expected, actual);
+        verify(openPortfolioActivityLogService).acceptTermAndCondition(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void should_return_status_0000_and_body_not_null_when_call_create_new_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        CustomerResponse customerResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/create_customer.json").toFile(),
+                CustomerResponse.class);
+        TmbOneServiceResponse<CustomerResponseBody> oneServiceCustomerResponse = new TmbOneServiceResponse<>();
+        oneServiceCustomerResponse.setData(customerResponse.getData());
+        oneServiceCustomerResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentRequestClient.createCustomer(any(), anyString(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
+
+        AccountPurposeResponse accountPurposeResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_purpose.json").toFile(),
+                AccountPurposeResponse.class);
+        TmbOneServiceResponse<AccountPurposeResponseBody> oneServiceAccountPurposeResponse = new TmbOneServiceResponse<>();
+        oneServiceAccountPurposeResponse.setData(accountPurposeResponse.getData());
+        oneServiceAccountPurposeResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentAsyncService.fetchAccountPurpose(any())).thenReturn(CompletableFuture.completedFuture(oneServiceAccountPurposeResponse.getData()));
+
+        OccupationInquiryResponse occupationInquiryResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_inquiry.json").toFile(),
+                OccupationInquiryResponse.class);
+        TmbOneServiceResponse<OccupationInquiryResponseBody> oneServiceOccupationInquiryResponse = new TmbOneServiceResponse<>();
+        oneServiceOccupationInquiryResponse.setData(occupationInquiryResponse.getData());
+        oneServiceOccupationInquiryResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentAsyncService.fetchOccupationInquiry(any(), anyString())).thenReturn(CompletableFuture.completedFuture(oneServiceOccupationInquiryResponse.getData()));
+
+        CustomerRequest customerRequest = CustomerRequest.builder()
+                .wealthCrmId("D0000000988")
+                .phoneNumber("0948096953")
+                .dateOfBirth("2019-04-03T09:23:45")
+                .emailAddress("test@tmbbank.com")
+                .maritalStatus("M")
+                .residentGeoCode("TH")
+                .taxNumber("1234567890123")
+                .branchCode("D0000000988")
+                .makerCode("D0000000988")
+                .kycFlag("Y")
+                .amloFlag("N")
+                .lastDateSync("2019-04-03T09:23:45")
+                .nationalDocumentExpireDate("2019-04-03T09:23:45")
+                .nationalDocumentId("1909057937549")
+                .nationalDocumentIdentificationType("TMB_CITIZEN_ID")
+                .customerThaiName("นาย นัท")
+                .customerEnglishName("MR NUT")
+                .existingCustomer(false)
+                .build();
+
+        OccupationInquiryResponseBody occupationInquiry = OccupationInquiryResponseBody.builder()
+                .crmId("00000018592884")
+                .occupationCode("308")
+                .occupationDescription("308 - พนักงานและลูกจ้างบริษัทห้างร้านกิจการอื่นๆ")
+                .positionDescription(null)
+                .requirePosition("Y")
+                .requireUpdate("Y")
+                .build();
+
+        // When
+        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
+
+        // Then
+        OpenPortfolioValidationResponse expected = OpenPortfolioValidationResponse.builder()
+                .accountPurposeResponse(accountPurposeResponse.getData())
+                .depositAccount(null)
                 .occupationInquiryResponse(occupationInquiry)
                 .build();
 
