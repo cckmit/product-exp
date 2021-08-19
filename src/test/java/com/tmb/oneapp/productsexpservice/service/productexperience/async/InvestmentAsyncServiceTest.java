@@ -13,16 +13,16 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.accoun
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.request.OccupationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
@@ -285,7 +285,7 @@ class InvestmentAsyncServiceTest {
     }
 
     @Test
-    void should_return_client_relationship_body_when_call_update_client_relationship_given_header_and_relationship_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
+    void should_return_client_relationship_body_when_call_update_client_relationship_given_header_and_crm_id_and_relationship_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> investmentRequestHeader = Map.of("test", "test");
@@ -343,7 +343,7 @@ class InvestmentAsyncServiceTest {
     }
 
     @Test
-    void should_return_open_portfolio_body_when_call_open_portfolio_given_header_and_open_portfolio_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
+    void should_return_open_portfolio_body_when_call_open_portfolio_given_header_and_crm_id_and_open_portfolio_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> investmentRequestHeader = Map.of("test", "test");
@@ -394,41 +394,42 @@ class InvestmentAsyncServiceTest {
     }
 
     @Test
-    void should_return_portfolio_nickname_body_when_call_update_portfolio_nickname_given_header_and_portfolio_nickname_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
+    void should_return_occupation_body_when_call_update_occupation_given_header_and_crm_id_and_occupation_request() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> investmentRequestHeader = Map.of("test", "test");
-        PortfolioNicknameResponse portfolioNicknameResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/nickname.json").toFile(),
-                PortfolioNicknameResponse.class);
-        TmbOneServiceResponse<PortfolioNicknameResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData(portfolioNicknameResponse.getData());
+        OccupationResponse occupationResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_update.json").toFile(),
+                OccupationResponse.class);
+        TmbOneServiceResponse<OccupationResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        tmbOneServiceResponse.setData(occupationResponse.getData());
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setService("products-exp-async-service");
         tmbOneServiceResponse.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
+        ResponseEntity<TmbOneServiceResponse<OccupationResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
 
-        PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
-                .portfolioNumber("PT000000000000108261")
-                .portfolioNickName("อนาคตเพื่อการศึกษา")
+        OccupationRequest occupationRequest = OccupationRequest.builder()
+                .occupationCode("406")
+                .positionDescription("ผู้ช่วยผู้จัดการ")
                 .build();
-        when(investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest)).thenReturn(response);
+        when(investmentRequestClient.updateOccupation(investmentRequestHeader, "00000000002914", occupationRequest)).thenReturn(response);
 
         //When
-        CompletableFuture<PortfolioNicknameResponseBody> actual = investmentAsyncService.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
+        CompletableFuture<OccupationResponseBody> actual = investmentAsyncService.updateOccupation(
+                investmentRequestHeader, "00000000002914", occupationRequest);
 
         //Then
-        CompletableFuture<PortfolioNicknameResponseBody> expected = CompletableFuture.completedFuture(portfolioNicknameResponse.getData());
+        CompletableFuture<OccupationResponseBody> expected = CompletableFuture.completedFuture(occupationResponse.getData());
         assertEquals(expected.get(), actual.get());
     }
 
     @Test
-    void should_return_null_when_call_update_portfolio_nickname_given_throw_exception_from_api() {
+    void should_return_null_when_call_update_occupation_given_throw_exception_from_api() {
         //Given
-        when(investmentRequestClient.openPortfolio(any(), anyString(), any())).thenThrow(RuntimeException.class);
+        when(investmentRequestClient.updateOccupation(any(), anyString(), any())).thenThrow(RuntimeException.class);
 
         //When
         TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.openPortfolio(any(), anyString(), any());
+            investmentAsyncService.updateOccupation(any(), anyString(), any());
         });
 
         //Then

@@ -205,10 +205,10 @@ public class CreditCardLogService {
 			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
 			String amountPlusMonthlyInstallment = ConversionUtil.doubleToString(installmentPlusAmount);
-			creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
+			creditCardEvent.setAmountMonthlyInstallment(amountPlusMonthlyInstallment);
 
 			String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountPlusTotalInterest);
-			creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+			creditCardEvent.setTotalAmountTotalIntrest(totalAmountPlusTotalInterest);
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);

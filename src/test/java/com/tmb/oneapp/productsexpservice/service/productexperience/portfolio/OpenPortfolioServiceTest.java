@@ -16,8 +16,11 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.accoun
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.request.OccupationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
@@ -206,7 +209,78 @@ class OpenPortfolioServiceTest {
     }
 
     @Test
-    void should_return_status_0000_and_body_not_null_when_call_open_portfolio_given_correlation_id_and_open_portfolio_request() throws IOException, TMBCommonException {
+    void should_return_status_0000_and_body_and_occupation_not_null_when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+
+        RelationshipResponse relationshipResponse = mapper.readValue(Paths.get("src/test/resources/investment/client/relationship.json").toFile(),
+                RelationshipResponse.class);
+        TmbOneServiceResponse<RelationshipResponseBody> oneServiceRelationshipResponse = new TmbOneServiceResponse<>();
+        oneServiceRelationshipResponse.setData(relationshipResponse.getData());
+        oneServiceRelationshipResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentAsyncService.updateClientRelationship(any(), anyString(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceRelationshipResponse.getData()));
+
+        OpenPortfolioResponse openPortfolioResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/open_portfolio.json").toFile(),
+                OpenPortfolioResponse.class);
+        TmbOneServiceResponse<OpenPortfolioResponseBody> oneServiceOpenPortfolioResponse = new TmbOneServiceResponse<>();
+        oneServiceOpenPortfolioResponse.setData(openPortfolioResponse.getData());
+        oneServiceOpenPortfolioResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentAsyncService.openPortfolio(any(), anyString(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceOpenPortfolioResponse.getData()));
+
+        OccupationResponse occupationResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_update.json").toFile(),
+                OccupationResponse.class);
+        TmbOneServiceResponse<OccupationResponseBody> oneServiceOccupationResponse = new TmbOneServiceResponse<>();
+        oneServiceOccupationResponse.setData(occupationResponse.getData());
+        oneServiceOccupationResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentAsyncService.updateOccupation(any(), anyString(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceOccupationResponse.getData()));
+
+        PortfolioNicknameResponse portfolioNicknameResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/nickname.json").toFile(),
+                PortfolioNicknameResponse.class);
+        TmbOneServiceResponse<PortfolioNicknameResponseBody> oneServicePortfolioNicknameResponse = new TmbOneServiceResponse<>();
+        oneServicePortfolioNicknameResponse.setData(portfolioNicknameResponse.getData());
+        oneServicePortfolioNicknameResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+        when(investmentRequestClient.updatePortfolioNickname(any(), any())).thenReturn(ResponseEntity.ok(oneServicePortfolioNicknameResponse));
+
+        OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
+                .jointType("Single")
+                .preferredRedemptionAccountCode("0632964227")
+                .preferredRedemptionAccountName("นาง สุนิสา ผลงาม 00000632964227 (SDA)")
+                .preferredSubscriptionAccountCode("0632324919")
+                .preferredSubscriptionAccountName("นาง สุนิสา ผลงาม 00000632324919 (SDA)")
+                .registeredForVat("No")
+                .vatEstablishmentBranchCode("nul")
+                .withHoldingTaxPreference("TaxWithheld")
+                .preferredAddressType("Contact")
+                .status("Active")
+                .suitabilityScore("5")
+                .portfolioType("TMB_ADVTYPE_10_ADVISORY")
+                .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
+                .portfolioNickName("อนาคตเพื่อการศึกษ")
+                .occupationRequest(OccupationRequest.builder()
+                        .occupationCode("406")
+                        .positionDescription("ผู้ช่วยผู้จัดการ")
+                        .build())
+                .build();
+
+        // When
+        PortfolioResponse actual = openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
+
+        // Then
+        assertNotNull(actual);
+        assertNotNull(actual.getOccupationResponse());
+        verify(openPortfolioActivityLogService).enterCorrectPin(anyString(), anyString(), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void should_return_status_0000_and_body_not_null_and_occupation_null_when_call_open_portfolio_given_correlation_id_and_crm_id_and_occupation_request_null() throws IOException, TMBCommonException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -259,6 +333,7 @@ class OpenPortfolioServiceTest {
 
         // Then
         assertNotNull(actual);
+        assertNull(actual.getOccupationResponse());
         verify(openPortfolioActivityLogService).enterCorrectPin(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 }
