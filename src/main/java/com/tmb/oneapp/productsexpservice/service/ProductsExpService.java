@@ -22,6 +22,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
@@ -48,7 +49,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassLi
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -174,9 +175,7 @@ public class ProductsExpService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummary);
 
             if (HttpStatus.OK.value() == fundSummary.getStatusCode().value()) {
-                var body = fundSummary.getBody();
-                var summaryByPort = summaryByPortResponse.getBody();
-                this.setFundSummaryBody(result, ports, body, summaryByPort);
+                this.setFundSummaryBody(result, ports, fundSummary.getBody(), summaryByPortResponse.getBody());
             }
 
             result.setCountProcessedOrder("0");
@@ -193,7 +192,7 @@ public class ProductsExpService {
     public List<String> getPortList(Map<String, String> header, String crmId, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
-        String portData = customerService.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID),crmId);
+        String portData = customerService.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), crmId);
         logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
         if (!StringUtils.isEmpty(portData)) {
@@ -201,7 +200,7 @@ public class ProductsExpService {
             JsonNode node = mapper.readValue(portData, JsonNode.class);
             JsonNode dataNode = node.get("data");
             JsonNode portList = dataNode.get("mutual_fund_accounts");
-            ports = mapper.readValue(portList.toString(), new TypeReference<List<String>>() {
+            ports = mapper.readValue(portList.toString(), new TypeReference<>() {
             });
         }
         if (isIncludePtesPortfolio) {
@@ -224,49 +223,58 @@ public class ProductsExpService {
     /***
      * Set The FundSummaryBody
      * @param result
-     * @param body
-     * @param summaryByPort
+     * @param fundSummary
+     * @param fundSummaryByPort
      */
-    private void setFundSummaryBody(FundSummaryBody result, List<String> ports, TmbOneServiceResponse<FundSummaryResponse> body, TmbOneServiceResponse<FundSummaryByPortResponse> summaryByPort) {
-        if (body != null) {
-            FundClassList fundClassList = body.getData().getBody().getFundClassList();
+    private void setFundSummaryBody(FundSummaryBody result, List<String> ports,
+                                    TmbOneServiceResponse<FundSummaryResponse> fundSummary,
+                                    TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
+
+        if (fundSummary != null) {
+            FundClassList fundClassList = fundSummary.getData().getBody().getFundClassList();
             List<FundClass> fundClass = fundClassList.getFundClass();
             List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
             List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
             result.setFundClass(fundClassData);
             result.setSearchList(searchList);
             result.setFundClassList(null);
-            result.setFeeAsOfDate(body.getData().getBody().getFeeAsOfDate());
-            result.setPercentOfFundType(body.getData().getBody().getPercentOfFundType());
-            result.setSumAccruedFee(body.getData().getBody().getSumAccruedFee());
-            result.setUnrealizedProfitPercent(body.getData().getBody().getUnrealizedProfitPercent());
-            result.setSummaryMarketValue(body.getData().getBody().getSummaryMarketValue());
-            result.setSummaryUnrealizedProfit(body.getData().getBody().getSummaryUnrealizedProfit());
-            result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
-            result.setSummarySmartPortMarketValue(body.getData().getBody().getSummarySmartPortMarketValue());
-            result.setSummarySmartPortUnrealizedProfit(body.getData().getBody().getSummarySmartPortUnrealizedProfit());
-            result.setSummarySmartPortUnrealizedProfitPercent(body.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
+            result.setFeeAsOfDate(fundSummary.getData().getBody().getFeeAsOfDate());
+            result.setPercentOfFundType(fundSummary.getData().getBody().getPercentOfFundType());
+            result.setSumAccruedFee(fundSummary.getData().getBody().getSumAccruedFee());
+            result.setUnrealizedProfitPercent(fundSummary.getData().getBody().getUnrealizedProfitPercent());
+            result.setSummaryMarketValue(fundSummary.getData().getBody().getSummaryMarketValue());
+            result.setSummaryUnrealizedProfit(fundSummary.getData().getBody().getSummaryUnrealizedProfit());
+            result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
+            result.setSummarySmartPortMarketValue(fundSummary.getData().getBody().getSummarySmartPortMarketValue());
+            result.setSummarySmartPortUnrealizedProfit(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfit());
+            result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
+
             List<FundClass> smartPort = fundClassData.stream()
                     .filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
                     .collect(Collectors.toList());
-            List<FundClass> ptPort = fundClassData.stream()
-                    .filter(port -> !ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
-                    .collect(Collectors.toList());
             result.setSmartPortList(smartPort);
-            result.setPtPortList(ptPort);
-
-            if (summaryByPort != null && summaryByPort.getData() != null && summaryByPort.getData().getBody() != null &&
-                    !summaryByPort.getData().getBody().getPortfolioList().isEmpty()) {
-                result.setSummaryByPort(summaryByPort.getData().getBody().getPortfolioList());
-            }
-            List<String> ptPorts = ports.stream().filter(port -> port.startsWith("PT")).collect(Collectors.toList());
-            List<String> ptestPorts = ports.stream().filter(port -> port.startsWith("PTES")).collect(Collectors.toList());
             if (!smartPort.isEmpty()) {
                 result.setIsSmartPort(Boolean.TRUE);
             }
+
+            List<FundClass> ptPort = fundClassData.stream()
+                    .filter(port -> !ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
+                    .collect(Collectors.toList());
+            result.setPtPortList(ptPort);
+
+            if (!isPortfolioListEmpty(fundSummaryByPort)) {
+                result.setSummaryByPort(fundSummaryByPort.getData().getBody().getPortfolioList());
+
+                boolean individualAccountExist = isIndividualAccountExist(fundSummaryByPort);
+                result.setIsJointPortOnly(!individualAccountExist);
+            }
+
+            List<String> ptPorts = ports.stream().filter(port -> port.startsWith("PT")).collect(Collectors.toList());
             if (!ptPorts.isEmpty()) {
                 result.setIsPt(Boolean.TRUE);
             }
+
+            List<String> ptestPorts = ports.stream().filter(port -> port.startsWith("PTES")).collect(Collectors.toList());
             if (!ptestPorts.isEmpty()) {
                 result.setIsPtes(Boolean.TRUE);
             }
@@ -319,12 +327,12 @@ public class ProductsExpService {
     public FundFactSheetValidationResponse validateAlternativeBuyFlow(String correlationId, String crmId, FundFactSheetRequestBody fundFactSheetRequestBody) {
         FundFactSheetValidationResponse fundFactSheetValidationResponse = new FundFactSheetValidationResponse();
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
-        FundResponse fundResponse = isServiceHour(correlationId,tmbStatus);
+        FundResponse fundResponse = isServiceHour(correlationId, tmbStatus);
         if (!fundResponse.isError()) {
             TmbStatusUtil.successStatus();
-            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
+            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId, crmId);
             fundFactSheetValidationResponse = validationAlternativeFlow(
-                    correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, customerSearchResponse );
+                    correlationId, crmId, fundFactSheetRequestBody, fundFactSheetValidationResponse, customerSearchResponse);
         } else {
             errorData(fundFactSheetValidationResponse, fundResponse);
         }
@@ -356,8 +364,8 @@ public class ProductsExpService {
         TmbStatus tmbStatus = TmbStatusUtil.successStatus();
         FundResponse fundResponse = isServiceHour(correlationId, tmbStatus);
         if (!fundResponse.isError()) {
-            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId,crmId);
-            if(StringUtils.isEmpty(customerSearchResponse)){
+            CustomerSearchResponse customerSearchResponse = customerService.getCustomerInfo(correlationId, crmId);
+            if (StringUtils.isEmpty(customerSearchResponse)) {
                 return responseNetWorkError(fundResponse);
             }
             fundResponse = validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, customerSearchResponse);
@@ -368,7 +376,7 @@ public class ProductsExpService {
         return fundResponse;
     }
 
-    private FundResponse responseNetWorkError(FundResponse fundResponse){
+    private FundResponse responseNetWorkError(FundResponse fundResponse) {
         fundResponse.setError(true);
         fundResponse.setErrorCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
         fundResponse.setErrorMsg(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
@@ -411,25 +419,25 @@ public class ProductsExpService {
             fundFactSheetValidationResponse.setErrorCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
             fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
             fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         }
 
-        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId,customerInfo,tmbStatus);
-        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, tmbStatus);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
             fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
             fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         }
 
-        tmbStatus = alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(),tmbStatus);
-        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+        tmbStatus = alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(), tmbStatus);
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
             fundFactSheetValidationResponse.setErrorMsg(tmbStatus.getMessage());
             fundFactSheetValidationResponse.setErrorDesc(tmbStatus.getDescription());
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         }
 
         if (isCASADormant(correlationId, crmId)) {
@@ -437,18 +445,18 @@ public class ProductsExpService {
             fundFactSheetValidationResponse.setErrorCode(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_CODE);
             fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_MESSAGE);
             fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.CASA_DORMANT_ACCOUNT_DESC);
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         }
         if (isSuitabilityExpired(correlationId, crmId)) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode());
             fundFactSheetValidationResponse.setErrorMsg(ProductsExpServiceConstant.SUITABILITY_EXPIRED_MESSAGE);
             fundFactSheetValidationResponse.setErrorDesc(ProductsExpServiceConstant.SUITABILITY_EXPIRED_DESC);
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         }
         if (isCustomerIdExpired(crmId)) {
             fundResponseError(fundFactSheetValidationResponse, isNotValid);
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         }
 
         String fatcaFlag = customerInfo.getFatcaFlag();
@@ -457,15 +465,15 @@ public class ProductsExpService {
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getCode(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getMsg(),
                     FatcaErrorEnums.CUSTOMER_NOT_FILLED_IN.getDesc());
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         } else if (!fatcaFlag.equalsIgnoreCase("N")) {
             funResponseMapping(fundFactSheetValidationResponse,
                     FatcaErrorEnums.USNATIONAL.getCode(),
                     FatcaErrorEnums.USNATIONAL.getMsg(),
                     FatcaErrorEnums.USNATIONAL.getDesc());
-            return  fundFactSheetValidationResponse;
+            return fundFactSheetValidationResponse;
         }
-        return  fundFactSheetValidationResponse;
+        return fundFactSheetValidationResponse;
     }
 
     void errorResponse(FundFactSheetValidationResponse fundFactSheetValidationResponse, boolean isNotValid) {
@@ -499,7 +507,7 @@ public class ProductsExpService {
             fundResponse.setErrorCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
             fundResponse.setErrorMsg(tmbStatus.getMessage());
             fundResponse.setErrorDesc(tmbStatus.getDescription());
-            return  fundResponse;
+            return fundResponse;
         }
 
         if (isSuitabilityExpired(correlationId, crmId)) {
@@ -532,11 +540,12 @@ public class ProductsExpService {
 
     /**
      * Method isServiceHour Query service hour from common-service
-     *  @param correlationId
+     *
+     * @param correlationId
      * @param tmbStatus
      */
     public FundResponse isServiceHour(String correlationId, TmbStatus tmbStatus) {
-        tmbStatus = alternativeService.validateServiceHour(correlationId,tmbStatus);
+        tmbStatus = alternativeService.validateServiceHour(correlationId, tmbStatus);
         return FundResponse.builder()
                 .isError(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode()))
                 .errorCode(tmbStatus.getCode())
@@ -874,5 +883,15 @@ public class ProductsExpService {
         } catch (Exception e) {
             logger.info("Unable to log the activity request : {}", e.toString());
         }
+    }
+
+    private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
+        return fundSummaryByPort == null || fundSummaryByPort.getData() == null ||
+                fundSummaryByPort.getData().getBody() == null || fundSummaryByPort.getData().getBody().getPortfolioList().isEmpty();
+    }
+
+    private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
+        List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getBody().getPortfolioList();
+        return portfolioList.stream().anyMatch(portfolioByPort -> "N".equals(portfolioByPort.getJointFlag()));
     }
 }

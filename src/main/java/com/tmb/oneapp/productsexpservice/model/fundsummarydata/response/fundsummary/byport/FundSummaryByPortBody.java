@@ -7,5 +7,6 @@ import java.util.List;
 @Data
 
 public class FundSummaryByPortBody {
+
     private List<PortfolioByPort> portfolioList;
 }
