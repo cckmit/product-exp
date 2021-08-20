@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
@@ -84,23 +85,17 @@ public class OpenPortfolioService {
             ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), customerRequest);
             if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
-                CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
                 CompletableFuture<OccupationInquiryResponseBody> occupationInquiry = investmentAsyncService.fetchOccupationInquiry(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
-                CompletableFuture.allOf(fetchAccountPurpose, fetchAccountRedeem, occupationInquiry);
+                CompletableFuture.allOf(fetchAccountPurpose, occupationInquiry);
 
-                AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.get();
-                List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId());
-                Optional<DepositAccount> account = eligibleDepositAccounts.stream()
-                        .filter(depositAccount -> accountRedeem.getAccountRedeem().equals(depositAccount.getAccountNumber()))
-                        .findFirst();
-
-                if (account.isEmpty()) {
-                    throwTmbException("========== failed account return 0 in list ==========");
+                DepositAccount depositAccount = null;
+                if (customerRequest.isExistingCustomer()) {
+                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader,correlationId,crmId);
                 }
 
                 return OpenPortfolioValidationResponse.builder()
                         .accountPurposeResponse(fetchAccountPurpose.get())
-                        .depositAccount(account.isPresent() ? account.get() : null)
+                        .depositAccount(depositAccount)
                         .occupationInquiryResponse(occupationInquiry.get())
                         .build();
             }
@@ -108,6 +103,19 @@ public class OpenPortfolioService {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return null;
+    }
+
+    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader,String correlationId, String crmId) throws TMBCommonException {
+        ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
+        AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
+        List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId());
+        Optional<DepositAccount> account = eligibleDepositAccounts.stream()
+                .filter(depositAccount -> accountRedeem.getAccountRedeem().equals(depositAccount.getAccountNumber()))
+                .findFirst();
+        if (account.isEmpty()) {
+            throwTmbException("========== failed account return 0 in list for exisitng user ==========");
+        }
+        return account.isPresent()? account.get():null;
     }
 
     /**
