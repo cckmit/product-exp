@@ -193,9 +193,10 @@ public interface LendingServiceClient {
             @RequestHeader(HEADER_X_CRM_ID) String  crmId,
             @RequestParam(value = "caId") Long caId);
     
-	@GetMapping(value = "/apis/lending-service/loanOnlineSubmission/get-customer-information")
+	@PostMapping(value = "/apis/lending-service/loanOnlineSubmission/get-customer-information")
 	ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> getCustomerInformation(
-			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, 
+			@RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody UpdateNCBConsentFlagRequest request);
 
 }

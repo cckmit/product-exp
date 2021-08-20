@@ -25,12 +25,12 @@ public class LoanSubmissionGetCustInfoAppInfoServiceTest {
 	@Mock
 	private LendingServiceClient lendingServiceClient;
 	@Mock
-	LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+	LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		loanSubmissionGetCustInfoAppInfoService = new LoanSubmissionGetCustInfoAppInfoService(lendingServiceClient);
+		loanSubmissionGetCustInfoAppInfoService = new LoanSubmissionGetCustomerInformationService(lendingServiceClient);
 	}
 
 	@Test

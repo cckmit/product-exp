@@ -15,13 +15,13 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class LoanSubmissionGetCustInfoAppInfoService {
-	private static final TMBLogger<LoanSubmissionGetCustInfoAppInfoService> logger = new TMBLogger<>(
-			LoanSubmissionGetCustInfoAppInfoService.class);
+public class LoanSubmissionGetCustomerInformationService {
+	private static final TMBLogger<LoanSubmissionGetCustomerInformationService> logger = new TMBLogger<>(
+			LoanSubmissionGetCustomerInformationService.class);
 	private final LendingServiceClient lendingServiceClient;
 
-	public CustomerInformationResponse getCustomerInformation(String correlationId, String crmId, UpdateNCBConsentFlagRequest request)
-			throws TMBCommonException {
+	public CustomerInformationResponse getCustomerInformation(String correlationId, String crmId,
+			UpdateNCBConsentFlagRequest request) throws TMBCommonException {
 		try {
 			TmbOneServiceResponse<CustomerInformationResponse> responseEntity = lendingServiceClient
 					.getCustomerInformation(correlationId, crmId, request).getBody();

@@ -25,7 +25,7 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsent
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustInfoAppInfoService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
@@ -48,7 +48,7 @@ class LoanSubmissionOnlineControllerTest {
     WorkingDetailUpdateInfoService workingDetailUpdateInfoService;
     
     @Mock
-    LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+    LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
 
     @BeforeEach
     void setUp() {

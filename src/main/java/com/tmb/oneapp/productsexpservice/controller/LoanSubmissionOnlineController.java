@@ -33,7 +33,7 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsent
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustInfoAppInfoService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
@@ -51,7 +51,7 @@ public class LoanSubmissionOnlineController {
     private final LoanSubmissionIncomeInfoService loanSubmissionIncomeInfoService;
     private final LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
-    private final LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+    private final LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
     private final WorkingDetailUpdateInfoService workingDetailUpdateInfoService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
@@ -191,7 +191,7 @@ public class LoanSubmissionOnlineController {
     }
     
 	@ApiOperation("Get Loan Submission Customer Information")
-	@GetMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
 	@LogAround
 	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> getCustomerInformation(
 			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
