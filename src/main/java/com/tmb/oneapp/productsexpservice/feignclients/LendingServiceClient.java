@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
@@ -162,7 +161,8 @@ public interface LendingServiceClient {
             @RequestParam(value = "caId") Long caId);
 
     @PostMapping(value = "/apis/lending-service/loanSubmission/savePersonalDetail")
-    ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> saveCustomerInfo(
+    ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> saveCustomerInfo(
+            @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody PersonalDetailSaveInfoRequest personalDetailReg);
 
     @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/getIncomeInfo")

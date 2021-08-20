@@ -5,12 +5,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.DropDown;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.service.PersonalDetailSaveInfoService;
 import com.tmb.oneapp.productsexpservice.service.PersonalDetailService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -109,20 +106,50 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setMobileNo("xx");
         personalDetailSaveInfoRequest.setResidentFlag(resident.getEntryCode());
 
-        when(personalDetailSaveInfoService.updatePersonalDetailInfo(any())).thenReturn(mockResponseIndividual().getData());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.savePersonalDetail(personalDetailSaveInfoRequest);
+        when(personalDetailSaveInfoService.updatePersonalDetailInfo(any(),any())).thenReturn(mockResponseIndividual().getData());
+        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.savePersonalDetail("001100000000000000000018593707",personalDetailSaveInfoRequest);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
-    private TmbOneServiceResponse<ResponseIndividual> mockResponseIndividual() {
-        TmbOneServiceResponse<ResponseIndividual> oneServiceResponse = new TmbOneServiceResponse<ResponseIndividual>();
+    private TmbOneServiceResponse<PersonalDetailResponse> mockResponseIndividual() {
+
+        PersonalDetailResponse response = new PersonalDetailResponse();
+
+        Address address1 = new Address();
+        address1.setNo("111");
+        address1.setRoad("xx");
+        address1.setCountry("TH");
+        address1.setFloor("6");
+        address1.setTumbol("xxx");
+        address1.setMoo("2");
+        address1.setStreetName("xxx");
+        address1.setProvince("xxx");
+        address1.setPostalCode("10400");
+        address1.setBuildingName("xx");
+        address1.setAmphur("xxx");
+
+        DropDown resident = new DropDown();
+        resident.setEntryNameEng("xxx");
+        resident.setEntryNameTh("xxx");
+        resident.setEntryCode("xx");
+        resident.setEntryId(BigDecimal.ONE);
+        resident.setEntrySource("H");
+
+        response.setPrefix("G01");
+        response.setEngSurname("xxx");
+        response.setCitizenId("1111");
+        response.setIdIssueCtry1("111");
+        response.setAddress(address1);
+        response.setResidentFlag(Collections.singletonList(resident));
+
+        TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();
         Body body = new Body();
         Header header = new Header();
-
-        ResponseIndividual response = new ResponseIndividual();
-
-        response.setBody(body);
-        response.setHeader(header);
+//
+//        ResponseIndividual response = new ResponseIndividual();
+//
+//        response.setBody(body);
+//        response.setHeader(header);
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
         oneServiceResponse.setData(response);
