@@ -14,7 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
@@ -474,18 +474,18 @@ public class UtilMap {
     /**
      * Generic Method to mappingRequestFundFactSheet
      *
-     * @param alternativeRequest
+     * @param alternativeBuyRequest
      * @return fundFactSheetRequestBody
      */
-    public static FundFactSheetRequestBody mappingRequestAlternative(String crmId,AlternativeRequest alternativeRequest) {
+    public static FundFactSheetRequestBody mappingRequestAlternative(String crmId, AlternativeBuyRequest alternativeBuyRequest) {
         FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
         fundFactSheetRequestBody.setCrmId(crmId);
-        fundFactSheetRequestBody.setFundCode(alternativeRequest.getFundCode());
-        fundFactSheetRequestBody.setProcessFlag(alternativeRequest.getProcessFlag());
-        fundFactSheetRequestBody.setUnitHolderNumber(alternativeRequest.getUnitHolderNumber());
-        fundFactSheetRequestBody.setFundHouseCode(alternativeRequest.getFundHouseCode());
-        fundFactSheetRequestBody.setOrderType(alternativeRequest.getOrderType());
-        fundFactSheetRequestBody.setFundClassThaiHubName(alternativeRequest.getFundClassThaiHubName());
+        fundFactSheetRequestBody.setFundCode(alternativeBuyRequest.getFundCode());
+        fundFactSheetRequestBody.setProcessFlag(alternativeBuyRequest.getProcessFlag());
+        fundFactSheetRequestBody.setUnitHolderNumber(alternativeBuyRequest.getUnitHolderNumber());
+        fundFactSheetRequestBody.setFundHouseCode(alternativeBuyRequest.getFundHouseCode());
+        fundFactSheetRequestBody.setOrderType(alternativeBuyRequest.getOrderType());
+        fundFactSheetRequestBody.setFundClassThaiHubName(alternativeBuyRequest.getFundClassThaiHubName());
         return fundFactSheetRequestBody;
     }
 

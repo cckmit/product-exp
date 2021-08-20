@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -159,9 +160,11 @@ public class CashForUService {
 	private boolean allowWaiveVatProduct(CashForUConfigInfo rateCashForUInfo, String productId) {
 		List<String> waiveVatProducts = rateCashForUInfo.getWaiveVatProducts();
 		boolean isAllow = false;
-		for (String code : waiveVatProducts) {
-			if (productId.equals(code)) {
-				isAllow = true;
+		if(CollectionUtils.isNotEmpty(waiveVatProducts)) {
+			for (String code : waiveVatProducts) {
+				if (productId.equals(code)) {
+					isAllow = true;
+				}
 			}
 		}
 		return isAllow;
@@ -177,9 +180,11 @@ public class CashForUService {
 	private boolean allowWaiveFeeProduct(CashForUConfigInfo rateCashForUInfo, String productId) {
 		List<String> waiveFeeProducts = rateCashForUInfo.getWaiveFeeProducts();
 		boolean isAllow = false;
-		for (String code : waiveFeeProducts) {
-			if (productId.equals(code)) {
-				isAllow = true;
+		if(CollectionUtils.isNotEmpty(waiveFeeProducts)) {
+			for (String code : waiveFeeProducts) {
+				if (productId.equals(code)) {
+					isAllow = true;
+				}
 			}
 		}
 		return isAllow;

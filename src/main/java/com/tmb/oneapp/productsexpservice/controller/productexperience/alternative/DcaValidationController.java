@@ -1,11 +1,12 @@
-package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
+package com.tmb.oneapp.productsexpservice.controller.productexperience.alternative;
 
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDto;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.dca.request.AlternativeDcaRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
-import com.tmb.oneapp.productsexpservice.service.productexperience.fund.DcaValidationService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.DcaValidationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -18,7 +19,7 @@ import javax.validation.Valid;
 
 import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatus;
 
-@Api(tags = "Get fund fact sheet for fund")
+@Api(tags = "for dca fund validation")
 @RequestMapping("/funds")
 @RestController
 public class DcaValidationController {
@@ -30,7 +31,7 @@ public class DcaValidationController {
     }
 
     /**
-     * Description:- method get dca list
+     * Description:- method get fund fact sheet data
      *
      * @headerParam correlationId        the correlation id
      * @headerParam crmif                the unique id for customer
@@ -56,4 +57,34 @@ public class DcaValidationController {
             return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
     }
+
+    /**
+     * Description:- method for handle alternative dca
+     *
+     * @param correlationId            the correlation id
+     * @param crmId                    the crm id
+     * @return return valid status code
+     */
+    @ApiOperation(value = "Validation alternative case")
+    @LogAround
+    @PostMapping(value = "/alternative/dca")
+    public ResponseEntity<TmbOneServiceResponse<String>> validationDca(
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestBody AlternativeDcaRequest alternativeDcaRequest) {
+
+        TmbOneServiceResponse<String> oneServiceResponse = dcaValidationService.validationAlternativeDca(correlationId,crmId,alternativeDcaRequest.getProcessFlag());
+        if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
+            if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
+                return ResponseEntity.ok(oneServiceResponse);
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(oneServiceResponse);
+            }
+        } else {
+            oneServiceResponse.setStatus(notFoundStatus());
+            return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
 }

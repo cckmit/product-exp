@@ -10,6 +10,9 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.request.OccupationRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
@@ -269,9 +272,23 @@ public interface InvestmentRequestClient {
             @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId);
 
     /**
+     * Call investment occupation inquiry service to get occupation inquiry response.
+     *
+     * @param header the headers
+     * @param crmId  the crm id
+     * @return the occupation inquiry response
+     */
+    @PostMapping(value = "${investment.service.customer.occupation.inquiry.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<OccupationInquiryResponseBody>> getCustomerOccupationInquiry(
+            @RequestHeader Map<String, String> header,
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId);
+
+    /**
      * Call investment client relationship service to update client relationship.
      *
      * @param header              the headers
+     * @param crmId               the crmId
      * @param relationshipRequest the relationshipRequest
      * @return the client relationship response
      */
@@ -286,6 +303,7 @@ public interface InvestmentRequestClient {
      * Call investment open portfolio service to open portfolio.
      *
      * @param header               the headers
+     * @param crmId                the crmId
      * @param openPortfolioRequest the openPortfolioRequest
      * @return the open portfolio response
      */
@@ -295,6 +313,21 @@ public interface InvestmentRequestClient {
             @RequestHeader Map<String, String> header,
             @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @RequestBody OpenPortfolioRequest openPortfolioRequest);
+
+    /**
+     * Call investment update occupation service to update customer occupation.
+     *
+     * @param header            the headers
+     * @param crmId             the crmId
+     * @param occupationRequest the occupationRequest
+     * @return the open portfolio response
+     */
+    @PostMapping(value = "${investment.service.occupation.update.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<OccupationResponseBody>> updateOccupation(
+            @RequestHeader Map<String, String> header,
+            @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @RequestBody OccupationRequest occupationRequest);
 
     /**
      * Call investment portfolio nickname service to create or update portfolio nickname.

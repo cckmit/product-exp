@@ -1,19 +1,21 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,7 @@ import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
@@ -50,6 +53,15 @@ public class AlternativeServiceTest {
 
     @Mock
     public CustomerServiceClient customerServiceClient;
+
+    @Mock
+    public AccountRequestClient accountRequestClient;
+
+    @Mock
+    public InvestmentRequestClient investmentRequestClient;
+
+    @Mock
+    public ProductExpAsyncService productExpAsyncService;
 
     @InjectMocks
     public AlternativeService alternativeService;
@@ -107,6 +119,84 @@ public class AlternativeServiceTest {
         assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getMessage());
         assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000003_when_call_validate_casa_dormant() throws Exception {
+        // given
+        String accountResponse = "{\n" +
+                "\t\"status\": {\n" +
+                "\t\t\"code\": \"0000\",\n" +
+                "\t\t\"message\": \"success\",\n" +
+                "\t\t\"service\": \"accounts-service\"\n" +
+                "\t},\n" +
+                "\t\"data\": [{\n" +
+                "\t\t\"product_name_Eng\": \"All Free Account\",\n" +
+                "\t\t\"product_name_TH\": \"บัญชีออลล์ฟรี\",\n" +
+                "\t\t\"product_code\": \"225\",\n" +
+                "\t\t\"balance_currency\": \"THB\",\n" +
+                "\t\t\"current_balance\": \"0.00\",\n" +
+                "\t\t\"account_number\": \"00001102416367\",\n" +
+                "\t\t\"relationship_code\": \"PRIIND\",\n" +
+                "\t\t\"account_status_code\": \"1\",\n" +
+                "\t\t\"account_status_text\": \"ACTIVE\"\n" +
+                "\t}, {\n" +
+                "\t\t\"product_name_Eng\": \"No Fixed Account\",\n" +
+                "\t\t\"product_name_TH\": \"บัญชีโนฟิกซ์\",\n" +
+                "\t\t\"product_code\": \"221\",\n" +
+                "\t\t\"balance_currency\": \"THB\",\n" +
+                "\t\t\"current_balance\": \"922963.66\",\n" +
+                "\t\t\"account_number\": \"00001102416458\",\n" +
+                "\t\t\"relationship_code\": \"PRIIND\",\n" +
+                "\t\t\"account_status_code\": \"2\",\n" +
+                "\t\t\"account_status_text\": \"ACTIVE\"\n" +
+                "\t}]\n" +
+                "}";
+        when(accountRequestClient.callCustomerExpService(any(),any())).thenReturn(accountResponse);
+
+        // When
+        TmbStatus actual = alternativeService.validateCASADormant("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000004_when_call_validate_suitability_expired() throws Exception {
+        // given
+        TmbOneServiceResponse<SuitabilityInfo> suitabilityInfo = new TmbOneServiceResponse<>();
+        ObjectMapper mapper = new ObjectMapper();
+        SuitabilityInfo suitabilityInfoResponse = mapper.readValue(Paths.get("src/test/resources/investment/suitability/suitabilityinfo.json").toFile(), SuitabilityInfo.class);
+        suitabilityInfo.setData(suitabilityInfoResponse);
+
+        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenReturn(ResponseEntity.ok(suitabilityInfo));
+
+        // When
+        TmbStatus actual = alternativeService.validateSuitabilityExpired("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000009_when_call_validate_id_card_expired() throws Exception {
+        // given
+        CustGeneralProfileResponse fundHolidayBody;
+        ObjectMapper mapper = new ObjectMapper();
+        fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customer/customers_profile_idcard_expired.json").toFile(), CustGeneralProfileResponse.class);
+
+        when(productExpAsyncService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+        // When
+        TmbStatus actual = alternativeService.validateIdCardExpired("00000018592884", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc(), actual.getDescription());
     }
 
     @Test

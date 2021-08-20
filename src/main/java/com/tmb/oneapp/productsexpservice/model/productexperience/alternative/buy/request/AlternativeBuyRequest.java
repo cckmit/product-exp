@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request;
+package com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AlternativeRequest {
+public class AlternativeBuyRequest {
 
     private String fundHouseCode;
 
