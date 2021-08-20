@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
+import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
@@ -198,5 +200,11 @@ public interface LendingServiceClient {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, 
 			@RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody UpdateNCBConsentFlagRequest request);
+
+    @PostMapping(value = "/apis/lending-service/document/upload")
+    ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
+            @RequestHeader(HEADER_X_CRM_ID) String  crmId,
+            @RequestBody UploadDocumentRequest request);
 
 }
