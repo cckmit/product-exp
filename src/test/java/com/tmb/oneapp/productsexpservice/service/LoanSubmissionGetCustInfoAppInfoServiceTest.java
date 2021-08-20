@@ -16,7 +16,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInfoApplicationInfo;
+import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
 
 @RunWith(JUnit4.class)
 public class LoanSubmissionGetCustInfoAppInfoServiceTest {
@@ -35,15 +36,15 @@ public class LoanSubmissionGetCustInfoAppInfoServiceTest {
 	@Test
 	void testGetCustomerInfoAndApplicationInfo() throws Exception {
 
-		CustomerInfoApplicationInfo customerInfoApplicationInfo = new CustomerInfoApplicationInfo();
-		TmbOneServiceResponse<CustomerInfoApplicationInfo> oneServiceResponse = new TmbOneServiceResponse<>();
+		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
+		TmbOneServiceResponse<CustomerInformationResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
-		oneServiceResponse.setData(customerInfoApplicationInfo);
-		when(lendingServiceClient.getCustomerInfoAndApplicationInfo(any(), any(), any()))
+		oneServiceResponse.setData(customerInfoRes);
+		when(lendingServiceClient.getCustomerInformation(any(), any(), any()))
 				.thenReturn(ResponseEntity.ok(oneServiceResponse));
 
-		Assert.assertNotNull(loanSubmissionGetCustInfoAppInfoService.getCustomerInfoApplicationInfo("correlationId",
-				"crmid", "caId"));
+		Assert.assertNotNull(loanSubmissionGetCustInfoAppInfoService.getCustomerInformation("correlationId",
+				"crmid", new UpdateNCBConsentFlagRequest()));
 	}
 
 }

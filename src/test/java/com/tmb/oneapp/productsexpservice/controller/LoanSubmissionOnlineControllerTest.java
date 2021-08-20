@@ -1,19 +1,12 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
-import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
-import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
-import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInfoApplicationInfo;
-import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
-import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustInfoAppInfoService;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
-import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,11 +14,21 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
+import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
+import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
+import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustInfoAppInfoService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
+import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
 
 class LoanSubmissionOnlineControllerTest {
 
@@ -129,21 +132,21 @@ class LoanSubmissionOnlineControllerTest {
     }
     
 	@Test
-	public void testGetCustomerInfoApplicationInfoSuccess() throws TMBCommonException {
-		CustomerInfoApplicationInfo customerInfoApplicationInfo = new CustomerInfoApplicationInfo();
-		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInfoApplicationInfo(any(), any(), any()))
-				.thenReturn(customerInfoApplicationInfo);
-		ResponseEntity<TmbOneServiceResponse<CustomerInfoApplicationInfo>> responseEntity = loanSubmissionOnlineController
-				.getCustomerInfoApplicationInfo("correlationId", "crmid", "caId");
+	public void testGetcustomerInfoResSuccess() throws TMBCommonException {
+		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
+		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInformation(any(), any(), any()))
+				.thenReturn(customerInfoRes);
+		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanSubmissionOnlineController
+				.getCustomerInformation("correlationId", "crmid", new UpdateNCBConsentFlagRequest());
 		assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
 	}
 
 	@Test
-	public void testGetCustomerInfoApplicationInfoFail() throws TMBCommonException {
-		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInfoApplicationInfo(any(), any(), any()))
+	public void testGetcustomerInfoResFail() throws TMBCommonException {
+		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInformation(any(), any(), any()))
 				.thenThrow(new IllegalArgumentException());
-		ResponseEntity<TmbOneServiceResponse<CustomerInfoApplicationInfo>> responseEntity = loanSubmissionOnlineController
-				.getCustomerInfoApplicationInfo("correlationId", "crmid", "caId");
+		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanSubmissionOnlineController
+				.getCustomerInformation("correlationId", "crmid",  new UpdateNCBConsentFlagRequest());
 		assertTrue(responseEntity.getStatusCode().isError());
 	}
 
