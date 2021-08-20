@@ -16,7 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSh
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -39,142 +40,136 @@ import static org.mockito.Mockito.*;
 public class ProductsExpServiceTest {
 
     @Mock
-    private TMBLogger<ProductsExpServiceTest> logger;
+    private CustomerService customerService;
 
     @Mock
     private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    private CustomerService customerService;
+    private TMBLogger<ProductsExpServiceTest> logger;
 
     @InjectMocks
     private ProductsExpService productsExpService;
 
     @Test
     public void testGetFundSummary() {
-        List<PtesDetail> ptesDetailList;
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
-        FundSummaryByPortResponse fundSummaryByPortResponse;
         FundSummaryResponse expectedResponse = new FundSummaryResponse();
-        TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
 
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapperPort = new ObjectMapper();
+
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
             String data = IOUtils.toString(fis, "UTF-8");
-            ObjectMapper mapper = new ObjectMapper();
-            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
-                    FundSummaryResponse.class);
-            ObjectMapper mapperPort = new ObjectMapper();
-            fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
-                    FundSummaryByPortResponse.class);
-            ptesDetailList = mapperPort.readValue(Paths.get("src/test/resources/investment/ptest.json").toFile(),
-                    new TypeReference<List<PtesDetail>>() {
-                    });
-            oneServiceResponse.setData(expectedResponse);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
 
+            TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
+            List<PtesDetail> ptesDetailList = mapperPort.readValue(Paths.get("src/test/resources/investment/ptest.json").toFile(),
+                    new TypeReference<>() {
+                    });
             oneServiceResponsePtes.setData(ptesDetailList);
             oneServiceResponsePtes.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                    .body(oneServiceResponsePtes));
 
+            TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
+                    FundSummaryResponse.class);
+            oneServiceResponse.setData(expectedResponse);
+            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+
+            TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+            FundSummaryByPortResponse fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
+                    FundSummaryByPortResponse.class);
             portResponse.setData(fundSummaryByPortResponse);
             portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
+            TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
             oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
             oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
-
-            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
-                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
-                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
-
-            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
-            when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
-                    .body(oneServiceResponsePtes));
-
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         FundSummaryBody result = productsExpService.getFundSummary(corrId, crmId);
-        Assert.assertEquals(expectedResponse.getBody().getFundClassList()
-                .getFundClass().size(), result.getFundClass().size());
+        Assert.assertEquals(expectedResponse.getBody().getFundClassList().getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE, result.getIsPtes());
         Assert.assertEquals(0, result.getSmartPortList().size());
-        Assert.assertEquals(expectedResponse.getBody().getFundClassList()
-                .getFundClass().size(), result.getPtPortList().size());
+        assertEquals(Boolean.FALSE, result.getIsJointPortOnly());
     }
 
     @Test
     public void testGetFundSummaryWithSmartPort() {
-        List<PtesDetail> ptesDetailList;
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
-        FundSummaryByPortResponse fundSummaryByPortResponse;
+        ObjectMapper mapperPort = new ObjectMapper();
         FundSummaryResponse expectedResponse = new FundSummaryResponse();
-        TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
 
         try {
+            ObjectMapper mapper = new ObjectMapper();
+
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
             String data = IOUtils.toString(fis, "UTF-8");
-            ObjectMapper mapper = new ObjectMapper();
-            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data_with_smart_port.json").toFile(),
-                    FundSummaryResponse.class);
-            ObjectMapper mapperPort = new ObjectMapper();
-            fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
-                    FundSummaryByPortResponse.class);
-            ptesDetailList = mapperPort.readValue(Paths.get("src/test/resources/investment/ptest.json").toFile(),
-                    new TypeReference<List<PtesDetail>>() {
-                    });
-            oneServiceResponse.setData(expectedResponse);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
 
+            TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
+            List<PtesDetail> ptesDetailList = mapperPort.readValue(Paths.get("src/test/resources/investment/ptest.json").toFile(),
+                    new TypeReference<>() {
+                    });
             oneServiceResponsePtes.setData(ptesDetailList);
             oneServiceResponsePtes.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                    .body(oneServiceResponsePtes));
 
+            TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+            expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data_with_smart_port.json").toFile(),
+                    FundSummaryResponse.class);
+            oneServiceResponse.setData(expectedResponse);
+            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+
+            TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+            FundSummaryByPortResponse fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
+                    FundSummaryByPortResponse.class);
             portResponse.setData(fundSummaryByPortResponse);
             portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
+            TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
             oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
             oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
-
-            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
-                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
-                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
-
-            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
-            when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
-                    .body(oneServiceResponsePtes));
-
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -191,43 +186,44 @@ public class ProductsExpServiceTest {
     public void testGetFundSummaryWithNoSummaryByPort() {
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
-        FundSummaryByPortResponse fundSummaryByPortResponse;
         FundSummaryResponse expectedResponse = new FundSummaryResponse();
-        TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
             String data = IOUtils.toString(fis, "UTF-8");
+            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
+
             ObjectMapper mapper = new ObjectMapper();
+            TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
             expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
                     FundSummaryResponse.class);
-            ObjectMapper mapperPort = new ObjectMapper();
-            fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port_data_not_found.json").toFile(),
-                    FundSummaryByPortResponse.class);
             oneServiceResponse.setData(expectedResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+
+            ObjectMapper mapperPort = new ObjectMapper();
+            TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
+            FundSummaryByPortResponse fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port_data_not_found.json").toFile(),
+                    FundSummaryByPortResponse.class);
             portResponse.setData(fundSummaryByPortResponse);
             portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
+                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
+            TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
             oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
             oneServiceResponseCountToBeProcessOrder.setData(CountOrderProcessingResponseBody.builder().countProcessOrder("1").build());
-
-            when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
-                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
-            when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
-            when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
-                    .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
             when(investmentRequestClient.callInvestmentCountProcessOrderService(any(), anyString(), any())).thenReturn(
                     ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                             .body(oneServiceResponseCountToBeProcessOrder));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
