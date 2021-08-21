@@ -65,9 +65,9 @@ public class PersonalDetailSaveInfoServiceTest {
 
         personalDetailSaveInfoRequest.setThaiSalutationCode("xx");
         personalDetailSaveInfoRequest.setEngName("xx");
-        personalDetailSaveInfoRequest.setEngSurName("xx");
+        personalDetailSaveInfoRequest.setEngSurname("xx");
         personalDetailSaveInfoRequest.setThaiName("xx");
-        personalDetailSaveInfoRequest.setThaiSurName("xx");
+        personalDetailSaveInfoRequest.setThaiSurname("xx");
         personalDetailSaveInfoRequest.setEmail("xx");
         personalDetailSaveInfoRequest.setBirthDate(Calendar.getInstance());
         personalDetailSaveInfoRequest.setIdIssueCtry1("xx");
