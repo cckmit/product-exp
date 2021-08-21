@@ -14,7 +14,7 @@ public class PersonalDetailSaveInfoRequest {
     private Long caId;
     private String thaiSalutationCode;
     private String engName;
-    private String engSurName;
+    private String engSurname;
     private Calendar birthDate;
     private String idIssueCtry1;
     private Calendar expiryDate;
