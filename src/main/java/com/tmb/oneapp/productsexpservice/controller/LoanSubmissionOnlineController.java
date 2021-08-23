@@ -36,6 +36,7 @@ import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplication
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
 import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
 
 import io.swagger.annotations.Api;
@@ -52,6 +53,7 @@ public class LoanSubmissionOnlineController {
     private final LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
     private final LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
+    private final LoanSubmissionUpdateNCBConsentFlagAndStoreFileService loanSubmissionUpdateNCBConsentFlagAndStoreFileService;
     private final WorkingDetailUpdateInfoService workingDetailUpdateInfoService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
@@ -216,4 +218,27 @@ public class LoanSubmissionOnlineController {
 		}
 	}
 
+	@ApiOperation("Loan Submission Update NCB consent flag and store file to sFTP")
+	@PostMapping(value = "/update-flag-and-store-ncb-consent", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
+			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+			@Valid @RequestBody UpdateNCBConsentFlagRequest request) {
+		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
+		try {
+			CustomerInformationResponse customerInfoRes = loanSubmissionUpdateNCBConsentFlagAndStoreFileService
+					.updateNCBConsentFlagAndStoreFile(correlationId, crmId, request);
+			response.setData(customerInfoRes);
+			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+		} catch (Exception e) {
+			logger.error("Error while get loan submission Customer Information : {}", e);
+			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService()));
+			return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+		}
+	}
+	
 }

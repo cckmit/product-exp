@@ -15,6 +15,7 @@ public class UpdateNCBConsentFlagRequest {
 
 	@NotNull
 	private String caId;
+	private String crmId;
 	@NotNull
     private String appType;
     private String appRefNo;

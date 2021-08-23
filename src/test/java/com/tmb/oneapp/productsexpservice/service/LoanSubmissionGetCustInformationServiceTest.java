@@ -20,7 +20,7 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformat
 import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
 
 @RunWith(JUnit4.class)
-public class LoanSubmissionGetCustInfoAppInfoServiceTest {
+public class LoanSubmissionGetCustInformationServiceTest {
 
 	@Mock
 	private LendingServiceClient lendingServiceClient;

@@ -11,13 +11,14 @@ import lombok.Setter;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CustomerInformationResponse {
     
+	private String crmId;
 	private String fullName;
     private String citizenIdOrPassportNo;
     private String birthDate;
     private String mobileNo;
     private String productName;
     private String memberRef;
-    private String custContactTime;
+    private String ncbConsentDate;
     private String channel;
     private String module;
     private String createDate;
