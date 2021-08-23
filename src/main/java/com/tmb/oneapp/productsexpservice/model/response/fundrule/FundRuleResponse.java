@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FundRuleBody {
+public class FundRuleResponse {
 
     private List<FundRuleInfoList> fundRuleInfoList;
 }

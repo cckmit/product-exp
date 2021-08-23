@@ -14,7 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidat
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -59,59 +59,53 @@ public class DcaValidationServiceTest {
 
     public static final String crmId = "crmId";
 
-    private void mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums alternativeEnums){
-        // given
+    private void mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums alternativeEnums) {
+        // Given
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse.builder().build();
-        if(alternativeEnums.equals(
-                AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY)){
+        if (alternativeEnums.equals(
+                AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY)) {
             customerSearchResponse.setBirthDate("2010-07-08");
         }
 
-
-        when(customerService.getCustomerInfo(any(),any())).thenReturn(customerSearchResponse);
-
+        when(customerService.getCustomerInfo(any(), any())).thenReturn(customerSearchResponse);
     }
 
-    private void byPassAllAlternative(){
+    private void byPassAllAlternative() {
         TmbStatus successStatus = TmbStatusUtil.successStatus();
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateIdCardExpired( any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateFatcaFlagNotValid( any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
     }
 
     @Test
-    public void should_return_status_null_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_status_null_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // When
+        when(customerService.getCustomerInfo(any(), any())).thenThrow(MockitoException.class);
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
-        // when
-        when(customerService.getCustomerInfo(any(),any())).thenThrow(MockitoException.class);
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId, "Y");
-
-        // then
+        // Then
         assertNull(actual.getStatus());
         assertNull(actual.getData());
-
     }
 
     @Test
-    public void should_return_failed_cant_buy_fund_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_failed_cant_buy_fund_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // When
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "N");
 
-        // when
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId, "N");
-
-        // then
+        // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 
     @Test
     void should_return_dca_validation_dto_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
         String fundFactSheetData = "fundfactsheet";
@@ -134,9 +128,9 @@ public class DcaValidationServiceTest {
         when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbPtesListResponse));
 
-        TmbOneServiceResponse<FundRuleBody> tmbFundRuleResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> tmbFundRuleResponse = new TmbOneServiceResponse<>();
         tmbFundRuleResponse.setStatus(TmbStatusUtil.successStatus());
-        tmbFundRuleResponse.setData(FundRuleBody.builder()
+        tmbFundRuleResponse.setData(FundRuleResponse.builder()
                 .fundRuleInfoList(List.of(FundRuleInfoList.builder().allowAipFlag("Y").build())).build());
         when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundRuleResponse));
@@ -147,10 +141,10 @@ public class DcaValidationServiceTest {
         when(investmentRequestClient.callInvestmentFundFactSheetService(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundFactSheetResponse));
 
-        //When
+        // When
         TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
-        //Then
+        // Then
         DcaValidationDto mockDto = DcaValidationDto.builder().factSheetData(fundFactSheetData).build();
         assertEquals(TmbStatusUtil.successStatus().getCode(), actual.getStatus().getCode());
         assertEquals(mockDto, actual.getData());
@@ -158,7 +152,7 @@ public class DcaValidationServiceTest {
 
     @Test
     void should_return_error_2000036_ptes_port_is_not_allow_for_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
@@ -180,10 +174,10 @@ public class DcaValidationServiceTest {
         when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbPtesListResponse));
 
-        //When
+        // When
         TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
-        //Then
+        // Then
         assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getCode(), actual.getStatus().getCode());
         assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getMsg(), actual.getStatus().getMessage());
         assertEquals(DcaValidationErrorEnums.PTES_PORT_IS_NOT_ALLOW_FOR_DCA.getDesc(), actual.getStatus().getDescription());
@@ -192,7 +186,7 @@ public class DcaValidationServiceTest {
 
     @Test
     void should_return_error_2000037_fund_not_allow_set_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
@@ -214,17 +208,17 @@ public class DcaValidationServiceTest {
         when(investmentRequestClient.getPtesPort(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbPtesListResponse));
 
-        TmbOneServiceResponse<FundRuleBody> tmbFundRuleResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> tmbFundRuleResponse = new TmbOneServiceResponse<>();
         tmbFundRuleResponse.setStatus(TmbStatusUtil.successStatus());
-        tmbFundRuleResponse.setData(FundRuleBody.builder()
+        tmbFundRuleResponse.setData(FundRuleResponse.builder()
                 .fundRuleInfoList(List.of(FundRuleInfoList.builder().allowAipFlag("N").build())).build());
         when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundRuleResponse));
 
-        //When
+        // When
         TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
-        //Then
+        // Then
         assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getCode(), actual.getStatus().getCode());
         assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getMsg(), actual.getStatus().getMessage());
         assertEquals(DcaValidationErrorEnums.FUND_NOT_ALLOW_SET_DCA.getDesc(), actual.getStatus().getDescription());
@@ -233,7 +227,7 @@ public class DcaValidationServiceTest {
 
     @Test
     void should_return_null_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
         ;
@@ -249,37 +243,34 @@ public class DcaValidationServiceTest {
         //When
         TmbOneServiceResponse<DcaValidationDto> actual = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
 
-        //Then
+        // Then
         assertNull(actual.getStatus());
         assertNull(actual.getData());
     }
 
     @Test
-    public void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    public void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(status);
 
-        // when
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
+        // When
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
-        // then
+        // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 
     @Test
-    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
@@ -289,21 +280,19 @@ public class DcaValidationServiceTest {
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(status);
 
-        // when
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
+        // When
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
-        // then
+        // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 
     @Test
-    public void should_return_failed_customer_risk_level_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    public void should_return_failed_customer_risk_level_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
@@ -311,23 +300,21 @@ public class DcaValidationServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(status);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any())).thenReturn(status);
 
-        // when
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
+        // When
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
-        // then
+        // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 
     @Test
-    public void should_return_failed_casa_dormant_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    public void should_return_failed_casa_dormant_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT);
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
@@ -337,21 +324,19 @@ public class DcaValidationServiceTest {
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(status);
 
-        // when
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
+        // When
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
-        // then
+        // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 
     @Test
-    public void should_return_failed_customer_id_card_expired_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    public void should_return_failed_customer_id_card_expired_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED);
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
@@ -359,23 +344,21 @@ public class DcaValidationServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateIdCardExpired( any(), any())).thenReturn(status);
+        when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(status);
 
-        // when
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
+        // When
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
-        // then
+        // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 
     @Test
-    public void should_return_failed_customer_not_fill_fatca_form_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    public void should_return_failed_customer_not_fill_fatca_form_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
@@ -383,16 +366,15 @@ public class DcaValidationServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateFatcaFlagNotValid( any(), any())).thenReturn(status);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(status);
 
-        // when
-        TmbOneServiceResponse<String>  actual = dcaValidationService.validationAlternativeDca(correlationId,crmId,"Y");
+        // When
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
-        // then
+        // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 }

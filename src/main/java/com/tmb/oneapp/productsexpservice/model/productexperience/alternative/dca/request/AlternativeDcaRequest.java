@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.alternative.dca.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +17,4 @@ public class AlternativeDcaRequest {
 
     @NotNull
     private String processFlag;
-
 }

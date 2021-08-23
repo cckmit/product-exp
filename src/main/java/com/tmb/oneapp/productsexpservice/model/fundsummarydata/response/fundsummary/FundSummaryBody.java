@@ -2,10 +2,7 @@ package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsum
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;

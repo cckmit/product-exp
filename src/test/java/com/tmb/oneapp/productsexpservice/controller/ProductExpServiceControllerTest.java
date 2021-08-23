@@ -17,9 +17,9 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSh
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.FundDetail;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import org.junit.Assert;
@@ -59,9 +59,9 @@ public class ProductExpServiceControllerTest {
 
     private final String crmId = "001100000000000000000000028365";
 
-    private AccountDetailBody accountDetailBody = null;
+    private AccountDetailResponse accountDetailResponse = null;
 
-    private FundRuleBody fundRuleBody = null;
+    private FundRuleResponse fundRuleResponse = null;
 
     private FundAccountResponse fundAccountResponse = null;
 
@@ -70,39 +70,39 @@ public class ProductExpServiceControllerTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    private FundAccountDetail mappingResponse(AccountDetailBody accountDetailBody, FundRuleBody fundRuleBody) {
+    private FundAccountDetail mappingResponse(AccountDetailResponse accountDetailResponse, FundRuleResponse fundRuleResponse) {
         FundRule fundRule = new FundRule();
-        List<FundRuleInfoList> fundRuleInfoList = null;
+        List<FundRuleInfoList> fundRuleInfoList;
         AccountDetail accountDetail = new AccountDetail();
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
-        if (!StringUtils.isEmpty(fundRuleBody)) {
-            fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
+        if (!StringUtils.isEmpty(fundRuleResponse)) {
+            fundRuleInfoList = fundRuleResponse.getFundRuleInfoList();
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundRule.setIpoflag(ruleInfoList.getIpoflag());
-            BeanUtils.copyProperties(accountDetail, accountDetailBody.getFundDetail());
+            BeanUtils.copyProperties(accountDetail, accountDetailResponse.getFundDetail());
             fundAccountDetail.setFundRuleInfoList(fundRuleInfoList);
             fundAccountDetail.setAccountDetail(accountDetail);
         }
         return fundAccountDetail;
     }
 
-    private void initAccountDetailBody() {
-        accountDetailBody = new AccountDetailBody();
+    private void initAccountDetailResponse() {
+        accountDetailResponse = new AccountDetailResponse();
         FundDetail fundDetail = new FundDetail();
         fundDetail.setFundHouseCode("TTTTT");
         fundDetail.setFundHouseCode("EEEEE");
-        accountDetailBody.setFundDetail(fundDetail);
+        accountDetailResponse.setFundDetail(fundDetail);
     }
 
-    private void initFundRuleBody() {
-        fundRuleBody = new FundRuleBody();
+    private void initFundRuleResponse() {
+        fundRuleResponse = new FundRuleResponse();
         List<FundRuleInfoList> fundRuleInfoList = new ArrayList<>();
         FundRuleInfoList list = new FundRuleInfoList();
         list.setFundCode("TTTTTT");
         list.setProcessFlag("N");
         fundRuleInfoList.add(list);
-        fundRuleBody.setFundRuleInfoList(fundRuleInfoList);
+        fundRuleResponse.setFundRuleInfoList(fundRuleInfoList);
     }
 
     private void initSuccessResponseAccountDetail() {
@@ -188,27 +188,19 @@ public class ProductExpServiceControllerTest {
 
     @Test
     public void testGetFundAccountDetail() {
-        initAccountDetailBody();
-        initFundRuleBody();
+        initAccountDetailResponse();
+        initFundRuleResponse();
 
-        FundAccountResponse fundAccountResponse = null;
+        FundAccountResponse fundAccountResponse = new FundAccountResponse();;
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
-        fundAccountRequest.setFundCode("EEEEEEE");
-        fundAccountRequest.setFundHouseCode("TTTTTTT");
-        fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setPortfolioNumber("PT00000001111");
-        fundAccountRequest.setTranType("All");
 
-        AccountDetailBody accountDetailBody = null;
-        FundRuleBody fundRuleBody = null;
+        AccountDetailResponse accountDetailResponse = null;
+        FundRuleResponse fundRuleResponse = null;
 
         try {
-            fundAccountResponse = new FundAccountResponse();
-
-            FundAccountDetail fundAccountDetail = mappingResponse(accountDetailBody, fundRuleBody);
+            FundAccountDetail fundAccountDetail = mappingResponse(accountDetailResponse, fundRuleResponse);
             fundAccountResponse.setDetails(fundAccountDetail);
             when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(fundAccountResponse);
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -232,7 +224,6 @@ public class ProductExpServiceControllerTest {
             ObjectMapper mapper = new ObjectMapper();
             fundPaymentDetailResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_payment_detail.json").toFile(), FundPaymentDetailResponse.class);
             when(productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest)).thenReturn(fundPaymentDetailResponse);
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -247,24 +238,17 @@ public class ProductExpServiceControllerTest {
 
     @Test
     public void testGetFundAccountDetailNull() {
-        initAccountDetailBody();
-        initFundRuleBody();
+        initAccountDetailResponse();
+        initFundRuleResponse();
 
-        FundAccountResponse fundAccountResponse;
+        FundAccountResponse fundAccountResponse = new FundAccountResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
-        fundAccountRequest.setFundCode("EEEEEEE");
-        fundAccountRequest.setFundHouseCode("TTTTTTT");
-        fundAccountRequest.setServiceType("1");
-        fundAccountRequest.setPortfolioNumber("PT00000001111");
-        fundAccountRequest.setTranType("All");
 
-        AccountDetailBody accountDetailBody = null;
-        FundRuleBody fundRuleBody = null;
+        AccountDetailResponse accountDetailResponse = null;
+        FundRuleResponse fundRuleResponse = null;
 
         try {
-            fundAccountResponse = new FundAccountResponse();
-
-            FundAccountDetail fundAccountDetail = mappingResponse(accountDetailBody, fundRuleBody);
+            FundAccountDetail fundAccountDetail = mappingResponse(accountDetailResponse, fundRuleResponse);
             fundAccountResponse.setDetails(fundAccountDetail);
             when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
@@ -321,7 +305,7 @@ public class ProductExpServiceControllerTest {
             fundRsAndValidation.setErrorMsg(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_MESSAGE);
             fundRsAndValidation.setErrorDesc(ProductsExpServiceConstant.SERVICE_OUR_CLOSE_DESC);
 
-            when(productsExpService.validateAlternativeBuyFlow(any(),any(),any())).thenReturn(fundRsAndValidation);
+            when(productsExpService.validateAlternativeBuyFlow(any(), any(), any())).thenReturn(fundRsAndValidation);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

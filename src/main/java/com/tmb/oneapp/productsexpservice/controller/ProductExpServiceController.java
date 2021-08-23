@@ -75,8 +75,9 @@ public class ProductExpServiceController {
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestBody FundAccountRequest fundAccountRequest) {
 
-        TmbOneServiceResponse<FundAccountResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
+        TmbOneServiceResponse<FundAccountResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         FundAccountResponse fundAccountResponse = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
 
@@ -178,8 +179,8 @@ public class ProductExpServiceController {
     /**
      * Description:- Inquiry MF Service
      *
-     * @param correlationId            the correlation id
-     * @param crmId                    the crm id
+     * @param correlationId         the correlation id
+     * @param crmId                 the crm id
      * @param alternativeBuyRequest the fund fact sheet request body
      * @return return fund sheet
      */

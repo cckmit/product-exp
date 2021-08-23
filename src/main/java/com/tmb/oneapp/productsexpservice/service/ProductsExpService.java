@@ -15,13 +15,13 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.FatcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
@@ -47,10 +47,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFav
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
@@ -130,15 +128,15 @@ public class ProductsExpService {
 
         Map<String, String> header = UtilMap.createHeader(correlationId);
         try {
-            CompletableFuture<AccountDetailBody> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(header, fundAccountRequestBody);
-            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(header, fundRuleRequestBody);
+            CompletableFuture<AccountDetailResponse> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(header, fundAccountRequestBody);
+            CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(header, fundRuleRequestBody);
             CompletableFuture<StatementResponse> fetchStmtByPort = productExpAsyncService.fetchStatementByPort(header, orderStmtByPortRequest);
             CompletableFuture.allOf(fetchFundAccountDetail, fetchFundRule, fetchStmtByPort);
 
-            AccountDetailBody accountDetailBody = fetchFundAccountDetail.get();
-            FundRuleBody fundRuleBody = fetchFundRule.get();
+            AccountDetailResponse accountDetailResponse = fetchFundAccountDetail.get();
+            FundRuleResponse fundRuleResponse = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
-            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailBody, fundRuleBody, statementResponse);
+            fundAccountResponse = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
@@ -295,19 +293,19 @@ public class ProductsExpService {
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailResponse fundPaymentDetailResponse;
         try {
-            CompletableFuture<FundRuleBody> fetchFundRule = productExpAsyncService.fetchFundRule(headerParameter, fundRuleRequestBody);
+            CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(headerParameter, fundRuleRequestBody);
             CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(headerParameter, fundRuleRequestBody.getFundCode());
             CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(headerParameter, UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
             CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
-            FundRuleBody fundRuleBody = fetchFundRule.get();
+            FundRuleResponse fundRuleResponse = fetchFundRule.get();
             FundHolidayBody fundHolidayBody = fetchFundHoliday.get();
             String customerExp = fetchCustomerExp.get();
             List<CommonData> commonDataList = fetchCommonConfigByModule.get();
 
             UtilMap map = new UtilMap();
-            fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleBody, fundHolidayBody, commonDataList, customerExp);
+            fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
             return null;
@@ -552,49 +550,6 @@ public class ProductsExpService {
                 .errorDesc(tmbStatus.getDescription())
                 .errorMsg(tmbStatus.getMessage())
                 .build();
-    }
-
-    /**
-     * @param fundResponse
-     */
-    void fundResponseData(FundResponse fundResponse) {
-        fundResponse.setError(true);
-        fundResponse.setErrorCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        fundResponse.setErrorMsg(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
-        fundResponse.setErrorDesc(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-    }
-
-    /**
-     * Method isBusinessClose for check cut of time from fundRule
-     *
-     * @param correlationId
-     * @param fundFactSheetRequestBody
-     */
-    public boolean isBusinessClose(String correlationId, FundFactSheetRequestBody fundFactSheetRequestBody) {
-        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setFundCode(fundFactSheetRequestBody.getFundCode());
-        fundRuleRequestBody.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
-        fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
-
-        ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity;
-        try {
-            Map<String, String> investmentHeaderHeader = UtilMap.createHeader(correlationId);
-            responseEntity = investmentRequestClient.callInvestmentFundRuleService(investmentHeaderHeader, fundRuleRequestBody);
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseEntity);
-
-            if (!StringUtils.isEmpty(responseEntity) && HttpStatus.OK == responseEntity.getStatusCode()) {
-                FundRuleBody fundRuleBody = responseEntity.getBody().getData();
-                FundRuleInfoList fundRuleInfoList = fundRuleBody.getFundRuleInfoList().get(0);
-                return (
-                        UtilMap.isBusinessClose(fundRuleInfoList.getTimeStart(), fundRuleInfoList.getTimeEnd())
-                                && ProductsExpServiceConstant.BUSINESS_HR_CLOSE.equals(fundRuleInfoList.getFundAllowOtx())
-                );
-            }
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            return true;
-        }
-        return false;
     }
 
     /**
