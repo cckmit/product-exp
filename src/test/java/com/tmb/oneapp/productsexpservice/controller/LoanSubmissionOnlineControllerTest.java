@@ -28,6 +28,7 @@ import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplication
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
 import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
 
 class LoanSubmissionOnlineControllerTest {
@@ -49,6 +50,9 @@ class LoanSubmissionOnlineControllerTest {
     
     @Mock
     LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
+    
+    @Mock
+    LoanSubmissionUpdateNCBConsentFlagAndStoreFileService loanSubmissionUpdateNCBConsentFlagAndStoreFileService;
 
     @BeforeEach
     void setUp() {
@@ -147,6 +151,25 @@ class LoanSubmissionOnlineControllerTest {
 				.thenThrow(new IllegalArgumentException());
 		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanSubmissionOnlineController
 				.getCustomerInformation("correlationId", "crmid",  new UpdateNCBConsentFlagRequest());
+		assertTrue(responseEntity.getStatusCode().isError());
+	}
+	
+	@Test
+	public void testUpdateNCBConsentFlagAndStoreFileResSuccess() throws TMBCommonException {
+		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
+		when(loanSubmissionUpdateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(any(), any(), any()))
+				.thenReturn(customerInfoRes);
+		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanSubmissionOnlineController
+				.updateNCBConsentFlagAndStoreFile("correlationId", "crmid", new UpdateNCBConsentFlagRequest());
+		assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+	}
+
+	@Test
+	public void testUpdateNCBConsentFlagAndStoreFileResFail() throws TMBCommonException {
+		when(loanSubmissionUpdateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(any(), any(), any()))
+				.thenThrow(new IllegalArgumentException());
+		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanSubmissionOnlineController
+				.updateNCBConsentFlagAndStoreFile("correlationId", "crmid",  new UpdateNCBConsentFlagRequest());
 		assertTrue(responseEntity.getStatusCode().isError());
 	}
 
