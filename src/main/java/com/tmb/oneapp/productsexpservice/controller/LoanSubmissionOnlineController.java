@@ -36,6 +36,7 @@ import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplication
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
 import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
 
 import io.swagger.annotations.Api;
@@ -52,6 +53,7 @@ public class LoanSubmissionOnlineController {
     private final LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
     private final LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
+    private final LoanSubmissionUpdateNCBConsentFlagAndStoreFileService loanSubmissionUpdateNCBConsentFlagAndStoreFileService;
     private final WorkingDetailUpdateInfoService workingDetailUpdateInfoService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
@@ -225,8 +227,8 @@ public class LoanSubmissionOnlineController {
 			@Valid @RequestBody UpdateNCBConsentFlagRequest request) {
 		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
 		try {
-			CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
-					.getCustomerInformation(correlationId, crmId, request);
+			CustomerInformationResponse customerInfoRes = loanSubmissionUpdateNCBConsentFlagAndStoreFileService
+					.updateNCBConsentFlagAndStoreFile(correlationId, crmId, request);
 			response.setData(customerInfoRes);
 			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
