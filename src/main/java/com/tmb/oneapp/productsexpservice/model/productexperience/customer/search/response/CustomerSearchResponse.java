@@ -182,4 +182,7 @@ public class CustomerSearchResponse {
     @JsonProperty("registered_addressData")
     private AddressWithPhone registeredAddressData;
 
+    @JsonProperty("full_fill_flag")
+    private String fullFillFlag;
+
 }
