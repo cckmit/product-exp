@@ -234,4 +234,10 @@ public class ProductsExpServiceConstant {
 	public static final String FAILED_ERROR_CODE = "0001";
 	public static final String INVALID_REQUEST_FAILURE_CODE = "0010";
 	public static final String FAIL_MESSAGE = "Fail";
+
+	/* INVESTMENT JOINT FLAG */
+	public static final String INVESTMENT_JOINT_FLAG_INDIVIDUAL = "N";
+
+	/* INVESTMENT PORTFOLIO TYPE */
+	public static final String INVESTMENT_PORTFOLIO_JOINT_TYPE = "j";
 }
