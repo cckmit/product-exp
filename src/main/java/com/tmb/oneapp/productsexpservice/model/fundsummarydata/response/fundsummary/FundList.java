@@ -6,5 +6,6 @@ import java.util.List;
 
 @Data
 public class FundList {
-     private List<Fund> fund;
+
+    private List<Fund> fund;
 }

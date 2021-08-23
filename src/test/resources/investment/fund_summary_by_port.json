@@ -1,50 +1,32 @@
 {
-  "status": {
-    "code": "0000",
-    "message": "success",
-    "service": "investment-service",
-    "description": "success"
-  },
-  "data": {
-    "header": {
-      "rqUID": "wwwwwwww",
-      "channelID": "MIB",
-      "serviceName": "getFundSummaryByPort",
-      "rqDateTime": "2021-04-02T15:05:39.000060+07.00",
-      "rsDateTime": "2021-04-02T15:05:39.0982325+07:00",
-      "status": {
-        "statusCode": "0000",
-        "severity": "Info",
-        "statusDesc": "Success"
+  "body": {
+    "portfolioList": [
+      {
+        "portfolioNumber": "PT000000000001829798",
+        "nickName": "New Me",
+        "portPercent": "100.00",
+        "jointFlag": "N",
+        "fundList": [
+          {
+            "fundHouseCode": "TMBAM",
+            "fundCode": "TMBAALF",
+            "fundShortName": "TMBAALF",
+            "unrealizedProfit": "0.00",
+            "marketValue": "100,000.00",
+            "unrealizedProfitPercent": "0.00",
+            "allotType": "MF"
+          },
+          {
+            "fundHouseCode": "TMBAM",
+            "fundCode": "TMB50",
+            "fundShortName": "TMB50",
+            "unrealizedProfit": "0.00",
+            "marketValue": "1,000,000.00",
+            "unrealizedProfitPercent": "0.00",
+            "allotType": "MF"
+          }
+        ]
       }
-    },
-    "body": {
-      "portfolioList": [
-        {
-          "portfolioNumber": "PT000000000001829798",
-          "portPercent": "100.00",
-          "fundList": [
-            {
-              "fundHouseCode": "TMBAM",
-              "fundCode": "TMBAALF",
-              "fundShortName": "TMBAALF",
-              "unrealizedProfit": "0.00",
-              "marketValue": "100,000.00",
-              "unrealizedProfitPercent": "0.00",
-              "allotType": "MF"
-            },
-            {
-              "fundHouseCode": "TMBAM",
-              "fundCode": "TMB50",
-              "fundShortName": "TMB50",
-              "unrealizedProfit": "0.00",
-              "marketValue": "1,000,000.00",
-              "unrealizedProfitPercent": "0.00",
-              "allotType": "MF"
-            }
-          ]
-        }
-      ]
-    }
+    ]
   }
 }

@@ -35,7 +35,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFav
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundsummary.FundSummaryByPortResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;

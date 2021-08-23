@@ -6,10 +6,16 @@ import java.math.BigDecimal;
 
 @Data
 public class PercentOfFundType {
+
     private BigDecimal balanced;
-    private BigDecimal  foreignEquity;
-    private BigDecimal foreignFixedIncome ;
+
+    private BigDecimal foreignEquity;
+
+    private BigDecimal foreignFixedIncome;
+
     private BigDecimal localEquity;
+
     private BigDecimal localFixedIncome;
+
     private String others;
 }

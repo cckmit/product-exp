@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FundSummaryResponse {
-    private FundSummaryBody body;
+
     private FundSummaryHeader header;
+
+    private FundSummaryBody body;
 }
