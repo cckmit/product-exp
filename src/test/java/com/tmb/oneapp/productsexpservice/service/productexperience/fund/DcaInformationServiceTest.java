@@ -53,7 +53,7 @@ public class DcaInformationServiceTest {
     public DcaInformationMapper dcaInformationMapper;
 
     @Test
-    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crmid() throws IOException {
+    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
@@ -61,11 +61,11 @@ public class DcaInformationServiceTest {
 
         when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
 
-        TmbOneServiceResponse<FundSummaryResponse> tmbFundsummaryResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundSummaryResponse> tmbFundSummaryResponse = new TmbOneServiceResponse<>();
         FundSummaryBody fundSummaryBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/fundsummarybody.json").toFile(), FundSummaryBody.class);
-        tmbFundsummaryResponse.setData(FundSummaryResponse.builder().body(fundSummaryBody).build());
+        tmbFundSummaryResponse.setData(FundSummaryResponse.builder().body(fundSummaryBody).build());
         when(investmentRequestClient.callInvestmentFundSummaryService(any(),
-                any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundsummaryResponse));
+                any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundSummaryResponse));
 
         TmbOneServiceResponse<FundListBody> tmbFundListResponse = new TmbOneServiceResponse<>();
         FundListBody fundListBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/fundlistinfo.json").toFile(), FundListBody.class);
@@ -85,7 +85,7 @@ public class DcaInformationServiceTest {
     }
 
     @Test
-    void should_return_null_when_call_get_dca_information_given_correlation_id_and_crmid() throws JsonProcessingException {
+    void should_return_null_when_call_get_dca_information_given_correlation_id_and_crm_id() throws JsonProcessingException {
         // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";

@@ -30,7 +30,7 @@ public class DcaInformationControllerTest {
     public DcaInformationService dcaInformationService;
 
     @Test
-    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crmid() throws IOException {
+    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
@@ -53,9 +53,8 @@ public class DcaInformationControllerTest {
     }
 
     @Test
-    void should_return_notfound_when_call_get_dca_information_given_correlation_id_and_crmid() throws IOException {
+    void should_return_not_found_when_call_get_dca_information_given_correlation_id_and_crm_id() {
         //Given
-        ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
@@ -67,11 +66,10 @@ public class DcaInformationControllerTest {
 
         //When
         ResponseEntity<TmbOneServiceResponse<DcaInformationDto>> actual =
-                dcaInformationController.getDcaInformation(correlationId,crmId);
+                dcaInformationController.getDcaInformation(correlationId, crmId);
         //Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
-        assertEquals(TmbStatusUtil.notFoundStatus().getCode(),actual.getBody().getStatus().getCode());
+        assertEquals(TmbStatusUtil.notFoundStatus().getCode(), actual.getBody().getStatus().getCode());
         assertNull(actual.getBody().getData());
     }
-
 }
