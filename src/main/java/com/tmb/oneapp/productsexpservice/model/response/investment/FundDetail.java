@@ -1,23 +1,20 @@
 package com.tmb.oneapp.productsexpservice.model.response.investment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 
-@Getter
-@Setter
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundDetail {
 
+    private String portfolioNumber;
+
     private String fundHouseCode;
 
-    @JsonProperty(value = "fundNameEN")
-    private String fundEnglishName;
+    private String englishFundName;
 
-    @JsonProperty(value = "fundNameTH")
-    private String fundThaiName;
+    private String thaiFundName;
 
     private String dateAsOf;
 
@@ -35,14 +32,17 @@ public class FundDetail {
 
     private String taxDoc;
 
-    private String unitLTF5Y;
-
-    @JsonProperty(value = "nickName")
-    private String nickname;
+    private String unitLTFFiveYear;
 
     private String unitSmartPort;
 
     private String fundType;
 
+    private String averageCost;
+
+    private String nickname;
+
     private String unitHolderNumber;
+
+    private String jointFlag;
 }
