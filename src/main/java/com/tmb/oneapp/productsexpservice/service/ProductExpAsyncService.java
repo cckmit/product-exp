@@ -81,7 +81,7 @@ public class ProductExpAsyncService {
     public CompletableFuture<AccountDetailBody> fetchFundAccountDetail(Map<String, String> header, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> response = investmentRequestClient
-                    .callInvestmentFundAccDetailService(header, fundAccountRequestBody);
+                    .callInvestmentFundAccountDetailService(header, fundAccountRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);

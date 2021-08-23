@@ -74,7 +74,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.account.detail.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> callInvestmentFundAccDetailService(
+    ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> callInvestmentFundAccountDetailService(
             @RequestHeader Map<String, String> headers, @RequestBody FundAccountRequestBody fundAccountRequestBody);
 
     /**

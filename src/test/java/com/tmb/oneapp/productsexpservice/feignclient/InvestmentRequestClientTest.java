@@ -40,7 +40,7 @@ public class InvestmentRequestClientTest {
     }
 
     private AccountDetailBody accountDetailBody = null;
-    private FundListBySuitScoreBody fundListBySuitScoreBody=null;
+    private FundListBySuitScoreBody fundListBySuitScoreBody = null;
 
     private final String corrID = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
@@ -73,13 +73,13 @@ public class InvestmentRequestClientTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundAccountDetailService(createHeader(corrID), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
+        responseEntity = investmentRequestClient.callInvestmentFundAccountDetailService(createHeader(corrID), fundAccountRq);
         Assert.assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
         Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getFundDetail().getFundHouseCode());
         Assert.assertNotNull(responseEntity.getBody().getData().getFundDetail());
@@ -108,13 +108,13 @@ public class InvestmentRequestClientTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq)).thenReturn(ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundAccountDetailService(createHeader(corrID), fundAccountRq)).thenReturn(ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(corrID), fundAccountRq);
+        responseEntity = investmentRequestClient.callInvestmentFundAccountDetailService(createHeader(corrID), fundAccountRq);
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), responseEntity.getStatusCodeValue());
     }
 
@@ -169,7 +169,7 @@ public class InvestmentRequestClientTest {
         }
 
         responseEntity = investmentRequestClient.callInvestmentListFundInfoService(createHeader(corrID));
-        Assert.assertEquals(responseEntity.getBody().getData().getFundClassList(),oneServiceResponse.getData().getFundClassList());
+        Assert.assertEquals(responseEntity.getBody().getData().getFundClassList(), oneServiceResponse.getData().getFundClassList());
 
     }
 

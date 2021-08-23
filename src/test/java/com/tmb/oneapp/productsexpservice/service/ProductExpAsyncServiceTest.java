@@ -86,7 +86,7 @@ public class ProductExpAsyncServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundAccDetailService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundAccountDetailService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -99,7 +99,7 @@ public class ProductExpAsyncServiceTest {
     @Test
     public void fetchFundAccDetailWithException() {
         try {
-            when(investmentRequestClient.callInvestmentFundAccDetailService(any(), any())).thenThrow(MockitoException.class);
+            when(investmentRequestClient.callInvestmentFundAccountDetailService(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<AccountDetailBody> response = productExpAsyncService.fetchFundAccountDetail(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {

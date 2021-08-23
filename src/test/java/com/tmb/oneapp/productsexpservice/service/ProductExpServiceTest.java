@@ -201,12 +201,12 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(correlationId), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundAccountDetailService(createHeader(correlationId), fundAccountRq)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        responseEntity = investmentRequestClient.callInvestmentFundAccDetailService(createHeader(correlationId), fundAccountRq);
+        responseEntity = investmentRequestClient.callInvestmentFundAccountDetailService(createHeader(correlationId), fundAccountRq);
         Assert.assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
         Assert.assertEquals("FFFFF", responseEntity.getBody().getData().getFundDetail().getFundHouseCode());
         Assert.assertNotNull(responseEntity.getBody().getData().getFundDetail());
@@ -299,7 +299,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(investmentRequestClient.callInvestmentFundAccDetailService(createHeader(correlationId), fundAccountRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
+            when(investmentRequestClient.callInvestmentFundAccountDetailService(createHeader(correlationId), fundAccountRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
             when(investmentRequestClient.callInvestmentFundRuleService(createHeader(correlationId), fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponseBody));
             when(investmentRequestClient.callInvestmentStatementByPortService(createHeader(correlationId), orderStmtByPortRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(serviceResponseStmt));
         } catch (Exception ex) {
@@ -492,8 +492,8 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId,crmId,fundAccountRequest);
-        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),actual.getErrorCode() );
+        FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundAccountRequest);
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getErrorCode());
 
     }
 
@@ -557,7 +557,7 @@ public class ProductExpServiceTest {
 
         // then
         FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundAccountRequest);
-        Assert.assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY,actual.getErrorCode());
+        Assert.assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getErrorCode());
 
     }
 
@@ -716,11 +716,11 @@ public class ProductExpServiceTest {
         bypassServiceHour();
         CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
         when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
-        when(alternativeService.validateDateNotOverTwentyYearOld(any(),any())).thenReturn(tmbStatus);
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(tmbStatus);
 
         // then
         FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
-        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),actual.getErrorCode());
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getErrorCode());
     }
 
     @Test
@@ -735,36 +735,37 @@ public class ProductExpServiceTest {
         suitabilityResponse.setData(SuitabilityInfo.builder().suitabilityScore("2").suitValidation("2").build());
         CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
         when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
-        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenReturn(ResponseEntity.ok(suitabilityResponse));
+        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok(suitabilityResponse));
 
         // then
         FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
-        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(),actual.getErrorCode());
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(), actual.getErrorCode());
     }
 
-    private void bypassServiceHour(){
-        when(alternativeService.validateServiceHour(any(),any())).thenReturn(TmbStatusUtil.successStatus());
+    private void bypassServiceHour() {
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(TmbStatusUtil.successStatus());
     }
 
-    private void bypassAgeNotOverTwenty(){
-        when(alternativeService.validateDateNotOverTwentyYearOld(any(),any())).thenReturn(TmbStatusUtil.successStatus());
+    private void bypassAgeNotOverTwenty() {
+        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(TmbStatusUtil.successStatus());
     }
 
-    private void mockExceptionServiceHour(){
+    private void mockExceptionServiceHour() {
         TmbStatus status = new TmbStatus();
         status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
         status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
         status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);    }
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(status);
+    }
 
-    private void mockIsHourClose(){
+    private void mockIsHourClose() {
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(status);
     }
 
     @Test
@@ -861,13 +862,13 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(serviceRes);
     }
 
-    public void bypassAlternative(){
+    public void bypassAlternative() {
         TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
-        when(alternativeService.validateCustomerRiskLevel(any(),any(),any())).thenReturn(tmbStatusSuccess);
-        when(alternativeService.validateIdentityAssuranceLevel(any(),any())).thenReturn(tmbStatusSuccess);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any())).thenReturn(tmbStatusSuccess);
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(tmbStatusSuccess);
     }
 
-    private TmbStatus mockTmbStatusError(String code,String message,String desc) {
+    private TmbStatus mockTmbStatusError(String code, String message, String desc) {
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(code);
         tmbStatus.setDescription(desc);
@@ -875,15 +876,15 @@ public class ProductExpServiceTest {
         return tmbStatus;
     }
 
-    private void mockSuccessAllAlternative(){
+    private void mockSuccessAllAlternative() {
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 
     @Test
