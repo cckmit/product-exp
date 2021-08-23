@@ -54,7 +54,7 @@ public class DcaInformationServiceTest {
 
     @Test
     void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crmid() throws IOException {
-        //Given
+        // Given
         ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
@@ -75,10 +75,10 @@ public class DcaInformationServiceTest {
         DcaInformationModel dcaInformationModel = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/dcainformationmodel.json").toFile(), DcaInformationModel.class);
         when(dcaInformationMapper.fundClassInfoToDcaInformationModel(any())).thenReturn(dcaInformationModel);
 
-        //When
+        // When
         TmbOneServiceResponse<DcaInformationDto> actual = dcaInformationService.getDcaInformation(correlationId, crmId);
 
-        //Then
+        // Then
         DcaInformationDto dcaInformationDto = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/dcainformationdto.json").toFile(), DcaInformationDto.class);
         assertEquals(TmbStatusUtil.successStatus().getCode(), actual.getStatus().getCode());
         assertEquals(dcaInformationDto, actual.getData());
@@ -86,16 +86,16 @@ public class DcaInformationServiceTest {
 
     @Test
     void should_return_null_when_call_get_dca_information_given_correlation_id_and_crmid() throws JsonProcessingException {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
         when(productsExpService.getPortList(any(), anyString(), anyBoolean()))
                 .thenThrow(new RuntimeException("Error"));
-        //When
+        // When
         TmbOneServiceResponse<DcaInformationDto> actual = dcaInformationService.getDcaInformation(correlationId, crmId);
 
-        //Then
+        // Then
         assertNull(actual.getStatus());
         assertNull(actual.getData());
     }

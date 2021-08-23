@@ -17,7 +17,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestB
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -49,7 +49,6 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ProductExpServiceCloseTest {
 
-
     @Mock
     private AccountRequestClient accountRequestClient;
 
@@ -71,7 +70,7 @@ public class ProductExpServiceCloseTest {
     @InjectMocks
     private ProductsExpService productsExpService;
 
-    private FundRuleBody fundRuleBody = null;
+    private FundRuleResponse fundRuleResponse = null;
 
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
     private final String crmId = "001100000000000000000000028365";
@@ -104,22 +103,22 @@ public class ProductExpServiceCloseTest {
         fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
 
         String responseCustomerExp;
-        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
         Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
-            responseEntity.setData(fundRuleBody);
+            responseEntity.setData(fundRuleResponse);
             responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
-            mockGetFlatcaResponseFromCustomerSearch();
+            mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -145,19 +144,19 @@ public class ProductExpServiceCloseTest {
         fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
 
         String responseCustomerExp = null;
-        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_close.json").toFile(), FundRuleBody.class);
-            responseEntity.setData(fundRuleBody);
+            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_close.json").toFile(), FundRuleResponse.class);
+            responseEntity.setData(fundRuleResponse);
             responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
-            mockGetFlatcaResponseFromCustomerSearch();
+            mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -181,16 +180,16 @@ public class ProductExpServiceCloseTest {
         fundRuleRequestBody.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
         fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
 
-        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
         String responseCustomerExp;
         Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/account_dormant.json")), StandardCharsets.UTF_8);
 
-            responseEntity.setData(fundRuleBody);
+            responseEntity.setData(fundRuleResponse);
             responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -198,7 +197,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             mockSuccessAllAlternative();
-            mockGetFlatcaResponseFromCustomerSearch();
+            mockGetFatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -209,7 +208,7 @@ public class ProductExpServiceCloseTest {
         Assert.assertNotNull(serviceRes);
     }
 
-    private void mockGetFlatcaResponseFromCustomerSearch() {
+    private void mockGetFatcaResponseFromCustomerSearch() {
         CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
         when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
     }
@@ -236,7 +235,7 @@ public class ProductExpServiceCloseTest {
         ffsRequest.setOrderType("1");
         ffsRequest.setProcessFlag("Y");
 
-        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundFactSheetResponse> responseFfs = new TmbOneServiceResponse<>();
         String responseCustomerExp;
         FundFactSheetResponse fundFactSheetResponse;
@@ -244,11 +243,11 @@ public class ProductExpServiceCloseTest {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
             fundFactSheetResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_factsheet.json").toFile(), FundFactSheetResponse.class);
 
-            responseEntity.setData(fundRuleBody);
+            responseEntity.setData(fundRuleResponse);
             responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -261,7 +260,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFfs));
-            mockGetFlatcaResponseFromCustomerSearch();
+            mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -294,16 +293,16 @@ public class ProductExpServiceCloseTest {
         ffsRequest.setProcessFlag("Y");
 
         String responseCustomerExp;
-        TmbOneServiceResponse<FundRuleBody> responseEntity = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundFactSheetResponse> responseFfs = new TmbOneServiceResponse<>();
         Map<String, String> headers = createHeader(correlationId);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
 
-            responseEntity.setData(fundRuleBody);
+            responseEntity.setData(fundRuleResponse);
             responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -316,7 +315,7 @@ public class ProductExpServiceCloseTest {
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
             when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenThrow(MockitoException.class);
-            mockGetFlatcaResponseFromCustomerSearch();
+            mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -454,21 +453,22 @@ public class ProductExpServiceCloseTest {
         Assert.assertEquals("", fundAccountRs);
     }
 
-    private TmbStatus mockTmbStatusError(String code,String message,String desc) {
+    private TmbStatus mockTmbStatusError(String code, String message, String desc) {
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(code);
         tmbStatus.setDescription(desc);
         tmbStatus.setMessage(message);
         return tmbStatus;
     }
-    private void mockSuccessAllAlternative(){
+
+    private void mockSuccessAllAlternative() {
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 }

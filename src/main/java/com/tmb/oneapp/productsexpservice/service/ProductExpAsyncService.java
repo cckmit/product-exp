@@ -22,8 +22,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFav
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -78,9 +78,9 @@ public class ProductExpAsyncService {
      */
     @LogAround
     @Async
-    public CompletableFuture<AccountDetailBody> fetchFundAccountDetail(Map<String, String> header, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
+    public CompletableFuture<AccountDetailResponse> fetchFundAccountDetail(Map<String, String> header, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<AccountDetailBody>> response = investmentRequestClient
+            ResponseEntity<TmbOneServiceResponse<AccountDetailResponse>> response = investmentRequestClient
                     .callInvestmentFundAccountDetailService(header, fundAccountRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
@@ -98,9 +98,9 @@ public class ProductExpAsyncService {
      */
     @LogAround
     @Async
-    public CompletableFuture<FundRuleBody> fetchFundRule(Map<String, String> header, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
+    public CompletableFuture<FundRuleResponse> fetchFundRule(Map<String, String> header, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<FundRuleBody>> responseEntity = investmentRequestClient
+            ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> responseEntity = investmentRequestClient
                     .callInvestmentFundRuleService(header, fundRuleRequestBody);
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
         } catch (Exception e) {

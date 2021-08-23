@@ -14,8 +14,8 @@ import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFav
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,9 +55,9 @@ public class ProductExpAsyncServiceTest {
 
     private CacheServiceClient cacheServiceClient;
 
-    private AccountDetailBody accountDetailBody = null;
+    private AccountDetailResponse accountDetailResponse = null;
 
-    private FundRuleBody fundRuleBody = null;
+    private FundRuleResponse fundRuleResponse = null;
 
     @JsonProperty("Project")
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
@@ -75,13 +75,13 @@ public class ProductExpAsyncServiceTest {
 
     @Test
     public void fetchFundAccDetail() throws Exception {
-        TmbOneServiceResponse<AccountDetailBody> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<AccountDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            accountDetailBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccountDetailBody.class);
+            accountDetailResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_account_detail.json").toFile(), AccountDetailResponse.class);
 
-            oneServiceResponse.setData(accountDetailBody);
+            oneServiceResponse.setData(accountDetailResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -92,7 +92,7 @@ public class ProductExpAsyncServiceTest {
             ex.printStackTrace();
         }
 
-        CompletableFuture<AccountDetailBody> response = productExpAsyncService.fetchFundAccountDetail(any(), any());
+        CompletableFuture<AccountDetailResponse> response = productExpAsyncService.fetchFundAccountDetail(any(), any());
         Assert.assertNotNull(response);
     }
 
@@ -100,7 +100,7 @@ public class ProductExpAsyncServiceTest {
     public void fetchFundAccDetailWithException() {
         try {
             when(investmentRequestClient.callInvestmentFundAccountDetailService(any(), any())).thenThrow(MockitoException.class);
-            CompletableFuture<AccountDetailBody> response = productExpAsyncService.fetchFundAccountDetail(any(), any());
+            CompletableFuture<AccountDetailResponse> response = productExpAsyncService.fetchFundAccountDetail(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -109,14 +109,14 @@ public class ProductExpAsyncServiceTest {
 
     @Test
     public void fetchFundRule() throws Exception {
-        TmbOneServiceResponse<FundRuleBody> oneServiceResponseBody = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundRuleResponse> oneServiceResponseBody = new TmbOneServiceResponse<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule.json").toFile(), FundRuleBody.class);
+            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule.json").toFile(), FundRuleResponse.class);
 
-            oneServiceResponseBody.setData(fundRuleBody);
+            oneServiceResponseBody.setData(fundRuleResponse);
             oneServiceResponseBody.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -126,7 +126,7 @@ public class ProductExpAsyncServiceTest {
             ex.printStackTrace();
         }
 
-        CompletableFuture<FundRuleBody> response = productExpAsyncService.fetchFundRule(any(), any());
+        CompletableFuture<FundRuleResponse> response = productExpAsyncService.fetchFundRule(any(), any());
         Assert.assertNotNull(response);
     }
 
@@ -134,7 +134,7 @@ public class ProductExpAsyncServiceTest {
     public void fetchFundRuleWithException() {
         try {
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
-            CompletableFuture<FundRuleBody> response = productExpAsyncService.fetchFundRule(any(), any());
+            CompletableFuture<FundRuleResponse> response = productExpAsyncService.fetchFundRule(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -443,7 +443,7 @@ public class ProductExpAsyncServiceTest {
         invHeaderReqParameter.put("test", "test");
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        fundRuleBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleBody.class);
+        fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
         String responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setData(responseCustomerExp);

@@ -14,7 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactShe
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.abstractservice.BuyAndDcaAbstractService;
@@ -63,7 +63,7 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
                 return dcaValidationDtoTmbOneServiceResponse;
             }
 
-            ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, FundRuleRequestBody.builder()
+            ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, FundRuleRequestBody.builder()
                     .fundCode(dcaValidationRequest.getFundCode())
                     .fundHouseCode(dcaValidationRequest.getFundHouseCode())
                     .tranType(dcaValidationRequest.getTranType())
@@ -84,7 +84,7 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
         }
     }
 
-    private TmbStatus validateAllowAipFlag(ResponseEntity<TmbOneServiceResponse<FundRuleBody>> fundRule, TmbStatus tmbStatus) throws TMBCommonException {
+    private TmbStatus validateAllowAipFlag(ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> fundRule, TmbStatus tmbStatus) throws TMBCommonException {
         if (!fundRule.getStatusCode().equals(HttpStatus.OK)) {
             throw new TMBCommonException("failed fetch fund rule");
         }
