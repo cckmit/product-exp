@@ -206,5 +206,12 @@ public interface LendingServiceClient {
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
             @RequestHeader(HEADER_X_CRM_ID) String  crmId,
             @RequestBody UploadDocumentRequest request);
+    
+    
+   	@PostMapping(value = "/apis/lending-service/loanOnlineSubmission/update-flag-and-store-ncb-consent")
+   	ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
+   			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, 
+   			@RequestHeader(HEADER_X_CRM_ID) String crmId,
+   			@RequestBody UpdateNCBConsentFlagRequest request);
 
 }
