@@ -1,13 +1,11 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FundAccountRequest {
 

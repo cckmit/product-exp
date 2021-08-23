@@ -1,18 +1,23 @@
 {
-    "detailFund": {
-      "unitHolderNumber": "FFFFF",
-      "fundHouseCode": "FFFFF",
-      "fundNameEN": "FFFFF",
-      "fundNameTH": "FFFFF",
-      "dateAsOf": "FFFFF",
-      "unit": "FFFFF",
-      "nav": "FFFFF",
-      "cost": "FFFFF",
-      "investmentValue": "FFFFF",
-      "unrealizedProfit": "FFFFF",
-      "unrealizedProfitPerc": "FFFFF",
-      "taxDoc": "FFFFF",
-      "unitLTF5Y": "FFFFF",
-      "nickName" : "nickName"
-    }
+  "fundDetail": {
+    "portfolioNumber": "PT000000000000108261",
+    "fundHouseCode": "UOBAMTH",
+    "englishFundName": "Good Corporate Governance Long Term Equity Fund",
+    "thaiFundName": "กองทุนเปิด บรรษัทภิบาล หุ้นระยะยาว",
+    "dateAsOf": "2020-07-08",
+    "unit": "4666.1413",
+    "nav": "48.5307",
+    "cost": "248654.13",
+    "investmentValue": "226451.09",
+    "unrealizedProfit": "-22203.04",
+    "unrealizedProfitPerc": "-8.93",
+    "taxDoc": "N",
+    "unitLTFFiveYear": "1313.7792",
+    "unitSmartPort": "0",
+    "fundType": "2",
+    "averageCost": "53.29",
+    "nickname": "อนาคตเพื่อการศึกษา",
+    "unitHolderNumber": "",
+    "jointFlag": "N"
+  }
 }

@@ -18,9 +18,9 @@ import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayB
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.FundDetail;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementList;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
@@ -47,24 +47,24 @@ public class UtilMapTest {
 
     @Test
     public void testValidateTMBResponse() {
-        /* body  */
+        /* accountDetailResponse  */
         FundDetail fundDetail = new FundDetail();
         fundDetail.setFundHouseCode("1234");
         fundDetail.setCost("1234");
-        fundDetail.setFundEnglishName("card");
+        fundDetail.setEnglishFundName("card");
         fundDetail.setInvestmentValue("12345");
 
-        AccountDetailBody body = new AccountDetailBody();
-        body.setFundDetail(fundDetail);
+        AccountDetailResponse accountDetailResponse = new AccountDetailResponse();
+        accountDetailResponse.setFundDetail(fundDetail);
 
-        /* fundRuleBody */
-        FundRuleBody fundRuleBody = new FundRuleBody();
+        /* fundRuleResponse */
+        FundRuleResponse fundRuleResponse = new FundRuleResponse();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
             ruleInfoList.setFundHouseCode("123");
             fundRuleList.add(ruleInfoList);
         }
-        fundRuleBody.setFundRuleInfoList(fundRuleList);
+        fundRuleResponse.setFundRuleInfoList(fundRuleList);
 
         /* statementResponse */
         List<StatementList> list = new ArrayList<>();
@@ -78,31 +78,31 @@ public class UtilMapTest {
         statementResponse.setTotalRecord("10");
         statementResponse.setStatementList(list);
 
-        FundAccountResponse result = UtilMap.validateTMBResponse(body, fundRuleBody, statementResponse);
+        FundAccountResponse result = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
         List<FundOrderHistory> ordersHistories = result.getDetails().getAccountDetail().getOrdersHistories();
         Assert.assertEquals(true, ordersHistories.isEmpty());
     }
 
     @Test
     public void testMappingResponse() {
-        /* body */
+        /* accountDetailResponse */
         FundDetail fundDetail = new FundDetail();
         fundDetail.setFundHouseCode("1234");
         fundDetail.setCost("1234");
-        fundDetail.setFundEnglishName("card");
+        fundDetail.setEnglishFundName("card");
         fundDetail.setInvestmentValue("12345");
 
-        AccountDetailBody body = new AccountDetailBody();
-        body.setFundDetail(fundDetail);
+        AccountDetailResponse accountDetailResponse = new AccountDetailResponse();
+        accountDetailResponse.setFundDetail(fundDetail);
 
-        /* fundRuleBody */
-        FundRuleBody fundRuleBody = new FundRuleBody();
+        /* fundRuleResponse */
+        FundRuleResponse fundRuleResponse = new FundRuleResponse();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
             ruleInfoList.setFundHouseCode("123");
             fundRuleList.add(ruleInfoList);
         }
-        fundRuleBody.setFundRuleInfoList(fundRuleList);
+        fundRuleResponse.setFundRuleInfoList(fundRuleList);
 
         /* statementResponse */
         StatementResponse statementResponse = new StatementResponse();
@@ -116,20 +116,20 @@ public class UtilMapTest {
         }
         statementResponse.setStatementList(list);
 
-        FundAccountDetail result = UtilMap.mappingResponse(body, fundRuleBody, statementResponse);
+        FundAccountDetail result = UtilMap.mappingResponse(accountDetailResponse, fundRuleResponse, statementResponse);
         List<FundRuleInfoList> fundRuleInfoList = result.getFundRuleInfoList();
         Assert.assertEquals(true, fundRuleInfoList.isEmpty());
     }
 
     @Test
     public void testMappingPaymentResponse() {
-        FundRuleBody fundRuleBody = new FundRuleBody();
+        FundRuleResponse fundRuleResponse = new FundRuleResponse();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
             ruleInfoList.setFundHouseCode("123");
             fundRuleList.add(ruleInfoList);
         }
-        fundRuleBody.setFundRuleInfoList(fundRuleList);
+        fundRuleResponse.setFundRuleInfoList(fundRuleList);
         FundHolidayBody fundHolidayBody = new FundHolidayBody();
         List<FundHolidayClassList> list = new ArrayList<>();
         for (FundHolidayClassList fundHolidayClassList : list) {
@@ -275,10 +275,10 @@ public class UtilMapTest {
 
     @Test
     public void testMappingRequestAlternative() {
-        String crmid = "4488";
+        String crmId = "4488";
         FundFactSheetRequestBody body = new FundFactSheetRequestBody();
         body.setFundCode("1234");
-        AlternativeBuyRequest result = UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmid),body);
+        AlternativeBuyRequest result = UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmId), body);
         AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
         alternativeBuyRequest.setFundCode("1234");
         Assert.assertEquals(alternativeBuyRequest.getFundCode(), result.getFundCode());
