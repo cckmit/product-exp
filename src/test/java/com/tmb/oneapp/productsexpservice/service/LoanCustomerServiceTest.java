@@ -17,10 +17,9 @@ import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
 import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
-import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
-import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerResponse;
-import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerSubmissionResponse;
+import com.tmb.oneapp.productsexpservice.model.response.loan.*;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +71,7 @@ public class LoanCustomerServiceTest {
         header.setRequestID(UUID.randomUUID().toString());
         respFacility.setHeader(header);
 
-        com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = new  com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
+        com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header header1 = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header();
         header1.setResponseCode("MSG_000");
         responseFacility.setHeader(header1);
@@ -105,7 +104,7 @@ public class LoanCustomerServiceTest {
         header.setRequestID(UUID.randomUUID().toString());
         respFacility.setHeader(header);
 
-        com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = new  com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
+        com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header header1 = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header();
         header1.setResponseCode("MSG_999");
         responseFacility.setHeader(header1);
@@ -141,7 +140,7 @@ public class LoanCustomerServiceTest {
         header.setRequestID(UUID.randomUUID().toString());
         respFacility.setHeader(header);
 
-        com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = new  com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
+        com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header header1 = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header();
         header1.setResponseCode("MSG_000");
         responseFacility.setHeader(header1);
@@ -152,10 +151,10 @@ public class LoanCustomerServiceTest {
         when(customerExpServiceClient.getCustomerAccountSaving(any(), any())).thenReturn(mockAccountSaving());
 
         LoanCustomerRequest request = new LoanCustomerRequest();
-        request.setCaId(1L);
-        LoanCustomerResponse response = loanCustomerService.getCustomerProfile("111",request,"111");
+        request.setCaId(2021082304188823L);
+        LoanCustomerResponse response = loanCustomerService.getCustomerProfile("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", request, "001100000000000000000018593707");
 
-        Assert.assertNotNull(response);
+        Assertions.assertNotNull(response);
     }
 
 
@@ -221,6 +220,10 @@ public class LoanCustomerServiceTest {
         DepositAccount depositAccount = new DepositAccount();
         depositAccount.setAccountNumber("accountNo");
         depositAccount.setProductNameTh("accountName");
+        depositAccount.setAccountStatus("ACTIVE");
+        depositAccount.setAllowReceiveLoanFund("1");
+        depositAccount.setAllowPayLoanDirectDebit("1");
+        depositAccount.setRelationshipCode("PRIIND");
         List<DepositAccount> depositAccountList = new ArrayList<>();
         depositAccountList.add(depositAccount);
         accountSaving.setDepositAccountLists(depositAccountList);

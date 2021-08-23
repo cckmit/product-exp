@@ -77,5 +77,6 @@
     "country": "TH",
     "working_place": ""
   },
-  "registered_addressData": null
+  "registered_addressData": null,
+  "full_fill_flag": "Y"
 }

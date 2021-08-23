@@ -10,6 +10,8 @@ import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnum
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.request.OccupationRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequestBody;
@@ -105,7 +107,7 @@ class OpenPortfolioControllerTest {
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", request))
+        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
                 .thenReturn(responseService);
 
         // When
@@ -179,6 +181,10 @@ class OpenPortfolioControllerTest {
                 .portfolioType("TMB_ADVTYPE_10_ADVISORY")
                 .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
                 .portfolioNickName("อนาคตเพื่อการศึกษ")
+                .occupationRequest(OccupationRequest.builder()
+                        .occupationCode("406")
+                        .positionDescription("ผู้ช่วยผู้จัดการ")
+                        .build())
                 .build();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -188,11 +194,14 @@ class OpenPortfolioControllerTest {
                 OpenPortfolioResponse.class);
         PortfolioNicknameResponse portfolioNicknameResponse = mapper.readValue(Paths.get("src/test/resources/investment/portfolio/nickname.json").toFile(),
                 PortfolioNicknameResponse.class);
+        OccupationResponse occupationResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_update.json").toFile(),
+                OccupationResponse.class);
 
         PortfolioResponse portfolioResponse = PortfolioResponse.builder()
                 .relationshipResponse(relationshipResponse.getData())
                 .openPortfolioResponse(openPortfolioResponse.getData())
                 .portfolioNicknameResponse(portfolioNicknameResponse.getData())
+                .occupationResponse(occupationResponse.getData())
                 .build();
 
         when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody)).thenReturn(portfolioResponse);

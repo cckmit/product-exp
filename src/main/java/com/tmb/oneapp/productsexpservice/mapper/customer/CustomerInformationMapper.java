@@ -32,7 +32,7 @@ public class CustomerInformationMapper {
                     .taxNumber(customerResponse.getIdNumber())
                     .branchCode(ProductsExpServiceConstant.MIB_CUSTOMER_STATIC_ID)
                     .makerCode(ProductsExpServiceConstant.MIB_CUSTOMER_STATIC_ID)
-                    .kycFlag(customerResponse.getEkycFlag())
+                    .kycFlag(customerResponse.getFullFillFlag())
                     .amloFlag(customerResponse.getAmloFlag())
                     .lastDateSync(openPortFormat.format(Calendar.getInstance().getTime()))
                     .nationalDocumentExpireDate(formatDateForOpenPortFolio(customerResponse.getExpiryDate()))

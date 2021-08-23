@@ -13,13 +13,14 @@ public class ProductsExpServiceConstant {
     private ProductsExpServiceConstant() {
     }
 
-    public static final String SERVICE_NAME = "product-exp-service";
+    public static final String SERVICE_NAME = "products-exp-service";
 
     public static final String INVESTMENT_MODULE_VALUE = "investment_module";
 
     /* RESPONSE MESSAGE FORMAT */
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";
+    public static final String SERVICE_IS_NOT_AVAILABLE = "service is not available : {}";
 
     public static final String HEADER_TIMESTAMP = "Timestamp";
     public static final String CONTENT_TYPE = "content-type";
@@ -81,6 +82,7 @@ public class ProductsExpServiceConstant {
     public static final String SERVICE_NOT_READY = "MSG999";
     public static final String SERVICE_NOT_READY_MESSAGE = "INTERNET CONNECTION FAIL";
     public static final String SERVICE_NOT_READY_DESC = "SOMETHING WENT WRONG, TRY AGAIN";
+    public static final String SERVICE_NOT_READY_DESC_MESSAGE = "SOMETHING WENT WRONG :%s, TRY AGAIN";
 
     /* BUSINESS OUR CLOSE */
     public static final String BUSINESS_HOURS_CLOSE_CODE = "msg_alt_06";
@@ -98,9 +100,9 @@ public class ProductsExpServiceConstant {
 
     public static final String PROCESS_FLAG_Y = "Y";
     public static final String BUSINESS_HR_CLOSE = "N";
-    public static final String ACTIVITY_ID_TEMP = "00700200";
-    public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "00700201";
-    public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "00700203";
+    public static final String ACTIVITY_ID_TEMP = "100700200";
+    public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "100700201";
+    public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "100700203";
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "100700701";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
     public static final String SUCCESS = "Success";
@@ -115,9 +117,9 @@ public class ProductsExpServiceConstant {
     public static final String ACCEPT_LANGUAGE = "accept-language";
     public static final String MODE_PERMANENT = "permanent";
     public static final String MODE_TEMPORARY = "temporary";
-    public static final String ACTIVITY_ID_VERIFY_CARD_NO = "00700100";
-    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN = "00700600";
-    public static final String ACTIVITY_ID_LOAD_CARD_DETAILS = "00700800";
+    public static final String ACTIVITY_ID_VERIFY_CARD_NO = "100700100";
+    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN = "100700500";
+    public static final String ACTIVITY_ID_LOAD_CARD_DETAILS = "100700800";
     public static final String METHOD = "SCAN/KEY IN";
     public static final String SUITABILITY_EXPIRED = "2";
     public static final String CASE_STATUS_CLOSED = "Closed";
@@ -129,7 +131,7 @@ public class ProductsExpServiceConstant {
     public static final String HIRE_PURCHASE_HP = "HP";
     public static final String HIRE_PURCHASE_DATA_NOT_FOUND = "100902102";
 
-    /* In Progress*/
+    /* In Progress */
     public static final String CASE_STATUS_IN_PROGRESS = "In Progress";
     public static final String APPLICATION_STATUS_IN_PROGRESS = "in_progress";
 
@@ -181,8 +183,7 @@ public class ProductsExpServiceConstant {
             RSLProductCodeEnum.CREDIT_CARD_TTB_SO_SMART.getProductCode(),
             RSLProductCodeEnum.CREDIT_CARD_TTB_SO_CHILL.getProductCode(),
             RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_INFINITE.getProductCode(),
-            RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_SIGNATURE.getProductCode()
-    );
+            RSLProductCodeEnum.CREDIT_CARD_TTB_RESERVE_SIGNATURE.getProductCode());
 
     /* Service Customer Search */
     public static final String SEARCH_TYPE = "rm-id";
@@ -192,7 +193,7 @@ public class ProductsExpServiceConstant {
     public static final String PWA_LEAVE_NOTE_SCREEN_NAME = "Send Note Success";
 
     /* ACTIVITY IDs */
-    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "100700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING = "101000101";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO = "101000701";
@@ -224,4 +225,26 @@ public class ProductsExpServiceConstant {
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_CALL_TO_ADVISOR = "O0011";
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_MESSAGE_TO_ADVISOR = "O0012";
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_EMAIL_TO_ADVISOR = "O0013";
+
+    public static final String SERVICE_HOUR_MODULE = "service_hour";
+    public static final String HEADER_SERVICE_HOUR_MODULE = "X-SERVICE-MODULE";
+    public static final String EKYC_SERVICE_HOUR_MODULE = "ekyc";
+    public static final String MISSING_SERVICE_HOUR_HEADER = "Invalid Service Hour Module";
+    public static final String MISSING_HEADER = "Missing Mandatory Header";
+    public static final String SERVICE_HOUR_ERROR_CODE = "Service_Hour_Error";
+    public static final String SERVICE_HOUR_ERROR_MESSAGE = "Out of Service Hour";
+    public static final String FAILED_ERROR_CODE = "0001";
+    public static final String INVALID_REQUEST_FAILURE_CODE = "0010";
+    public static final String FAIL_MESSAGE = "Fail";
+
+    /* INVESTMENT JOINT FLAG */
+    public static final String INVESTMENT_JOINT_FLAG_INDIVIDUAL = "N";
+    public static final String INVESTMENT_JOINT_FLAG_JOINT = "Y";
+
+    /* INVESTMENT PORTFOLIO TYPE */
+    public static final String INVESTMENT_PORTFOLIO_NORMAL_TYPE = "n";
+    public static final String INVESTMENT_PORTFOLIO_JOINT_TYPE = "j";
+
+    /* INVESTMENT FIRST TRADE FLAG */
+    public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
 }

@@ -13,6 +13,8 @@ import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledS
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import io.swagger.annotations.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,6 +143,9 @@ public class BilledStatementController {
 
     ResponseEntity<TmbOneServiceResponse<BilledStatementResponse>> getTmbOneServiceResponse(TmbOneServiceResponse<BilledStatementResponse> oneServiceResponse, HttpHeaders responseHeaders, BilledStatementResponse response) {
         List<StatementTransaction> statementTransactions = response.getCardStatement().getStatementTransactions();
+        statementTransactions.stream().forEach(each -> {
+			each.setTransactionDescription(each.getTransactionDescription().replaceAll("\\s+", StringUtils.SPACE));
+		});
         statementTransactions.sort((StatementTransaction s1, StatementTransaction s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
         response.getCardStatement().setStatementTransactions(statementTransactions);
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),

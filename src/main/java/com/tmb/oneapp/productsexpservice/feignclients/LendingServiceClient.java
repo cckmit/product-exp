@@ -1,8 +1,31 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_CITIZEN_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_MOBILE_NO;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
+import com.tmb.common.model.loan.InstantLoanCreationRequest;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
@@ -187,5 +210,26 @@ public interface LendingServiceClient {
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
             @RequestHeader(HEADER_X_CRM_ID) String  crmId,
             @ModelAttribute UploadDocumentRequest request);
+	@PostMapping(value = "/apis/lending-service/loanOnlineSubmission/get-customer-information")
+	ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> getCustomerInformation(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody UpdateNCBConsentFlagRequest request);
+
+	@PostMapping(value = "/apis/lending-service/document/upload")
+	ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody UploadDocumentRequest request);
+
+	@PostMapping(value = "/apis/lending-service/loanOnlineSubmission/update-flag-and-store-ncb-consent")
+	ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody UpdateNCBConsentFlagRequest request);
+
+	@PostMapping(value = "/apis/lending-service/create-instant-loan-application")
+	ResponseEntity<TmbOneServiceResponse<Object>> createInstanceLoanApplication(
+			@RequestHeader Map<String, String> headers, @RequestBody InstantLoanCreationRequest request);
+
+    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/customerAge")
+    ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(HEADER_X_CRM_ID) String crmId);
 
 }

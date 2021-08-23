@@ -53,7 +53,7 @@ class EligibleDepositAccountServiceTest {
         mockAccountResponse();
 
         // When
-        List<DepositAccount> actual = eligibleDepositAccountService.getEligibleDepositAccounts("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000000002914");
+        List<DepositAccount> actual = eligibleDepositAccountService.getEligibleDepositAccounts("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000000002914",true);
 
         // Then
         assertNotNull(actual);
@@ -65,7 +65,7 @@ class EligibleDepositAccountServiceTest {
         when(productExpAsyncService.fetchCommonConfigByModule(any(), any())).thenThrow(RuntimeException.class);
 
         // When
-        List<DepositAccount> actual = eligibleDepositAccountService.getEligibleDepositAccounts("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000000002914");
+        List<DepositAccount> actual = eligibleDepositAccountService.getEligibleDepositAccounts("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000000002914",true);
 
         // Then
         assertTrue(actual.isEmpty());

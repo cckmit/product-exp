@@ -4,8 +4,10 @@ import lombok.Data;
 
 @Data
 public class Status {
-    private String statusCode;
-    private String severity;
-    private String statusDesc;
 
+    private String statusCode;
+
+    private String severity;
+
+    private String statusDesc;
 }
