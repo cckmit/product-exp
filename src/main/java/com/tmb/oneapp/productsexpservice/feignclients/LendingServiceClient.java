@@ -181,7 +181,7 @@ public interface LendingServiceClient {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestHeader(HEADER_X_CRM_ID) String  crmId);
 
-    @PutMapping(value = "/apis/lending-service/loanOnlineSubmission/workingDetail")
+    @PutMapping(value = "/apis/lending-service/loanOnlineSubmission/updateWorkingDetail")
     ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateWorkingDetail(@RequestBody UpdateWorkingDetailReq request);
 
     @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/documents")
