@@ -7,14 +7,12 @@ import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.A
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 
 public abstract class SellAndSwitchAbstractService extends ValidateGroupingAbstractService {
-    protected final AlternativeService alternativeService;
 
     protected final CustomerService customerService;
 
     public SellAndSwitchAbstractService(AlternativeService alternativeService,
                                         CustomerService customerService) {
         super(alternativeService);
-        this.alternativeService = alternativeService;
         this.customerService = customerService;
     }
 
