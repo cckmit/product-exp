@@ -10,7 +10,7 @@ public abstract class SellAndSwitchAbstractService extends ValidateGroupingAbstr
 
     protected final CustomerService customerService;
 
-    public SellAndSwitchAbstractService(AlternativeService alternativeService,
+    protected SellAndSwitchAbstractService(AlternativeService alternativeService,
                                         CustomerService customerService) {
         super(alternativeService);
         this.customerService = customerService;
