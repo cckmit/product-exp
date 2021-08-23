@@ -311,15 +311,6 @@ public class ProductExpServiceTest {
         fundAccountRequest.setPortfolioNumber("PT000001111");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
 
-        FundAccountRequestBody fundAccountRq = new FundAccountRequestBody();
-        fundAccountRq.setPortfolioNumber("PT000000000000138924");
-        fundAccountRq.setFundCode("DDD");
-
-        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setTranType("1");
-        fundRuleRequestBody.setFundHouseCode("TFUND");
-        fundRuleRequestBody.setFundCode("TMB50");
-
         TmbOneServiceResponse<AccountDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
         TmbOneServiceResponse<FundRuleResponse> oneServiceResponseBody = new TmbOneServiceResponse<>();
 
