@@ -157,12 +157,12 @@ public interface LendingServiceClient {
             @RequestParam(value = "productCode") String productCode);
 
 
-    @GetMapping(value = "/apis/lending-service/loanSubmission/personalDetail")
+    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/personalDetail")
     ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(
             @RequestHeader(HEADER_X_CRM_ID) String crmid,
             @RequestParam(value = "caId") Long caId);
 
-    @PostMapping(value = "/apis/lending-service/loanSubmission/savePersonalDetail")
+    @PostMapping(value = "/apis/lending-service/loanOnlineSubmission/savePersonalDetail")
     ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> saveCustomerInfo(
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody PersonalDetailSaveInfoRequest personalDetailReg);
@@ -181,10 +181,10 @@ public interface LendingServiceClient {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestHeader(HEADER_X_CRM_ID) String  crmId);
 
-    @PutMapping(value = "/apis/lending-service/workingDetail")
+    @PutMapping(value = "/apis/lending-service/loanOnlineSubmission/workingDetail")
     ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateWorkingDetail(@RequestBody UpdateWorkingDetailReq request);
 
-    @GetMapping(value = "/apis/lending-service/loanSubmission/documents")
+    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/documents")
     ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestParam(value = "caId") Long caId);
