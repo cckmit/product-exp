@@ -241,7 +241,7 @@ public class ProductExpServiceControllerTest {
         initAccountDetailResponse();
         initFundRuleResponse();
 
-        fundAccountResponse = new FundAccountResponse();
+        FundAccountResponse fundAccountResponse = new FundAccountResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
 
         AccountDetailResponse accountDetailResponse = null;
