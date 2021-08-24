@@ -38,7 +38,6 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.tmb.oneapp.productsexpservice.util.ExceptionUtil.throwTmbException;
 
-
 /**
  * OpenPortfolioService class will get data from api services, and handle business criteria
  */
@@ -90,7 +89,7 @@ public class OpenPortfolioService {
 
                 DepositAccount depositAccount = null;
                 if (customerRequest.isExistingCustomer()) {
-                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader,correlationId,crmId);
+                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader, correlationId, crmId);
                 }
 
                 return OpenPortfolioValidationResponse.builder()
@@ -105,7 +104,7 @@ public class OpenPortfolioService {
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader,String correlationId, String crmId) throws TMBCommonException {
+    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader, String correlationId, String crmId) throws TMBCommonException {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
         List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId());
@@ -115,7 +114,7 @@ public class OpenPortfolioService {
         if (account.isEmpty()) {
             throwTmbException("========== failed account return 0 in list for exisitng user ==========");
         }
-        return account.isPresent()? account.get():null;
+        return account.isPresent() ? account.get() : null;
     }
 
     /**
