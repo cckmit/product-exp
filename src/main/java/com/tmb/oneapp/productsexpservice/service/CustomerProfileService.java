@@ -120,6 +120,7 @@ public class CustomerProfileService {
 			individualProfile.setFirstNameTh(generalProfile.getThaFname());
 			individualProfile.setLastNameTh(generalProfile.getThaLname());
 
+			individualProfile.setEmail(generalProfile.getEmailAddress());
 			individualProfile.setIdType(generalProfile.getIdType());
 			individualProfile.setIdNo(generalProfile.getIdNo());
 
