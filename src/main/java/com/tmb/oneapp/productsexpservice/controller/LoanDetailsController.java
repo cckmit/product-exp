@@ -6,6 +6,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.loan.InstantLoanCreationRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -22,6 +23,7 @@ import com.tmb.oneapp.productsexpservice.model.loan.Payment;
 import com.tmb.oneapp.productsexpservice.model.loan.Rates;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.InstantLoanService;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -58,6 +60,7 @@ public class LoanDetailsController {
 	private final CreditCardLogService creditCardLogService;
 	private final CustomerServiceClient customerServiceClient;
 	private final ApplyEStatementService applyEStatementService;
+	private final InstantLoanService instanceLoanService;
 
 	/**
 	 * Constructor
@@ -69,12 +72,13 @@ public class LoanDetailsController {
 	@Autowired
 	public LoanDetailsController(AccountRequestClient accountRequestClient, CommonServiceClient commonServiceClient,
 			CreditCardLogService creditCardLogService, CustomerServiceClient customerServiceClient,
-			ApplyEStatementService applyEStatementService) {
+			ApplyEStatementService applyEStatementService, InstantLoanService instantLoanService) {
 		this.accountRequestClient = accountRequestClient;
 		this.commonServiceClient = commonServiceClient;
 		this.creditCardLogService = creditCardLogService;
 		this.customerServiceClient = customerServiceClient;
 		this.applyEStatementService = applyEStatementService;
+		this.instanceLoanService = instantLoanService;
 	}
 
 	/**
@@ -210,11 +214,32 @@ public class LoanDetailsController {
 		loanDetails.setCardEmail(cardEmail);
 		loanDetails.setEstatementDetail(result);
 	}
-	
-//	public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(@ApiParam(hidden = true) @RequestHeader Map<String, String> reqHeaders,
-//			@RequestBody InstantLoanCreationRequest request) throws TMBCommonException {
-//		
-//	}
+
+	@LogAround
+	@PostMapping(value = "/loan/activate-instanceloan", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Process for activate instance loan application")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+	public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> reqHeaders,
+			@RequestBody InstantLoanCreationRequest request) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+		TmbOneServiceResponse<Object> oneServiceResponse = new TmbOneServiceResponse<>();
+		try {
+			Object objResult = instanceLoanService.createInstanceLoanApplication(reqHeaders, request);
+			oneServiceResponse.setData(objResult);
+			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			return ResponseEntity.ok(oneServiceResponse);
+		} catch (Exception e) {
+			log.error("Error while createInstantLoanApplication: {}", e);
+			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService()));
+			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+		}
+	}
 
 	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getFailedResponse(HttpHeaders responseHeaders,
 			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse) {
@@ -223,5 +248,5 @@ public class LoanDetailsController {
 				ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
 		return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 	}
-	
+
 }
