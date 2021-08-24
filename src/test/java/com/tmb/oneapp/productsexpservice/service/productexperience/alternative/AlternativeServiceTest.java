@@ -19,6 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityI
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -99,7 +100,7 @@ public class AlternativeServiceTest {
         when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));    }
 
     @Test
-    void should_return_status_code_2000001_when_call_validate_service_hour() throws Exception {
+    void should_return_status_code_2000001_when_call_validate_service_hour() {
         // Given
         mockNotPassServiceHour();
         // When
@@ -112,7 +113,7 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000025_when_call_validate_age_is_not_over_twenty() throws Exception {
+    void should_return_status_code_2000025_when_call_validate_age_is_not_over_twenty() {
         // When
         TmbStatus actual = alternativeService.validateDateNotOverTwentyYearOld("2010-07-08", TmbStatusUtil.successStatus());
 
@@ -123,7 +124,7 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000003_when_call_validate_casa_dormant() throws Exception {
+    void should_return_status_code_2000003_when_call_validate_casa_dormant() {
         // given
         String accountResponse = "{\n" +
                 "\t\"status\": {\n" +
@@ -201,7 +202,7 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000019_when_call_validate_no_casa_active() throws Exception {
+    void should_return_status_code_2000019_when_call_validate_no_casa_active() {
         // Given
         DepositAccount depositAccount = new DepositAccount();
         depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
@@ -223,10 +224,10 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000018_when_call_validate_risk_level_not_valid() throws Exception {
+    void should_return_status_code_2000018_when_call_validate_risk_level_not_valid() {
         //given
         TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
-        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
+        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("C3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
         // When
@@ -246,7 +247,7 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_mf999_when_call_validate_risk_level_not_valid() throws Exception {
+    void should_return_status_code_mf999_when_call_validate_risk_level_not_valid() {
         //given
         TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
         response.setData(null);
@@ -269,9 +270,9 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_success_code_when_call_validate_risk_level_not_valid() throws Exception {
+    void should_return_error_mf999_when_call_validate_risk_level_not_valid() {
         //given
-        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenThrow(MockitoException.class);
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenThrow(FeignException.class);
 
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
@@ -284,11 +285,11 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
     }
 
     @Test
-    void should_return_status_code_2000018_when_call_validate_customer_assurance_level() throws Exception {
+    void should_return_status_code_2000018_when_call_validate_customer_assurance_level() {
 
         // When
         TmbStatus actual = alternativeService.validateIdentityAssuranceLevel("100",  TmbStatusUtil.successStatus());
