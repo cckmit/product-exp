@@ -81,6 +81,7 @@ public class ProductsExpServiceConstant {
     public static final String SERVICE_NOT_READY = "MSG999";
     public static final String SERVICE_NOT_READY_MESSAGE = "INTERNET CONNECTION FAIL";
     public static final String SERVICE_NOT_READY_DESC = "SOMETHING WENT WRONG, TRY AGAIN";
+    public static final String SERVICE_NOT_READY_DESC_MESSAGE = "SOMETHING WENT WRONG :%s, TRY AGAIN";
 
     /* BUSINESS OUR CLOSE */
     public static final String BUSINESS_HOURS_CLOSE_CODE = "msg_alt_06";

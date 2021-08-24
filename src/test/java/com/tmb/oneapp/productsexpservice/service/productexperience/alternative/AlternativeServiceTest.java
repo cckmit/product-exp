@@ -266,7 +266,7 @@ public class AlternativeServiceTest {
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE, actual.getMessage());
-        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC, actual.getDescription());
+        assertEquals(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"), actual.getDescription());
     }
 
     @Test

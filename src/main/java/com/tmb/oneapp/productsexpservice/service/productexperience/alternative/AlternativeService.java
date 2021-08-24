@@ -390,7 +390,7 @@ public class AlternativeService {
         }else{
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"));
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
