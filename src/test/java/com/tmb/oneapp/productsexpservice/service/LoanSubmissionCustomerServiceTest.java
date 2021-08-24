@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.LoanOnlineInterestRate;
 import com.tmb.common.model.LoanOnlineRangeIncome;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -26,9 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -56,7 +55,7 @@ public class LoanSubmissionCustomerServiceTest {
     }
 
     @Test
-    public void testGetCustomerInfoSuccess() throws ServiceException, RemoteException {
+    public void testGetCustomerInfoSuccess() throws  TMBCommonException {
         ResponseFacility respFacility = mockFacility1();
         Body body = new Body();
         body.setFacilities(respFacility.getBody().getFacilities());
@@ -178,6 +177,10 @@ public class LoanSubmissionCustomerServiceTest {
         DepositAccount depositAccount = new DepositAccount();
         depositAccount.setAccountNumber("accountNo");
         depositAccount.setProductNameTh("accountName");
+        depositAccount.setAccountStatus("ACTIVE");
+        depositAccount.setAllowReceiveLoanFund("1");
+        depositAccount.setAllowPayLoanDirectDebit("1");
+        depositAccount.setRelationshipCode("PRIIND");
         List<DepositAccount> depositAccountList = new ArrayList<>();
         depositAccountList.add(depositAccount);
         accountSaving.setDepositAccountLists(depositAccountList);
