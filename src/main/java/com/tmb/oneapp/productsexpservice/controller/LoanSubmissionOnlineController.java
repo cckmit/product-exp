@@ -33,7 +33,6 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformat
 import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
@@ -47,9 +46,8 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/loanSubmissionOnline")
-@Api(tags = "waive income")
+@Api(tags = "Loan Submission Online")
 public class LoanSubmissionOnlineController {
-    private final LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
     private final LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
     private final LoanSubmissionUpdateNCBConsentFlagAndStoreFileService loanSubmissionUpdateNCBConsentFlagAndStoreFileService;
@@ -94,7 +92,7 @@ public class LoanSubmissionOnlineController {
         TmbOneServiceResponse<ResponseApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ResponseApplication res = loanSubmissionCreateApplicationService.createApplication(crmId, request);
+            ResponseApplication res = loanSubmissionOnlineService.createApplication(crmId, request);
             oneTmbOneServiceResponse.setData(res);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,

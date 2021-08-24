@@ -6,6 +6,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
@@ -144,10 +145,10 @@ public interface CustomerServiceClient {
      *
      * @param correlationId correlationId
      * @param requestBody   EkycRiskCalculateRequest
-     * @return String
+     * @return EkycRiskCalculateResponse
      */
     @PostMapping(value = "/apis/customers/ekyc/risk/calculate")
-    ResponseEntity<TmbOneServiceResponse<String>> customerEkycRiskCalculate(
+    ResponseEntity<TmbOneServiceResponse<EkycRiskCalculateResponse>> customerEkycRiskCalculate(
             @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @RequestBody EkycRiskCalculateRequest requestBody
     );
