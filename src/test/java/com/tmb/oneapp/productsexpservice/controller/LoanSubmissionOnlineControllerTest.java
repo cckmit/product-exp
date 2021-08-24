@@ -25,7 +25,6 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformat
 import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
@@ -35,9 +34,6 @@ class LoanSubmissionOnlineControllerTest {
 
     @InjectMocks
     LoanSubmissionOnlineController loanSubmissionOnlineController;
-
-    @Mock
-    LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
 
     @Mock
     LoanSubmissionOnlineService loanSubmissionOnlineService;
@@ -75,14 +71,14 @@ class LoanSubmissionOnlineControllerTest {
     @Test
     public void testCreateApplicationSuccess() throws TMBCommonException {
         ResponseApplication responseApplication = new ResponseApplication();
-        when(loanSubmissionCreateApplicationService.createApplication(any(), any())).thenReturn(responseApplication);
+        when(loanSubmissionOnlineService.createApplication(any(), any())).thenReturn(responseApplication);
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void testCreateApplicationFail() throws TMBCommonException {
-        when(loanSubmissionCreateApplicationService.createApplication(any(), any())).thenThrow(new IllegalArgumentException());
+        when(loanSubmissionOnlineService.createApplication(any(), any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().isError());
     }
