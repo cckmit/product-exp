@@ -413,7 +413,7 @@ public class AlternativeService {
         }catch (FeignException feignException){
             if(feignException.status() == HttpStatus.BAD_REQUEST.value()){
                 try {
-                    TmbServiceResponse<String> body = exceptionHandling(feignException);
+                    TmbServiceResponse<String> body = getResponseFromBadRequest(feignException);
                     if(!StringUtils.isEmpty(body.getData())){
                         ObjectMapper obj = new ObjectMapper();
                         return obj.convertValue(body.getData(),EkycRiskCalculateResponse.class);
