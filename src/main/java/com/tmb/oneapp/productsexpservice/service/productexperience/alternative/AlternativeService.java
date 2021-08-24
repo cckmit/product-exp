@@ -1,7 +1,10 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.*;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
@@ -11,17 +14,22 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -372,13 +380,19 @@ public class AlternativeService {
      * @return TmbStatus
      */
     public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status) {
-        String customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
+        EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
-            String[] values = {"C3", "B3"};
-            if (Arrays.stream(values).anyMatch(customerRiskLevel::equals)) {
+            String[] values = {"C3"};
+            if (Arrays.stream(values).anyMatch(customerRiskLevel.getMaxRiskRM()::equals)) {
                 isCustomerRiskLevelNotValid = true;
             }
+        }else{
+            status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"));
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            return status;
         }
 
         if (isCustomerRiskLevelNotValid) {
@@ -391,17 +405,46 @@ public class AlternativeService {
         return status;
     }
 
-    private String fetchApiculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
-        try{
+    private EkycRiskCalculateResponse fetchApiculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
+        try {
             EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
-            ResponseEntity<TmbOneServiceResponse<String>> customerRiskResponse =
-                    customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
+            ResponseEntity<TmbOneServiceResponse<EkycRiskCalculateResponse>> customerRiskResponse = customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
             return customerRiskResponse.getBody().getData();
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE,ex);
+        }catch (FeignException feignException){
+            if(feignException.status() == HttpStatus.BAD_REQUEST.value()){
+                try {
+                    TmbServiceResponse<String> body = getResponseFromBadRequest(feignException);
+                    if(!StringUtils.isEmpty(body.getData())){
+                        ObjectMapper obj = new ObjectMapper();
+                        return obj.convertValue(body.getData(),EkycRiskCalculateResponse.class);
+                    }
+                    logger.info("========== no data risk return from customer cal risk  ========== : {}",body);
+                } catch (JsonProcessingException e) {
+                    logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED,e);
+                }
+            }
+
         }
+
         return null;
     }
+
+    @SuppressWarnings("unchecked")
+    <T> TmbServiceResponse<T> getResponseFromBadRequest(final FeignException ex)
+            throws JsonProcessingException {
+        TmbServiceResponse<T> response = new TmbServiceResponse<>();
+        Optional<ByteBuffer> responseBody = ex.responseBody();
+        if (responseBody.isPresent()) {
+            ByteBuffer responseBuffer = responseBody.get();
+            String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
+            logger.info("response msg fail {}", responseObj);
+            response = ((TmbServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
+                    TmbServiceResponse.class));
+        }
+        return response;
+
+    }
+
     private EkycRiskCalculateRequest mappingFieldToRequestEkycRiskCalculate(CustomerSearchResponse customerInfo) {
 
         return EkycRiskCalculateRequest.builder()
