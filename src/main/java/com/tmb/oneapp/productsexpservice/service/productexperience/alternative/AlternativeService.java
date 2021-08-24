@@ -416,8 +416,7 @@ public class AlternativeService {
                     TmbServiceResponse<String> body = exceptionHandling(feignException);
                     if(!StringUtils.isEmpty(body.getData())){
                         ObjectMapper obj = new ObjectMapper();
-                        EkycRiskCalculateResponse response = obj.convertValue(body.getData(),EkycRiskCalculateResponse.class);
-                        return response;
+                        return obj.convertValue(body.getData(),EkycRiskCalculateResponse.class);
                     }
                     logger.info("========== no data risk return from customer cal risk  ========== : {}",body);
                 } catch (JsonProcessingException e) {
@@ -431,18 +430,18 @@ public class AlternativeService {
     }
 
     @SuppressWarnings("unchecked")
-    <T> TmbServiceResponse<T> exceptionHandling(final FeignException ex)
+    <T> TmbServiceResponse<T> getResponseFromBadRequest(final FeignException ex)
             throws JsonProcessingException {
-        TmbServiceResponse<T> data = new TmbServiceResponse<>();
-        Optional<ByteBuffer> response = ex.responseBody();
-        if (response.isPresent()) {
-            ByteBuffer responseBuffer = response.get();
+        TmbServiceResponse<T> response = new TmbServiceResponse<>();
+        Optional<ByteBuffer> responseBody = ex.responseBody();
+        if (responseBody.isPresent()) {
+            ByteBuffer responseBuffer = responseBody.get();
             String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
-            logger.info("response fail {}", responseObj);
-            data = ((TmbServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
+            logger.info("response msg fail {}", responseObj);
+            response = ((TmbServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
                     TmbServiceResponse.class));
         }
-        return data;
+        return response;
 
     }
 
