@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 
+import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -172,5 +173,19 @@ class LoanSubmissionOnlineControllerTest {
 				.updateNCBConsentFlagAndStoreFile("correlationId", "crmid",  new UpdateNCBConsentFlagRequest());
 		assertTrue(responseEntity.getStatusCode().isError());
 	}
+
+    @Test
+    public void testGetCustomerAgeSuccess() throws TMBCommonException {
+        when(loanSubmissionOnlineService.getCustomerAge(any())).thenReturn(new LoanSubmissionGetCustomerAgeResponse());
+        ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> responseEntity = loanSubmissionOnlineController.getCustomerAge("rmid");
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testGetCustomerAgeFail() throws TMBCommonException {
+        when(loanSubmissionOnlineService.getCustomerAge(any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> responseEntity = loanSubmissionOnlineController.getCustomerAge("rmid");
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
 
 }

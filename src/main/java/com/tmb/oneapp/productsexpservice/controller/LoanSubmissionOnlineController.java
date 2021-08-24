@@ -5,6 +5,7 @@ import java.time.Instant;
 
 import javax.validation.Valid;
 
+import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,7 @@ public class LoanSubmissionOnlineController {
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
     private String timeStamp = "Timestamp";
+
     @GetMapping("/getIncomeInfo")
     @LogAround
     @ApiOperation(value = "get income info")
@@ -76,7 +78,7 @@ public class LoanSubmissionOnlineController {
             responseHeaders.set(timeStamp, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
-            logger.error("Error while getConfig: {}", e);
+            logger.error("Error while get income info: {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
@@ -191,54 +193,79 @@ public class LoanSubmissionOnlineController {
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
     }
-    
-	@ApiOperation("Get Loan Submission Customer Information")
-	@PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
-	@LogAround
-	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> getCustomerInformation(
-			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-			@Valid @RequestBody UpdateNCBConsentFlagRequest request) {
-		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
 
-		try {
-			CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
-					.getCustomerInformation(correlationId, crmId, request);
-			response.setData(customerInfoRes);
-			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+    @ApiOperation("Get Loan Submission Customer Information")
+    @PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> getCustomerInformation(
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestBody UpdateNCBConsentFlagRequest request) {
+        TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
 
-			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+        try {
+            CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
+                    .getCustomerInformation(correlationId, crmId, request);
+            response.setData(customerInfoRes);
+            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 
-		} catch (Exception e) {
-			logger.error("Error while get loan submission Customer Information : {}", e);
-			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService()));
-			return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
-		}
-	}
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
 
-	@ApiOperation("Loan Submission Update NCB consent flag and store file to sFTP")
-	@PostMapping(value = "/update-flag-and-store-ncb-consent", produces = MediaType.APPLICATION_JSON_VALUE)
-	@LogAround
-	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
-			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-			@Valid @RequestBody UpdateNCBConsentFlagRequest request) {
-		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
-		try {
-			CustomerInformationResponse customerInfoRes = loanSubmissionUpdateNCBConsentFlagAndStoreFileService
-					.updateNCBConsentFlagAndStoreFile(correlationId, crmId, request);
-			response.setData(customerInfoRes);
-			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
-		} catch (Exception e) {
-			logger.error("Error while get loan submission Customer Information : {}", e);
-			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService()));
-			return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
-		}
-	}
-	
+        } catch (Exception e) {
+            logger.error("Error while get loan submission Customer Information : {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+    }
+
+    @ApiOperation("Loan Submission Update NCB consent flag and store file to sFTP")
+    @PostMapping(value = "/update-flag-and-store-ncb-consent", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestBody UpdateNCBConsentFlagRequest request) {
+        TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
+        try {
+            CustomerInformationResponse customerInfoRes = loanSubmissionUpdateNCBConsentFlagAndStoreFileService
+                    .updateNCBConsentFlagAndStoreFile(correlationId, crmId, request);
+            response.setData(customerInfoRes);
+            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+        } catch (Exception e) {
+            logger.error("Error while get loan submission Customer Information : {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+    }
+
+
+    @GetMapping("/getCustomerAge")
+    @LogAround
+    @ApiOperation(value = "get customer age")
+    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
+        TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        try {
+
+            oneTmbOneServiceResponse.setData(loanSubmissionOnlineService.getCustomerAge(crmId));
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            responseHeaders.set(timeStamp, String.valueOf(Instant.now().toEpochMilli()));
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+            logger.error("Error while get customer age: {}", e);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+    }
+
 }
