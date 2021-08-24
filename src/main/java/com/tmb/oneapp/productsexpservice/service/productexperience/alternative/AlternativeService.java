@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
@@ -382,14 +383,14 @@ public class AlternativeService {
         EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
-            String[] values = {"C3", "B3"};
-            if (Arrays.stream(values).anyMatch(customerRiskLevel::equals)) {
+            String[] values = {"C3"};
+            if (Arrays.stream(values).anyMatch(customerRiskLevel.getMaxRiskRM()::equals)) {
                 isCustomerRiskLevelNotValid = true;
             }
         }else{
-            status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
+            status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -414,17 +415,18 @@ public class AlternativeService {
                 try {
                     TmbServiceResponse<String> body = exceptionHandling(feignException);
                     if(!StringUtils.isEmpty(body.getData())){
-                        EkycRiskCalculateResponse response = (EkycRiskCalculateResponse) TMBUtils.convertStringToJavaObj(body.getData(),EkycRiskCalculateResponse.class);
+                        ObjectMapper obj = new ObjectMapper();
+                        EkycRiskCalculateResponse response = obj.convertValue(body.getData(),EkycRiskCalculateResponse.class);
                         return response;
                     }
+                    logger.info("========== no data risk return from customer cal risk  ========== : {}",body);
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED,e);
                 }
             }
-            return null;
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE,ex);
+
         }
+
         return null;
     }
 

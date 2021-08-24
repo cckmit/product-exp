@@ -52,7 +52,9 @@ public class ValidateGroupingAbstractService {
         // validate customer risk level
         tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
+            if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SERVICE_NOT_READY)){
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
+            }
             return tmbOneServiceResponse;
         }
 

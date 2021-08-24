@@ -246,6 +246,29 @@ public class AlternativeServiceTest {
     }
 
     @Test
+    void should_return_status_code_mf999_when_call_validate_risk_level_not_valid() throws Exception {
+        //given
+        TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
+        response.setData(null);
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+        // When
+        CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
+                .builder()
+                .businessTypeCode("22")
+                .officeAddressData(AddressWithPhone.builder().build())
+                .registeredAddressData(AddressWithPhone.builder().build())
+                .primaryAddressData(AddressWithPhone.builder().build())
+                .build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC, actual.getDescription());
+    }
+
+    @Test
     void should_return_success_code_when_call_validate_risk_level_not_valid() throws Exception {
         //given
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenThrow(MockitoException.class);

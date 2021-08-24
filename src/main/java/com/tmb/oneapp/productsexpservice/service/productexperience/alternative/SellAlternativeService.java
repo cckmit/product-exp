@@ -42,7 +42,7 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
             return tmbOneServicesResponse;
 
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_RESPONSE, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             tmbOneServicesResponse.setStatus(null);
             tmbOneServicesResponse.setData(null);
             return tmbOneServicesResponse;
