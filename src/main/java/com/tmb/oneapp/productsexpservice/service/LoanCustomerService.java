@@ -28,7 +28,6 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -160,16 +159,14 @@ public class LoanCustomerService {
         return installments;
     }
 
-    private List<LoanCustomerDisburstAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId) {
-
-        List<LoanCustomerDisburstAccount> disburstAccounts = new ArrayList<>();
+    private List<DepositAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId) {
 
         TmbOneServiceResponse<AccountSaving> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
             ResponseEntity<TmbOneServiceResponse<AccountSaving>> accountSavingResponse = customerExpServiceClient.getCustomerAccountSaving(correlationId, crmId);
             oneTmbOneServiceResponse.setData(accountSavingResponse.getBody().getData());
-
+            return oneTmbOneServiceResponse.getData().getDepositAccountLists();
         } catch (NullPointerException e) {
             logger.error("get account saving fail: ", e);
             throw e;
@@ -177,19 +174,6 @@ public class LoanCustomerService {
             logger.error("get account saving fail: ", ex);
             throw ex;
         }
-
-        var accList = oneTmbOneServiceResponse.getData().getDepositAccountLists();
-        accList.sort(Comparator.comparing(DepositAccount::getProductConfigSortOrder));
-
-        for (DepositAccount acc : accList) {
-            LoanCustomerDisburstAccount disburstAccount = new LoanCustomerDisburstAccount();
-            disburstAccount.setAccountNo(acc.getAccountNumber());
-            disburstAccount.setAccountName(acc.getProductNameTh());
-            disburstAccounts.add(disburstAccount);
-        }
-
-
-        return disburstAccounts;
     }
 
 
@@ -210,9 +194,30 @@ public class LoanCustomerService {
 
     private LoanCustomerResponse parseLoanCustomerResponse(String correlationId, Facility facility, Long caID, String crmId) throws ServiceException, TMBCommonException, RemoteException {
         LoanCustomerResponse response = new LoanCustomerResponse();
+        List<LoanCustomerDisburstAccount> receiveAccountList = new ArrayList<>();
+        List<LoanCustomerDisburstAccount> paymentAccountList = new ArrayList<>();
+        List<DepositAccount> depositAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
+        if (depositAccounts != null) {
+            for (var receiveAccount : depositAccounts) {
+                LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
+                if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("PRIIND"))
+                    account.setAccountNo(receiveAccount.getAccountNumber());
+                account.setAccountName(receiveAccount.getAccountName());
+                receiveAccountList.add(account);
+            }
 
-        List<LoanCustomerDisburstAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
-        response.setDisburstAccounts(disburstAccounts);
+            for (var paymentAccount : depositAccounts) {
+                LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
+                if (paymentAccount.getAllowPayLoanDirectDebit().equals("1") && paymentAccount.getAccountStatus().equals("ACTIVE") && paymentAccount.getRelationshipCode().equals("PRIIND")) {
+                    account.setAccountNo(paymentAccount.getAccountNumber());
+                    account.setAccountName(paymentAccount.getAccountName());
+                    paymentAccountList.add(account);
+                }
+            }
+        }
+
+        response.setReceiveAccounts(receiveAccountList);
+        response.setPaymentAccounts(paymentAccountList);
 
         Facility facilityC = getFacilityFeature(facility, caID, FEATURE_TYPE_C);
 

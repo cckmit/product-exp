@@ -15,7 +15,8 @@ import java.util.List;
 public class LoanSubmissionResponse {
     private BigDecimal tenure;
     private BigDecimal payAmount;
-    private List<LoanCustomerDisburstAccount> accounts;
+    private List<LoanCustomerDisburstAccount> ReceiveAccounts;
+    private List<LoanCustomerDisburstAccount> paymentAccounts;
     private List<InterestRate> interestRateList;
     private List<RangeIncome> rangeIncomeList;
 
