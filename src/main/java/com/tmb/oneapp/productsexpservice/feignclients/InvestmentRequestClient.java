@@ -90,7 +90,7 @@ public interface InvestmentRequestClient {
             @RequestHeader Map<String, String> headers, @RequestBody UnitHolder unitHolder);
 
     /***
-     * Call investment to get fund sumaary by port
+     * Call investment to get fund summary by port
      * @param headers
      * @param unitHolder
      * @return
