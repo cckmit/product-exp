@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,10 +37,6 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailR
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
 
@@ -208,5 +205,8 @@ public interface LendingServiceClient {
 	@PostMapping(value = "/apis/lending-service/create-instant-loan-application")
 	ResponseEntity<TmbOneServiceResponse<Object>> createInstanceLoanApplication(
 			@RequestHeader Map<String, String> headers, @RequestBody InstantLoanCreationRequest request);
+
+    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/customerAge")
+    ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(HEADER_X_CRM_ID) String crmId);
 
 }
