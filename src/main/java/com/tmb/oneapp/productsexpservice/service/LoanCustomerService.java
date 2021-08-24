@@ -200,10 +200,12 @@ public class LoanCustomerService {
         if (depositAccounts != null) {
             for (var receiveAccount : depositAccounts) {
                 LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
-                if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("PRIIND"))
+                if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("PRIIND")) {
                     account.setAccountNo(receiveAccount.getAccountNumber());
-                account.setAccountName(receiveAccount.getAccountName());
-                receiveAccountList.add(account);
+                    account.setAccountName(receiveAccount.getAccountName());
+                    receiveAccountList.add(account);
+                }
+                
             }
 
             for (var paymentAccount : depositAccounts) {
