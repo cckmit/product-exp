@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
 
@@ -48,8 +47,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 @RestController
-@Api(tags = "Credit Card-Cash For You")
+@Api(tags = "Loan detail controller")
 public class LoanDetailsController {
 	private static final TMBLogger<LoanDetailsController> log = new TMBLogger<>(LoanDetailsController.class);
 	private final AccountRequestClient accountRequestClient;
@@ -100,8 +101,8 @@ public class LoanDetailsController {
 		String activityDate = Long.toString(System.currentTimeMillis());
 		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN;
 		CreditCardEvent creditCardEvent = new CreditCardEvent(
-				requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()), activityDate,
-				activityId);
+				requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()),
+				activityDate, activityId);
 
 		try {
 
@@ -190,8 +191,7 @@ public class LoanDetailsController {
 		}
 	}
 
-	private void processSetEStatementDetail(HomeLoanFullInfoResponse loanDetails, String crmId,
-			String correlationId) {
+	private void processSetEStatementDetail(HomeLoanFullInfoResponse loanDetails, String crmId, String correlationId) {
 		EStatementDetail result = new EStatementDetail();
 		CardEmail cardEmail = new CardEmail();
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
@@ -210,6 +210,11 @@ public class LoanDetailsController {
 		loanDetails.setCardEmail(cardEmail);
 		loanDetails.setEstatementDetail(result);
 	}
+	
+//	public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(@ApiParam(hidden = true) @RequestHeader Map<String, String> reqHeaders,
+//			@RequestBody InstantLoanCreationRequest request) throws TMBCommonException {
+//		
+//	}
 
 	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getFailedResponse(HttpHeaders responseHeaders,
 			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse) {
@@ -218,4 +223,5 @@ public class LoanDetailsController {
 				ResponseCode.DATA_NOT_FOUND_ERROR.getDesc()));
 		return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 	}
+	
 }
