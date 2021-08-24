@@ -70,6 +70,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.INVESTMENT_JOINT_FLAG_INDIVIDUAL;
+
 
 /**
  * ProductsExpService class will get fund Details from MF Service
@@ -847,6 +849,6 @@ public class ProductsExpService {
 
     private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
         List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getBody().getPortfolioList();
-        return portfolioList.stream().anyMatch(portfolioByPort -> "N".equals(portfolioByPort.getJointFlag()));
+        return portfolioList.stream().anyMatch(portfolioByPort -> INVESTMENT_JOINT_FLAG_INDIVIDUAL.equals(portfolioByPort.getJointFlag()));
     }
 }

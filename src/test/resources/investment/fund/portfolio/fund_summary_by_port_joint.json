@@ -1,0 +1,32 @@
+{
+  "body": {
+    "portfolioList": [
+      {
+        "portfolioNumber": "PT000000000001829798",
+        "nickName": "New Me",
+        "portPercent": "100.00",
+        "jointFlag": "Y",
+        "fundList": [
+          {
+            "fundHouseCode": "TMBAM",
+            "fundCode": "TMBAALF",
+            "fundShortName": "TMBAALF",
+            "unrealizedProfit": "0.00",
+            "marketValue": "100,000.00",
+            "unrealizedProfitPercent": "0.00",
+            "allotType": "MF"
+          },
+          {
+            "fundHouseCode": "TMBAM",
+            "fundCode": "TMB50",
+            "fundShortName": "TMB50",
+            "unrealizedProfit": "0.00",
+            "marketValue": "1,000,000.00",
+            "unrealizedProfitPercent": "0.00",
+            "allotType": "MF"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -34,7 +34,7 @@ import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatu
 /**
  * OpenPortfolioController will handle to call apis for open portfolio validation
  */
-@Api(tags = "Get portfolio data than return it back")
+@Api(tags = "Get portfolio data then return it back")
 @RestController
 public class OpenPortfolioController {
 
