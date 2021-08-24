@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
@@ -224,8 +225,8 @@ public class AlternativeServiceTest {
     @Test
     void should_return_status_code_2000018_when_call_validate_risk_level_not_valid() throws Exception {
         //given
-        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
-        response.setData("B3");
+        TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
+        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
         // When
