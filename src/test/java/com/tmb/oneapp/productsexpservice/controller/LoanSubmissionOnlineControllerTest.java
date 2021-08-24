@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 
+import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +27,6 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionCreateApplicationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionIncomeInfoService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
 import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
@@ -35,9 +35,6 @@ class LoanSubmissionOnlineControllerTest {
 
     @InjectMocks
     LoanSubmissionOnlineController loanSubmissionOnlineController;
-
-    @Mock
-    LoanSubmissionIncomeInfoService loanSubmissionIncomeInfoService;
 
     @Mock
     LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
@@ -63,14 +60,14 @@ class LoanSubmissionOnlineControllerTest {
     public void testGetIncomeInfoByRmIdSuccess() throws TMBCommonException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
-        when(loanSubmissionIncomeInfoService.getIncomeInfoByRmId(any())).thenReturn(res);
+        when(loanSubmissionOnlineService.getIncomeInfoByRmId(any())).thenReturn(res);
         ResponseEntity<TmbOneServiceResponse<IncomeInfo>> responseEntity = loanSubmissionOnlineController.getIncomeInfo("rmid");
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void testGetIncomeInfoByRmIdFail() throws TMBCommonException {
-        when(loanSubmissionIncomeInfoService.getIncomeInfoByRmId(any())).thenThrow(new IllegalArgumentException());
+        when(loanSubmissionOnlineService.getIncomeInfoByRmId(any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<IncomeInfo>> responseEntity = loanSubmissionOnlineController.getIncomeInfo("rmid");
         assertTrue(responseEntity.getStatusCode().isError());
     }
@@ -172,5 +169,19 @@ class LoanSubmissionOnlineControllerTest {
 				.updateNCBConsentFlagAndStoreFile("correlationId", "crmid",  new UpdateNCBConsentFlagRequest());
 		assertTrue(responseEntity.getStatusCode().isError());
 	}
+
+    @Test
+    public void testGetCustomerAgeSuccess() throws TMBCommonException {
+        when(loanSubmissionOnlineService.getCustomerAge(any())).thenReturn(new LoanSubmissionGetCustomerAgeResponse());
+        ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> responseEntity = loanSubmissionOnlineController.getCustomerAge("rmid");
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testGetCustomerAgeFail() throws TMBCommonException {
+        when(loanSubmissionOnlineService.getCustomerAge(any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> responseEntity = loanSubmissionOnlineController.getCustomerAge("rmid");
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
 
 }
