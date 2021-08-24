@@ -7,6 +7,7 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -48,8 +49,6 @@ import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.validation.Valid;
 
 @RestController
 @Api(tags = "Loan detail controller")
@@ -228,6 +227,7 @@ public class LoanDetailsController {
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<Object> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
+			log.info("== Create activate instance loan request "+TMBUtils.getObjectMapper().writeValueAsString(request));
 			Object objResult = instanceLoanService.createInstanceLoanApplication(reqHeaders, request);
 			oneServiceResponse.setData(objResult);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
