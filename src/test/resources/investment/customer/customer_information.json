@@ -9,7 +9,7 @@
   "taxNumber": "4062655748851",
   "branchCode": "D0000000988",
   "makerCode": "D0000000988",
-  "kycFlag": "",
+  "kycFlag": "Y",
   "amloFlag": "N",
   "lastDateSync": "2021-08-11T11:09:55",
   "nationalDocumentExpireDate": "2026-10-10T00:00:00",

@@ -16,6 +16,20 @@ public class ValidateGroupingAbstractService {
         this.alternativeService = alternativeService;
     }
 
+    protected TmbOneServiceResponse<String> validateSuitabilityExpired(String correlationId,
+                                                                       String crmId,
+                                                                       TmbOneServiceResponse<String> tmbOneServiceResponse,
+                                                                       TmbStatus status){
+        // validate suitability expired
+        tmbOneServiceResponse.setStatus(alternativeService.validateSuitabilityExpired(correlationId, crmId, status));
+        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            return tmbOneServiceResponse;
+        }
+
+        return tmbOneServiceResponse;
+
+    }
+
     protected TmbOneServiceResponse<String> validateServiceHourAgeAndRisk(String correlationId,
                                                                   CustomerSearchResponse customerInfo,
                                                                   TmbOneServiceResponse<String> tmbOneServiceResponse,

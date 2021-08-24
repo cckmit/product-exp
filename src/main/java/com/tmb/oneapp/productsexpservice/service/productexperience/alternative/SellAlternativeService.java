@@ -21,31 +21,31 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
 
     public TmbOneServiceResponse<String> validationSell(String correlationId, String crmId) {
 
-        TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
+        TmbOneServiceResponse<String> tmbOneServicesResponse = new TmbOneServiceResponse();
         try {
 
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
-            tmbOneServiceResponse.setStatus(status);
+            tmbOneServicesResponse.setStatus(status);
 
-            tmbOneServiceResponse = validateSellAndSwitch(correlationId,customerInfo,tmbOneServiceResponse,status);
-            if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
-                return tmbOneServiceResponse;
+            tmbOneServicesResponse = validateSellAndSwitch(correlationId,customerInfo,tmbOneServicesResponse,status);
+            if(!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+                return tmbOneServicesResponse;
             }
 
             // validate suitability expired
-            tmbOneServiceResponse.setStatus(alternativeService.validateSuitabilityExpired(correlationId, crmId, status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                return tmbOneServiceResponse;
+            tmbOneServicesResponse = validateSuitabilityExpired(correlationId,crmId,tmbOneServicesResponse,status);
+            if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServicesResponse;
             }
 
-            return tmbOneServiceResponse;
+            return tmbOneServicesResponse;
 
-        } catch (Exception ex) {
-            logger.error("error : {}", ex);
-            tmbOneServiceResponse.setStatus(null);
-            tmbOneServiceResponse.setData(null);
-            return tmbOneServiceResponse;
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_RESPONSE, e);
+            tmbOneServicesResponse.setStatus(null);
+            tmbOneServicesResponse.setData(null);
+            return tmbOneServicesResponse;
         }
     }
 

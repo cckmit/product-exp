@@ -12,7 +12,6 @@ import com.tmb.oneapp.productsexpservice.service.productexperience.customer.Cust
 
 public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractService {
 
-    protected final AlternativeService alternativeService;
 
     protected final CustomerService customerService;
 
@@ -26,7 +25,6 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
                                     ProductsExpService productsExpService,
                                     InvestmentRequestClient investmentRequestClient) {
         super(alternativeService);
-        this.alternativeService = alternativeService;
         this.customerService = customerService;
         this.productsExpService = productsExpService;
         this.investmentRequestClient = investmentRequestClient;

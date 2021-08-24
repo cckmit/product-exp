@@ -6,7 +6,7 @@ import java.util.List;
  * Constant class for Application
  */
 public class ProductsExpServiceConstant {
-
+	
     /**
      * created private constructor so that no body can create object of this call
      */
@@ -20,6 +20,7 @@ public class ProductsExpServiceConstant {
     /* RESPONSE MESSAGE FORMAT */
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";
+	public static final String EXCEPTION_RESPONSE = "Error Exception : {}";
 
     public static final String HEADER_TIMESTAMP = "Timestamp";
     public static final String CONTENT_TYPE = "content-type";
