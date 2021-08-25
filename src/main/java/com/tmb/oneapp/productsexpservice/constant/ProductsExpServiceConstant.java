@@ -117,7 +117,7 @@ public class ProductsExpServiceConstant {
     public static final String MODE_PERMANENT = "permanent";
     public static final String MODE_TEMPORARY = "temporary";
     public static final String ACTIVITY_ID_VERIFY_CARD_NO = "100700100";
-    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN = "00700600";
+    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN = "100700500";
     public static final String ACTIVITY_ID_LOAD_CARD_DETAILS = "100700800";
     public static final String METHOD = "SCAN/KEY IN";
     public static final String SUITABILITY_EXPIRED = "2";
