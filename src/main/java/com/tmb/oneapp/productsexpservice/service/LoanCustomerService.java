@@ -60,7 +60,7 @@ public class LoanCustomerService {
         return parseSaveFacilityResponse(request, facility);
     }
 
-    private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) throws ServiceException, TMBCommonException, RemoteException {
+    private void saveFacility(@NonNull LoanCustomerSubmissionRequest request, @NonNull Facility facility) throws ServiceException, TMBCommonException {
         facility.setFeatureType(request.getFeatureType());
         if (request.getFeatureType().equals(FEATURE_TYPE_S)) {
             facility.getFeature().setRequestAmount(request.getRequestAmount());

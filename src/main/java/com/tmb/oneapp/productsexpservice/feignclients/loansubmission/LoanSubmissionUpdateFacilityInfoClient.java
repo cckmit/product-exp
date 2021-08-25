@@ -28,7 +28,6 @@ public class LoanSubmissionUpdateFacilityInfoClient {
     private String updateFacilityInfoUrl;
 
      LoanSubmissionUpdateFacilityServiceLocator locator = new LoanSubmissionUpdateFacilityServiceLocator();
-    private String updateCustomerInfo;
     private final ObjectMapper mapper;
     private static final TMBLogger<LoanSubmissionUpdateFacilityInfoClient> logger = new TMBLogger<>(LoanSubmissionUpdateFacilityInfoClient.class);
 
@@ -60,7 +59,6 @@ public class LoanSubmissionUpdateFacilityInfoClient {
         req.setHeader(header);
 
         Body body = new Body();
-//        facility.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
         body.setFacility(facility);
         req.setBody(body);
 
