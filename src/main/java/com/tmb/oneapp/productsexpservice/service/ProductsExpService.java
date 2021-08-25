@@ -849,6 +849,8 @@ public class ProductsExpService {
 
     private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
         List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getBody().getPortfolioList();
-        return portfolioList.stream().anyMatch(portfolioByPort -> INVESTMENT_JOINT_FLAG_INDIVIDUAL.equals(portfolioByPort.getJointFlag()));
+        return portfolioList.stream()
+                .filter(portfolioByPort -> portfolioByPort.getPortfolioNumber().startsWith("PT"))
+                .anyMatch(portfolioByPort -> INVESTMENT_JOINT_FLAG_INDIVIDUAL.equals(portfolioByPort.getJointFlag()));
     }
 }

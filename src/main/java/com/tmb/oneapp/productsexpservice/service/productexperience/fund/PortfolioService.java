@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.INVESTMENT_JOINT_FLAG_JOINT;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.INVESTMENT_PORTFOLIO_JOINT_TYPE;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
 /**
  * PortfolioService class will get portfolio list from api services, and filter it with type from request
@@ -75,6 +74,10 @@ public class PortfolioService {
         if (INVESTMENT_PORTFOLIO_JOINT_TYPE.equals(type)) {
             portfolioByPortList = portfolioList.stream().filter(portfolioByPort ->
                     INVESTMENT_JOINT_FLAG_JOINT.equals(portfolioByPort.getJointFlag()))
+                    .collect(Collectors.toList());
+        } else if (INVESTMENT_PORTFOLIO_NORMAL_TYPE.equals(type)) {
+            portfolioByPortList = portfolioList.stream().filter(portfolioByPort ->
+                    INVESTMENT_JOINT_FLAG_INDIVIDUAL.equals(portfolioByPort.getJointFlag()))
                     .collect(Collectors.toList());
         } else {
             portfolioByPortList = portfolioList;

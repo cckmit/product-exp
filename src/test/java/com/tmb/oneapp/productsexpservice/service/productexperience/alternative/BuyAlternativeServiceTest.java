@@ -165,7 +165,6 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
                 actual.getStatus().getMessage());
-
     }
 
     @Test
