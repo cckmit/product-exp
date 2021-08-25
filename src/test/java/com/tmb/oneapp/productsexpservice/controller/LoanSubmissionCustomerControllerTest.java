@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionRequest;
@@ -13,9 +14,6 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
-
-import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
 
 import static org.mockito.Mockito.when;
 
@@ -34,7 +32,7 @@ public class LoanSubmissionCustomerControllerTest {
     }
 
     @Test
-    public void testGetFacilitySuccess() throws ServiceException, RemoteException {
+    public void testGetFacilitySuccess() throws TMBCommonException {
         LoanSubmissionRequest request = new LoanSubmissionRequest();
         request.setCaId(2021053104186868L);
         LoanSubmissionResponse response = new LoanSubmissionResponse();
