@@ -13,6 +13,8 @@ import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbille
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import io.swagger.annotations.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -157,6 +159,9 @@ public class UnbilledStatementController {
         responseBody.setSearchKeys(searchKeys);
         responseBody.setTotalRecords(totalRecords);
         List<StatementTransaction> statementTransactions = responseBody.getCardStatement().getStatementTransactions();
+        statementTransactions.stream().forEach(each -> {
+			each.setTransactionDescription(each.getTransactionDescription().replaceAll("\\s+", StringUtils.SPACE));
+		});
         statementTransactions.sort((StatementTransaction s1, StatementTransaction s2) -> s2.getTransactionDate().compareTo(s1.getTransactionDate()));
         responseBody.getCardStatement().setStatementTransactions(statementTransactions);
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
