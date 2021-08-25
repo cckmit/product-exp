@@ -18,6 +18,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.respon
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.request.FirstTradeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
@@ -279,6 +281,20 @@ public interface InvestmentRequestClient {
     ResponseEntity<TmbOneServiceResponse<OccupationInquiryResponseBody>> getCustomerOccupationInquiry(
             @RequestHeader Map<String, String> header,
             @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId);
+
+
+    /**
+     * Call investment first trade inquiry service to get first trade response.
+     *
+     * @param header the headers
+     * @param firstTradeRequestBody  the body request
+     * @return the first trade inquiry response
+     */
+    @PostMapping(value = "${investment.service.fund.first.trade.inquiry.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<FirstTradeResponseBody>> getFirstTrade(
+            @RequestHeader Map<String, String> header,
+            @RequestBody FirstTradeRequestBody firstTradeRequestBody);
 
     /**
      * Call investment client relationship service to update client relationship.
