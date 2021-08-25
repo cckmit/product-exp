@@ -15,5 +15,5 @@ public class PortfolioByPort {
 
     private String jointFlag;
 
-    private List<FundByPort> fundList;
+    private List<FundSummaryByPort> fundList;
 }

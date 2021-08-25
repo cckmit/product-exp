@@ -14,7 +14,11 @@
             "unrealizedProfit": "0.00",
             "marketValue": "100,000.00",
             "unrealizedProfitPercent": "0.00",
-            "allotType": "MF"
+            "allotType": "MF",
+            "navDate": "2021-06-01",
+            "fundClassCode": "300",
+            "thaiFundClassName": "กองทุนผสม",
+            "englishFundClassName": "Balanced"
           },
           {
             "fundHouseCode": "TMBAM",
@@ -23,7 +27,11 @@
             "unrealizedProfit": "0.00",
             "marketValue": "1,000,000.00",
             "unrealizedProfitPercent": "0.00",
-            "allotType": "MF"
+            "allotType": "MF",
+            "navDate": "2021-06-01",
+            "fundClassCode": "400",
+            "thaiFundClassName": "กองทุนหุ้น",
+            "englishFundClassName": "Equity"
           }
         ]
       }
