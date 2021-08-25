@@ -7,7 +7,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupa
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.request.FirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.tradeOccupationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.TradeOccupationResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -30,8 +30,8 @@ public class BuyFirstTradeService {
         this.investmentAsyncService = investmentAsyncService;
     }
 
-    public TmbOneServiceResponse<tradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest){
-        TmbOneServiceResponse<tradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+    public TmbOneServiceResponse<TradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest){
+        TmbOneServiceResponse<TradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         try {
@@ -43,7 +43,7 @@ public class BuyFirstTradeService {
             CompletableFuture.allOf(firstTrade, occupationInquiry);
             FirstTradeResponseBody firstTradeResponseBody = firstTrade.get();
             OccupationInquiryResponseBody occupationInquiryResponseBody = occupationInquiry.get();
-            tmbOneServiceResponse.setData(tradeOccupationResponse.builder()
+            tmbOneServiceResponse.setData(TradeOccupationResponse.builder()
                     .firstTradeFlag(firstTradeResponseBody.getFirstTradeFlag())
                     .requirePosition(occupationInquiryResponseBody.getRequirePosition())
                     .build());

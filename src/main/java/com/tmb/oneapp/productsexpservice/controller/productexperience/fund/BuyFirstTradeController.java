@@ -4,7 +4,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.tradeOccupationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.TradeOccupationResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.BuyFirstTradeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,12 +40,12 @@ public class BuyFirstTradeController {
     @ApiOperation(value = "Validation alternative case")
     @LogAround
     @PostMapping(value = "/tradeOccupationInquiry")
-    public ResponseEntity<TmbOneServiceResponse<tradeOccupationResponse>> validationDca(
+    public ResponseEntity<TmbOneServiceResponse<TradeOccupationResponse>> tradeOccupationInquiry(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody TradeOccupationRequest tradeOccupationRequest) {
 
-        TmbOneServiceResponse<tradeOccupationResponse> oneServiceResponse =
+        TmbOneServiceResponse<TradeOccupationResponse> oneServiceResponse =
                 buyFirstTradeService.tradeOuccupationInquiry(correlationId,crmId,tradeOccupationRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             return ResponseEntity.ok(oneServiceResponse);

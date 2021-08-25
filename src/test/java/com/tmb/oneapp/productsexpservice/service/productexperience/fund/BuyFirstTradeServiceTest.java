@@ -6,7 +6,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.tradeOccupationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.TradeOccupationResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ public class BuyFirstTradeServiceTest {
         when(investmentAsyncService.fetchOccupationInquiry(any(), any())).thenReturn(CompletableFuture.completedFuture(occupationInquiryResponseBody));
 
         // when
-        TmbOneServiceResponse<tradeOccupationResponse> actual = buyFirstTradeService
+        TmbOneServiceResponse<TradeOccupationResponse> actual = buyFirstTradeService
                 .tradeOuccupationInquiry(correlationId,crmId,TradeOccupationRequest.builder().build());
 
         // then
@@ -66,7 +66,7 @@ public class BuyFirstTradeServiceTest {
         when(investmentAsyncService.getFirstTrade(any(), any())).thenThrow(MockitoException.class);
 
         // when
-        TmbOneServiceResponse<tradeOccupationResponse> actual = buyFirstTradeService
+        TmbOneServiceResponse<TradeOccupationResponse> actual = buyFirstTradeService
                 .tradeOuccupationInquiry(correlationId,crmId,TradeOccupationRequest.builder().build());
 
         // then
