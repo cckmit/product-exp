@@ -64,6 +64,8 @@ public class CustIndividualProfileInfo {
 	private String lastNameTh;
 	@JsonProperty("email")
 	private String email;
+	@JsonProperty("issueDate")
+	private String issueDate;
 	
 	
 }
