@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.feature.Feature;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -65,7 +66,6 @@ public class LoanCustomerService {
             facility.getFeature().setRequestAmount(request.getRequestAmount());
         }
         facility.getFeature().setTenure(request.getTenure());
-
         facility.setDisburstAccountName(request.getDisburstAccountName());
         facility.setDisburstAccountNo(request.getDisburstAccountNo());
         updateFacility(facility);
@@ -102,8 +102,17 @@ public class LoanCustomerService {
         }
     }
 
-    private void updateFacility(@NonNull Facility facility) throws ServiceException, TMBCommonException, RemoteException {
+    private void updateFacility(@NonNull Facility facility) throws ServiceException, TMBCommonException {
         try {
+            if (facility.getFeatureType().equals(FEATURE_TYPE_C)) {
+                Feature feature = new Feature();
+                feature.setDisbAcctName("TTB MEEHAI");
+                feature.setDisbAcctNo("12345671");
+                feature.setDisbBankCode("011");
+                feature.setRequestAmount(BigDecimal.valueOf(20000));
+                feature.setRequestPercent(BigDecimal.valueOf(7));
+                facility.setFeature(feature);
+            }
             com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility responseFacility = updateFacilityInfoClient.updateFacilityInfo(facility);
 
             if (!responseFacility.getHeader().getResponseCode().equals("MSG_000")) {
@@ -205,7 +214,7 @@ public class LoanCustomerService {
                     account.setAccountName(receiveAccount.getAccountName());
                     receiveAccountList.add(account);
                 }
-                
+
             }
 
             for (var paymentAccount : depositAccounts) {
