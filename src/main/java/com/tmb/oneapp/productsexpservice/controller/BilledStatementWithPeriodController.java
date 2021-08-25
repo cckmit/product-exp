@@ -10,8 +10,13 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledStatementQuery;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import io.swagger.annotations.*;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -126,6 +131,14 @@ public class BilledStatementWithPeriodController {
         Integer maxRecords = billedStatementResponse.getCardStatement() != null ? billedStatementResponse.getMaxRecords()
                 : ProductsExpServiceConstant.ZERO;
         CardStatement cardStatement = billedStatementResponse.getCardStatement();
+		if (billedStatementResponse.getCardStatement() != null) {
+			List<StatementTransaction> statementTransactions = billedStatementResponse.getCardStatement()
+					.getStatementTransactions();
+			statementTransactions.stream().forEach(each -> {
+				each.setTransactionDescription(each.getTransactionDescription().replaceAll("\\s+", StringUtils.SPACE));
+			});
+			cardStatement.setStatementTransactions(statementTransactions);
+		}
         billedStatementResponse.setCardStatement(cardStatement);
         billedStatementResponse.setMaxRecords(maxRecords);
         billedStatementResponse.setMoreRecords(moreRecords);
