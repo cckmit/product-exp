@@ -3,7 +3,7 @@ package com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsum
 import lombok.Data;
 
 @Data
-public class FundByPort {
+public class FundSummaryByPort {
 
     private String fundHouseCode;
 
@@ -18,4 +18,12 @@ public class FundByPort {
     private String unrealizedProfitPercent;
 
     private String allotType;
+
+    private String navDate;
+
+    private String fundClassCode;
+
+    private String thaiFundClassName;
+
+    private String englishFundClassName;
 }
