@@ -123,6 +123,7 @@ public class CustomerProfileService {
 			individualProfile.setEmail(generalProfile.getEmailAddress());
 			individualProfile.setIdType(generalProfile.getIdType());
 			individualProfile.setIdNo(generalProfile.getIdNo());
+			individualProfile.setIssueDate(generalProfile.getIdReleasedDate());
 
 		}
 		return individualProfile;

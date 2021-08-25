@@ -99,9 +99,9 @@ public class ProductsExpServiceConstant {
 
     public static final String PROCESS_FLAG_Y = "Y";
     public static final String BUSINESS_HR_CLOSE = "N";
-    public static final String ACTIVITY_ID_TEMP = "00700200";
-    public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "00700201";
-    public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "00700203";
+    public static final String ACTIVITY_ID_TEMP = "100700200";
+    public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "100700201";
+    public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "100700203";
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "100700701";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
     public static final String SUCCESS = "Success";
@@ -116,9 +116,9 @@ public class ProductsExpServiceConstant {
     public static final String ACCEPT_LANGUAGE = "accept-language";
     public static final String MODE_PERMANENT = "permanent";
     public static final String MODE_TEMPORARY = "temporary";
-    public static final String ACTIVITY_ID_VERIFY_CARD_NO = "00700100";
-    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN = "00700600";
-    public static final String ACTIVITY_ID_LOAD_CARD_DETAILS = "00700800";
+    public static final String ACTIVITY_ID_VERIFY_CARD_NO = "100700100";
+    public static final String ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN = "100700500";
+    public static final String ACTIVITY_ID_LOAD_CARD_DETAILS = "100700800";
     public static final String METHOD = "SCAN/KEY IN";
     public static final String SUITABILITY_EXPIRED = "2";
     public static final String CASE_STATUS_CLOSED = "Closed";
@@ -192,7 +192,7 @@ public class ProductsExpServiceConstant {
     public static final String PWA_LEAVE_NOTE_SCREEN_NAME = "Send Note Success";
 
     /* ACTIVITY IDs */
-    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "00700402";
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "100700402";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING = "101000101";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO = "101000701";
