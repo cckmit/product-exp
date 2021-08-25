@@ -3,7 +3,7 @@ package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.tradeOccupationRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.tradeOccupationResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.BuyFirstTradeService;
 import io.swagger.annotations.Api;
@@ -43,7 +43,7 @@ public class BuyFirstTradeController {
     public ResponseEntity<TmbOneServiceResponse<tradeOccupationResponse>> validationDca(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody tradeOccupationRequest tradeOccupationRequest) {
+            @Valid @RequestBody TradeOccupationRequest tradeOccupationRequest) {
 
         TmbOneServiceResponse<tradeOccupationResponse> oneServiceResponse =
                 buyFirstTradeService.tradeOuccupationInquiry(correlationId,crmId,tradeOccupationRequest);

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class tradeOccupationRequest {
+public class TradeOccupationRequest {
 
     @NotBlank
     private String portfolioNumber;

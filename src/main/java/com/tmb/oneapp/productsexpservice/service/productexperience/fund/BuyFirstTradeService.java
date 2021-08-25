@@ -6,7 +6,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.request.FirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.tradeOccupationRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.tradeOccupationResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -30,7 +30,7 @@ public class BuyFirstTradeService {
         this.investmentAsyncService = investmentAsyncService;
     }
 
-    public TmbOneServiceResponse<tradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid tradeOccupationRequest tradeOccupationRequest){
+    public TmbOneServiceResponse<tradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest){
         TmbOneServiceResponse<tradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
