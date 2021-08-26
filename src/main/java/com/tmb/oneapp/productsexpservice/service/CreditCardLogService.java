@@ -206,10 +206,8 @@ public class CreditCardLogService {
 			creditCardEvent.setAmountMonthlyInstallment(
 					String.format("%,.2f", amountInDouble) + "+" + (String.format("%,.2f", installmentInDouble)));
 
-			String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountPlusTotalInterest);
-
 			creditCardEvent.setTotalAmountTotalIntrest(String.format("%,.2f", interestInDouble) + "+"
-					+ String.format("%,.2f", totalAmountPlusTotalInterest));
+					+ String.format("%,.2f", amountPlusTotalInterest));
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
