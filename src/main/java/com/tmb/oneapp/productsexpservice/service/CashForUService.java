@@ -59,16 +59,21 @@ public class CashForUService {
 			responseModelInfo.setMaximumTransferAmt(
 					formateDigit(String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer())));
 
+			BigDecimal cashTransferFee = new BigDecimal(rateCashForUInfo.getCashTransferFee());
+			BigDecimal cashTransferVat = new BigDecimal(rateCashForUInfo.getCashTransferVat());
+			BigDecimal fee = new BigDecimal("0");
+			BigDecimal vat = new BigDecimal("0");
 			if (allowWaiveFeeProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashFeeRate(formateDigit("0"));
 			} else {
-				responseModelInfo.setCashFeeRate(formateDigit(rateCashForUInfo.getCashTransferFee()));
+				fee = new BigDecimal(requestBody.getAmount()).multiply(cashTransferFee);
+				responseModelInfo.setCashFeeRate(formateDigit(fee.toString()));
 			}
-
 			if (allowWaiveVatProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashVatRate(formateDigit("0"));
 			} else {
-				responseModelInfo.setCashVatRate(formateDigit(rateCashForUInfo.getCashTransferVat()));
+				vat = fee.multiply(cashTransferVat);
+				responseModelInfo.setCashVatRate(formateDigit(vat.toString()));
 			}
 
 		} else {
