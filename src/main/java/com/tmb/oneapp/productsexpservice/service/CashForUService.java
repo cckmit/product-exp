@@ -65,7 +65,8 @@ public class CashForUService {
 			if (allowWaiveFeeProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashFeeRate(formateDigit("0"));
 			} else {
-				fee = new BigDecimal(requestBody.getAmount()).multiply(cashTransferFee);
+				fee = new BigDecimal(requestBody.getAmount() != null ? requestBody.getAmount() : "0")
+						.multiply(cashTransferFee);
 				responseModelInfo.setCashFeeRate(formateDigit(fee.toString()));
 			}
 			if (allowWaiveVatProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
