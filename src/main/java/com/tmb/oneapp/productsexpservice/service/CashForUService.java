@@ -62,7 +62,6 @@ public class CashForUService {
 			BigDecimal cashTransferFee = new BigDecimal(rateCashForUInfo.getCashTransferFee());
 			BigDecimal cashTransferVat = new BigDecimal(rateCashForUInfo.getCashTransferVat());
 			BigDecimal fee = new BigDecimal("0");
-			BigDecimal vat = new BigDecimal("0");
 			if (allowWaiveFeeProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashFeeRate(formateDigit("0"));
 			} else {
@@ -72,8 +71,7 @@ public class CashForUService {
 			if (allowWaiveVatProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashVatRate(formateDigit("0"));
 			} else {
-				vat = fee.multiply(cashTransferVat);
-				responseModelInfo.setCashVatRate(formateDigit(vat.toString()));
+				responseModelInfo.setCashVatRate(formateDigit(fee.multiply(cashTransferVat).toString()));
 			}
 
 		} else {
