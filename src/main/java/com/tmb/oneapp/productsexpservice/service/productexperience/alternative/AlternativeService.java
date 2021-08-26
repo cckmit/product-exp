@@ -379,20 +379,29 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
-    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status) {
+    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status,boolean isBuyFlow) {
         EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
-            String[] values = {"C3"};
+
+            String[] values = new String[2];
+            values[0] = "C3";
+            if(isBuyFlow){
+                values[1] = "B3";
+            }
+
             if (Arrays.stream(values).anyMatch(customerRiskLevel.getMaxRiskRM()::equals)) {
                 isCustomerRiskLevelNotValid = true;
             }
+
         }else{
+
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
             status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"));
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
+
         }
 
         if (isCustomerRiskLevelNotValid) {

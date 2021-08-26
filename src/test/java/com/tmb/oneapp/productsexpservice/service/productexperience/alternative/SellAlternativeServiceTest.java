@@ -19,6 +19,7 @@ import org.mockito.quality.Strictness;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,7 +55,7 @@ public class SellAlternativeServiceTest {
         TmbStatus successStatus = TmbStatusUtil.successStatus();
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
     }
 
@@ -128,7 +129,7 @@ public class SellAlternativeServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(status);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean())).thenReturn(status);
 
         // when
         TmbOneServiceResponse<String>  actual = sellAlternativeService.validationSell(correlationId,crmId);

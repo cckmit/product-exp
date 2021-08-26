@@ -33,7 +33,8 @@ public class ValidateGroupingAbstractService {
     protected TmbOneServiceResponse<String> validateServiceHourAgeAndRisk(String correlationId,
                                                                   CustomerSearchResponse customerInfo,
                                                                   TmbOneServiceResponse<String> tmbOneServiceResponse,
-                                                                  TmbStatus status){
+                                                                  TmbStatus status,
+                                                                  boolean isBuyFlow){
 
         // validate service hour
         tmbOneServiceResponse.setStatus(alternativeService.validateServiceHour(correlationId, status));
@@ -50,7 +51,7 @@ public class ValidateGroupingAbstractService {
         }
 
         // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status));
+        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status,isBuyFlow));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SERVICE_NOT_READY)){
                 tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());

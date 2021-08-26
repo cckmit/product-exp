@@ -140,7 +140,7 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
-            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp));
+            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp,true));
             return fundPaymentDetailResponse;
         }
     }
@@ -152,7 +152,7 @@ public class UtilMap {
      * @param responseCustomerExp
      * @return FundPaymentDetailRs
      */
-    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp) {
+    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp,boolean isBuyAccount) {
         List<DepositAccount> depositAccountList = new ArrayList<>();
 
         try {
@@ -162,7 +162,14 @@ public class UtilMap {
             ArrayNode arrayNode = (ArrayNode) node.get("data");
             int size = arrayNode.size();
             DepositAccount depositAccount;
-            List<String> eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
+            List<String> eligibleAccountCodeBuy;
+
+            if(isBuyAccount){
+                eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
+            }else{
+                eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeSell();
+            }
+
             for (int i = 0; i < size; i++) {
                 JsonNode itr = arrayNode.get(i);
                 String accCode = itr.get("product_code").textValue();

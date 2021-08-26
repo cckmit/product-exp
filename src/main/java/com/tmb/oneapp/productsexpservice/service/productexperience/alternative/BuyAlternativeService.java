@@ -38,7 +38,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
 
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-            tmbOneServiceResponse = validateBuyAndDca(correlationId,crmId,customerInfo,processFlag,tmbOneServiceResponse,status);
+            tmbOneServiceResponse = validateBuyAndDca(correlationId,crmId,customerInfo,processFlag,tmbOneServiceResponse,status,true);
             if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
                 return tmbOneServiceResponse;
             }
