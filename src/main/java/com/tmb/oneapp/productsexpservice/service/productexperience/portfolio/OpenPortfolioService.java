@@ -107,14 +107,12 @@ public class OpenPortfolioService {
     private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader, String correlationId, String crmId) throws TMBCommonException {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
-        List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId(),false);
-        Optional<DepositAccount> account = eligibleDepositAccounts.stream()
-                .filter(depositAccount -> accountRedeem.getAccountRedeem().equals(depositAccount.getAccountNumber()))
-                .findFirst();
-        if (account.isEmpty()) {
-            throwTmbException("========== failed account return 0 in list for exisitng user ==========");
-        }
-        return account.isPresent() ? account.get() : null;
+         return DepositAccount.builder()
+                 .accountNumber(accountRedeem.getAccountRedeem())
+                 .productNickname("My nickname")
+                 .productNameTH("thai name")
+                 .productNameTH("eng name")
+                 .build();
     }
 
     /**
