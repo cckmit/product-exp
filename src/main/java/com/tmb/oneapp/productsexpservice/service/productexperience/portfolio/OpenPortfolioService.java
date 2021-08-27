@@ -44,8 +44,6 @@ public class OpenPortfolioService {
 
     private InvestmentRequestClient investmentRequestClient;
 
-    private EligibleDepositAccountService eligibleDepositAccountService;
-
     private InvestmentAsyncService investmentAsyncService;
 
     private OpenPortfolioActivityLogService openPortfolioActivityLogService;
@@ -55,12 +53,10 @@ public class OpenPortfolioService {
     @Autowired
     public OpenPortfolioService(
             InvestmentRequestClient investmentRequestClient,
-            EligibleDepositAccountService eligibleDepositAccountService,
             InvestmentAsyncService investmentAsyncService,
             OpenPortfolioActivityLogService openPortfolioActivityLogService,
             OpenPortfolioMapper openPortfolioMapper) {
         this.investmentRequestClient = investmentRequestClient;
-        this.eligibleDepositAccountService = eligibleDepositAccountService;
         this.investmentAsyncService = investmentAsyncService;
         this.openPortfolioActivityLogService = openPortfolioActivityLogService;
         this.openPortfolioMapper = openPortfolioMapper;
@@ -85,7 +81,7 @@ public class OpenPortfolioService {
 
                 DepositAccount depositAccount = null;
                 if (customerRequest.isExistingCustomer()) {
-                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader, correlationId, crmId);
+                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader, crmId);
                 }
 
                 return OpenPortfolioValidationResponse.builder()
@@ -100,7 +96,7 @@ public class OpenPortfolioService {
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader, String correlationId, String crmId) throws TMBCommonException {
+    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader,  String crmId)  {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
          return DepositAccount.builder()
