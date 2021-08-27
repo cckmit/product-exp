@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
@@ -148,7 +149,7 @@ public interface CustomerServiceClient {
      * @return EkycRiskCalculateResponse
      */
     @PostMapping(value = "/apis/customers/ekyc/risk/calculate")
-    ResponseEntity<TmbOneServiceResponse<EkycRiskCalculateResponse>> customerEkycRiskCalculate(
+    ResponseEntity<TmbServiceResponse<EkycRiskCalculateResponse>> customerEkycRiskCalculate(
             @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @RequestBody EkycRiskCalculateRequest requestBody
     );

@@ -225,7 +225,7 @@ public class AlternativeServiceTest {
     @Test
     void should_return_status_code_2000018_when_call_validate_risk_level_not_valid_at_buy_flow() {
         //given
-        TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
+        TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
@@ -248,7 +248,7 @@ public class AlternativeServiceTest {
     @Test
     void should_return_status_code_0000_when_call_validate_risk_level_not_valid_at_sell_flow() {
         //given
-        TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
+        TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
@@ -271,7 +271,7 @@ public class AlternativeServiceTest {
     @Test
     void should_return_status_code_mf999_when_call_validate_risk_level_not_valid() {
         //given
-        TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
+        TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(null);
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
