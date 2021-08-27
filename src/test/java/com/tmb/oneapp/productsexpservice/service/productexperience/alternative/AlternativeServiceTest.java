@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -238,7 +237,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),true);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),true,true);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
@@ -261,7 +260,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
@@ -284,7 +283,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
@@ -305,7 +304,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());

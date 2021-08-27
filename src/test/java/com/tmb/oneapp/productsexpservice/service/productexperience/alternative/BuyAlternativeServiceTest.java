@@ -4,8 +4,11 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.request.FirstTradeRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -17,6 +20,7 @@ import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -36,6 +40,9 @@ public class BuyAlternativeServiceTest {
 
     @Mock
     public ProductsExpService productsExpService;
+
+    @Mock
+    public InvestmentRequestClient investmentRequestClient;
 
     @InjectMocks
     public BuyAlternativeService buyAlternativeService;
@@ -59,9 +66,13 @@ public class BuyAlternativeServiceTest {
 
     private void byPassAllAlternative(){
         TmbStatus successStatus = TmbStatusUtil.successStatus();
+        TmbOneServiceResponse<FirstTradeResponseBody> firstTradeResponse = new TmbOneServiceResponse<>();
+        firstTradeResponse.setStatus(successStatus);
+        firstTradeResponse.setData(FirstTradeResponseBody.builder().firstTradeFlag("Y").build());
+        when(investmentRequestClient.getFirstTrade(any(),any())).thenReturn(ResponseEntity.ok(firstTradeResponse));
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(),anyBoolean())).thenReturn(successStatus);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(),anyBoolean(),anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired( any(), any())).thenReturn(successStatus);
@@ -84,6 +95,9 @@ public class BuyAlternativeServiceTest {
     @Test
     public void should_return_failed_cant_buy_fund_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
 
+        // given
+        byPassAllAlternative();
+
         // when
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("N").build();
         TmbOneServiceResponse<String>  actual = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
@@ -100,6 +114,7 @@ public class BuyAlternativeServiceTest {
     public void should_return_failed_validate_service_hour_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
+        byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
@@ -155,7 +170,7 @@ public class BuyAlternativeServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(),anyBoolean())).thenReturn(status);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(),anyBoolean(),anyBoolean())).thenReturn(status);
 
         // when
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();

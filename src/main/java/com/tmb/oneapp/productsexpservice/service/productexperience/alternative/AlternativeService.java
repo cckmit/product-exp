@@ -379,14 +379,14 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
-    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status,boolean isBuyFlow) {
+    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status,boolean isBuyFlow,boolean isFirstTrade) {
         EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
 
             String[] values = new String[2];
             values[0] = "C3";
-            if(isBuyFlow){
+            if(isBuyFlow && isFirstTrade){
                 values[1] = "B3";
             }
 

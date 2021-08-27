@@ -55,7 +55,7 @@ public class SwitchAlternativeServiceTest {
         TmbStatus successStatus = TmbStatusUtil.successStatus();
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean())).thenReturn(successStatus);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(),anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
     }
 
@@ -129,7 +129,7 @@ public class SwitchAlternativeServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean())).thenReturn(status);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(),anyBoolean())).thenReturn(status);
 
         // when
         TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);

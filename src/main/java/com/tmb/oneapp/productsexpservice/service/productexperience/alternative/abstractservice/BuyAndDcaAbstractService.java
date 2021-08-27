@@ -36,7 +36,8 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
                                                               String processFlag,
                                                               TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                               TmbStatus status,
-                                                              boolean isBuyFlow){
+                                                              boolean isBuyFlow,
+                                                              boolean isFirstTrade){
 
         // process flag != Y = Can'y By fund
         if(!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(processFlag)){
@@ -48,7 +49,7 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
             return tmbOneServiceResponse;
         }
 
-        tmbOneServiceResponse = validateServiceHourAgeAndRisk(correlationId,customerInfo,tmbOneServiceResponse,status,isBuyFlow);
+        tmbOneServiceResponse = validateServiceHourAgeAndRisk(correlationId,customerInfo,tmbOneServiceResponse,status,isBuyFlow,isFirstTrade);
         if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
             return tmbOneServiceResponse;
         }

@@ -838,7 +838,7 @@ public class ProductExpServiceTest {
 
     public void bypassAlternative() {
         TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(tmbStatusSuccess);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(tmbStatusSuccess);
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(tmbStatusSuccess);
     }
 
@@ -858,7 +858,7 @@ public class ProductExpServiceTest {
         when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 
     @Test
