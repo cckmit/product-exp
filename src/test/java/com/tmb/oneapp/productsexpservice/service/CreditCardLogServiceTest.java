@@ -226,6 +226,8 @@ public class CreditCardLogServiceTest {
 		query.setCardInstallment(cardInstallment);
 		List<CardInstallmentResponse> installment = new ArrayList<>();
 		CardInstallmentResponse response = getCardInstallmentResponse();
+		
+		response.setCreditCard(getCreditCardModel());
 		installment.add(response);
 		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, installment);
 		assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
@@ -437,6 +439,10 @@ public class CreditCardLogServiceTest {
 		card.setTransactionDescription("Test");
 		card.setTransactionKey("1234");
 		card.setAmounts("1234.00");
+		card.setInterest("0");
+		card.setAmounts("1000.3");
+		card.setInterest("173.58");
+		card.setMonthlyInstallments("13000");
 		creditCard.setCardInstallment(card);
 		return creditCard;
 	}
