@@ -417,7 +417,7 @@ public class AlternativeService {
     private EkycRiskCalculateResponse fetchApiculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
         try {
             EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
-            ResponseEntity<TmbOneServiceResponse<EkycRiskCalculateResponse>> customerRiskResponse = customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
+            ResponseEntity<TmbServiceResponse<EkycRiskCalculateResponse>> customerRiskResponse = customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
             return customerRiskResponse.getBody().getData();
         }catch (FeignException feignException){
             if(feignException.status() == HttpStatus.BAD_REQUEST.value()){
@@ -463,6 +463,7 @@ public class AlternativeService {
                 .dobCountry(customerInfo.getNationality())
                 .firstName(customerInfo.getCustomerThaiFirstName())
                 .firstNameEng(customerInfo.getCustomerEnglishFirstName())
+                .incomeSourceCountry(customerInfo.getCountryOfIncome())
                 .lastName(customerInfo.getCustomerThaiLastName())
                 .lastNameEng(customerInfo.getCustomerEnglishLastName())
                 .occupationCode(customerInfo.getOccupationCode())
