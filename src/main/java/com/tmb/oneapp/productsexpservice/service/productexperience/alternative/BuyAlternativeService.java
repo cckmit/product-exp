@@ -47,7 +47,13 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
 
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-            tmbOneServiceResponse = validateBuyAndDca(correlationId,crmId,customerInfo,processFlag,tmbOneServiceResponse,status,true,isFirstTrade(correlationId,alternativeBuyRequest));
+
+            tmbOneServiceResponse = validateProcessFlag(processFlag,tmbOneServiceResponse,status);
+            if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+                return tmbOneServiceResponse;
+            }
+
+            tmbOneServiceResponse = validateBuyAndDca(correlationId,crmId,customerInfo,tmbOneServiceResponse,status,true,isFirstTrade(correlationId,alternativeBuyRequest));
             if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
                 return tmbOneServiceResponse;
             }
@@ -87,6 +93,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             return ProductsExpServiceConstant.INVESTMENT_FIRST_TRADE_FLAG
                     .equals(tmbOneServiceResponse.getBody().getData().getFirstTradeFlag());
         }catch (TMBCommonException ex){
+            logger.error(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE,"get first trade failed");
            throw ex;
         }
     }
