@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
@@ -23,7 +22,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.respo
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +29,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-
-import static com.tmb.oneapp.productsexpservice.util.ExceptionUtil.throwTmbException;
 
 /**
  * OpenPortfolioService class will get data from api services, and handle business criteria
@@ -48,8 +42,6 @@ public class OpenPortfolioService {
 
     private InvestmentRequestClient investmentRequestClient;
 
-    private EligibleDepositAccountService eligibleDepositAccountService;
-
     private InvestmentAsyncService investmentAsyncService;
 
     private OpenPortfolioActivityLogService openPortfolioActivityLogService;
@@ -59,12 +51,10 @@ public class OpenPortfolioService {
     @Autowired
     public OpenPortfolioService(
             InvestmentRequestClient investmentRequestClient,
-            EligibleDepositAccountService eligibleDepositAccountService,
             InvestmentAsyncService investmentAsyncService,
             OpenPortfolioActivityLogService openPortfolioActivityLogService,
             OpenPortfolioMapper openPortfolioMapper) {
         this.investmentRequestClient = investmentRequestClient;
-        this.eligibleDepositAccountService = eligibleDepositAccountService;
         this.investmentAsyncService = investmentAsyncService;
         this.openPortfolioActivityLogService = openPortfolioActivityLogService;
         this.openPortfolioMapper = openPortfolioMapper;
@@ -89,7 +79,7 @@ public class OpenPortfolioService {
 
                 DepositAccount depositAccount = null;
                 if (customerRequest.isExistingCustomer()) {
-                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader, correlationId, crmId);
+                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader, crmId);
                 }
 
                 return OpenPortfolioValidationResponse.builder()
@@ -104,17 +94,15 @@ public class OpenPortfolioService {
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader, String correlationId, String crmId) throws TMBCommonException {
+    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader,  String crmId)  {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
-        List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId(),false);
-        Optional<DepositAccount> account = eligibleDepositAccounts.stream()
-                .filter(depositAccount -> accountRedeem.getAccountRedeem().equals(depositAccount.getAccountNumber()))
-                .findFirst();
-        if (account.isEmpty()) {
-            throwTmbException("========== failed account return 0 in list for exisitng user ==========");
-        }
-        return account.isPresent() ? account.get() : null;
+         return DepositAccount.builder()
+                 .accountNumber(accountRedeem.getAccountRedeem())
+                 .productNickname("My Nickname")
+                 .productNameTH("Thai Name Account")
+                 .productNameEN("Eng name Account")
+                 .build();
     }
 
     /**
