@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -224,10 +223,10 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000018_when_call_validate_risk_level_not_valid() {
+    void should_return_status_code_2000018_when_call_validate_risk_level_not_valid_at_buy_flow() {
         //given
         TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
-        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("C3").build());
+        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
         // When
@@ -238,12 +237,35 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),true,true);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getMessage());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_0000_when_call_validate_risk_level_not_valid_at_sell_flow() {
+        //given
+        TmbOneServiceResponse<EkycRiskCalculateResponse> response = new TmbOneServiceResponse<>();
+        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+        // When
+        CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
+                .builder()
+                .businessTypeCode("22")
+                .officeAddressData(AddressWithPhone.builder().build())
+                .registeredAddressData(AddressWithPhone.builder().build())
+                .primaryAddressData(AddressWithPhone.builder().build())
+                .build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
     }
 
     @Test
@@ -261,7 +283,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
@@ -282,7 +304,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());

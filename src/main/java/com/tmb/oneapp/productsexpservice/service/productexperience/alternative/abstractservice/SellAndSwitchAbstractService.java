@@ -21,7 +21,7 @@ public abstract class SellAndSwitchAbstractService extends ValidateGroupingAbstr
                                                                   TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                                   TmbStatus status){
         return validateServiceHourAgeAndRisk(correlationId,customerInfo,tmbOneServiceResponse,
-                status);
+                status,false,false);
     }
 
 }

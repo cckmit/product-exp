@@ -39,8 +39,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -156,7 +155,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountTypeShort("SDA");
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
@@ -273,7 +272,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.DORMANT_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(),
@@ -306,9 +305,9 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any())).thenReturn(
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc()));
@@ -341,7 +340,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(),
@@ -375,7 +374,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(),
@@ -410,7 +409,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
@@ -477,7 +476,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(),
@@ -501,7 +500,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(), anyBoolean())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 
 }

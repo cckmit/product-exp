@@ -160,7 +160,7 @@ public class UtilMapTest {
         list.setFundHouseCode("1234");
         FundPaymentDetailResponse fundPaymentDetailResponse = new FundPaymentDetailResponse();
         fundPaymentDetailResponse.setFundRule(list);
-        List<DepositAccount> depositAccountList = UtilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp");
+        List<DepositAccount> depositAccountList = UtilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp",true);
         fundPaymentDetailResponse.setDepositAccountList(depositAccountList);
         data.setAccount290Url("1234");
         assertNotEquals(data.getAccount290Url(), depositAccountList);
