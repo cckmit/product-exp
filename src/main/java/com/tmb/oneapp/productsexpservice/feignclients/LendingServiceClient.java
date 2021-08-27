@@ -186,6 +186,6 @@ public interface LendingServiceClient {
     ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
             @RequestHeader(HEADER_X_CRM_ID) String  crmId,
-            @RequestBody UploadDocumentRequest request);
+            @ModelAttribute UploadDocumentRequest request);
 
 }
