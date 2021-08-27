@@ -99,9 +99,9 @@ public class OpenPortfolioService {
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
          return DepositAccount.builder()
                  .accountNumber(accountRedeem.getAccountRedeem())
-                 .productNickname("My nickname")
-                 .productNameTH("thai name")
-                 .productNameTH("eng name")
+                 .productNickname("My Nickname")
+                 .productNameTH("Thai Name Account")
+                 .productNameEN("Eng name Account")
                  .build();
     }
 
