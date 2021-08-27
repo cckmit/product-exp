@@ -1,6 +1,5 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
@@ -23,7 +22,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.respo
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
