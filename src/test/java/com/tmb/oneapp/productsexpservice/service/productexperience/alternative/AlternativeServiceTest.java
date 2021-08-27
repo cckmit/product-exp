@@ -1,26 +1,29 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CommonTime;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -31,6 +34,7 @@ import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
@@ -50,6 +54,15 @@ public class AlternativeServiceTest {
 
     @Mock
     public CustomerServiceClient customerServiceClient;
+
+    @Mock
+    public AccountRequestClient accountRequestClient;
+
+    @Mock
+    public InvestmentRequestClient investmentRequestClient;
+
+    @Mock
+    public ProductExpAsyncService productExpAsyncService;
 
     @InjectMocks
     public AlternativeService alternativeService;
@@ -86,7 +99,7 @@ public class AlternativeServiceTest {
         when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));    }
 
     @Test
-    void should_return_status_code_2000001_when_call_validate_service_hour() throws Exception {
+    void should_return_status_code_2000001_when_call_validate_service_hour() {
         // Given
         mockNotPassServiceHour();
         // When
@@ -99,7 +112,7 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000025_when_call_validate_age_is_not_over_twenty() throws Exception {
+    void should_return_status_code_2000025_when_call_validate_age_is_not_over_twenty() {
         // When
         TmbStatus actual = alternativeService.validateDateNotOverTwentyYearOld("2010-07-08", TmbStatusUtil.successStatus());
 
@@ -110,7 +123,85 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000019_when_call_validate_no_casa_active() throws Exception {
+    void should_return_status_code_2000003_when_call_validate_casa_dormant() {
+        // given
+        String accountResponse = "{\n" +
+                "\t\"status\": {\n" +
+                "\t\t\"code\": \"0000\",\n" +
+                "\t\t\"message\": \"success\",\n" +
+                "\t\t\"service\": \"accounts-service\"\n" +
+                "\t},\n" +
+                "\t\"data\": [{\n" +
+                "\t\t\"product_name_Eng\": \"All Free Account\",\n" +
+                "\t\t\"product_name_TH\": \"บัญชีออลล์ฟรี\",\n" +
+                "\t\t\"product_code\": \"225\",\n" +
+                "\t\t\"balance_currency\": \"THB\",\n" +
+                "\t\t\"current_balance\": \"0.00\",\n" +
+                "\t\t\"account_number\": \"00001102416367\",\n" +
+                "\t\t\"relationship_code\": \"PRIIND\",\n" +
+                "\t\t\"account_status_code\": \"1\",\n" +
+                "\t\t\"account_status_text\": \"ACTIVE\"\n" +
+                "\t}, {\n" +
+                "\t\t\"product_name_Eng\": \"No Fixed Account\",\n" +
+                "\t\t\"product_name_TH\": \"บัญชีโนฟิกซ์\",\n" +
+                "\t\t\"product_code\": \"221\",\n" +
+                "\t\t\"balance_currency\": \"THB\",\n" +
+                "\t\t\"current_balance\": \"922963.66\",\n" +
+                "\t\t\"account_number\": \"00001102416458\",\n" +
+                "\t\t\"relationship_code\": \"PRIIND\",\n" +
+                "\t\t\"account_status_code\": \"2\",\n" +
+                "\t\t\"account_status_text\": \"ACTIVE\"\n" +
+                "\t}]\n" +
+                "}";
+        when(accountRequestClient.callCustomerExpService(any(),any())).thenReturn(accountResponse);
+
+        // When
+        TmbStatus actual = alternativeService.validateCASADormant("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000004_when_call_validate_suitability_expired() throws Exception {
+        // given
+        TmbOneServiceResponse<SuitabilityInfo> suitabilityInfo = new TmbOneServiceResponse<>();
+        ObjectMapper mapper = new ObjectMapper();
+        SuitabilityInfo suitabilityInfoResponse = mapper.readValue(Paths.get("src/test/resources/investment/suitability/suitabilityinfo.json").toFile(), SuitabilityInfo.class);
+        suitabilityInfo.setData(suitabilityInfoResponse);
+
+        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenReturn(ResponseEntity.ok(suitabilityInfo));
+
+        // When
+        TmbStatus actual = alternativeService.validateSuitabilityExpired("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000009_when_call_validate_id_card_expired() throws Exception {
+        // given
+        CustGeneralProfileResponse fundHolidayBody;
+        ObjectMapper mapper = new ObjectMapper();
+        fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customer/customers_profile_idcard_expired.json").toFile(), CustGeneralProfileResponse.class);
+
+        when(productExpAsyncService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+        // When
+        TmbStatus actual = alternativeService.validateIdCardExpired("00000018592884", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000019_when_call_validate_no_casa_active() {
         // Given
         DepositAccount depositAccount = new DepositAccount();
         depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
@@ -132,10 +223,10 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000018_when_call_validate_risk_level_not_valid() throws Exception {
+    void should_return_status_code_2000018_when_call_validate_risk_level_not_valid_at_buy_flow() {
         //given
-        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
-        response.setData("B3");
+        TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
+        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
         // When
@@ -146,7 +237,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),true,true);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
@@ -155,9 +246,11 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_success_code_when_call_validate_risk_level_not_valid() throws Exception {
+    void should_return_status_code_0000_when_call_validate_risk_level_not_valid_at_sell_flow() {
         //given
-        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenThrow(MockitoException.class);
+        TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
+        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
 
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
@@ -167,14 +260,58 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
     }
 
     @Test
-    void should_return_status_code_2000018_when_call_validate_customer_assurance_level() throws Exception {
+    void should_return_status_code_mf999_when_call_validate_risk_level_not_valid() {
+        //given
+        TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
+        response.setData(null);
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+        // When
+        CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
+                .builder()
+                .businessTypeCode("22")
+                .officeAddressData(AddressWithPhone.builder().build())
+                .registeredAddressData(AddressWithPhone.builder().build())
+                .primaryAddressData(AddressWithPhone.builder().build())
+                .build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE, actual.getMessage());
+        assertEquals(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"), actual.getDescription());
+    }
+
+    @Test
+    void should_return_error_mf999_when_call_validate_risk_level_not_valid() {
+        //given
+        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenThrow(FeignException.class);
+
+        // When
+        CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
+                .builder()
+                .businessTypeCode("22")
+                .officeAddressData(AddressWithPhone.builder().build())
+                .registeredAddressData(AddressWithPhone.builder().build())
+                .primaryAddressData(AddressWithPhone.builder().build())
+                .build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
+    }
+
+    @Test
+    void should_return_status_code_2000018_when_call_validate_customer_assurance_level() {
 
         // When
         TmbStatus actual = alternativeService.validateIdentityAssuranceLevel("100",  TmbStatusUtil.successStatus());

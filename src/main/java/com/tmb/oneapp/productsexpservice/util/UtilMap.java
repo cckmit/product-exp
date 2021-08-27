@@ -14,7 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.request.AlternativeRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
@@ -26,9 +26,9 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassLi
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleBody;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
-import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailBody;
+import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementList;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -53,20 +53,20 @@ public class UtilMap {
     /**
      * Generic Method to validateTMBResponse
      *
-     * @param accountDetailBody
-     * @param fundRuleBody
+     * @param accountDetailResponse
+     * @param fundRuleResponse
      * @param statementResponse
      * @return FundAccountRs
      */
-    public static FundAccountResponse validateTMBResponse(AccountDetailBody accountDetailBody,
-                                                          FundRuleBody fundRuleBody,
+    public static FundAccountResponse validateTMBResponse(AccountDetailResponse accountDetailResponse,
+                                                          FundRuleResponse fundRuleResponse,
                                                           StatementResponse statementResponse) {
 
-        if ((StringUtils.isEmpty(accountDetailBody) && StringUtils.isEmpty(fundRuleBody))) {
+        if ((StringUtils.isEmpty(accountDetailResponse) && StringUtils.isEmpty(fundRuleResponse))) {
             return null;
         } else {
             FundAccountResponse fundAccountResponse = new FundAccountResponse();
-            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accountDetailBody, fundRuleBody, statementResponse);
+            FundAccountDetail fundAccountDetail = UtilMap.mappingResponse(accountDetailResponse, fundRuleResponse, statementResponse);
             fundAccountResponse.setDetails(fundAccountDetail);
             return fundAccountResponse;
         }
@@ -75,16 +75,16 @@ public class UtilMap {
     /**
      * Generic Method to mappingResponse
      *
-     * @param accountDetailBody
-     * @param fundRuleBody
+     * @param accountDetailResponse
+     * @param fundRuleResponse
      * @return FundAccountDetail
      */
-    public static FundAccountDetail mappingResponse(AccountDetailBody accountDetailBody,
-                                                    FundRuleBody fundRuleBody,
+    public static FundAccountDetail mappingResponse(AccountDetailResponse accountDetailResponse,
+                                                    FundRuleResponse fundRuleResponse,
                                                     StatementResponse statementResponse) {
 
         AccountDetail accountDetail = new AccountDetail();
-        BeanUtils.copyProperties(accountDetailBody.getFundDetail(), accountDetail);
+        BeanUtils.copyProperties(accountDetailResponse.getFundDetail(), accountDetail);
         List<FundOrderHistory> ordersHistories = new ArrayList<>();
         List<StatementList> statementList = statementResponse.getStatementList();
         FundOrderHistory order;
@@ -94,9 +94,9 @@ public class UtilMap {
             ordersHistories.add(order);
         }
         accountDetail.setOrdersHistories(ordersHistories);
-        Collections.sort(fundRuleBody.getFundRuleInfoList(), (o1, o2) -> o1.getOrderType().compareTo(o2.getOrderType()));
+        Collections.sort(fundRuleResponse.getFundRuleInfoList(), Comparator.comparing(FundRuleInfoList::getOrderType));
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
-        fundAccountDetail.setFundRuleInfoList(fundRuleBody.getFundRuleInfoList());
+        fundAccountDetail.setFundRuleInfoList(fundRuleResponse.getFundRuleInfoList());
         fundAccountDetail.setAccountDetail(accountDetail);
 
         return fundAccountDetail;
@@ -105,17 +105,17 @@ public class UtilMap {
     /**
      * Generic Method to mappingResponse
      *
-     * @param fundRuleBody
+     * @param fundRuleResponse
      * @param fundHolidayBody
      * @param responseCommon
      * @param responseCustomerExp
      * @return FundPaymentDetailRs
      */
-    public FundPaymentDetailResponse mappingPaymentResponse(FundRuleBody fundRuleBody,
+    public FundPaymentDetailResponse mappingPaymentResponse(FundRuleResponse fundRuleResponse,
                                                             FundHolidayBody fundHolidayBody,
                                                             List<CommonData> responseCommon,
                                                             String responseCustomerExp) {
-        if (StringUtils.isEmpty(fundRuleBody)
+        if (StringUtils.isEmpty(fundRuleResponse)
                 || StringUtils.isEmpty(responseCustomerExp)) {
             return null;
         } else {
@@ -136,11 +136,11 @@ public class UtilMap {
             }
 
             FundRule fundRule = new FundRule();
-            List<FundRuleInfoList> fundRuleInfoList = fundRuleBody.getFundRuleInfoList();
+            List<FundRuleInfoList> fundRuleInfoList = fundRuleResponse.getFundRuleInfoList();
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
-            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp));
+            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp,true));
             return fundPaymentDetailResponse;
         }
     }
@@ -152,7 +152,7 @@ public class UtilMap {
      * @param responseCustomerExp
      * @return FundPaymentDetailRs
      */
-    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp) {
+    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp,boolean isBuyAccount) {
         List<DepositAccount> depositAccountList = new ArrayList<>();
 
         try {
@@ -162,7 +162,14 @@ public class UtilMap {
             ArrayNode arrayNode = (ArrayNode) node.get("data");
             int size = arrayNode.size();
             DepositAccount depositAccount;
-            List<String> eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
+            List<String> eligibleAccountCodeBuy;
+
+            if(isBuyAccount){
+                eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
+            }else{
+                eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeSell();
+            }
+
             for (int i = 0; i < size; i++) {
                 JsonNode itr = arrayNode.get(i);
                 String accCode = itr.get("product_code").textValue();
@@ -474,18 +481,18 @@ public class UtilMap {
     /**
      * Generic Method to mappingRequestFundFactSheet
      *
-     * @param alternativeRequest
+     * @param alternativeBuyRequest
      * @return fundFactSheetRequestBody
      */
-    public static FundFactSheetRequestBody mappingRequestAlternative(String crmId,AlternativeRequest alternativeRequest) {
+    public static FundFactSheetRequestBody mappingRequestAlternative(String crmId, AlternativeBuyRequest alternativeBuyRequest) {
         FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
         fundFactSheetRequestBody.setCrmId(crmId);
-        fundFactSheetRequestBody.setFundCode(alternativeRequest.getFundCode());
-        fundFactSheetRequestBody.setProcessFlag(alternativeRequest.getProcessFlag());
-        fundFactSheetRequestBody.setUnitHolderNumber(alternativeRequest.getUnitHolderNumber());
-        fundFactSheetRequestBody.setFundHouseCode(alternativeRequest.getFundHouseCode());
-        fundFactSheetRequestBody.setOrderType(alternativeRequest.getOrderType());
-        fundFactSheetRequestBody.setFundClassThaiHubName(alternativeRequest.getFundClassThaiHubName());
+        fundFactSheetRequestBody.setFundCode(alternativeBuyRequest.getFundCode());
+        fundFactSheetRequestBody.setProcessFlag(alternativeBuyRequest.getProcessFlag());
+        fundFactSheetRequestBody.setUnitHolderNumber(alternativeBuyRequest.getUnitHolderNumber());
+        fundFactSheetRequestBody.setFundHouseCode(alternativeBuyRequest.getFundHouseCode());
+        fundFactSheetRequestBody.setOrderType(alternativeBuyRequest.getOrderType());
+        fundFactSheetRequestBody.setFundClassThaiHubName(alternativeBuyRequest.getFundClassThaiHubName());
         return fundFactSheetRequestBody;
     }
 

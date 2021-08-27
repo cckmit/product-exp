@@ -6,8 +6,14 @@ import java.util.List;
 
 @Data
 public class PortfolioByPort {
-   private String portfolioNumber;
-   private String portPercent ;
-   private List<FundByPort> fundList;
-   private String nickName;
+
+    private String portfolioNumber;
+
+    private String nickName;
+
+    private String portPercent;
+
+    private String jointFlag;
+
+    private List<FundSummaryByPort> fundList;
 }

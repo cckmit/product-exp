@@ -12,7 +12,11 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionResponse;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
+
 import io.swagger.annotations.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
@@ -78,6 +83,15 @@ public class CampaignTransactionsController {
                     status.setStatusCode(campaignTransactionsDetails.getBody().getStatus().getCode());
                     TmbOneServiceResponse<CampaignTransactionResponse> body = campaignTransactionsDetails.getBody();
                     CampaignTransactionResponse data = body.getData();
+					if (data.getCardStatement() != null) {
+						List<StatementTransaction> statementTransactions = data.getCardStatement()
+								.getStatementTransactions();
+						statementTransactions.stream().forEach(each -> {
+							each.setTransactionDescription(
+									each.getTransactionDescription().replaceAll("\\s+", StringUtils.SPACE));
+						});
+						data.getCardStatement().setStatementTransactions(statementTransactions);
+					}
                     oneServiceResponse.setData(data);
                     oneServiceResponse
                             .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),

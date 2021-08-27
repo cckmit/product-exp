@@ -4,7 +4,6 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
@@ -60,11 +59,15 @@ public class PersonalDetailController {
     @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Update Personal Detail")
-    public ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> savePersonalDetail(
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+    public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> savePersonalDetail(
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
             @RequestBody PersonalDetailSaveInfoRequest request) {
-        TmbOneServiceResponse<ResponseIndividual> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<PersonalDetailResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            personalDetailSaveInfoService.updatePersonalDetailInfo(request);
+            PersonalDetailResponse personalDetailResponse = personalDetailSaveInfoService.updatePersonalDetailInfo(crmid,request);
+            oneTmbOneServiceResponse.setData(personalDetailResponse);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);

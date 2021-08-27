@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request;
 
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.CustomerClientModel;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.request.OccupationRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -20,4 +21,6 @@ public class OpenPortfolioRequestBody extends CustomerClientModel {
     private String purposeTypeCode;
 
     private String portfolioNickName;
+
+    private OccupationRequest occupationRequest;
 }

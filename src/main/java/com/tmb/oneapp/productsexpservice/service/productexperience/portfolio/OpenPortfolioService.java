@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
@@ -10,6 +11,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
@@ -34,7 +37,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.tmb.oneapp.productsexpservice.util.ExceptionUtil.throwTmbException;
-
 
 /**
  * OpenPortfolioService class will get data from api services, and handle business criteria
@@ -82,28 +84,37 @@ public class OpenPortfolioService {
             ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), customerRequest);
             if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
-                CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
-                CompletableFuture.allOf(fetchAccountPurpose, fetchAccountRedeem);
+                CompletableFuture<OccupationInquiryResponseBody> occupationInquiry = investmentAsyncService.fetchOccupationInquiry(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
+                CompletableFuture.allOf(fetchAccountPurpose, occupationInquiry);
 
-                AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.get();
-                List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId());
-                Optional<DepositAccount> account = eligibleDepositAccounts.stream()
-                        .filter(depositAccount -> accountRedeem.getAccountRedeem().equals(depositAccount.getAccountNumber()))
-                        .findFirst();
-
-                if (account.isEmpty()) {
-                    throwTmbException("========== failed account return 0 in list ==========");
+                DepositAccount depositAccount = null;
+                if (customerRequest.isExistingCustomer()) {
+                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader, correlationId, crmId);
                 }
 
                 return OpenPortfolioValidationResponse.builder()
                         .accountPurposeResponse(fetchAccountPurpose.get())
-                        .depositAccount(account.isPresent() ? account.get() : null)
+                        .depositAccount(depositAccount)
+                        .occupationInquiryResponse(occupationInquiry.get())
                         .build();
             }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
         }
         return null;
+    }
+
+    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader, String correlationId, String crmId) throws TMBCommonException {
+        ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
+        AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
+        List<DepositAccount> eligibleDepositAccounts = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, accountRedeem.getCrmId(),false);
+        Optional<DepositAccount> account = eligibleDepositAccounts.stream()
+                .filter(depositAccount -> accountRedeem.getAccountRedeem().equals(depositAccount.getAccountNumber()))
+                .findFirst();
+        if (account.isEmpty()) {
+            throwTmbException("========== failed account return 0 in list for exisitng user ==========");
+        }
+        return account.isPresent() ? account.get() : null;
     }
 
     /**
@@ -113,7 +124,9 @@ public class OpenPortfolioService {
      * @param openPortfolioRequestBody
      */
     public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
+        OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
+
         try {
             RelationshipRequest relationshipRequest = openPortfolioMapper.openPortfolioRequestBodyToRelationshipRequest(openPortfolioRequestBody);
             CompletableFuture<RelationshipResponseBody> relationship = investmentAsyncService.updateClientRelationship(
@@ -123,7 +136,15 @@ public class OpenPortfolioService {
             CompletableFuture<OpenPortfolioResponseBody> openPortfolio = investmentAsyncService.openPortfolio(
                     investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), openPortfolioRequest);
 
-            CompletableFuture.allOf(relationship, openPortfolio);
+            if (openPortfolioRequestBody.getOccupationRequest() == null) {
+                CompletableFuture.allOf(relationship, openPortfolio);
+            } else {
+                CompletableFuture<OccupationResponseBody> occupation = investmentAsyncService.updateOccupation(
+                        investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), openPortfolioRequestBody.getOccupationRequest());
+                CompletableFuture.allOf(relationship, openPortfolio, occupation);
+                occupationResponseBody = occupation.get();
+            }
+
             openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
@@ -137,6 +158,7 @@ public class OpenPortfolioService {
                     .relationshipResponse(relationship.get())
                     .openPortfolioResponse(openPortfolio.get())
                     .portfolioNicknameResponse(portfolioNickname.getBody().getData())
+                    .occupationResponse(occupationResponseBody != null ? occupationResponseBody : null)
                     .build();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);

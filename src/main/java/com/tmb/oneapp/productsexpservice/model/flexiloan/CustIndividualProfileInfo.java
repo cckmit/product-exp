@@ -62,7 +62,10 @@ public class CustIndividualProfileInfo {
 	@ApiModelProperty(notes = "lastNameTh")
 	@JsonProperty("lastNameTh")
 	private String lastNameTh;
-	
+	@JsonProperty("email")
+	private String email;
+	@JsonProperty("issueDate")
+	private String issueDate;
 	
 	
 }

@@ -197,18 +197,17 @@ public class CreditCardLogService {
 
 			Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
 			Double installmentInDouble = ConversionUtil.stringToDouble(cardInstallment.getMonthlyInstallments());
-			Double installmentPlusAmount = amountInDouble + installmentInDouble;
 
 			Double interestInDouble = ConversionUtil.stringToDouble(cardInstallment.getInterest());
 			Double amountPlusTotalInterest = amountInDouble + interestInDouble;
 
 			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
-			String amountPlusMonthlyInstallment = ConversionUtil.doubleToString(installmentPlusAmount);
-			creditCardEvent.setAmountPlusMonthlyInstallment(amountPlusMonthlyInstallment);
+			creditCardEvent.setAmountMonthlyInstallment(
+					String.format("%,.2f", amountInDouble) + "+" + (String.format("%,.2f", installmentInDouble)));
 
-			String totalAmountPlusTotalInterest = ConversionUtil.doubleToString(amountPlusTotalInterest);
-			creditCardEvent.setTotalAmountPlusTotalIntrest(totalAmountPlusTotalInterest);
+			creditCardEvent.setTotalAmountTotalIntrest(String.format("%,.2f", interestInDouble) + "+"
+					+ String.format("%,.2f", amountPlusTotalInterest));
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);

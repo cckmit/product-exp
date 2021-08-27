@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Address {
+    private String addrTypCode;
     private String no;
     private String buildingName;
     private String streetName;

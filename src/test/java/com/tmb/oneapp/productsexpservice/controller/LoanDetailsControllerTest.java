@@ -18,6 +18,8 @@ import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 import com.tmb.oneapp.productsexpservice.model.loan.*;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.InstantLoanService;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,12 +59,14 @@ public class LoanDetailsControllerTest {
     CustomerServiceClient customerServiceClient;
     @Mock
 	ApplyEStatementService applyEStatementService;
+    @Mock
+    InstantLoanService instantLoanService ;
 
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		homeLoanController = new LoanDetailsController(accountRequestClient, commonServiceClient, creditCardLogService,
-				customerServiceClient, applyEStatementService);
+				customerServiceClient, applyEStatementService,instantLoanService);
 	}
 
     @Test
