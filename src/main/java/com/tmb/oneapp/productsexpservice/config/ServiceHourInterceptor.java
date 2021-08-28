@@ -75,7 +75,7 @@ public class ServiceHourInterceptor extends HandlerInterceptorAdapter {
 				request.getHeader(ProductsExpServiceConstant.HEADER_SERVICE_HOUR_MODULE));
 		boolean serviceHours = serviceHourCheck(serviceHourModule);
 		logger.info("Service Hour Interceptor Flag : {} ", serviceHours);
-		if (!serviceHours) {
+		if (serviceHours) {
 			throw new TMBCommonException(ProductsExpServiceConstant.SERVICE_HOUR_ERROR_CODE.toLowerCase(),
 					ProductsExpServiceConstant.SERVICE_HOUR_ERROR_MESSAGE.toLowerCase(),
 					ProductsExpServiceConstant.SERVICE_NAME, HttpStatus.BAD_REQUEST, null);
@@ -115,9 +115,13 @@ public class ServiceHourInterceptor extends HandlerInterceptorAdapter {
 		Calendar serviceHourStart = getCalendarObj(startEndTime.get(0));
 		Calendar serviceHourEnd = getCalendarObj(startEndTime.get(1));
 		Calendar currentTime = getCalendarObj(getCurrentTime());
-		Date currentDate = currentTime.getTime();
-		if (!(currentDate.equals(serviceHourStart.getTime()) || currentDate.equals(serviceHourEnd.getTime())
-				|| (currentDate.after(serviceHourStart.getTime()) && currentDate.before(serviceHourEnd.getTime())))) {
+		if (serviceHourEnd.compareTo(serviceHourStart) < 0) {
+			serviceHourEnd.add(Calendar.DATE, 1);
+			currentTime.add(Calendar.DATE, 1);
+		}
+		Date actualTime = currentTime.getTime();
+		if ((actualTime.after(serviceHourStart.getTime()) || actualTime.compareTo(serviceHourStart.getTime()) == 0)
+				&& actualTime.before(serviceHourEnd.getTime())) {
 			serviceHourFlag = Boolean.TRUE;
 		}
 		return serviceHourFlag;
