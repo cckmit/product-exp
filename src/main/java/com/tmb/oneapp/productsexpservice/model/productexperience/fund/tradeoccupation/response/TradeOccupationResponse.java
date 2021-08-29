@@ -13,10 +13,12 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class TradeOccupationResponse {
 
-    @NotBlank
     private String firstTradeFlag;
 
-    @NotBlank
     private String requirePosition;
+
+    private String occupationCode;
+
+    private String occupationDescription;
 
 }
