@@ -115,15 +115,20 @@ public class ServiceHourInterceptor extends HandlerInterceptorAdapter {
 		Calendar serviceHourStart = getCalendarObj(startEndTime.get(0));
 		Calendar serviceHourEnd = getCalendarObj(startEndTime.get(1));
 		Calendar currentTime = getCalendarObj(getCurrentTime());
+
 		if (serviceHourEnd.compareTo(serviceHourStart) < 0) {
 			serviceHourEnd.add(Calendar.DATE, 1);
-			currentTime.add(Calendar.DATE, 1);
+			if (!currentTime.after(serviceHourStart))
+				currentTime.add(Calendar.DATE, 1);
 		}
-		Date actualTime = currentTime.getTime();
-		if ((actualTime.after(serviceHourStart.getTime()) || actualTime.compareTo(serviceHourStart.getTime()) == 0)
-				&& actualTime.before(serviceHourEnd.getTime())) {
-			serviceHourFlag = Boolean.TRUE;
+		Date currentDate = currentTime.getTime();
+		if (currentDate.equals(serviceHourStart.getTime()) || currentDate.equals(serviceHourEnd.getTime())
+				|| (currentDate.after(serviceHourStart.getTime()) && currentDate.before(serviceHourEnd.getTime()))) {
+			logger.info("Current Time {} is between {} and {} ", currentDate, serviceHourStart.getTime(),
+					serviceHourEnd.getTime());
+			serviceHourFlag = true;
 		}
+
 		return serviceHourFlag;
 	}
 
