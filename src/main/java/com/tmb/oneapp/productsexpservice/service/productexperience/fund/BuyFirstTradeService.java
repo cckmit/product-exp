@@ -46,6 +46,8 @@ public class BuyFirstTradeService {
             tmbOneServiceResponse.setData(TradeOccupationResponse.builder()
                     .firstTradeFlag(firstTradeResponseBody.getFirstTradeFlag())
                     .requirePosition(occupationInquiryResponseBody.getRequirePosition())
+                    .occupationCode(occupationInquiryResponseBody.getOccupationCode())
+                    .occupationDescription(occupationInquiryResponseBody.getOccupationDescription())
                     .build());
             return tmbOneServiceResponse;
 
