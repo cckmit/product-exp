@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.model.creditcard.CardInstallment;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.*;
 public class CreditCardLogServiceTest {
 
 	KafkaProducerService kafkaProducerService;
+	CreditCardClient creditCardClient;
 	CreditCardLogService logService;
 	CreditCardEvent creditCardEvent;
 	Map headers = new HashMap<>();
@@ -43,7 +45,7 @@ public class CreditCardLogServiceTest {
 		creditCardEvent.setActivityDate("28-03-2021");
 		creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
 		kafkaProducerService = mock(KafkaProducerService.class);
-		logService = new CreditCardLogService( kafkaProducerService);
+		logService = new CreditCardLogService( kafkaProducerService,creditCardClient);
 		headers.put("account-id", "0000000050078360018000167");
 		headers.put("activity-type-id", 00700101);
 		headers.put("x-forward-for", "20.0.0.1");
@@ -229,7 +231,7 @@ public class CreditCardLogServiceTest {
 		
 		response.setCreditCard(getCreditCardModel());
 		installment.add(response);
-		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, installment);
+//		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, installment);
 		assertEquals(false, Arrays.asList(new CreditCardEvent(correlationId, activityDate, activityTypeId)).isEmpty());
 	}
 
