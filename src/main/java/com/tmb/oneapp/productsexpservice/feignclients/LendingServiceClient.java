@@ -28,6 +28,8 @@ import com.tmb.common.model.loan.InstantLoanCreationRequest;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
@@ -209,4 +211,9 @@ public interface LendingServiceClient {
     @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/customerAge")
     ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(HEADER_X_CRM_ID) String crmId);
 
+	@PostMapping(value = "/apis/lending-service/loan/product-orientation")
+	ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> fetchProductOrientation(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody ProductDetailRequest request);
+    
 }
