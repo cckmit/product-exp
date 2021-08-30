@@ -107,7 +107,8 @@ public class NotificationService {
 						customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 				notifyCommon.setAccountId(accountId);
 				notifyCommon.setCrmId(crmId);
-				sendActivationCardEmail(notifyCommon, customerProfileInfo.getEmailAddress());
+				sendActivationCardEmail(notifyCommon, customerProfileInfo.getEmailAddress(),
+						cardInfoResponse.getBody().getCreditCard().getProductId());
 			}
 		}
 	}
@@ -130,7 +131,7 @@ public class NotificationService {
 	 * @param notifyCommon
 	 * @param email
 	 */
-	private void sendActivationCardEmail(NotifyCommon notifyCommon, String email) {
+	private void sendActivationCardEmail(NotifyCommon notifyCommon, String email, String productId) {
 
 		if (StringUtils.isNotBlank(email)) {
 			NotificationRequest notificationRequest = new NotificationRequest();
@@ -151,6 +152,7 @@ public class NotificationService {
 			params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
 			params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
 			params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+			params.put(NotificationConstant.PRODUCT_ID, productId);
 			emailRecord.setParams(params);
 			emailRecord.setLanguage(NotificationConstant.LOCALE_TH);
 			emailRecord.setCrmId(notifyCommon.getCrmId());
@@ -197,7 +199,7 @@ public class NotificationService {
 				notifyCommon.setCrmId(crmId);
 
 				sendNotificationEmailForSetpin(notifyCommon, gobalCallCenter, customerProfileInfo.getEmailAddress(),
-						customerProfileInfo.getPhoneNoFull());
+						customerProfileInfo.getPhoneNoFull(), cardInfoResponse.getBody().getCreditCard().getProductId());
 			}
 		}
 	}
@@ -209,7 +211,7 @@ public class NotificationService {
 	 * @param supportNo
 	 */
 	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String supportNo, String email,
-			String smsNo) {
+			String smsNo, String productId) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 
@@ -224,6 +226,7 @@ public class NotificationService {
 		params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());
 		params.put(NotificationConstant.PRODUCT_NAME_EN, notifyCommon.getProductNameEN());
 		params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
+		params.put(NotificationConstant.PRODUCT_ID, productId);
 		params.put(NotificationConstant.SUPPORT_NO, supportNo);
 		record.setParams(params);
 		record.setLanguage(NotificationConstant.LOCALE_TH);
