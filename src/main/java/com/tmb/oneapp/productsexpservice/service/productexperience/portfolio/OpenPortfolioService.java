@@ -135,8 +135,7 @@ public class OpenPortfolioService {
             accountNickName = dataNode.get("accountName").textValue();
             accountStatus = dataNode.get("accountStatus").textValue();
             accountBalance = dataNode.get("accountBalance").textValue();
-
-            System.out.println(accountNo);
+            
         } catch (JsonProcessingException e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }

@@ -2,7 +2,6 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.customer.accountdetail.request.AccountDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
 import org.springframework.cloud.openfeign.FeignClient;
