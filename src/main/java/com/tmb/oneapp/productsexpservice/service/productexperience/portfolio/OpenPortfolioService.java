@@ -129,13 +129,12 @@ public class OpenPortfolioService {
             ObjectMapper mapper = new ObjectMapper();
             node = mapper.readValue(accountAccountSavingDetail, JsonNode.class);
             JsonNode dataNode = node.get("data");
-            String accountNo = dataNode.get("accountNo").textValue();
             productNameTh = dataNode.get("productNameTh").textValue();
             productNameEn = dataNode.get("productNameEn").textValue();
             accountNickName = dataNode.get("accountName").textValue();
             accountStatus = dataNode.get("accountStatus").textValue();
             accountBalance = dataNode.get("accountBalance").textValue();
-            
+
         } catch (JsonProcessingException e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
         }
