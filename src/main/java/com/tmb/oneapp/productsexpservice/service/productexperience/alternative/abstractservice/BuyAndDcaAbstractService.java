@@ -30,13 +30,9 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
         this.investmentRequestClient = investmentRequestClient;
     }
 
-    protected TmbOneServiceResponse<String> validateBuyAndDca(String correlationId,
-                                                              String crmId,
-                                                              CustomerSearchResponse customerInfo,
-                                                              String processFlag,
-                                                              TmbOneServiceResponse<String> tmbOneServiceResponse,
-                                                              TmbStatus status){
-
+    protected TmbOneServiceResponse<String> validateProcessFlag(String processFlag,
+                                                                TmbOneServiceResponse<String> tmbOneServiceResponse,
+                                                                TmbStatus status){
         // process flag != Y = Can'y By fund
         if(!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(processFlag)){
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode());
@@ -46,8 +42,19 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
             tmbOneServiceResponse.setStatus(status);
             return tmbOneServiceResponse;
         }
+        return tmbOneServiceResponse;
+    }
 
-        tmbOneServiceResponse = validateServiceHourAgeAndRisk(correlationId,customerInfo,tmbOneServiceResponse,status);
+    protected TmbOneServiceResponse<String> validateBuyAndDca(String correlationId,
+                                                              String crmId,
+                                                              CustomerSearchResponse customerInfo,
+                                                              TmbOneServiceResponse<String> tmbOneServiceResponse,
+                                                              TmbStatus status,
+                                                              boolean isBuyFlow,
+                                                              boolean isFirstTrade){
+
+
+        tmbOneServiceResponse = validateServiceHourAgeAndRisk(correlationId,customerInfo,tmbOneServiceResponse,status,isBuyFlow,isFirstTrade);
         if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
             return tmbOneServiceResponse;
         }

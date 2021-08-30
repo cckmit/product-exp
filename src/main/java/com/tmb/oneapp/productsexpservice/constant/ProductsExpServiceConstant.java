@@ -20,6 +20,7 @@ public class ProductsExpServiceConstant {
     /* RESPONSE MESSAGE FORMAT */
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";
+    public static final String SERVICE_IS_NOT_AVAILABLE = "service is not available : {}";
 
     public static final String HEADER_TIMESTAMP = "Timestamp";
     public static final String CONTENT_TYPE = "content-type";
@@ -243,4 +244,7 @@ public class ProductsExpServiceConstant {
     /* INVESTMENT PORTFOLIO TYPE */
     public static final String INVESTMENT_PORTFOLIO_NORMAL_TYPE = "n";
     public static final String INVESTMENT_PORTFOLIO_JOINT_TYPE = "j";
+
+    /* INVESTMENT FIRST TRADE FLAG */
+    public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
 }

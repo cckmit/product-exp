@@ -422,7 +422,7 @@ public class ProductsExpService {
             return fundFactSheetValidationResponse;
         }
 
-        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, tmbStatus);
+        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, tmbStatus,true,false);
         if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());

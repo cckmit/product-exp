@@ -379,20 +379,29 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
-    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status) {
+    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status,boolean isBuyFlow,boolean isFirstTrade) {
         EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
-            String[] values = {"C3"};
+
+            String[] values = new String[2];
+            values[0] = "C3";
+            if(isBuyFlow && isFirstTrade){
+                values[1] = "B3";
+            }
+
             if (Arrays.stream(values).anyMatch(customerRiskLevel.getMaxRiskRM()::equals)) {
                 isCustomerRiskLevelNotValid = true;
             }
+
         }else{
+
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
             status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"));
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
+
         }
 
         if (isCustomerRiskLevelNotValid) {
@@ -408,7 +417,7 @@ public class AlternativeService {
     private EkycRiskCalculateResponse fetchApiculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
         try {
             EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
-            ResponseEntity<TmbOneServiceResponse<EkycRiskCalculateResponse>> customerRiskResponse = customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
+            ResponseEntity<TmbServiceResponse<EkycRiskCalculateResponse>> customerRiskResponse = customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
             return customerRiskResponse.getBody().getData();
         }catch (FeignException feignException){
             if(feignException.status() == HttpStatus.BAD_REQUEST.value()){
@@ -454,6 +463,7 @@ public class AlternativeService {
                 .dobCountry(customerInfo.getNationality())
                 .firstName(customerInfo.getCustomerThaiFirstName())
                 .firstNameEng(customerInfo.getCustomerEnglishFirstName())
+                .incomeSourceCountry(customerInfo.getCountryOfIncome())
                 .lastName(customerInfo.getCustomerThaiLastName())
                 .lastNameEng(customerInfo.getCustomerEnglishLastName())
                 .occupationCode(customerInfo.getOccupationCode())

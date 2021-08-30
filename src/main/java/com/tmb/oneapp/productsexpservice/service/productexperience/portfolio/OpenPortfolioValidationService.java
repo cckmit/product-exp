@@ -80,7 +80,7 @@ public class OpenPortfolioValidationService {
 
             List<DepositAccount> depositAccountList = null;
             if (!openPortfolioValidateRequest.isExistingCustomer()) {
-                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId);
+                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId,false);
             }
 
             validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
@@ -164,7 +164,7 @@ public class OpenPortfolioValidationService {
         }
 
         // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status));
+        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status,false,false));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
             return tmbOneServiceResponse;

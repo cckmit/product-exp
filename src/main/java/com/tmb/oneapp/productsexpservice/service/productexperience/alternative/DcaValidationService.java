@@ -122,7 +122,13 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-            return validateBuyAndDca(correlationId,crmId,customerInfo,processFlag,tmbOneServiceResponse,status);
+
+            tmbOneServiceResponse = validateProcessFlag(processFlag,tmbOneServiceResponse,status);
+            if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+                return tmbOneServiceResponse;
+            }
+
+            return validateBuyAndDca(correlationId,crmId,customerInfo,tmbOneServiceResponse,status,false,false);
 
         } catch (Exception ex) {
             logger.error("error : {}", ex);

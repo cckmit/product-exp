@@ -94,7 +94,7 @@ public class InstallmentRateController {
 		rateReq.setCashTransferFlag(requestBody.getCashTransferFlag());
 		rateReq.setDisbursementDate(requestBody.getDisbursementDate());
 		rateReq.setGetAllDetailFlag(requestBody.getGetAllDetailFlag());
-		rateReq.setGroupAccountId(requestBody.getAccountId().substring(9, requestBody.getAccountId().length()));
+		rateReq.setGroupAccountId(requestBody.getAccountId().substring(0, requestBody.getAccountId().length() - 6));
 		rateReq.setPromoSegment(requestBody.getPromoSegment());
 		return rateReq;
 	}

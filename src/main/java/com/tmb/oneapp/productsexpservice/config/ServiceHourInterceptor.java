@@ -75,7 +75,7 @@ public class ServiceHourInterceptor extends HandlerInterceptorAdapter {
 				request.getHeader(ProductsExpServiceConstant.HEADER_SERVICE_HOUR_MODULE));
 		boolean serviceHours = serviceHourCheck(serviceHourModule);
 		logger.info("Service Hour Interceptor Flag : {} ", serviceHours);
-		if (!serviceHours) {
+		if (serviceHours) {
 			throw new TMBCommonException(ProductsExpServiceConstant.SERVICE_HOUR_ERROR_CODE.toLowerCase(),
 					ProductsExpServiceConstant.SERVICE_HOUR_ERROR_MESSAGE.toLowerCase(),
 					ProductsExpServiceConstant.SERVICE_NAME, HttpStatus.BAD_REQUEST, null);
@@ -115,11 +115,20 @@ public class ServiceHourInterceptor extends HandlerInterceptorAdapter {
 		Calendar serviceHourStart = getCalendarObj(startEndTime.get(0));
 		Calendar serviceHourEnd = getCalendarObj(startEndTime.get(1));
 		Calendar currentTime = getCalendarObj(getCurrentTime());
+
+		if (serviceHourEnd.compareTo(serviceHourStart) < 0) {
+			serviceHourEnd.add(Calendar.DATE, 1);
+			if (!currentTime.after(serviceHourStart))
+				currentTime.add(Calendar.DATE, 1);
+		}
 		Date currentDate = currentTime.getTime();
 		if (currentDate.equals(serviceHourStart.getTime()) || currentDate.equals(serviceHourEnd.getTime())
-				|| (currentDate.after(serviceHourEnd.getTime()) && currentDate.before(serviceHourStart.getTime()))) {
-			serviceHourFlag = Boolean.TRUE;
+				|| (currentDate.after(serviceHourStart.getTime()) && currentDate.before(serviceHourEnd.getTime()))) {
+			logger.info("Current Time {} is between {} and {} ", currentDate, serviceHourStart.getTime(),
+					serviceHourEnd.getTime());
+			serviceHourFlag = true;
 		}
+
 		return serviceHourFlag;
 	}
 

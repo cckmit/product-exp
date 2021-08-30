@@ -2,11 +2,17 @@ package com.tmb.oneapp.productsexpservice.model.response.fundpayment;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DepositAccount {
 
@@ -27,4 +33,5 @@ public class DepositAccount {
     private String accountTypeShort;
 
     private BigDecimal availableBalance;
+
 }
