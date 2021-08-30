@@ -17,10 +17,7 @@ import io.swagger.annotations.Api;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -83,7 +80,7 @@ public class LendingServiceController {
     public ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
-            @RequestBody UploadDocumentRequest request) throws TMBCommonException {
+            @ModelAttribute UploadDocumentRequest request) throws TMBCommonException {
         try {
             return lendingServiceClient.uploadDocument(xCorrelationId, crmId, request);
         } catch (FeignException e) {
