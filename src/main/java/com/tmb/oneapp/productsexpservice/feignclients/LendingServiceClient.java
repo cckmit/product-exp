@@ -13,6 +13,7 @@ import javax.validation.Valid;
 
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -188,7 +189,7 @@ public interface LendingServiceClient {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody UpdateNCBConsentFlagRequest request);
 
-	@PostMapping(value = "/apis/lending-service/document/upload")
+	@PostMapping(value = "/apis/lending-service/document/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@ModelAttribute UploadDocumentRequest request);
