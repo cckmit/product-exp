@@ -13,6 +13,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PersonalDetailResponse {
     private String prefix;
+    private String residentStatus;
     private String citizenId;
     private String engName;
     private String engSurname;
