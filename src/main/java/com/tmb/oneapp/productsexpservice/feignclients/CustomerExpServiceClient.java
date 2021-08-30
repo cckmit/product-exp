@@ -1,11 +1,15 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.customer.accountdetail.request.AccountDetailRequest;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
@@ -29,5 +33,11 @@ public interface CustomerExpServiceClient {
     ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> getCustomerCreditCard(
             @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
             @RequestHeader("X-CRMID") String crmId
+    );
+
+    @PostMapping(value = "/apis/customer/accounts/details")
+    String getAccountDetail(
+            @RequestHeader(value = HEADER_X_CORRELATION_ID) String correlationId,
+            @RequestBody AccountDetailRequest requestBody
     );
 }
