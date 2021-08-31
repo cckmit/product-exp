@@ -8,7 +8,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
 import com.tmb.oneapp.productsexpservice.model.response.loan.ApplyPersonalLoan;
 import com.tmb.oneapp.productsexpservice.model.response.loan.ProductData;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionInstantLoanCalUWService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.service.PersonalLoanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,96 +30,96 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class PersonalLoanControllerTest {
 
-	PersonalLoanController personalLoanController;
+    PersonalLoanController personalLoanController;
 
-	@Mock
+    @Mock
     PersonalLoanService personalLoanService;
-	@Mock
-    LoanSubmissionInstantLoanCalUWService loanCalUWService;
+    @Mock
+    LoanSubmissionOnlineService loanSubmissionOnlineService;
 
-	@BeforeEach
-	void setUp() {
-		MockitoAnnotations.initMocks(this);
-		personalLoanController = new PersonalLoanController(personalLoanService,loanCalUWService);
-	}
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        personalLoanController = new PersonalLoanController(personalLoanService, loanSubmissionOnlineService);
+    }
 
-	@Test
-	public void testCheckPreloadSuccess() {
-		LoanPreloadRequest loadPreloadReq = new LoanPreloadRequest();
-		loadPreloadReq.setProductCode("P");
-		LoanPreloadResponse response = new LoanPreloadResponse();
-		when(personalLoanService.checkPreload(any(), any())).thenReturn(response);
-		personalLoanController.checkPreload("zxx", loadPreloadReq);
-		assertTrue(true);
-	}
+    @Test
+    public void testCheckPreloadSuccess() {
+        LoanPreloadRequest loadPreloadReq = new LoanPreloadRequest();
+        loadPreloadReq.setProductCode("P");
+        LoanPreloadResponse response = new LoanPreloadResponse();
+        when(personalLoanService.checkPreload(any(), any())).thenReturn(response);
+        personalLoanController.checkPreload("zxx", loadPreloadReq);
+        assertTrue(true);
+    }
 
-	@Test
-	public void testCheckPreloadFail() {
-		LoanPreloadRequest loadPreloadReq = new LoanPreloadRequest();
-		loadPreloadReq.setProductCode("P");
-		LoanPreloadResponse response = new LoanPreloadResponse();
-		when(personalLoanService.checkPreload(any(), any())).thenThrow(new IllegalArgumentException());
-		ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> result= personalLoanController.checkPreload("zxx", loadPreloadReq);
-		assertTrue(result.getStatusCode().isError());
-	}
+    @Test
+    public void testCheckPreloadFail() {
+        LoanPreloadRequest loadPreloadReq = new LoanPreloadRequest();
+        loadPreloadReq.setProductCode("P");
+        LoanPreloadResponse response = new LoanPreloadResponse();
+        when(personalLoanService.checkPreload(any(), any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> result = personalLoanController.checkPreload("zxx", loadPreloadReq);
+        assertTrue(result.getStatusCode().isError());
+    }
 
-	@Test
-	public void testCheckCalUWSuccess() throws TMBCommonException {
+    @Test
+    public void testCheckCalUWSuccess() throws TMBCommonException {
         InstantLoanCalUWRequest request = new InstantLoanCalUWRequest();
         request.setCaId(BigDecimal.valueOf(2021052704186761L));
         request.setTriggerFlag("Y");
         request.setProduct("RC01");
 
-		when(loanCalUWService.checkCalculateUnderwriting(request)).thenReturn(any());
+        when(loanSubmissionOnlineService.checkCalculateUnderwriting(request)).thenReturn(any());
 
-		ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = personalLoanController.checkCalUW(request);
-		assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+        ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = personalLoanController.checkCalUW(request);
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
 
-	}
+    }
 
-	@Test
-	public void testCheckCalUWSFail() throws TMBCommonException {
+    @Test
+    public void testCheckCalUWSFail() throws TMBCommonException {
 
         InstantLoanCalUWRequest request = new InstantLoanCalUWRequest();
         request.setCaId(BigDecimal.valueOf(2021052704186775L));
         request.setTriggerFlag("Y");
         request.setProduct("RC01");
 
-		when(loanCalUWService.checkCalculateUnderwriting(request)).thenThrow(new NullPointerException());
+        when(loanSubmissionOnlineService.checkCalculateUnderwriting(request)).thenThrow(new NullPointerException());
 
-		ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = personalLoanController.checkCalUW(request);
-		assertTrue(result.getStatusCode().isError());
-	}
+        ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = personalLoanController.checkCalUW(request);
+        assertTrue(result.getStatusCode().isError());
+    }
 
 
-	@Test
-	public void testGetProductListSuccess() {
-		when(personalLoanService.getProductsLoan()).thenReturn(any());
-		personalLoanController.getProductList();
-		assertTrue(true);
-	}
+    @Test
+    public void testGetProductListSuccess() {
+        when(personalLoanService.getProductsLoan()).thenReturn(any());
+        personalLoanController.getProductList();
+        assertTrue(true);
+    }
 
-	@Test
-	public void testGetProductListFail() {
-		when(personalLoanService.getProductsLoan()).thenThrow(new NullPointerException());
+    @Test
+    public void testGetProductListFail() {
+        when(personalLoanService.getProductsLoan()).thenThrow(new NullPointerException());
 
-		ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> result = personalLoanController.getProductList();
-		assertTrue(result.getStatusCode().isError());
-	}
+        ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> result = personalLoanController.getProductList();
+        assertTrue(result.getStatusCode().isError());
+    }
 
-	@Test
-	public void testGetProductCreditListSuccess() {
-		when(personalLoanService.getProductsCredit()).thenReturn(any());
-		personalLoanController.getProductCreditList();
-		assertTrue(true);
-	}
+    @Test
+    public void testGetProductCreditListSuccess() {
+        when(personalLoanService.getProductsCredit()).thenReturn(any());
+        personalLoanController.getProductCreditList();
+        assertTrue(true);
+    }
 
-	@Test
-	public void testGetProductCreditListFail() {
-		when(personalLoanService.getProductsCredit()).thenThrow(new NullPointerException());
+    @Test
+    public void testGetProductCreditListFail() {
+        when(personalLoanService.getProductsCredit()).thenThrow(new NullPointerException());
 
-		ResponseEntity<TmbOneServiceResponse<List<ProductData>>> result = personalLoanController.getProductCreditList();
-		assertTrue(result.getStatusCode().isError());
-	}
+        ResponseEntity<TmbOneServiceResponse<List<ProductData>>> result = personalLoanController.getProductCreditList();
+        assertTrue(result.getStatusCode().isError());
+    }
 
 }
