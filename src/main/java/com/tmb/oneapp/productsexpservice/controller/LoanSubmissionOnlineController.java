@@ -71,10 +71,7 @@ public class LoanSubmissionOnlineController {
     public ResponseEntity<TmbOneServiceResponse<ResponseApplication>> createApplication(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
                                                                                         @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<ResponseApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-
         try {
             ResponseApplication res = loanSubmissionOnlineService.createApplication(crmId, request);
             oneTmbOneServiceResponse.setData(res);
@@ -82,28 +79,26 @@ public class LoanSubmissionOnlineController {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseHeaders.set(timeStamp, String.valueOf(Instant.now().toEpochMilli()));
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
 
             logger.error("Error while submission create application : {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
 
     @GetMapping(value = "/personalDetail")
     @LogAround
     @ApiOperation("Get Personal Detail")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid PersonalDetailRequest request) {
         TmbOneServiceResponse<PersonalDetailResponse> response = new TmbOneServiceResponse<>();
         try {
-            PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.getPersonalDetailInfo(crmid, request);
+            PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.getPersonalDetailInfo(crmId, request);
             response.setData(personalDetailResponse);
             response.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -281,8 +276,6 @@ public class LoanSubmissionOnlineController {
     @ApiOperation(value = "get customer age")
     public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
         TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
 
             oneTmbOneServiceResponse.setData(loanSubmissionOnlineService.getCustomerAge(crmId));
@@ -290,13 +283,12 @@ public class LoanSubmissionOnlineController {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseHeaders.set(timeStamp, String.valueOf(Instant.now().toEpochMilli()));
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while get customer age: {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
 
