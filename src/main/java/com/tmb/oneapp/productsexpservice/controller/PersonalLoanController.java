@@ -12,7 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.LoanPreloadRequest;
 import com.tmb.oneapp.productsexpservice.model.response.LoanPreloadResponse;
 import com.tmb.oneapp.productsexpservice.model.response.loan.ApplyPersonalLoan;
 import com.tmb.oneapp.productsexpservice.model.response.loan.ProductData;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionInstantLoanCalUWService;
+import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.service.PersonalLoanService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -38,8 +38,7 @@ import java.util.List;
 public class PersonalLoanController {
 
     private final PersonalLoanService personalLoanService;
-    private final LoanSubmissionInstantLoanCalUWService loanCalUWService;
-
+    private final LoanSubmissionOnlineService loanSubmissionOnlineService;
     private static final TMBLogger<ProductsVerifyCvvController> logger = new TMBLogger<>(ProductsVerifyCvvController.class);
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
@@ -71,7 +70,7 @@ public class PersonalLoanController {
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            InstantLoanCalUWResponse instantLoanCalUWResponse = loanCalUWService.checkCalculateUnderwriting(instantLoanCalUWRequest);
+            InstantLoanCalUWResponse instantLoanCalUWResponse = loanSubmissionOnlineService.checkCalculateUnderwriting(instantLoanCalUWRequest);
             oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();

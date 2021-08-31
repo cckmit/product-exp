@@ -1,23 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 
-import java.time.Instant;
-
-import javax.validation.Valid;
-
-import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -26,22 +9,26 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplicati
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
+import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionGetCustomerInformationService;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
-import com.tmb.oneapp.productsexpservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
-import com.tmb.oneapp.productsexpservice.service.WorkingDetailUpdateInfoService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.time.Instant;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,9 +36,6 @@ import lombok.RequiredArgsConstructor;
 @Api(tags = "Loan Submission Online")
 public class LoanSubmissionOnlineController {
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
-    private final LoanSubmissionGetCustomerInformationService loanSubmissionGetCustInfoAppInfoService;
-    private final LoanSubmissionUpdateNCBConsentFlagAndStoreFileService loanSubmissionUpdateNCBConsentFlagAndStoreFileService;
-    private final WorkingDetailUpdateInfoService workingDetailUpdateInfoService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
     private String timeStamp = "Timestamp";
@@ -109,6 +93,58 @@ public class LoanSubmissionOnlineController {
         }
     }
 
+    @GetMapping(value = "/personalDetail")
+    @LogAround
+    @ApiOperation("Get Personal Detail")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
+    public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
+            @Valid PersonalDetailRequest request) {
+        TmbOneServiceResponse<PersonalDetailResponse> response = new TmbOneServiceResponse<>();
+        try {
+            PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.getPersonalDetailInfo(crmid, request);
+            response.setData(personalDetailResponse);
+            response.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            return ResponseEntity.ok()
+                    .headers(TMBUtils.getResponseHeaders())
+                    .body(response);
+        } catch (Exception e) {
+            logger.error("error while get personal detail: {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+    }
+
+    @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    @ApiOperation("Update Personal Detail")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
+    public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> savePersonalDetail(
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
+            @RequestBody PersonalDetailSaveInfoRequest request) {
+        TmbOneServiceResponse<PersonalDetailResponse> response = new TmbOneServiceResponse<>();
+        try {
+            PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.updatePersonalDetailInfo(crmid, request);
+            response.setData(personalDetailResponse);
+            response.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            return ResponseEntity.ok()
+                    .headers(TMBUtils.getResponseHeaders())
+                    .body(response);
+        } catch (Exception e) {
+            logger.error("error while update personal customer detail: {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+    }
+
     @ApiOperation("Get DropdownsLoanSubmissionWorkingDetail Loan Submission Working Detail")
     @GetMapping(value = "/dropdown/workingDetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
@@ -136,6 +172,7 @@ public class LoanSubmissionOnlineController {
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
+
 
     @ApiOperation("Get Loan Submission Working Detail")
     @GetMapping(value = "/workingDetail", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -174,7 +211,7 @@ public class LoanSubmissionOnlineController {
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<ResponseApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            ResponseApplication res = workingDetailUpdateInfoService.updateWorkingDetail(request);
+            ResponseApplication res = loanSubmissionOnlineService.updateWorkingDetail(request);
             oneTmbOneServiceResponse.setData(res);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -200,7 +237,7 @@ public class LoanSubmissionOnlineController {
         TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
+            CustomerInformationResponse customerInfoRes = loanSubmissionOnlineService
                     .getCustomerInformation(correlationId, crmId, request);
             response.setData(customerInfoRes);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
@@ -225,7 +262,7 @@ public class LoanSubmissionOnlineController {
             @Valid @RequestBody UpdateNCBConsentFlagRequest request) {
         TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
         try {
-            CustomerInformationResponse customerInfoRes = loanSubmissionUpdateNCBConsentFlagAndStoreFileService
+            CustomerInformationResponse customerInfoRes = loanSubmissionOnlineService
                     .updateNCBConsentFlagAndStoreFile(correlationId, crmId, request);
             response.setData(customerInfoRes);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
@@ -261,6 +298,29 @@ public class LoanSubmissionOnlineController {
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+    }
+
+    @GetMapping(value = "/documents")
+    @LogAround
+    @ApiOperation("Checklist Document")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
+    public ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
+            @Valid ChecklistRequest request) {
+        TmbOneServiceResponse<List<ChecklistResponse>> response = new TmbOneServiceResponse<>();
+        try {
+            List<ChecklistResponse> checklistResponses = loanSubmissionOnlineService.getDocuments(crmid, request.getCaId());
+            response.setData(checklistResponses);
+            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+        } catch (Exception e) {
+            logger.error("error while get checklist : {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
 
