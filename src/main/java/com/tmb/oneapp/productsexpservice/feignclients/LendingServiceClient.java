@@ -201,14 +201,16 @@ public interface LendingServiceClient {
 
 	@PostMapping(value = "/apis/lending-service/create-instant-loan-application")
 	ResponseEntity<TmbOneServiceResponse<Object>> createInstanceLoanApplication(
-			@RequestHeader Map<String, String> headers, @RequestBody InstantLoanCreationRequest request);
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody InstantLoanCreationRequest request);
 
-    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/customerAge")
-    ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(HEADER_X_CRM_ID) String crmId);
+	@GetMapping(value = "/apis/lending-service/loanOnlineSubmission/customerAge")
+	ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(
+			@RequestHeader(HEADER_X_CRM_ID) String crmId);
 
 	@PostMapping(value = "/apis/lending-service/loan/product-orientation")
 	ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> fetchProductOrientation(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody ProductDetailRequest request);
-    
+
 }
