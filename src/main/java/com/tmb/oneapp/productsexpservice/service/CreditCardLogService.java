@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -109,8 +110,8 @@ public class CreditCardLogService {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-			creditCardEvent.setNewLimit(requestBody.getCurrentCreditLimit());
-			creditCardEvent.setCurrentLimit(requestBody.getPreviousCreditLimit());
+			creditCardEvent.setNewLimit(formateForCurrency(requestBody.getCurrentCreditLimit()));
+			creditCardEvent.setCurrentLimit(formateForCurrency(requestBody.getPreviousCreditLimit()));
 			creditCardEvent.setType(requestBody.getType());
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
@@ -122,6 +123,23 @@ public class CreditCardLogService {
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		return creditCardEvent;
+	}
+
+	/**
+	 * 
+	 * @param moneyString
+	 * @return
+	 */
+	private String formateForCurrency(String moneyString) {
+
+		try {
+			BigDecimal money = new BigDecimal(moneyString);
+			return String.format("%,.2f", money);
+		} catch (Exception e) {
+			logger.error("Invalid money input " + moneyString);
+		}
+
+		return null;
 	}
 
 	/**
@@ -244,7 +262,7 @@ public class CreditCardLogService {
 			}
 		}
 		if (Objects.nonNull(reqInstallmentPlan)) {
-			bf.append(String.format("%,.2f", reqInstallmentPlan.getInterestRate())+"%");
+			bf.append(String.format("%,.2f", reqInstallmentPlan.getInterestRate()) + "%");
 			bf.append(StringUtils.SPACE);
 			bf.append(reqInstallmentPlan.getPaymentTerm());
 			bf.append(StringUtils.SPACE);
