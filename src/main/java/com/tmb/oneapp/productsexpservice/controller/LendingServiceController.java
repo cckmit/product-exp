@@ -74,7 +74,7 @@ public class LendingServiceController {
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
     }
 
-    @PostMapping(value = "/lending/document/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/lending/document/upload", produces = MediaType.APPLICATION_JSON_VALUE, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
