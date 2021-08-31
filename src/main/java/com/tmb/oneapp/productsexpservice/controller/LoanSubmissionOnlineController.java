@@ -122,14 +122,13 @@ public class LoanSubmissionOnlineController {
     @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     @ApiOperation("Update Personal Detail")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> savePersonalDetail(
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @RequestBody PersonalDetailSaveInfoRequest request) {
         TmbOneServiceResponse<PersonalDetailResponse> response = new TmbOneServiceResponse<>();
         try {
-            PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.updatePersonalDetailInfo(crmid, request);
+            PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.updatePersonalDetailInfo(crmId, request);
             response.setData(personalDetailResponse);
             response.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -304,14 +303,13 @@ public class LoanSubmissionOnlineController {
     @GetMapping(value = "/documents")
     @LogAround
     @ApiOperation("Checklist Document")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmid,
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid ChecklistRequest request) {
         TmbOneServiceResponse<List<ChecklistResponse>> response = new TmbOneServiceResponse<>();
         try {
-            List<ChecklistResponse> checklistResponses = loanSubmissionOnlineService.getDocuments(crmid, request.getCaId());
+            List<ChecklistResponse> checklistResponses = loanSubmissionOnlineService.getDocuments(crmId, request.getCaId());
             response.setData(checklistResponses);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
