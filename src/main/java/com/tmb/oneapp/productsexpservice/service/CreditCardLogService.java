@@ -228,11 +228,12 @@ public class CreditCardLogService {
 
 			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
-			creditCardEvent.setAmountMonthlyInstallment(
-					String.format("%,.2f", amountInDouble) + "+" + (String.format("%,.2f", installmentInDouble)));
 
-			creditCardEvent.setTotalAmountTotalIntrest(
-					String.format("%,.2f", interestInDouble) + "+" + String.format("%,.2f", amountPlusTotalInterest));
+			creditCardEvent.setAmountMonthlyInstallment(formateForCurrency(amountInDouble.toString()) + "+"
+					+ formateForCurrency(installmentInDouble.toString()));
+
+			creditCardEvent.setTotalAmountTotalIntrest(formateForCurrency(interestInDouble.toString()) + "+"
+					+ formateForCurrency(amountPlusTotalInterest.toString()));
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
@@ -262,7 +263,7 @@ public class CreditCardLogService {
 			}
 		}
 		if (Objects.nonNull(reqInstallmentPlan)) {
-			bf.append(String.format("%,.2f", reqInstallmentPlan.getInterestRate()) + "%");
+			bf.append(formateForCurrency(reqInstallmentPlan.getInterestRate()) + "%");
 			bf.append(StringUtils.SPACE);
 			bf.append(reqInstallmentPlan.getPaymentTerm());
 			bf.append(StringUtils.SPACE);
