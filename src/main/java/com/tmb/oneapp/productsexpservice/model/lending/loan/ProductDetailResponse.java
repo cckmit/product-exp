@@ -17,6 +17,7 @@ public class ProductDetailResponse {
     private boolean flexiOnly;
     private String contentLink;
     private ProductStatus status;
+    private String flowType;
     private ContinueApplyNextScreen continueApplyNextStep;
     private ContinueApplyParams continueApplyParams;
     private Object productData;

@@ -17,6 +17,7 @@ public class NotificationConstant {
 	public static final String CHANNEL_NAME_TH = "channelNameTH";
 	public static final String CHANNEL_NAME_EN = "channelNameEN";
 	public static final String ACCOUNT_ID = "fromAcctId";
+	public static final String PRODUCT_ID = "productID";
 	public static final String PRODUCT_NAME_TH = "productNameTH";
 	public static final String PRODUCT_NAME_EN = "productNameEN";
 	public static final String LOCALE_TH = "th";
