@@ -10,13 +10,11 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
+import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
-import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import io.swagger.annotations.*;
@@ -308,6 +306,28 @@ public class LoanSubmissionOnlineController {
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
         } catch (Exception e) {
             logger.error("error while get checklist : {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+    }
+
+    @GetMapping(value = "/e-app")
+    @LogAround
+    @ApiOperation("Get E-App Data")
+    public ResponseEntity<TmbOneServiceResponse<List<EAppResponse>>> getEAppData(
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid EAppRequest request) {
+        TmbOneServiceResponse<List<EAppResponse>> response = new TmbOneServiceResponse<>();
+        try {
+            List<EAppResponse> eAppResponses = loanSubmissionOnlineService.getEAppData(crmId, request.getCaId());
+            response.setData(eAppResponses);
+            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+        } catch (Exception e) {
+            logger.error("error while get e-app : {}", e);
             response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
