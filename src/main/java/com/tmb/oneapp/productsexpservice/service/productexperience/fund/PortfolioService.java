@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -47,6 +48,7 @@ public class PortfolioService {
      * @param type
      * @return PortfolioResponse
      */
+    @LogAround
     public PortfolioResponse getPortfolioList(String correlationId, String crmId, String type) {
         List<PortfolioByPort> portfolioByPortList;
         UnitHolder unitHolder = new UnitHolder();

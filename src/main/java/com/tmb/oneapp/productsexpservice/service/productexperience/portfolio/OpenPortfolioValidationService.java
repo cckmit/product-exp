@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -72,6 +73,7 @@ public class OpenPortfolioValidationService {
      * @param correlationId
      * @param openPortfolioValidateRequest
      */
+    @LogAround
     public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, String crmId, OpenPortfolioValidationRequest openPortfolioValidateRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
