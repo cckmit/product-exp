@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -49,6 +50,7 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
      * @param dcaValidationRequest
      * @return TmbOneServiceResponse<DcaInformationDto>
      */
+    @LogAround
     public TmbOneServiceResponse<DcaValidationDto> dcaValidation(String correlationId, String crmId, DcaValidationRequest dcaValidationRequest) {
 
         TmbOneServiceResponse<DcaValidationDto> dcaValidationDtoTmbOneServiceResponse = new TmbOneServiceResponse<>();

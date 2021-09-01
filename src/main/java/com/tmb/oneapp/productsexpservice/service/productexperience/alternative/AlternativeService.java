@@ -92,8 +92,8 @@ public class AlternativeService {
                 List<CommonData> commonDataList = responseCommon.getBody().getData();
                 CommonData commonData = commonDataList.get(0);
                 CommonTime noneServiceHour = commonData.getNoneServiceHour();
-                String startTime = "08:00";
-                String endTime = "20:00";
+                String startTime = noneServiceHour.getStart();
+                String endTime = noneServiceHour.getEnd();
 
                 if (UtilMap.isBusinessClose(startTime, endTime)) {
                     statusWithTime.setCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());

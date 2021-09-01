@@ -20,7 +20,7 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
     protected final InvestmentRequestClient investmentRequestClient;
 
 
-    public BuyAndDcaAbstractService(AlternativeService alternativeService,
+    protected BuyAndDcaAbstractService(AlternativeService alternativeService,
                                     CustomerService customerService,
                                     ProductsExpService productsExpService,
                                     InvestmentRequestClient investmentRequestClient) {
