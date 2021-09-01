@@ -15,6 +15,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -22,6 +23,7 @@ import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import feign.FeignException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,32 +76,43 @@ public class AlternativeService {
      * Method validateServiceHour method  validate working hour for customer
      * @param correlationId
      * @param status
-     * @return TmbStatus
+     * @return TmbStatusWithTime
      */
-    public TmbStatus validateServiceHour(String correlationId, TmbStatus status) {
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = null;
+    public TmbStatusWithTime validateServiceHour(String correlationId, TmbStatus status) {
+        TmbStatusWithTime statusWithTime = new TmbStatusWithTime();
         try {
-            responseCommon = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+            BeanUtils.copyProperties(status,statusWithTime);
+
+            ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = commonServiceClient
+                    .getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
+
             if (!StringUtils.isEmpty(responseCommon)) {
                 List<CommonData> commonDataList = responseCommon.getBody().getData();
                 CommonData commonData = commonDataList.get(0);
                 CommonTime noneServiceHour = commonData.getNoneServiceHour();
-                if (UtilMap.isBusinessClose(noneServiceHour.getStart(), noneServiceHour.getEnd())) {
-                    status.setCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-                    status.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-                    status.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
-                    status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                String startTime = "08:00";
+                String endTime = "20:00";
+
+                if (UtilMap.isBusinessClose(startTime, endTime)) {
+                    statusWithTime.setCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+                    statusWithTime.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+                    statusWithTime.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+                    statusWithTime.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                    statusWithTime.setStartTime(startTime);
+                    statusWithTime.setEndTime(endTime);
                 }
+
             }
-            return status;
+            return statusWithTime;
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
-            status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
-            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-            return status;
+            statusWithTime.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
+            statusWithTime.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            statusWithTime.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+            statusWithTime.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            return statusWithTime;
         }
     }
 

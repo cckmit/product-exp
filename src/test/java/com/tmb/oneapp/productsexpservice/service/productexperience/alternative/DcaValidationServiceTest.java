@@ -9,6 +9,7 @@ import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDt
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.DcaValidationErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
@@ -26,6 +27,7 @@ import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
@@ -73,7 +75,9 @@ public class DcaValidationServiceTest {
 
     private void byPassAllAlternative() {
         TmbStatus successStatus = TmbStatusUtil.successStatus();
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(successStatus);
+        TmbStatusWithTime tmbStatusWithTime = new TmbStatusWithTime();
+        BeanUtils.copyProperties(successStatus,tmbStatusWithTime);
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(tmbStatusWithTime);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(),anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
@@ -252,11 +256,13 @@ public class DcaValidationServiceTest {
     @Test
     public void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
-        TmbStatus status = new TmbStatus();
+        TmbStatusWithTime status = new TmbStatusWithTime();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        status.setStartTime("19:00");
+        status.setEndTime("20:00");
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(status);
 
         // When
@@ -267,6 +273,7 @@ public class DcaValidationServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
                 actual.getStatus().getMessage());
+        assertEquals("19:00-20:00",(actual.getData()));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -15,6 +16,7 @@ import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.BeanUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -53,7 +55,9 @@ public class SellAlternativeServiceTest {
 
     private void byPassAllAlternative(){
         TmbStatus successStatus = TmbStatusUtil.successStatus();
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(successStatus);
+        TmbStatusWithTime tmbStatusWithTime = new TmbStatusWithTime();
+        BeanUtils.copyProperties(successStatus,tmbStatusWithTime);
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(tmbStatusWithTime);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(),anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
@@ -76,11 +80,13 @@ public class SellAlternativeServiceTest {
     public void should_return_failed_validate_service_hour_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
-        TmbStatus status = new TmbStatus();
+        TmbStatusWithTime status = new TmbStatusWithTime();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        status.setStartTime("19:00");
+        status.setEndTime("20:00");
         when(alternativeService.validateServiceHour(any(),any())).thenReturn(status);
 
         // when
@@ -91,6 +97,7 @@ public class SellAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
                 actual.getStatus().getMessage());
+        assertEquals("19:00-20:00",(actual.getData()));
 
     }
 
