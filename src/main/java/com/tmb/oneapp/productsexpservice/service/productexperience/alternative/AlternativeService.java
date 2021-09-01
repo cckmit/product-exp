@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
@@ -78,6 +79,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatusWithTime
      */
+    @LogAround
     public ValidateServiceHourResponse validateServiceHour(String correlationId, TmbStatus status) {
         ValidateServiceHourResponse statusWithTime = new ValidateServiceHourResponse();
         try {
@@ -123,6 +125,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateDateNotOverTwentyYearOld(String birthDate, TmbStatus status) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -157,6 +160,7 @@ public class AlternativeService {
      * @param crmId
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateCASADormant(String correlationId, String crmId,TmbStatus status) {
         try {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
@@ -185,6 +189,7 @@ public class AlternativeService {
      * @param crmId
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateSuitabilityExpired(String correlationId, String crmId,TmbStatus status) {
 
         try {
@@ -213,6 +218,7 @@ public class AlternativeService {
      * @param crmId
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateIdCardExpired(String crmId,TmbStatus status) {
         CompletableFuture<CustGeneralProfileResponse> responseResponseEntity;
         try {
@@ -243,6 +249,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList, TmbStatus status) {
         if (depositAccountList != null) {
             boolean isAccountActiveOnce = false;
@@ -270,6 +277,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status) {
         boolean isFatcaFlagValid = false;
         if (!StringUtils.isEmpty(fatcaFlag) && !fatcaFlag.equals("0")) {
@@ -293,6 +301,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String expireDate, TmbStatus status) {
         boolean isKycAndIdCardExpiredValid = false;
         if ((kycLimitFlag != null && expireDate != null) &&
@@ -311,6 +320,7 @@ public class AlternativeService {
         return status;
     }
 
+    @LogAround
     private boolean isExpiredDateOccurAfterCurrentDate(String expireDate) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -331,6 +341,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status) {
         boolean isAssuranceLevelValid = false;
 
@@ -348,6 +359,7 @@ public class AlternativeService {
         return status;
     }
 
+    @LogAround
     private boolean validateAssuranceLevel(String ekycIdentifyAssuranceLevel) {
         try {
             int ekycIdentifyAssuranceLevelInt = Integer.parseInt(ekycIdentifyAssuranceLevel);
@@ -366,6 +378,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateNationality(String correlationId, String mainNationality, String secondNationality, TmbStatus status) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
                 commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
@@ -392,6 +405,7 @@ public class AlternativeService {
      * @param status
      * @return TmbStatus
      */
+    @LogAround
     public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status,boolean isBuyFlow,boolean isFirstTrade) {
         EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
@@ -427,6 +441,7 @@ public class AlternativeService {
         return status;
     }
 
+    @LogAround
     private EkycRiskCalculateResponse fetchApiculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
         try {
             EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);

@@ -76,6 +76,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
         }
     }
 
+    @LogAround
     private boolean isFirstTrade(String correlationId,AlternativeBuyRequest alternativeBuyRequest) throws TMBCommonException {
         try{
             Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
