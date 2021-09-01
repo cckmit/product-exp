@@ -608,6 +608,7 @@ public class NotificationServiceTest {
 		NotifyCommon notifyCommon = getNotifyCommon();
 		String email = "test@test.com";
 		String phoneNo = "9899776640";
+		String productId = "VTOPBR";
 		SoGoodWrapper soGoodWrapper = new SoGoodWrapper();
 		List<SoGoodItemInfo> items = new ArrayList<>();
 		SoGoodItemInfo soGoodItemInfo = new SoGoodItemInfo();
@@ -628,7 +629,7 @@ public class NotificationServiceTest {
 		notification.setMessage("Success");
 		response.setData(notification);
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(response);
-		notificationService.sendNotifyApplySoGood(notifyCommon, email, phoneNo, soGoodWrapper, totalAmt, "productID");
+		notificationService.sendNotifyApplySoGood(notifyCommon, email, phoneNo, soGoodWrapper, totalAmt, productId);
 		assertNotNull(response);
 	}
 
