@@ -5,9 +5,10 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
+import org.springframework.beans.BeanUtils;
 
 public class ValidateGroupingAbstractService {
 
@@ -39,11 +40,11 @@ public class ValidateGroupingAbstractService {
                                                                   boolean isFirstTrade){
 
         // validate service hour
-        TmbStatusWithTime tmbStatusWithTime = alternativeService.validateServiceHour(correlationId, status);
-        tmbOneServiceResponse.setStatus(tmbStatusWithTime);
+        ValidateServiceHourResponse validateServiceHourResponse = alternativeService.validateServiceHour(correlationId, status);
+        BeanUtils.copyProperties(validateServiceHourResponse,tmbOneServiceResponse.getStatus());
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-            tmbOneServiceResponse.setData(String.format("%s-%s",tmbStatusWithTime.getStartTime(),tmbStatusWithTime.getEndTime()));
+            tmbOneServiceResponse.setData(String.format("%s-%s", validateServiceHourResponse.getStartTime(), validateServiceHourResponse.getEndTime()));
             return tmbOneServiceResponse;
         }
 

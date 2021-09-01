@@ -5,7 +5,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.BuyAlternativeService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -75,12 +76,14 @@ public class BuyValidationControllerTest {
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        TmbStatusWithTime tmbStatus = new TmbStatusWithTime();
-        tmbStatus.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        tmbStatus.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
-        tmbStatus.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+        tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+
+        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
+        validateServiceHourResponse.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+        validateServiceHourResponse.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        validateServiceHourResponse.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+        BeanUtils.copyProperties(validateServiceHourResponse,tmbOneServiceResponse.getStatus());
         tmbOneServiceResponse.setData("19:00-20:00");
-        tmbOneServiceResponse.setStatus(tmbStatus);
         when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
 
         // when

@@ -15,7 +15,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
@@ -78,8 +78,8 @@ public class AlternativeService {
      * @param status
      * @return TmbStatusWithTime
      */
-    public TmbStatusWithTime validateServiceHour(String correlationId, TmbStatus status) {
-        TmbStatusWithTime statusWithTime = new TmbStatusWithTime();
+    public ValidateServiceHourResponse validateServiceHour(String correlationId, TmbStatus status) {
+        ValidateServiceHourResponse statusWithTime = new ValidateServiceHourResponse();
         try {
             BeanUtils.copyProperties(status,statusWithTime);
 

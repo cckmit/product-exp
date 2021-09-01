@@ -6,9 +6,8 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.request.FirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -73,7 +72,7 @@ public class BuyAlternativeServiceTest {
         firstTradeResponse.setData(FirstTradeResponseBody.builder().firstTradeFlag("Y").build());
         when(investmentRequestClient.getFirstTrade(any(),any())).thenReturn(ResponseEntity.ok(firstTradeResponse));
 
-        TmbStatusWithTime statusWithTime = new TmbStatusWithTime();
+        ValidateServiceHourResponse statusWithTime = new ValidateServiceHourResponse();
         BeanUtils.copyProperties(successStatus,statusWithTime);
 
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(statusWithTime);
@@ -121,7 +120,7 @@ public class BuyAlternativeServiceTest {
 
         // given
         byPassAllAlternative();
-        TmbStatusWithTime status = new TmbStatusWithTime();
+        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());

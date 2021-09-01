@@ -9,7 +9,7 @@ import com.tmb.oneapp.productsexpservice.dto.fund.dca.validation.DcaValidationDt
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.enums.DcaValidationErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dcavalidation.DcaValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
@@ -75,9 +75,9 @@ public class DcaValidationServiceTest {
 
     private void byPassAllAlternative() {
         TmbStatus successStatus = TmbStatusUtil.successStatus();
-        TmbStatusWithTime tmbStatusWithTime = new TmbStatusWithTime();
-        BeanUtils.copyProperties(successStatus,tmbStatusWithTime);
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(tmbStatusWithTime);
+        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
+        BeanUtils.copyProperties(successStatus, validateServiceHourResponse);
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(validateServiceHourResponse);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(),anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
@@ -256,7 +256,7 @@ public class DcaValidationServiceTest {
     @Test
     public void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
-        TmbStatusWithTime status = new TmbStatusWithTime();
+        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());

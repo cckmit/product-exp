@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class ValidateOpenPortfolioResponse {
 
     private CustomerInformation customerInformation;
@@ -20,4 +22,6 @@ public class ValidateOpenPortfolioResponse {
     private List<DepositAccount> depositAccountList;
 
     private TermAndConditionResponseBody termsConditions;
+
+    private String serviceHour;
 }

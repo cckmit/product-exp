@@ -11,7 +11,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -461,12 +461,12 @@ public class ProductExpServiceCloseTest {
         return tmbStatus;
     }
 
-    private TmbStatusWithTime mockTmbStatusWithTimeSuccess(String code, String message, String desc) {
-        TmbStatusWithTime tmbStatusWithTime = new TmbStatusWithTime();
-        tmbStatusWithTime.setCode(code);
-        tmbStatusWithTime.setDescription(desc);
-        tmbStatusWithTime.setMessage(message);
-        return tmbStatusWithTime;
+    private ValidateServiceHourResponse mockTmbStatusWithTimeSuccess(String code, String message, String desc) {
+        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
+        validateServiceHourResponse.setCode(code);
+        validateServiceHourResponse.setDescription(desc);
+        validateServiceHourResponse.setMessage(message);
+        return validateServiceHourResponse;
     }
 
     private void mockSuccessAllAlternative() {

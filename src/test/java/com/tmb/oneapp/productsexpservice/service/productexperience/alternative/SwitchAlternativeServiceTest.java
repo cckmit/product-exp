@@ -4,7 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.TmbStatusWithTime;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -55,9 +55,9 @@ public class SwitchAlternativeServiceTest {
 
     private void byPassAllAlternative(){
         TmbStatus successStatus = TmbStatusUtil.successStatus();
-        TmbStatusWithTime tmbStatusWithTime = new TmbStatusWithTime();
-        BeanUtils.copyProperties(successStatus,tmbStatusWithTime);
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(tmbStatusWithTime);
+        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
+        BeanUtils.copyProperties(successStatus, validateServiceHourResponse);
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(validateServiceHourResponse);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(),anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
@@ -80,7 +80,7 @@ public class SwitchAlternativeServiceTest {
     public void should_return_failed_validate_service_hour_when_call_validation_switch_given_correlation_id_and_crm_id_and_alternative_request(){
 
         // given
-        TmbStatusWithTime status = new TmbStatusWithTime();
+        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
