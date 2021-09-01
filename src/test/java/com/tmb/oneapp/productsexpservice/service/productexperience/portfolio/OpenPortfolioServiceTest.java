@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponse;
@@ -31,8 +32,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.respo
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.PortfolioResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +42,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 
@@ -63,13 +61,13 @@ class OpenPortfolioServiceTest {
     private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    private EligibleDepositAccountService eligibleDepositAccountService;
-
-    @Mock
     private InvestmentAsyncService investmentAsyncService;
 
     @Mock
     private OpenPortfolioActivityLogService openPortfolioActivityLogService;
+
+    @Mock
+    private CustomerExpServiceClient customerExpServiceClient;
 
     @Mock
     private OpenPortfolioMapper openPortfolioMapper;
@@ -138,24 +136,8 @@ class OpenPortfolioServiceTest {
                 .existingCustomer(true)
                 .build();
 
-        DepositAccount depositAccount = new DepositAccount();
-        depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
-        depositAccount.setProductNameEN("TMB All Free Account");
-        depositAccount.setAccountNumber("1102416367");
-        depositAccount.setAccountStatus("ACTIVE");
-        depositAccount.setAccountType("S");
-        depositAccount.setAccountTypeShort("SDA");
-        depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
-
-        OccupationInquiryResponseBody occupationInquiry = OccupationInquiryResponseBody.builder()
-                .crmId("00000018592884")
-                .occupationCode("308")
-                .occupationDescription("308 - พนักงานและลูกจ้างบริษัทห้างร้านกิจการอื่นๆ")
-                .positionDescription(null)
-                .requirePosition("Y")
-                .requireUpdate("Y")
-                .build();
-
+        String depositAccountReponse = "{\"status\":{\"code\":\"0000\",\"message\":\"success\",\"service\":\"customers-ex-service\",\"description\":\"success\"},\"data\":{\"accountNo\":\"1112469166\",\"accountType\":\"SDA\",\"accountBalance\":\"0.31\",\"branchNameTh\":\"ถนนติวานนท์\",\"branchNameEn\":\"THANONTIWANON\",\"accountName\":\"NAMETEST\",\"ledgerBalance\":\"0.31\",\"interestRate\":\"0.824193\",\"accruedInterest\":\"0.0\",\"accountStatus\":\"Active|ปกติ(Active)\",\"productNameTh\":\"บัญชีโนฟิกซ์\",\"productNameEn\":\"NoFixedAccount\",\"productCode\":\"221\",\"productBonesRateUrl\":\"https://www.tmbbank.com/accounts/savings/tmb-no-fixed-account.html\",\"accountDetailView\":\"5\",\"iconId\":\"https://storage.googleapis.com/oneapp-vit.appspot.com/product/logo/icon_03.png\",\"linkedAccount\":\"\",\"openingDate\":\"9-2021\"}}";
+        when(customerExpServiceClient.getAccountDetail(any(),any())).thenReturn(depositAccountReponse);
 
         // When
         OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);

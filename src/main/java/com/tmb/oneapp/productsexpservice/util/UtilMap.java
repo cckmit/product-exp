@@ -620,4 +620,30 @@ public class UtilMap {
         }
         return crmId.substring(crmId.length() - ProductsExpServiceConstant.DIGIT_OF_CRM_ID);
     }
+
+    public static String getAccountTypeFromAccountNumber(String accountNumber){
+        int accLength = accountNumber.length();
+        char fouthDigit;
+        String accountType = "";
+
+        if(accLength == 14){
+            fouthDigit = accountNumber.charAt(7);
+        }else{
+            fouthDigit = accountNumber.charAt(3);
+        }
+
+        if(fouthDigit == '2' || fouthDigit == '7' || fouthDigit == '9'){
+            accountType = ProductsExpServiceConstant.ACC_TYPE_SDA; // "SA/SDA"
+        }else if (fouthDigit == '1'){
+            accountType = ProductsExpServiceConstant.ACC_TYPE_DDA; // "CA/DDA"
+        }else if (fouthDigit == '3'){
+            accountType = ProductsExpServiceConstant.ACC_TYPE_CCA; // "TD/CDA"
+        }else if (fouthDigit == '0' || fouthDigit == '5' || fouthDigit == '6'){
+            accountType = ""; // "LOAN"
+        }else{
+            accountType = ""; // "CC"
+        }
+        return accountType;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.response.lending;
+package com.tmb.oneapp.productsexpservice.model.lending.loan;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,7 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanSubmissionGetCustomerAgeResponse {
-    private Long age;
-    private String birthDate;
+public class ContinueApplyParams {
+    private long caId;
+    private String appRefNo;
+    private String titlePage;
 }

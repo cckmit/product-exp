@@ -7,20 +7,14 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
@@ -28,6 +22,8 @@ import com.tmb.common.model.loan.InstantLoanCreationRequest;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
@@ -192,10 +188,10 @@ public interface LendingServiceClient {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody UpdateNCBConsentFlagRequest request);
 
-	@PostMapping(value = "/apis/lending-service/document/upload")
+	@PostMapping(value = "/apis/lending-service/document/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
-			@RequestBody UploadDocumentRequest request);
+			@ModelAttribute UploadDocumentRequest request);
 
 	@PostMapping(value = "/apis/lending-service/loanOnlineSubmission/update-flag-and-store-ncb-consent")
 	ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
@@ -204,9 +200,16 @@ public interface LendingServiceClient {
 
 	@PostMapping(value = "/apis/lending-service/create-instant-loan-application")
 	ResponseEntity<TmbOneServiceResponse<Object>> createInstanceLoanApplication(
-			@RequestHeader Map<String, String> headers, @RequestBody InstantLoanCreationRequest request);
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody InstantLoanCreationRequest request);
 
-    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/customerAge")
-    ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(HEADER_X_CRM_ID) String crmId);
+	@GetMapping(value = "/apis/lending-service/loanOnlineSubmission/customerAge")
+	ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(
+			@RequestHeader(HEADER_X_CRM_ID) String crmId);
+
+	@PostMapping(value = "/apis/lending-service/loan/product-orientation")
+	ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> fetchProductOrientation(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody ProductDetailRequest request);
 
 }

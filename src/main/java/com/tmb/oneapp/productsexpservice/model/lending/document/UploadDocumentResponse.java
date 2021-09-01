@@ -20,7 +20,6 @@ public class UploadDocumentResponse {
 
     @Getter
     @Setter
-    @Builder
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
     public static class Document {
         private String docCode;

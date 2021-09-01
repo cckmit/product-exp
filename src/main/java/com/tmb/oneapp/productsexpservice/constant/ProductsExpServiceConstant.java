@@ -46,6 +46,7 @@ public class ProductsExpServiceConstant {
     public static final String CARD_EXPIRY = "card-expiry";
     public static final String ACC_TYPE_SDA = "SDA";
     public static final String ACC_TYPE_DDA = "DDA";
+    public static final String ACC_TYPE_CCA = "CCA";
     public static final String ACC_TYPE_SAVING = "S";
     public static final String ACC_TYPE_CURRENT = "A";
     public static final String FUND_RULE_TRANS_TYPE = "1";
