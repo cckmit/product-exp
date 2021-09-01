@@ -20,6 +20,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
@@ -718,7 +719,15 @@ public class ProductExpServiceTest {
     }
 
     private void bypassServiceHour() {
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(TmbStatusUtil.successStatus());
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+    }
+
+    private ValidateServiceHourResponse mockTmbStatusWithTimeSuccess(String code, String message, String desc) {
+        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
+        validateServiceHourResponse.setCode(code);
+        validateServiceHourResponse.setDescription(desc);
+        validateServiceHourResponse.setMessage(message);
+        return validateServiceHourResponse;
     }
 
     private void bypassAgeNotOverTwenty() {
@@ -726,7 +735,7 @@ public class ProductExpServiceTest {
     }
 
     private void mockExceptionServiceHour() {
-        TmbStatus status = new TmbStatus();
+        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
         status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
         status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
@@ -735,7 +744,7 @@ public class ProductExpServiceTest {
     }
 
     private void mockIsHourClose() {
-        TmbStatus status = new TmbStatus();
+        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
@@ -851,7 +860,7 @@ public class ProductExpServiceTest {
     }
 
     private void mockSuccessAllAlternative() {
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));

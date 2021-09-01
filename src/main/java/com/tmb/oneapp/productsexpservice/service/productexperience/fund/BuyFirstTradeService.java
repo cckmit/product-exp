@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -30,6 +31,7 @@ public class BuyFirstTradeService {
         this.investmentAsyncService = investmentAsyncService;
     }
 
+    @LogAround
     public TmbOneServiceResponse<TradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest){
         TmbOneServiceResponse<TradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());

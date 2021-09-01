@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
@@ -103,12 +104,14 @@ public class AlternativeServiceTest {
         // Given
         mockNotPassServiceHour();
         // When
-        TmbStatus actual = alternativeService.validateServiceHour(correlationId, TmbStatusUtil.successStatus());
+        ValidateServiceHourResponse actual = alternativeService.validateServiceHour(correlationId, TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(), actual.getMessage());
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc(), actual.getDescription());
+        assertEquals("00:00",actual.getStartTime());
+        assertEquals("00:00",actual.getEndTime());
     }
 
     @Test

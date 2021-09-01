@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
@@ -79,6 +80,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param customerRequest
      */
+    @LogAround
     public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) {
         try {
             openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
@@ -156,6 +158,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param openPortfolioRequestBody
      */
+    @LogAround
     public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
         OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);

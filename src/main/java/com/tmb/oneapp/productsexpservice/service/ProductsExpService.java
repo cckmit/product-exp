@@ -27,6 +27,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.request.CountToBeProcessOrderRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
@@ -545,12 +546,12 @@ public class ProductsExpService {
      * @param tmbStatus
      */
     public FundResponse isServiceHour(String correlationId, TmbStatus tmbStatus) {
-        tmbStatus = alternativeService.validateServiceHour(correlationId, tmbStatus);
+        ValidateServiceHourResponse validateServiceHour = alternativeService.validateServiceHour(correlationId, tmbStatus);
         return FundResponse.builder()
-                .isError(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode()))
-                .errorCode(tmbStatus.getCode())
-                .errorDesc(tmbStatus.getDescription())
-                .errorMsg(tmbStatus.getMessage())
+                .isError(!ProductsExpServiceConstant.SUCCESS_CODE.equals(validateServiceHour.getCode()))
+                .errorCode(validateServiceHour.getCode())
+                .errorDesc(validateServiceHour.getDescription())
+                .errorMsg(validateServiceHour.getMessage())
                 .build();
     }
 
