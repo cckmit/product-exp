@@ -500,8 +500,9 @@ class LoanSubmissionOnlineServiceTest {
         instantLoanCalUWRequest.setCaId(BigDecimal.TEN);
         instantLoanCalUWRequest.setProduct("RC01");
         instantLoanCalUWRequest.setTriggerFlag("Y");
+        instantLoanCalUWRequest.setLoanDay1Set("Y");
 
-        when(lendingServiceClient.checkApprovedStatus(instantLoanCalUWRequest.getCaId(),instantLoanCalUWRequest.getTriggerFlag(),instantLoanCalUWRequest.getProduct())).thenReturn(ResponseEntity.ok(mockCalUW()));
+        when(lendingServiceClient.checkApprovedStatus(instantLoanCalUWRequest.getCaId(),instantLoanCalUWRequest.getTriggerFlag(),instantLoanCalUWRequest.getProduct(),instantLoanCalUWRequest.getLoanDay1Set())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
         InstantLoanCalUWResponse actualResult = loanSubmissionOnlineService.checkCalculateUnderwriting(instantLoanCalUWRequest);
 
@@ -515,12 +516,13 @@ class LoanSubmissionOnlineServiceTest {
         instantLoanCalUWRequest.setCaId(BigDecimal.TEN);
         instantLoanCalUWRequest.setProduct("RC01");
         instantLoanCalUWRequest.setTriggerFlag("Y");
+        instantLoanCalUWRequest.setLoanDay1Set("Y");
 
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneServiceResponse = new TmbOneServiceResponse<InstantLoanCalUWResponse>();
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
                 loanSubmissionOnlineService.checkCalculateUnderwriting(instantLoanCalUWRequest));
@@ -533,9 +535,10 @@ class LoanSubmissionOnlineServiceTest {
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G");
         calUWReq.setTriggerFlag("Y");
+        calUWReq.setLoanDay1Set("Y");
         calUWReq.setCaId(BigDecimal.TEN);
 
-        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(mockCalUW()));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any(),any())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
         InstantLoanCalUWResponse actualResult = loanSubmissionOnlineService.checkCalculateUnderwriting(calUWReq);
 
@@ -548,6 +551,7 @@ class LoanSubmissionOnlineServiceTest {
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G");
+        calUWReq.setLoanDay1Set("Y");
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.TEN);
 
@@ -555,7 +559,7 @@ class LoanSubmissionOnlineServiceTest {
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
                 loanSubmissionOnlineService.checkCalculateUnderwriting(calUWReq));
