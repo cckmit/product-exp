@@ -205,7 +205,7 @@ public class LoanSubmissionOnlineService {
     public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws TMBCommonException {
 
         try {
-            TmbOneServiceResponse<InstantLoanCalUWResponse> responseEntity = lendingServiceClient.checkApprovedStatus(request.getCaId(), request.getTriggerFlag(), request.getProduct()).getBody();
+            TmbOneServiceResponse<InstantLoanCalUWResponse> responseEntity = lendingServiceClient.checkApprovedStatus(request.getCaId(), request.getTriggerFlag(), request.getProduct(), request.getLoanDay1Set()).getBody();
             if (responseEntity.getStatus().getCode().equals("0000")) {
                 return responseEntity.getData();
             }
