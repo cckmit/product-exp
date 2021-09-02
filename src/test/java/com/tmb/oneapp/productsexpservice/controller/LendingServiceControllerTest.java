@@ -2,7 +2,9 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.LoanStagingbarRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import feign.FeignException;
 import feign.Request;
@@ -53,7 +55,7 @@ public class LendingServiceControllerTest {
     void getLoanProductsHandleErrorShouldThrowTMBCommonException() {
         when(lendingServiceClient.getLoanProducts(any(), any())).thenAnswer(invocation -> {
             Map<String, Collection<String>> headers = new HashMap<>();
-            String errorBody = "{\"status\":{\"code\":\"0002\",\"message\":\"Data Not Found\",\"service\":\"lending-service\",\"description\":{\"en\":\"We cannot proceed your request right now. Please contact 1428 for more information. Sorry for the inconvenience.\",\"th\":\"???????????????????? ???????????????????????????? ? ??????  ??????????????? ???. 1428\"}},\"data\":null}\n";
+            String errorBody = "{\"status\":{\"code\":\"0002\",\"message\":\"Data Not Found\",\"service\":\"lending-service\",\"description\":{\"en\":\"We cannot proceed your request right now. Please contact 1428 for more information. Sorry for the inconvenience.\",\"th\":\"ไม่สามารถทำรายการได้ ธนาคารขออภัยในความไม่สะดวกมา ณ ที่นี้  สอบถามเพิ่มเติม โทร.  1428\"}},\"data\":null}\n";
 
             Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
             RequestTemplate template = new RequestTemplate();
@@ -95,5 +97,45 @@ public class LendingServiceControllerTest {
             Assertions.assertEquals("products-exp-service", e.getService());
         }
     }
+    
+	@Test
+	void fetchLoanStagingBarSuccess() throws TMBCommonException {
+		HttpStatus status = HttpStatus.OK;
+		ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> mockResponse = new ResponseEntity<>(status);
+		when(lendingServiceClient.fetchLoanStagingBar(any(), any(), any())).thenReturn(mockResponse);
+		LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient);
+		lendingServiceController.fetchLoanStagingBar("32fbd3b2-3f97-4a89-ar39-b4f628fbc8da",
+				"001100000000000000000018593707",
+				new LoanStagingbarRequest("sub non-waived doc", "apply-personal-loan"));
+		verify(lendingServiceClient, times(1)).fetchLoanStagingBar(any(), any(), any());
+	}
+
+	@Test
+	void fetchLoanStagingBarHandleErrorShouldThrowTMBCommonException() {
+		when(lendingServiceClient.fetchLoanStagingBar(any(), any(), any())).thenAnswer(invocation -> {
+			Map<String, Collection<String>> headers = new HashMap<>();
+			String errorBody = "{\"status\":{\"code\":\"0002\",\"message\":\"Data Not Found\",\"service\":\"lending-service\",\"description\":{\"en\":\"We cannot proceed your request right now. Please contact 1428 for more information. Sorry for the inconvenience.\",\"th\":\"ไม่สามารถทำรายการได้ ธนาคารขออภัยในความไม่สะดวกมา ณ ที่นี้  สอบถามเพิ่มเติม โทร. 1428\"}},\"data\":null}\n";
+
+			Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
+			RequestTemplate template = new RequestTemplate();
+			Request request = Request.create(Request.HttpMethod.POST, "http://localhost", headers, body, template);
+			FeignException.BadRequest e = new FeignException.BadRequest("", request,
+					errorBody.getBytes(StandardCharsets.UTF_8));
+			throw e;
+		});
+		try {
+			LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient);
+			lendingServiceController.fetchLoanStagingBar("32fbd3b2-3f97-4a89-ar39-b4f628fbc8da",
+					"001100000000000000000018593707",
+					new LoanStagingbarRequest("sub non-waived doc", "apply-personal-loan"));
+			fail("Should get exception");
+		} catch (TMBCommonException e) {
+			Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatus().value());
+			Assertions.assertEquals("0002", e.getErrorCode());
+			Assertions.assertEquals("lending-service", e.getService());
+			Assertions.assertEquals("Data Not Found", e.getErrorMessage());
+		}
+
+	}
 
 }

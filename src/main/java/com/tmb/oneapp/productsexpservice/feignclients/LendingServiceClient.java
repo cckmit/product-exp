@@ -3,8 +3,10 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
+import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.LoanStagingbarRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
@@ -208,5 +210,10 @@ public interface LendingServiceClient {
 	ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> fetchProductOrientation(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody ProductDetailRequest request);
+	
+	@PostMapping(value = "/apis/lending-service/loan/get-staging-bar")
+	ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> fetchLoanStagingBar(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody LoanStagingbarRequest request);
 
 }

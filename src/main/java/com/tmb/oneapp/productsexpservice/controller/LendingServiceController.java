@@ -3,10 +3,12 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.LoanStagingbarRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
@@ -115,6 +117,26 @@ public class LendingServiceController {
 			if (response != null && response.getStatus() != null) {
 				logger.info(
 						"Error while calling POST /apis/lending-service/loan/product-orientation. crmId: {}, code:{}, errMsg:{}",
+						crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+				throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
+						response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+			}
+		}
+		throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+				ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+	}
+	
+	@PostMapping(value = "/lending/loan/get-staging-bar", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> fetchLoanStagingBar(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody LoanStagingbarRequest request) throws TMBCommonException {
+		try {
+			return lendingServiceClient.fetchLoanStagingBar(xCorrelationId, crmId, request);
+		} catch (FeignException e) {
+			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+			if (response != null && response.getStatus() != null) {
+				logger.info(
+						"Error while calling POST /apis/lending-service/loan/get-staging-bar crmId: {}, code:{}, errMsg:{}",
 						crmId, response.getStatus().getCode(), response.getStatus().getMessage());
 				throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
 						response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
