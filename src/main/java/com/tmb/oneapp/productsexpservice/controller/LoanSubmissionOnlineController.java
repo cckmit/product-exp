@@ -315,13 +315,13 @@ public class LoanSubmissionOnlineController {
     @GetMapping(value = "/e-app")
     @LogAround
     @ApiOperation("Get E-App Data")
-    public ResponseEntity<TmbOneServiceResponse<List<EAppResponse>>> getEAppData(
+    public ResponseEntity<TmbOneServiceResponse<EAppResponse>> getEAppData(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid EAppRequest request) {
-        TmbOneServiceResponse<List<EAppResponse>> response = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<EAppResponse> response = new TmbOneServiceResponse<>();
         try {
-            List<EAppResponse> eAppResponses = loanSubmissionOnlineService.getEAppData(crmId, request.getCaId());
+            EAppResponse eAppResponses = loanSubmissionOnlineService.getEAppData(crmId, request.getCaId());
             response.setData(eAppResponses);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

@@ -8,13 +8,11 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
+import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
-import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import org.junit.Assert;
@@ -79,6 +77,28 @@ class LoanSubmissionOnlineControllerTest {
     public void testCreateApplicationFail() throws TMBCommonException {
         when(loanSubmissionOnlineService.createApplication(any(), any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+
+    @Test
+    public void testGetEAppSuccess() throws TMBCommonException {
+        EAppRequest request = new EAppRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        EAppResponse response = new EAppResponse();
+        when(loanSubmissionOnlineService.getEAppData(any(),anyLong())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<EAppResponse>> responseEntity = loanSubmissionOnlineController.getEAppData(crmid,request);
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void tesGetEAppFail() throws TMBCommonException {
+        EAppRequest request = new EAppRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        when(loanSubmissionOnlineService.getEAppData(any(),anyLong())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<EAppResponse>> responseEntity = loanSubmissionOnlineController.getEAppData(crmid,request);
         assertTrue(responseEntity.getStatusCode().isError());
     }
 

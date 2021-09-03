@@ -1,21 +1,5 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_CITIZEN_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_MOBILE_NO;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.validation.Valid;
-
-import com.tmb.oneapp.productsexpservice.model.response.lending.*;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
@@ -33,8 +17,19 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailR
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.List;
+
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.*;
 
 /**
  * LendingServiceClient to retrieve lending data
@@ -213,6 +208,6 @@ public interface LendingServiceClient {
 			@RequestBody ProductDetailRequest request);
 
 	@GetMapping(value = "/apis/lending-service/loanOnlineSubmission/e-app")
-	ResponseEntity<TmbOneServiceResponse<List<EAppResponse>>> getEApp(
+	ResponseEntity<TmbOneServiceResponse<EAppResponse>> getEApp(
 			@RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestParam(value = "caId") Long caId);
 }
