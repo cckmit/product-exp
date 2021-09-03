@@ -15,6 +15,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
+import com.tmb.oneapp.productsexpservice.model.request.FetchWorkInfoReq;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.service.CustomerProfileService;
 
@@ -54,13 +55,13 @@ public class CustomerServiceControllerTest {
 		when(lendingServiceClient.getWorkStatusInfo(any())).thenReturn(ResponseEntity.ok(body));
 		TmbOneServiceResponse<List<Province>> provinces = new TmbOneServiceResponse();
 		when(commonServiceClient.searchAddressByField(any())).thenReturn(ResponseEntity.ok(provinces));
-
+		FetchWorkInfoReq req = new FetchWorkInfoReq();
 		customerServiceController.getIndividualProfileInfo(new HashedMap<String, String>());
 		customerServiceController.getCountryDependency(new HashedMap<String, String>());
 		customerServiceController.getCountryIncomeSourceDependency("TH", new HashedMap<String, String>());
 		customerServiceController.getWorkingDependencyBusinessType(new HashedMap<String, String>());
 		customerServiceController.getWorkingDependencyByOccupationCode("02", new HashedMap<String, String>());
-		customerServiceController.getWorkingInformation(new HashedMap<String, String>());
+		customerServiceController.getWorkingInformation(new HashedMap<String, String>(),req);
 		customerServiceController.getWorkingStatusDependency(new HashedMap<String, String>());
 		customerServiceController.getZipcodeInfo("10800", new HashedMap<String, String>());
 		assertTrue(true);
