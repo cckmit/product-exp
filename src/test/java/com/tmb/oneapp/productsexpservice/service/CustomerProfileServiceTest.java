@@ -27,6 +27,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetCustomerInfoClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstantGetEligibleProductClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
+import com.tmb.oneapp.productsexpservice.model.request.FetchWorkInfoReq;
 import com.tmb.oneapp.productsexpservice.model.response.DependDefaultEntry;
 import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoResponse;
@@ -223,6 +224,7 @@ public class CustomerProfileServiceTest {
 		List<InstantCreditCard> instantCreditCards = new ArrayList<>();
 		InstantCreditCard card = new InstantCreditCard();
 		card.setSourceOfData("1");
+		card.setProductType("200");
 		instantCreditCards.add(card);
 		bodys.setInstantCreditCard(instantCreditCards.toArray(new InstantCreditCard[0]));
 		
@@ -231,9 +233,11 @@ public class CustomerProfileServiceTest {
 		
 		when(lendingServiceClient.getWorkInformationWithProfile(any(), any(), any(), any()))
 				.thenReturn(ResponseEntity.ok(workProfileRes));
+		FetchWorkInfoReq req = new FetchWorkInfoReq();
+		req.setProductCode("200");
 		try {
 			WorkingInfoResponse responseWorkingProfile = customerProfileService
-					.getWorkingInformation("001100000000000000000018593707", "dxsd");
+					.getWorkingInformation("001100000000000000000018593707", "dxsd",req);
 		} catch (RemoteException | ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

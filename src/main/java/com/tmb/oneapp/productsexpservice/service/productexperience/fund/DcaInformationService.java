@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -52,6 +53,7 @@ public class DcaInformationService {
      * @param crmId
      * @return TmbOneServiceResponse<DcaInformationDto>
      */
+    @LogAround
     public TmbOneServiceResponse<DcaInformationDto> getDcaInformation(String correlationId, String crmId) {
 
         TmbOneServiceResponse<DcaInformationDto> dcaInformationDto = new TmbOneServiceResponse<>();

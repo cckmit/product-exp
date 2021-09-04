@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.alternative;
 
 import com.tmb.common.logger.LogAround;
-import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
@@ -22,8 +21,6 @@ import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatu
 @RequestMapping("/funds")
 @RestController
 public class BuyValidationController {
-
-    private static final TMBLogger<BuyValidationController> logger = new TMBLogger<>(BuyValidationController.class);
 
     private final BuyAlternativeService buyAlternativeService;
 

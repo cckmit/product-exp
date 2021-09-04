@@ -3,22 +3,28 @@ package com.tmb.oneapp.productsexpservice.service;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.CardInstallment;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +35,7 @@ public class CreditCardLogService {
 	@Value("${com.tmb.oneapp.service.activity.topic.name}")
 	private String topicName = "activity";
 	private KafkaProducerService kafkaProducerService;
+	private CreditCardClient creditCardClient;
 
 	/**
 	 * constructor
@@ -36,8 +43,9 @@ public class CreditCardLogService {
 	 * @param topicName
 	 * @param kafkaProducerService
 	 */
-	public CreditCardLogService(KafkaProducerService kafkaProducerService) {
+	public CreditCardLogService(KafkaProducerService kafkaProducerService, CreditCardClient creditCardClient) {
 		this.kafkaProducerService = kafkaProducerService;
+		this.creditCardClient = creditCardClient;
 	}
 
 	/**
@@ -102,8 +110,8 @@ public class CreditCardLogService {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-			creditCardEvent.setNewLimit(requestBody.getCurrentCreditLimit());
-			creditCardEvent.setCurrentLimit(requestBody.getPreviousCreditLimit());
+			creditCardEvent.setNewLimit(formateForCurrency(requestBody.getCurrentCreditLimit()));
+			creditCardEvent.setCurrentLimit(formateForCurrency(requestBody.getPreviousCreditLimit()));
 			creditCardEvent.setType(requestBody.getType());
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
@@ -115,6 +123,23 @@ public class CreditCardLogService {
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		return creditCardEvent;
+	}
+
+	/**
+	 * 
+	 * @param moneyString
+	 * @return
+	 */
+	private String formateForCurrency(String moneyString) {
+
+		try {
+			BigDecimal money = new BigDecimal(moneyString);
+			return String.format("%,.2f", money);
+		} catch (Exception e) {
+			logger.error("Invalid money input " + moneyString);
+		}
+
+		return null;
 	}
 
 	/**
@@ -192,7 +217,7 @@ public class CreditCardLogService {
 		populateBaseEvents(creditCardEvent, reqHeader);
 		if (Objects.nonNull(e.getStatus()) && "0".equals(e.getStatus().getStatusCode())) {
 			CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
-			creditCardEvent.setPlan(cardInstallment.getPromotionModelNo());
+			creditCardEvent.setPlan(converPlan(cardInstallment, correlationId));
 			creditCardEvent.setTransactionDescription(cardInstallment.getTransactionDescription());
 
 			Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
@@ -203,11 +228,12 @@ public class CreditCardLogService {
 
 			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
-			creditCardEvent.setAmountMonthlyInstallment(
-					String.format("%,.2f", amountInDouble) + "+" + (String.format("%,.2f", installmentInDouble)));
 
-			creditCardEvent.setTotalAmountTotalIntrest(String.format("%,.2f", interestInDouble) + "+"
-					+ String.format("%,.2f", amountPlusTotalInterest));
+			creditCardEvent.setAmountMonthlyInstallment(formateForCurrency(amountInDouble.toString()) + "+"
+					+ formateForCurrency(installmentInDouble.toString()));
+
+			creditCardEvent.setTotalAmountTotalIntrest(formateForCurrency(interestInDouble.toString()) + "+"
+					+ formateForCurrency(amountPlusTotalInterest.toString()));
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
@@ -216,6 +242,35 @@ public class CreditCardLogService {
 		}
 		logActivity(creditCardEvent);
 
+	}
+
+	/**
+	 * Generate format plan
+	 * 
+	 * @param cardInstallment
+	 * @param correlationId
+	 * @return
+	 */
+	private String converPlan(CardInstallment cardInstallment, String correlationId) {
+		StringBuffer bf = new StringBuffer();
+		ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> responseInstallments = creditCardClient
+				.getInstallmentPlan(correlationId);
+		List<InstallmentPlan> installmentPlans = responseInstallments.getBody().getData();
+		InstallmentPlan reqInstallmentPlan = null;
+		for (InstallmentPlan installmentplan : installmentPlans) {
+			if (installmentplan.getInstallmentsPlan().equals(cardInstallment.getPromotionModelNo())) {
+				reqInstallmentPlan = installmentplan;
+			}
+		}
+		if (Objects.nonNull(reqInstallmentPlan)) {
+			bf.append(formateForCurrency(reqInstallmentPlan.getInterestRate()) + "%");
+			bf.append(StringUtils.SPACE);
+			bf.append(reqInstallmentPlan.getPaymentTerm());
+			bf.append(StringUtils.SPACE);
+			bf.append("Months");
+		}
+
+		return bf.toString();
 	}
 
 	/**

@@ -1,12 +1,16 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
-import feign.FeignException;
-import feign.Request;
-import feign.RequestTemplate;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,14 +21,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
 
 @RunWith(JUnit4.class)
 public class LendingServiceControllerTest {
@@ -53,7 +57,7 @@ public class LendingServiceControllerTest {
     void getLoanProductsHandleErrorShouldThrowTMBCommonException() {
         when(lendingServiceClient.getLoanProducts(any(), any())).thenAnswer(invocation -> {
             Map<String, Collection<String>> headers = new HashMap<>();
-            String errorBody = "{\"status\":{\"code\":\"0002\",\"message\":\"Data Not Found\",\"service\":\"lending-service\",\"description\":{\"en\":\"We cannot proceed your request right now. Please contact 1428 for more information. Sorry for the inconvenience.\",\"th\":\"???????????????????? ???????????????????????????? ? ??????  ??????????????? ???. 1428\"}},\"data\":null}\n";
+            String errorBody = "{\"status\":{\"code\":\"0002\",\"message\":\"Data Not Found\",\"service\":\"lending-service\",\"description\":{\"en\":\"We cannot proceed your request right now. Please contact 1428 for more information. Sorry for the inconvenience.\",\"th\":\"ไม่สามารถทำรายการได้ ธนาคารขออภัยในความไม่สะดวกมา ณ ที่นี้  สอบถามเพิ่มเติม โทร.  1428\"}},\"data\":null}\n";
 
             Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
             RequestTemplate template = new RequestTemplate();
@@ -95,5 +99,5 @@ public class LendingServiceControllerTest {
             Assertions.assertEquals("products-exp-service", e.getService());
         }
     }
-
+    
 }

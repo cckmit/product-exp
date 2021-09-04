@@ -2,9 +2,11 @@ package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.*;
 import com.tmb.common.model.address.Province;
+import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.LoanStagingbarRequest;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
 import com.tmb.oneapp.productsexpservice.model.response.NodeDetails;
 import io.swagger.annotations.ApiOperation;
@@ -58,5 +60,11 @@ public interface CommonServiceClient {
 	ResponseEntity<TmbOneServiceResponse<TermAndConditionResponseBody>> getTermAndConditionByServiceCodeAndChannel(
 			@RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
 			@PathVariable("serviceCode") String serviceCode, @PathVariable("channel") String channel);
+
+	@PostMapping(value = "/apis/common/fetch/staging-bar")
+	TmbOneServiceResponse<LoanStagingbar> fetchLoanStagingBar(
+			@RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+			@RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+			@RequestBody(required = true) LoanStagingbarRequest request);
 
 }

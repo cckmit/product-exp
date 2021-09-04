@@ -1,11 +1,17 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
+import com.tmb.oneapp.productsexpservice.model.customer.accountdetail.request.AccountDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.purpose.response.AccountPurposeResponseBody;
@@ -28,7 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,16 +56,22 @@ public class OpenPortfolioService {
 
     private OpenPortfolioMapper openPortfolioMapper;
 
+    private CustomerExpServiceClient customerExpServiceClient;
+
     @Autowired
     public OpenPortfolioService(
             InvestmentRequestClient investmentRequestClient,
             InvestmentAsyncService investmentAsyncService,
             OpenPortfolioActivityLogService openPortfolioActivityLogService,
-            OpenPortfolioMapper openPortfolioMapper) {
+            OpenPortfolioMapper openPortfolioMapper,
+            CustomerExpServiceClient customerExpServiceClient) {
+
         this.investmentRequestClient = investmentRequestClient;
         this.investmentAsyncService = investmentAsyncService;
         this.openPortfolioActivityLogService = openPortfolioActivityLogService;
         this.openPortfolioMapper = openPortfolioMapper;
+        this.customerExpServiceClient = customerExpServiceClient;
+
     }
 
     /**
@@ -66,6 +80,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param customerRequest
      */
+    @LogAround
     public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) {
         try {
             openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
@@ -79,7 +94,7 @@ public class OpenPortfolioService {
 
                 DepositAccount depositAccount = null;
                 if (customerRequest.isExistingCustomer()) {
-                    depositAccount = getDepositAccountForExisitngCustomer(investmentRequestHeader, crmId);
+                    depositAccount = getDepositAccountForExisitngCustomer(correlationId,investmentRequestHeader, crmId);
                 }
 
                 return OpenPortfolioValidationResponse.builder()
@@ -94,14 +109,46 @@ public class OpenPortfolioService {
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(Map<String, String> investmentRequestHeader,  String crmId)  {
+    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId,Map<String, String> investmentRequestHeader,  String crmId)  {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
+        String accountNumber = accountRedeem.getAccountRedeem();
+        String accountType = UtilMap.getAccountTypeFromAccountNumber(accountNumber);
+        String accountAccountSavingDetail = customerExpServiceClient.getAccountDetail(
+                correlationId, AccountDetailRequest.builder()
+                        .accountNo(accountNumber)
+                        .accountType(accountType)
+                        .build());
+
+        String productNameTh = "";
+        String productNameEn = "";
+        String accountNickName = "";
+        String accountStatus = "";
+        String accountBalance = "";
+
+        try {
+            JsonNode node;
+            ObjectMapper mapper = new ObjectMapper();
+            node = mapper.readValue(accountAccountSavingDetail, JsonNode.class);
+            JsonNode dataNode = node.get("data");
+            productNameTh = dataNode.get("productNameTh").textValue();
+            productNameEn = dataNode.get("productNameEn").textValue();
+            accountNickName = dataNode.get("accountName").textValue();
+            accountStatus = dataNode.get("accountStatus").textValue();
+            accountBalance = dataNode.get("accountBalance").textValue();
+
+        } catch (JsonProcessingException e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+        }
+
          return DepositAccount.builder()
-                 .accountNumber(accountRedeem.getAccountRedeem())
-                 .productNickname("My Nickname")
-                 .productNameTH("Thai Name Account")
-                 .productNameEN("Eng name Account")
+                 .accountNumber(accountNumber)
+                 .accountType(accountType)
+                 .accountStatus(accountStatus)
+                 .availableBalance(StringUtils.isEmpty(accountBalance)? null : new BigDecimal(accountBalance))
+                 .productNickname(accountNickName)
+                 .productNameTH(productNameTh)
+                 .productNameEN(productNameEn)
                  .build();
     }
 
@@ -111,6 +158,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param openPortfolioRequestBody
      */
+    @LogAround
     public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
         OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);

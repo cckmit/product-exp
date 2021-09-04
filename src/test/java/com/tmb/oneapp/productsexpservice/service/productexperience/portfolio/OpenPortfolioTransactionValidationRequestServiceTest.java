@@ -14,6 +14,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInformationMapper;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponse;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioValidationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.CustomerInformation;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -209,20 +211,23 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
     @Test
     void should_return_status_code_2000001_when_call_validateOpenPortfolioService_validate_service_hour() throws Exception {
         // Given
-        ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(true).build();
         mockCustomerResponse(null);
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(
-                mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc()));
+        ValidateServiceHourResponse tmbStatus = new ValidateServiceHourResponse();
+        tmbStatus.setCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
+        tmbStatus.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
+        tmbStatus.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        tmbStatus.setStartTime("19:00");
+        tmbStatus.setEndTime("20:00");
+
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(tmbStatus);
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, openPortfolioValidationRequest);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getStatus().getCode());
-        assertNull(actual.getData());
+        assertEquals("19:00-20:00",actual.getData().getServiceHour());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -243,8 +248,15 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getStatus().getCode());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+    }
+
+    private ValidateServiceHourResponse mockTmbStatusWithTimeSuccess(String code, String message, String desc) {
+        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
+        validateServiceHourResponse.setCode(code);
+        validateServiceHourResponse.setDescription(desc);
+        validateServiceHourResponse.setMessage(message);
+        return validateServiceHourResponse;
     }
 
     private TmbStatus mockTmbStatusError(String code,String message,String desc) {
@@ -283,7 +295,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(), actual.getStatus().getCode());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -318,7 +329,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getStatus().getMessage());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -352,7 +362,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(), actual.getStatus().getMessage());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -387,7 +396,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(), actual.getStatus().getMessage());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -422,7 +430,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(), actual.getStatus().getMessage());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -455,7 +462,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getStatus().getMessage());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -488,12 +494,11 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getStatus().getMessage());
-        assertNull(actual.getData());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
     private void mockSuccessAllAlternative(){
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));

@@ -12,10 +12,9 @@ import java.math.BigDecimal;
 public class InstantLoanCalUWRequest {
     @NotNull
     private BigDecimal caId;
-
     @NotEmpty
     private String triggerFlag;
-
     @NotEmpty
     private String product;
+    private String loanDay1Set;
 }
