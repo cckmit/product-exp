@@ -6,6 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.TmbOneServiceErrorResponse;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.nio.ByteBuffer;
@@ -82,11 +82,9 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
             @ApiParam(value = HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
-            @ApiParam(value = "file", required = true) @Valid @RequestPart MultipartFile file,
-            @ApiParam(value = "caId", required = true) @Valid @RequestPart String caId,
-            @ApiParam(value = "docCode", required = true) @Valid @RequestPart String docCode) throws TMBCommonException {
+            @Valid @RequestBody UploadDocumentRequest request) throws TMBCommonException {
         try {
-            return lendingServiceClient.uploadDocument(xCorrelationId, crmId, file, caId, docCode);
+            return lendingServiceClient.uploadDocument(xCorrelationId, crmId, request);
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
