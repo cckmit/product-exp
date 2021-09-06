@@ -36,7 +36,7 @@ public class ProductsExpServiceConstant {
     public static final String FAILED_MESSAGE = "failed";
     public static final String DATA_NOT_FOUND_CODE = "0009";
     public static final String DATA_NOT_FOUND_MESSAGE = "DATA NOT FOUND";
-    public static final String EXCEPTION_OCCURED = "Exception occured : {}";
+    public static final String EXCEPTION_OCCURRED = "Exception occurred : {}";
 
     public static final int ZERO = 0;
     public static final String STRING_ZERO = "0";
@@ -52,9 +52,9 @@ public class ProductsExpServiceConstant {
     public static final String FUND_RULE_TRANS_TYPE = "1";
 
     /* DATETIME FORMAT */
-    public static final String MF_TIME_HHMM = "HHmm";
-    public static final String MF_TIME_WITH_COLON_HHMM = "HH:mm";
-    public static final String MF_DATE_YYYYMMDD = "yyyy-MM-dd";
+    public static final String MF_TIME_HH_MM = "HHmm";
+    public static final String MF_TIME_WITH_COLON_HH_MM = "HH:mm";
+    public static final String MF_DATE_YYYY_MM_DD = "yyyy-MM-dd";
     public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String HP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
@@ -170,7 +170,7 @@ public class ProductsExpServiceConstant {
     public static final String PTES_PORT_FOLIO_FLAG = "2";
     public static final String TRANSACTION_DATE = "transaction_date";
 
-    public static final String FATCA_FLAG = "fatca_flag";
+    public static final String FAT_CA_FLAG = "fatca_flag";
 
     /* Channel */
     public static final String CHANNEL_MOBILE_BANKING = "mb";

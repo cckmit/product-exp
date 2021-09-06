@@ -84,7 +84,7 @@ public class OpenPortfolioValidationService {
 
             List<DepositAccount> depositAccountList = null;
             if (!openPortfolioValidateRequest.isExistingCustomer()) {
-                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId,false);
+                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId, false);
             }
 
             validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
@@ -102,7 +102,7 @@ public class OpenPortfolioValidationService {
             mappingOpenPortFolioValidationResponse(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
             return tmbOneServiceResponse;
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
             return tmbOneServiceResponse;
@@ -122,7 +122,7 @@ public class OpenPortfolioValidationService {
 
         // validate service hour
         ValidateServiceHourResponse validateServiceHourResponse = alternativeService.validateServiceHour(correlationId, status);
-        BeanUtils.copyProperties(validateServiceHourResponse,tmbOneServiceResponse.getStatus());
+        BeanUtils.copyProperties(validateServiceHourResponse, tmbOneServiceResponse.getStatus());
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             tmbOneServiceResponse.getData().setServiceHour(String.format("%s-%s", validateServiceHourResponse.getStartTime(), validateServiceHourResponse.getEndTime()));
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
@@ -172,7 +172,7 @@ public class OpenPortfolioValidationService {
         }
 
         // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status,false,false));
+        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, status, false, false));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
             return tmbOneServiceResponse;

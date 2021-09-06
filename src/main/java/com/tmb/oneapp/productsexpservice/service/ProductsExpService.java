@@ -141,7 +141,7 @@ public class ProductsExpService {
             StatementResponse statementResponse = fetchStmtByPort.get();
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
         return fundAccountResponse;
@@ -185,7 +185,7 @@ public class ProductsExpService {
             }
             return result;
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
     }
@@ -310,7 +310,7 @@ public class ProductsExpService {
             UtilMap map = new UtilMap();
             fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp);
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
         return fundPaymentDetailResponse;
@@ -423,7 +423,7 @@ public class ProductsExpService {
             return fundFactSheetValidationResponse;
         }
 
-        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, tmbStatus,true,false);
+        tmbStatus = alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, tmbStatus, true, false);
         if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
             fundFactSheetValidationResponse.setError(isNotValid);
             fundFactSheetValidationResponse.setErrorCode(tmbStatus.getCode());
@@ -569,7 +569,7 @@ public class ProductsExpService {
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             return UtilMap.isCASADormant(responseCustomerExp);
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             return true;
         }
     }
@@ -588,7 +588,7 @@ public class ProductsExpService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
             return UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             return true;
         }
     }
@@ -606,9 +606,9 @@ public class ProductsExpService {
             CompletableFuture.allOf(responseResponseEntity);
             CustGeneralProfileResponse responseData = responseResponseEntity.get();
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
-            return UtilMap.isCustIDExpired(responseData);
+            return UtilMap.isCustIdExpired(responseData);
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             return true;
         }
     }
@@ -643,7 +643,7 @@ public class ProductsExpService {
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
             return listFund;
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return listFund;
         }
     }
@@ -673,7 +673,7 @@ public class ProductsExpService {
                             .build());
             return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
     }

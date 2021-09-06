@@ -140,7 +140,7 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
-            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp,true));
+            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp, true));
             return fundPaymentDetailResponse;
         }
     }
@@ -152,7 +152,7 @@ public class UtilMap {
      * @param responseCustomerExp
      * @return FundPaymentDetailRs
      */
-    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp,boolean isBuyAccount) {
+    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp, boolean isBuyAccount) {
         List<DepositAccount> depositAccountList = new ArrayList<>();
 
         try {
@@ -164,9 +164,9 @@ public class UtilMap {
             DepositAccount depositAccount;
             List<String> eligibleAccountCodeBuy;
 
-            if(isBuyAccount){
+            if (isBuyAccount) {
                 eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
-            }else{
+            } else {
                 eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeSell();
             }
 
@@ -191,7 +191,7 @@ public class UtilMap {
                 }
             }
         } catch (JsonProcessingException e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return depositAccountList;
     }
@@ -229,14 +229,14 @@ public class UtilMap {
         try {
             if (!StringUtils.isEmpty(startTime) && !StringUtils.isEmpty(endTime)) {
                 Calendar currentDate = Calendar.getInstance();
-                SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM);
+                SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HH_MM);
                 String getCurrentTime = simpleDateTimeFormat.format(currentDate.getTime());
                 if (isTimeBetweenTwoTime(startTime, endTime, getCurrentTime)) {
                     isClose = true;
                 }
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return isClose;
     }
@@ -282,7 +282,7 @@ public class UtilMap {
                 return isExpire;
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return false;
     }
@@ -293,16 +293,16 @@ public class UtilMap {
      * @param customerProfileResponseData
      * @return
      */
-    public static boolean isCustIDExpired(CustGeneralProfileResponse customerProfileResponseData) {
+    public static boolean isCustIdExpired(CustGeneralProfileResponse customerProfileResponseData) {
         try {
             if (!StringUtils.isEmpty(customerProfileResponseData) && customerProfileResponseData.getIdExpireDate() != null) {
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_DATE_YYYYMMDD);
+                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_DATE_YYYY_MM_DD);
                 String getCurrentTime = sdf.format(cal.getTime());
                 return getCurrentTime.compareTo(customerProfileResponseData.getIdExpireDate()) > 0;
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return false;
     }
@@ -343,7 +343,7 @@ public class UtilMap {
                 }
                 return (size == countDormant.size());
             } catch (JsonProcessingException e) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             }
             return false;
         }
@@ -382,7 +382,7 @@ public class UtilMap {
                 fundClassData.add(fundClassLoop);
             }
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return fundClassData;
     }
@@ -423,7 +423,7 @@ public class UtilMap {
             fundListDistinctByFundCode = searchList.stream().filter(e -> nameSet.add(e.getFundCode())).collect(Collectors.toList());
             return fundListDistinctByFundCode;
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return searchList;
     }
@@ -569,7 +569,7 @@ public class UtilMap {
                 fundClassLists.add(fundClass);
             }
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return fundClassLists;
     }
@@ -593,7 +593,7 @@ public class UtilMap {
                 }
             }
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return fundClass;
     }
@@ -621,29 +621,28 @@ public class UtilMap {
         return crmId.substring(crmId.length() - ProductsExpServiceConstant.DIGIT_OF_CRM_ID);
     }
 
-    public static String getAccountTypeFromAccountNumber(String accountNumber){
+    public static String getAccountTypeFromAccountNumber(String accountNumber) {
         int accLength = accountNumber.length();
         char fouthDigit;
         String accountType = "";
 
-        if(accLength == 14){
+        if (accLength == 14) {
             fouthDigit = accountNumber.charAt(7);
-        }else{
+        } else {
             fouthDigit = accountNumber.charAt(3);
         }
 
-        if(fouthDigit == '2' || fouthDigit == '7' || fouthDigit == '9'){
+        if (fouthDigit == '2' || fouthDigit == '7' || fouthDigit == '9') {
             accountType = ProductsExpServiceConstant.ACC_TYPE_SDA; // "SA/SDA"
-        }else if (fouthDigit == '1'){
+        } else if (fouthDigit == '1') {
             accountType = ProductsExpServiceConstant.ACC_TYPE_DDA; // "CA/DDA"
-        }else if (fouthDigit == '3'){
+        } else if (fouthDigit == '3') {
             accountType = ProductsExpServiceConstant.ACC_TYPE_CCA; // "TD/CDA"
-        }else if (fouthDigit == '0' || fouthDigit == '5' || fouthDigit == '6'){
+        } else if (fouthDigit == '0' || fouthDigit == '5' || fouthDigit == '6') {
             accountType = ""; // "LOAN"
-        }else{
+        } else {
             accountType = ""; // "CC"
         }
         return accountType;
     }
-
 }

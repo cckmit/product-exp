@@ -66,7 +66,7 @@ public class PortfolioService {
             List<PortfolioResponseBody> portfolioResponseBodyList = buildPortfolioResponseBodyList(portfolioByPortList);
             return PortfolioResponse.builder().portfolioResponseBody(portfolioResponseBodyList).build();
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
     }

@@ -242,7 +242,7 @@ public class ProductExpServiceController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             oneServiceResponse.setData(null);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
                     ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
@@ -283,7 +283,7 @@ public class ProductExpServiceController {
                 return ResponseEntity.status(HttpStatus.OK).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             oneServiceResponse.setData(null);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
                     ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
@@ -337,7 +337,7 @@ public class ProductExpServiceController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             oneServiceResponse.setData(null);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
                     ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
@@ -372,7 +372,7 @@ public class ProductExpServiceController {
                 return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         oneServiceResponse.setStatus(getStatusNotFund());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
