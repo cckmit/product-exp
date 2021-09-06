@@ -30,6 +30,7 @@ import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.TmbOneServiceErrorResponse;
+import com.tmb.oneapp.productsexpservice.service.LoanService;
 
 import feign.FeignException;
 import io.swagger.annotations.Api;
@@ -41,9 +42,11 @@ public class LendingServiceController {
     private static final TMBLogger<LendingServiceController> logger =
             new TMBLogger<>(LendingServiceController.class);
     private final LendingServiceClient lendingServiceClient;
+    private final LoanService loanService;
 
-    public LendingServiceController(LendingServiceClient lendingServiceClient) {
+    public LendingServiceController(LendingServiceClient lendingServiceClient, LoanService loanService) {
         this.lendingServiceClient = lendingServiceClient;
+        this.loanService = loanService;
     }
 
     /**
@@ -116,7 +119,7 @@ public class LendingServiceController {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody ProductDetailRequest request) throws TMBCommonException {
 		try {
-			return lendingServiceClient.fetchProductOrientation(xCorrelationId, crmId, request);
+			return loanService.fetchProductOrientation(xCorrelationId, crmId, request);
 		} catch (FeignException e) {
 			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
 			if (response != null && response.getStatus() != null) {

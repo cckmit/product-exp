@@ -25,6 +25,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
+import com.tmb.oneapp.productsexpservice.service.LoanService;
 
 import feign.FeignException;
 import feign.Request;
@@ -36,6 +37,8 @@ public class LendingServiceControllerTest {
 
     @Mock
     LendingServiceClient lendingServiceClient;
+    @Mock
+    LoanService loanService;
 
     @BeforeEach
     void setUp() {
@@ -48,7 +51,7 @@ public class LendingServiceControllerTest {
         HttpStatus status = HttpStatus.OK;
         ResponseEntity<TmbOneServiceResponse<Object>> mockResponse = new ResponseEntity<>(status);
         when(lendingServiceClient.getLoanProducts(any(), any())).thenReturn(mockResponse);
-        LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient);
+        LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
         lendingServiceController.getProducts("", new ProductRequest());
         verify(lendingServiceClient, times(1)).getLoanProducts(any(), any());
     }
@@ -66,7 +69,7 @@ public class LendingServiceControllerTest {
             throw e;
         });
         try {
-            LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient);
+            LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
             lendingServiceController.getProducts("", new ProductRequest());
             fail("Should get exception");
         } catch (TMBCommonException e) {
@@ -90,7 +93,7 @@ public class LendingServiceControllerTest {
             throw e;
         });
         try {
-            LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient);
+            LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
             lendingServiceController.getProducts("", new ProductRequest());
             fail("Should get exception");
         } catch (TMBCommonException e) {
