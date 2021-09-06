@@ -526,10 +526,22 @@ public class NotificationServiceTest {
 
 		tmbResponse.setStatus(tmbStatus);
 		tmbResponse.setData(plan);
-
+		FetchCardResponse cardResponse = new FetchCardResponse();
+		ProductCodeData productData = new ProductCodeData();
+		productData.setProductNameEN("So Fast Credit Card");
+		productData.setProductNameTH("โซฟาสต์");
+		cardResponse.setProductCodeData(productData);
+		SilverlakeStatus silverlake = new SilverlakeStatus();
+		silverlake.setStatusCode(0);
+		cardResponse.setStatus(silverlake);
+		CreditCardDetail cardDetail = new CreditCardDetail();
+		cardDetail.setProductId("VTOPBR");
+		cardResponse.setCreditCard(cardDetail);
 		ResponseEntity<TmbOneServiceResponse<List<InstallmentPlan>>> responseInstallments = new ResponseEntity(
 				tmbResponse, HttpStatus.OK);
 		when(creditCardClient.getInstallmentPlan(any())).thenReturn(responseInstallments);
+		when(creditCardClient.getCreditCardDetails(any(), any()))
+		.thenReturn(ResponseEntity.status(HttpStatus.OK).body(cardResponse));
 
 		notificationService.doNotifyApplySoGood("correlationId", "accountId", "crmId", Arrays.asList(response),
 				requestBody);
@@ -596,6 +608,7 @@ public class NotificationServiceTest {
 		NotifyCommon notifyCommon = getNotifyCommon();
 		String email = "test@test.com";
 		String phoneNo = "9899776640";
+		String productId = "VTOPBR";
 		SoGoodWrapper soGoodWrapper = new SoGoodWrapper();
 		List<SoGoodItemInfo> items = new ArrayList<>();
 		SoGoodItemInfo soGoodItemInfo = new SoGoodItemInfo();
@@ -616,7 +629,7 @@ public class NotificationServiceTest {
 		notification.setMessage("Success");
 		response.setData(notification);
 		when(notificationServiceClient.sendMessage(any(), any())).thenReturn(response);
-		notificationService.sendNotifyApplySoGood(notifyCommon, email, phoneNo, soGoodWrapper, totalAmt);
+		notificationService.sendNotifyApplySoGood(notifyCommon, email, phoneNo, soGoodWrapper, totalAmt, productId);
 		assertNotNull(response);
 	}
 

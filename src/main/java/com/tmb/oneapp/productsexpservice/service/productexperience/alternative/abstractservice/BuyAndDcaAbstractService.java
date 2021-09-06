@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative.abstractservice;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -19,8 +20,7 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
 
     protected final InvestmentRequestClient investmentRequestClient;
 
-
-    public BuyAndDcaAbstractService(AlternativeService alternativeService,
+    protected BuyAndDcaAbstractService(AlternativeService alternativeService,
                                     CustomerService customerService,
                                     ProductsExpService productsExpService,
                                     InvestmentRequestClient investmentRequestClient) {
@@ -30,6 +30,7 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
         this.investmentRequestClient = investmentRequestClient;
     }
 
+    @LogAround
     protected TmbOneServiceResponse<String> validateProcessFlag(String processFlag,
                                                                 TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                                 TmbStatus status){
@@ -45,6 +46,7 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
         return tmbOneServiceResponse;
     }
 
+    @LogAround
     protected TmbOneServiceResponse<String> validateBuyAndDca(String correlationId,
                                                               String crmId,
                                                               CustomerSearchResponse customerInfo,

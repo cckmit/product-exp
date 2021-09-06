@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.information.InformationDto;
@@ -36,6 +37,7 @@ public class InformationService {
      * @param fundCodeRequestBody
      * @return InformationDto
      */
+    @LogAround
     public InformationDto getFundInformation(String correlationId, FundCodeRequestBody fundCodeRequestBody) {
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
         try {

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -18,6 +19,7 @@ public class SwitchAlternativeService extends SellAndSwitchAbstractService {
 
     private static final TMBLogger<SwitchAlternativeService> logger = new TMBLogger<>(SwitchAlternativeService.class);
 
+    @LogAround
     public TmbOneServiceResponse<String> validationSwitch(String correlationId, String crmId) {
 
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();

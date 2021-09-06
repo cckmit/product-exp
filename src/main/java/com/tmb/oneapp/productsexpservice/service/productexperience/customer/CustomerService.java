@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.customer;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -55,6 +56,7 @@ public class CustomerService {
      * @param crmId
      * @return CustomerSearchResponse
      */
+    @LogAround
     public CustomerSearchResponse getCustomerInfo(String correlationId, String crmId) {
         try {
             CrmSearchBody request = CrmSearchBody.builder()

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -19,6 +20,7 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
         super(alternativeService, customerService);
     }
 
+    @LogAround
     public TmbOneServiceResponse<String> validationSell(String correlationId, String crmId) {
 
         TmbOneServiceResponse<String> tmbOneServicesResponse = new TmbOneServiceResponse();

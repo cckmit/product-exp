@@ -20,6 +20,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
@@ -480,7 +481,7 @@ public class ProductExpServiceTest {
         fundPaymentDetailRequest.setTranType("1");
 
         try {
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenThrow(MockitoException.class);
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenThrow(MockitoException.class);
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
@@ -539,7 +540,7 @@ public class ProductExpServiceTest {
     @Test
     public void isCASADormantException() {
         try {
-            when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getAccountList(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -589,7 +590,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
             bypassServiceHour();
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
@@ -625,7 +626,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
             bypassServiceHour();
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
@@ -668,7 +669,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
             mockSuccessAllAlternative();
             when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseResponseEntity));
             mockGetFatcaResponseFromCustomerSearch();
@@ -718,7 +719,15 @@ public class ProductExpServiceTest {
     }
 
     private void bypassServiceHour() {
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(TmbStatusUtil.successStatus());
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+    }
+
+    private ValidateServiceHourResponse mockTmbStatusWithTimeSuccess(String code, String message, String desc) {
+        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
+        validateServiceHourResponse.setCode(code);
+        validateServiceHourResponse.setDescription(desc);
+        validateServiceHourResponse.setMessage(message);
+        return validateServiceHourResponse;
     }
 
     private void bypassAgeNotOverTwenty() {
@@ -726,7 +735,7 @@ public class ProductExpServiceTest {
     }
 
     private void mockExceptionServiceHour() {
-        TmbStatus status = new TmbStatus();
+        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
         status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
         status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
@@ -735,7 +744,7 @@ public class ProductExpServiceTest {
     }
 
     private void mockIsHourClose() {
-        TmbStatus status = new TmbStatus();
+        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
@@ -821,7 +830,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(headers, "00000012025950")).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(headers, "00000012025950")).thenReturn(responseCustomerExp);
             mockGetFatcaResponseFromCustomerSearch();
             bypassServiceHour();
             mockSuccessAllAlternative();
@@ -851,7 +860,7 @@ public class ProductExpServiceTest {
     }
 
     private void mockSuccessAllAlternative() {
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));

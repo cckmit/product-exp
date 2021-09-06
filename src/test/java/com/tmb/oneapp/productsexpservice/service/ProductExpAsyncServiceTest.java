@@ -214,7 +214,7 @@ public class ProductExpAsyncServiceTest {
         try {
             String responseCustomerExp;
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -226,7 +226,7 @@ public class ProductExpAsyncServiceTest {
     @Test
     public void fetchCustomerExpWithException() {
         try {
-            when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getAccountList(any(), any())).thenThrow(MockitoException.class);
             CompletableFuture<String> response = productExpAsyncService.fetchCustomerExp(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {

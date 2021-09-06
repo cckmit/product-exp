@@ -36,7 +36,7 @@ public class EligibleDepositAccountService {
         List<DepositAccount> depositAccountList;
         try {
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-            CompletableFuture<String> accountInfo = CompletableFuture.completedFuture(accountRequestClient.callCustomerExpService(UtilMap.createHeader(correlationId), crmId));
+            CompletableFuture<String> accountInfo = CompletableFuture.completedFuture(accountRequestClient.getAccountList(UtilMap.createHeader(correlationId), crmId));
             CompletableFuture.allOf(fetchCommonConfigByModule, accountInfo);
 
             depositAccountList = UtilMap.mappingAccount(fetchCommonConfigByModule.get(), accountInfo.get(),isBuyAccount);

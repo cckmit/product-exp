@@ -54,7 +54,6 @@ public class FundFilterService {
             String suitScore = fundListBySuitScoreRequest.getSuitScore();
             ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> fundListBySuitScoreBodyResponse =
                     investmentRequestClient.callInvestmentListFundInfoService(investmentHeaderRequest);
-
             List<FundClassListInfo> fundList = fundListBySuitScoreBodyResponse.getBody().getData().getFundClassList();
             return filterFundListBasedOnSuitScore(fundList, suitScore);
         } catch (Exception ex) {
@@ -79,19 +78,19 @@ public class FundFilterService {
                         .collect(Collectors.toList()));
                 break;
             case "2":
-                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("02") || t.getRiskRate().equals("03") || t.getRiskRate().equals("04"))
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("01") || t.getRiskRate().equals("02") || t.getRiskRate().equals("03") || t.getRiskRate().equals("04"))
                         .collect(Collectors.toList()));
                 break;
             case "3":
-                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("05"))
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("01") || t.getRiskRate().equals("02") || t.getRiskRate().equals("03") || t.getRiskRate().equals("04")|| t.getRiskRate().equals("05"))
                         .collect(Collectors.toList()));
                 break;
             case "4":
-                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("06") || t.getRiskRate().equals("07"))
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("01") || t.getRiskRate().equals("02") || t.getRiskRate().equals("03") || t.getRiskRate().equals("04")|| t.getRiskRate().equals("05") || t.getRiskRate().equals("06") || t.getRiskRate().equals("07"))
                         .collect(Collectors.toList()));
                 break;
             case "5":
-                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("08"))
+                fundListBySuitScoreBodyResponses.setFundClassList(fundList.stream().filter(t -> t.getRiskRate().equals("01") || t.getRiskRate().equals("02") || t.getRiskRate().equals("03") || t.getRiskRate().equals("04")|| t.getRiskRate().equals("05") || t.getRiskRate().equals("06") || t.getRiskRate().equals("07") || t.getRiskRate().equals("08"))
                         .collect(Collectors.toList()));
                 break;
             default:

@@ -3,10 +3,12 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
@@ -57,19 +59,23 @@ public class OpenPortfolioService {
 
     private CustomerExpServiceClient customerExpServiceClient;
 
+    private CacheServiceClient cacheServiceClient;
+
     @Autowired
     public OpenPortfolioService(
             InvestmentRequestClient investmentRequestClient,
             InvestmentAsyncService investmentAsyncService,
             OpenPortfolioActivityLogService openPortfolioActivityLogService,
             OpenPortfolioMapper openPortfolioMapper,
-            CustomerExpServiceClient customerExpServiceClient) {
+            CustomerExpServiceClient customerExpServiceClient,
+            CacheServiceClient cacheServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.investmentAsyncService = investmentAsyncService;
         this.openPortfolioActivityLogService = openPortfolioActivityLogService;
         this.openPortfolioMapper = openPortfolioMapper;
         this.customerExpServiceClient = customerExpServiceClient;
+        this.cacheServiceClient = cacheServiceClient;
 
     }
 
@@ -79,6 +85,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param customerRequest
      */
+    @LogAround
     public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) {
         try {
             openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
@@ -156,6 +163,7 @@ public class OpenPortfolioService {
      * @param correlationId
      * @param openPortfolioRequestBody
      */
+    @LogAround
     public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
         OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
@@ -187,6 +195,9 @@ public class OpenPortfolioService {
                     .build();
             ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> portfolioNickname = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
 
+            String fullCrmId = UtilMap.fullCrmIdFormat(crmId);
+            removeCacheAfterSuccessOpenPortfolio(correlationId,fullCrmId);
+
             return PortfolioResponse.builder()
                     .relationshipResponse(relationship.get())
                     .openPortfolioResponse(openPortfolio.get())
@@ -198,5 +209,22 @@ public class OpenPortfolioService {
             openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
             return null;
         }
+    }
+
+    private void removeCacheAfterSuccessOpenPortfolio(String correlationId,String fullCrmId) {
+
+        String depositWithCrmIdKey = String.format("%s_deposit",fullCrmId);
+        String investmentWithCrmIdKey = String.format("%s_investment",fullCrmId);
+
+        try{
+
+            cacheServiceClient.deleteCacheByKey(correlationId,depositWithCrmIdKey);
+            cacheServiceClient.deleteCacheByKey(correlationId,investmentWithCrmIdKey);
+            logger.info("========== remove cache success ==========");
+        }catch (Exception ex){
+            logger.info("========== Can't Remove Key Redis complete ==========");
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED,ex);
+        }
+
     }
 }

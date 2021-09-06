@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -31,6 +32,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
         super(alternativeService, customerService, productsExpService, investmentRequestClient);
     }
 
+    @LogAround
     public TmbOneServiceResponse<String> validationBuy(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest) {
 
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
@@ -74,6 +76,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
         }
     }
 
+    @LogAround
     private boolean isFirstTrade(String correlationId,AlternativeBuyRequest alternativeBuyRequest) throws TMBCommonException {
         try{
             Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
