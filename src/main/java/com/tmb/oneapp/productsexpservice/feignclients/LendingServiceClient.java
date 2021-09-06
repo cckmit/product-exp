@@ -1,5 +1,22 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_CITIZEN_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_MOBILE_NO;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
@@ -187,10 +204,10 @@ public interface LendingServiceClient {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody UpdateNCBConsentFlagRequest request);
 
-	@PostMapping(value = "/apis/lending-service/document/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@PostMapping(value = "/apis/lending-service/document/upload")
 	ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
-			@RequestPart MultipartFile file, @RequestPart String caId, @Valid @RequestPart String docCode);
+			@RequestBody UploadDocumentRequest request);
 
 	@PostMapping(value = "/apis/lending-service/loanOnlineSubmission/update-flag-and-store-ncb-consent")
 	ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
