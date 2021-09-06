@@ -186,7 +186,7 @@ public class OpenPortfolioService {
                 occupationResponseBody = occupation.get();
             }
 
-            openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
+            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
             PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
@@ -206,7 +206,7 @@ public class OpenPortfolioService {
                     .build();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
+            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
             return null;
         }
     }

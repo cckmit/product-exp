@@ -140,7 +140,7 @@ class OpenPortfolioServiceTest {
                 .build();
 
         String depositAccountReponse = "{\"status\":{\"code\":\"0000\",\"message\":\"success\",\"service\":\"customers-ex-service\",\"description\":\"success\"},\"data\":{\"accountNo\":\"1112469166\",\"accountType\":\"SDA\",\"accountBalance\":\"0.31\",\"branchNameTh\":\"ถนนติวานนท์\",\"branchNameEn\":\"THANONTIWANON\",\"accountName\":\"NAMETEST\",\"ledgerBalance\":\"0.31\",\"interestRate\":\"0.824193\",\"accruedInterest\":\"0.0\",\"accountStatus\":\"Active|ปกติ(Active)\",\"productNameTh\":\"บัญชีโนฟิกซ์\",\"productNameEn\":\"NoFixedAccount\",\"productCode\":\"221\",\"productBonesRateUrl\":\"https://www.tmbbank.com/accounts/savings/tmb-no-fixed-account.html\",\"accountDetailView\":\"5\",\"iconId\":\"https://storage.googleapis.com/oneapp-vit.appspot.com/product/logo/icon_03.png\",\"linkedAccount\":\"\",\"openingDate\":\"9-2021\"}}";
-        when(customerExpServiceClient.getAccountDetail(any(),any())).thenReturn(depositAccountReponse);
+        when(customerExpServiceClient.getAccountDetail(any(), any())).thenReturn(depositAccountReponse);
 
         // When
         OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
@@ -328,8 +328,8 @@ class OpenPortfolioServiceTest {
         // Then
         assertNotNull(actual);
         assertNotNull(actual.getOccupationResponse());
-        verify(openPortfolioActivityLogService).enterCorrectPin(anyString(), anyString(), anyString(), anyString(), anyString());
-        verify(cacheServiceClient,times(2)).deleteCacheByKey(anyString(),anyString());
+        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(cacheServiceClient, times(2)).deleteCacheByKey(anyString(), anyString());
     }
 
     @Test
@@ -387,7 +387,7 @@ class OpenPortfolioServiceTest {
         // Then
         assertNotNull(actual);
         assertNull(actual.getOccupationResponse());
-        verify(openPortfolioActivityLogService).enterCorrectPin(anyString(), anyString(), anyString(), anyString(), anyString());
-        verify(cacheServiceClient,times(2)).deleteCacheByKey(anyString(),anyString());
+        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(cacheServiceClient, times(2)).deleteCacheByKey(anyString(), anyString());
     }
 }
