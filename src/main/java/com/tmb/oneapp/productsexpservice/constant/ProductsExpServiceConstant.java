@@ -205,6 +205,9 @@ public class ProductsExpServiceConstant {
     public static final String CASE_SUBMIT_PWA_BY_CALL_ACTIVITY_ID = "101500503";
     public static final String CASE_SUBMIT_PWA_BY_LEAVE_MSG_ACTIVITY_ID = "101500505";
 
+    /* Activity Log Description */
+    public static final String ACTIVITY_LOG_OPEN_PORTFOLIO_DESCRIPTION = "MF Open portfolio";
+
     /* ACTIVITY LOG MESSAGE */
     public static final String ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
     public static final String ACTIVITY_LOG_INVESTMENT_CHANNEL = "mb";
@@ -248,19 +251,19 @@ public class ProductsExpServiceConstant {
 
     /* INVESTMENT FIRST TRADE FLAG */
     public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
-    
+
     public static final String C2G = "c2g";
     public static final String RC = "rc";
-	public static final String FLEXI = "flexi";
-	public static final String LOAN_SUBMISSION = "loan-submission";
-	public static final String APPLY_PERSONAL_LOAN = "apply-personal-loan";
-	public static final String APPLY_FLASH_CARD = "apply-flash-card";
-	public static final String APPLY_CREDIT_CARD = "apply-credit-card";
-	public static final String PERSONAL_DETAIL = "personal-detail";
-	public static final String WORK_DETAIL = "work-detail";
-	public static final String UPLOAD_DOCUMENTS = "upload-documents";
-	public static final String LOAN_DAY1 = "loan-day1";
-	public static final String FINAL_APPROVAL = "final-approval";
-	public static final String CONFIRM_APPLICATION = "confirm-application";
-	public static final String LOAN_CAL = "loan-cal";
+    public static final String FLEXI = "flexi";
+    public static final String LOAN_SUBMISSION = "loan-submission";
+    public static final String APPLY_PERSONAL_LOAN = "apply-personal-loan";
+    public static final String APPLY_FLASH_CARD = "apply-flash-card";
+    public static final String APPLY_CREDIT_CARD = "apply-credit-card";
+    public static final String PERSONAL_DETAIL = "personal-detail";
+    public static final String WORK_DETAIL = "work-detail";
+    public static final String UPLOAD_DOCUMENTS = "upload-documents";
+    public static final String LOAN_DAY1 = "loan-day1";
+    public static final String FINAL_APPROVAL = "final-approval";
+    public static final String CONFIRM_APPLICATION = "confirm-application";
+    public static final String LOAN_CAL = "loan-cal";
 }

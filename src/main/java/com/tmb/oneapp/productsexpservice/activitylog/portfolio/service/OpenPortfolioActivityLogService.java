@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.activitylog.portfolio.service;
 
+import com.tmb.oneapp.productsexpservice.activitylog.portfolio.enums.OpenPortfolioActivityEnums;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.request.OpenPortfolioActivityLog;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.request.OpenPortfolioActivityLogRequest;
 import com.tmb.oneapp.productsexpservice.activitylog.service.LogActivityService;
@@ -19,20 +20,20 @@ public class OpenPortfolioActivityLogService {
     }
 
     public void openPortfolio(String correlationId, String crmId, String initialOpenPortfolio, String reasonValue) {
-        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO);
+        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, OpenPortfolioActivityEnums.OPEN_PORTFOLIO.getActivityTypeId());
         activityData.setInitialOpenPortfolio(initialOpenPortfolio);
         activityData.setReasonValue(reasonValue);
         logActivityService.createLog(activityData);
     }
 
     public void acceptTermAndCondition(String correlationId, String crmId, String value) {
-        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
+        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, OpenPortfolioActivityEnums.ACCEPT_TERM_AND_CONDITION.getActivityTypeId());
         activityData.setValue(value);
         logActivityService.createLog(activityData);
     }
 
     public void clickConfirm(String correlationId, String crmId, OpenPortfolioActivityLogRequest openPortfolioActivityLogRequest) {
-        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_CLICK_CONFIRM);
+        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, OpenPortfolioActivityEnums.CLICK_CONFIRM_BUTTON.getActivityTypeId());
         activityData.setScoreValue(openPortfolioActivityLogRequest.getScoreValue());
         activityData.setNickname(openPortfolioActivityLogRequest.getNickname());
         activityData.setPurposeOfInvestment(openPortfolioActivityLogRequest.getPurposeOfInvestment());
@@ -42,7 +43,7 @@ public class OpenPortfolioActivityLogService {
     }
 
     public void enterCorrectPin(String correlationId, String crmId, String status, String portfolioNumber, String portfolioNickname) {
-        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO_ENTER_CORRECT_PIN);
+        OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, OpenPortfolioActivityEnums.ENTER_PIN_IS_CORRECT.getActivityTypeId());
         activityData.setStatus(status);
         activityData.setPortfolioNumber(portfolioNumber);
         activityData.setPortfolioNickname(portfolioNickname);
