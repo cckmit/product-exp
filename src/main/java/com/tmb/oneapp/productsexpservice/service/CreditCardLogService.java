@@ -25,9 +25,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class CreditCardLogService {
@@ -197,7 +199,17 @@ public class CreditCardLogService {
 			List<CardInstallmentResponse> data) {
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			data.forEach(e -> constructCardEvent(correlationId, reqHeader, e));
+			List<CardInstallmentResponse> sucessResponse = data.stream().filter( e->"0".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
+			List<CardInstallmentResponse> failResponse = data.stream().filter( e->"1".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
+			if(CollectionUtils.isNotEmpty(sucessResponse) && CollectionUtils.isNotEmpty(failResponse)) {
+				constructCardEvent(correlationId,reqHeader,sucessResponse.get(0));
+			}else {
+				if(CollectionUtils.isNotEmpty(sucessResponse)) {
+					constructCardEvent(correlationId,reqHeader,sucessResponse.get(0));
+				}else {
+					constructCardEvent(correlationId,reqHeader,failResponse.get(0));
+				}
+			}
 		}
 
 	}
