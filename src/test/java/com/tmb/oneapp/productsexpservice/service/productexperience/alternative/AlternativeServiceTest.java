@@ -156,7 +156,7 @@ public class AlternativeServiceTest {
                 "\t\t\"account_status_text\": \"ACTIVE\"\n" +
                 "\t}]\n" +
                 "}";
-        when(accountRequestClient.callCustomerExpService(any(),any())).thenReturn(accountResponse);
+        when(accountRequestClient.getAccountList(any(),any())).thenReturn(accountResponse);
 
         // When
         TmbStatus actual = alternativeService.validateCASADormant("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", TmbStatusUtil.successStatus());

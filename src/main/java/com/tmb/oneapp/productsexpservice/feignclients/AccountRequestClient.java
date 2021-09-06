@@ -35,7 +35,7 @@ public interface AccountRequestClient {
 	 * @return the fund summary response
 	 */
 	@GetMapping(value = "${account.service.account.list.url}")
-	String callCustomerExpService(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
+	String getAccountList(@RequestHeader Map<String, String> headers, @RequestHeader("CRM_ID") String crmId);
 
 	@PostMapping(value = "${account.service.loan.url}", consumes = "application/json", produces = "application/json")
 	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getLoanAccountDetail(

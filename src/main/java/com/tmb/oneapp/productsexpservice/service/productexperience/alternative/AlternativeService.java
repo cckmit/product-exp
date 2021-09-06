@@ -112,7 +112,7 @@ public class AlternativeService {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
             statusWithTime.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
             statusWithTime.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            statusWithTime.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+            statusWithTime.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateServiceHour failed"));
             statusWithTime.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return statusWithTime;
         }
@@ -164,7 +164,7 @@ public class AlternativeService {
     public TmbStatus validateCASADormant(String correlationId, String crmId,TmbStatus status) {
         try {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            String responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
+            String responseCustomerExp = accountRequestClient.getAccountList(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             if(UtilMap.isCASADormant(responseCustomerExp)){
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
@@ -175,7 +175,7 @@ public class AlternativeService {
         } catch (Exception e) {
             logger.error("========== accountRequestClient error ==========");
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateCASADormant failed"));
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
@@ -205,7 +205,7 @@ public class AlternativeService {
         } catch (Exception e) {
             logger.error("========== investment callInvestmentFundSuitabilityService error ==========");
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateSuitabilityExpired failed"));
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
@@ -235,8 +235,7 @@ public class AlternativeService {
         } catch (Exception e) {
             logger.error("========== investment callInvestmentFundSuitabilityService error ==========");
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateIdCardExpired failed"));
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
@@ -365,7 +364,7 @@ public class AlternativeService {
             int ekycIdentifyAssuranceLevelInt = Integer.parseInt(ekycIdentifyAssuranceLevel);
             return ekycIdentifyAssuranceLevelInt >= 210;
         } catch (NumberFormatException ex) {
-            logger.info("ekycIdentifyAssuranceLevel is not number : " + ekycIdentifyAssuranceLevel);
+            logger.error("ekycIdentifyAssuranceLevel is not number : " + ekycIdentifyAssuranceLevel);
             return false;
         }
     }
