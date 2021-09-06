@@ -15,10 +15,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequ
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
-import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -214,6 +211,23 @@ public class LoanSubmissionOnlineService {
                     ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("calculateUnderwriting got exception:{}", e);
+            throw e;
+        }
+    }
+
+
+    public EAppResponse getEAppData(String correlationId, String crmId, Long caId) throws TMBCommonException {
+        try {
+            TmbOneServiceResponse<EAppResponse> responseEntity = lendingServiceClient.getEApp(correlationId, crmId, caId).getBody();
+
+            if (responseEntity.getStatus().getCode().equals("0000")) {
+                return responseEntity.getData();
+            }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+        } catch (Exception e) {
+            logger.error("get e-app got exception:{}", e);
             throw e;
         }
     }
