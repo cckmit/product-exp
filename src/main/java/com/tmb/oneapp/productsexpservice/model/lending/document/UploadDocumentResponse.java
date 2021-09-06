@@ -11,9 +11,9 @@ import lombok.Setter;
 public class UploadDocumentResponse {
 
     private String pdfFileName;
-    private String status;
     private String appRefNo;
     private String appType;
     private String productDescTh;
+    private String ncbConsentFlag;
 
 }
