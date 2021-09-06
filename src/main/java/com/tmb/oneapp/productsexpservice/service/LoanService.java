@@ -69,8 +69,13 @@ public class LoanService {
 		} else {
 			request.setProductHeaderKey(ProductsExpServiceConstant.APPLY_CREDIT_CARD);
 		}
-		LoanStagingbar loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, request);
-		if (data.getContinueApplyNextStep() != null && loanStagingbarRes != null) {
+
+		LoanStagingbar loanStagingbarRes;
+		loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, request);
+		if (loanStagingbarRes == null) {
+			loanStagingbarRes = new LoanStagingbar();
+		}
+		if (data.getContinueApplyNextStep() != null) {
 			switch (data.getContinueApplyNextStep()) {
 			case PERSONAL:
 				loanStagingbarRes.setCurrentStep(ProductsExpServiceConstant.PERSONAL_DETAIL);
