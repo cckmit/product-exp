@@ -117,7 +117,7 @@ public class ProductExpServiceCloseTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
         } catch (Exception ex) {
@@ -155,7 +155,7 @@ public class ProductExpServiceCloseTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
         } catch (Exception ex) {
@@ -195,7 +195,7 @@ public class ProductExpServiceCloseTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             mockSuccessAllAlternative();
             mockGetFatcaResponseFromCustomerSearch();
         } catch (Exception ex) {
@@ -258,7 +258,7 @@ public class ProductExpServiceCloseTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseFfs));
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
@@ -313,7 +313,7 @@ public class ProductExpServiceCloseTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(headers, "001100000000000000000012025950")).thenReturn(responseCustomerExp);
             when(investmentRequestClient.callInvestmentFundFactSheetService(headers, ffsRequest)).thenThrow(MockitoException.class);
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();

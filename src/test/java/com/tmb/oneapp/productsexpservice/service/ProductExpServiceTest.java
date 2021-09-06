@@ -481,7 +481,7 @@ public class ProductExpServiceTest {
         fundPaymentDetailRequest.setTranType("1");
 
         try {
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenThrow(MockitoException.class);
             when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenThrow(MockitoException.class);
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
@@ -540,7 +540,7 @@ public class ProductExpServiceTest {
     @Test
     public void isCASADormantException() {
         try {
-            when(accountRequestClient.callCustomerExpService(any(), any())).thenThrow(MockitoException.class);
+            when(accountRequestClient.getAccountList(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -590,7 +590,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
             bypassServiceHour();
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
@@ -626,7 +626,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
             bypassServiceHour();
             mockGetFatcaResponseFromCustomerSearch();
             mockSuccessAllAlternative();
@@ -669,7 +669,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(any(), anyString())).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
             mockSuccessAllAlternative();
             when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseResponseEntity));
             mockGetFatcaResponseFromCustomerSearch();
@@ -830,7 +830,7 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
             when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.callCustomerExpService(headers, "00000012025950")).thenReturn(responseCustomerExp);
+            when(accountRequestClient.getAccountList(headers, "00000012025950")).thenReturn(responseCustomerExp);
             mockGetFatcaResponseFromCustomerSearch();
             bypassServiceHour();
             mockSuccessAllAlternative();

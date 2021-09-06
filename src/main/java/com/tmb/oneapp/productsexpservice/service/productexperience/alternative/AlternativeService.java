@@ -164,7 +164,7 @@ public class AlternativeService {
     public TmbStatus validateCASADormant(String correlationId, String crmId,TmbStatus status) {
         try {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            String responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
+            String responseCustomerExp = accountRequestClient.getAccountList(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             if(UtilMap.isCASADormant(responseCustomerExp)){
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());

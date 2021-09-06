@@ -565,7 +565,7 @@ public class ProductsExpService {
         String responseCustomerExp;
         try {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
-            responseCustomerExp = accountRequestClient.callCustomerExpService(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
+            responseCustomerExp = accountRequestClient.getAccountList(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             return UtilMap.isCASADormant(responseCustomerExp);
         } catch (Exception e) {

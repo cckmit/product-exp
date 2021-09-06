@@ -160,7 +160,7 @@ public class ProductExpAsyncService {
     @Async
     public CompletableFuture<String> fetchCustomerExp(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
-            String responseFundHoliday = accountRequestClient.callCustomerExpService(headerParameter, crmId);
+            String responseFundHoliday = accountRequestClient.getAccountList(headerParameter, crmId);
             return CompletableFuture.completedFuture(responseFundHoliday);
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
