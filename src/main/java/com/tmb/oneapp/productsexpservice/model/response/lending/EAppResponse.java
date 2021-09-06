@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.Calendar;
 
 @Getter
 @Setter
@@ -16,31 +16,33 @@ public class EAppResponse {
     String productType;
     String appNo;
     String employmentStatus;
-    String salary;
+    BigDecimal salary;
     BigDecimal otherIncome;
-    BigDecimal creditLimit;
-    BigDecimal tenor;
+    BigDecimal limitApplied;
+    BigDecimal monthlyInstallment;
+    BigDecimal tenure;
+    BigDecimal requestAmount;
     BigDecimal interest;
-    String loanReceiveAccount;
+    String disburstAccountNo;
     String paymentPlan;
     String paymentMethod;
     String paymentAccountName;
-    String paymentAccountNumber;
+    String paymentAccountNo;
     String paymentCriteria;
-    String botQ1;
-    String botQ2;
+    String loanWithOtherBank;
+    String considerLoanWithOtherBank;
 
     String idType;
-    String idNumber;
+    String idNo;
     String issueCountry;
-    Date issueDate;
-    Date expiryDate;
+    Calendar issueDate;
+    Calendar expiryDate;
     String nameTh;
     String nameEn;
-    Date birthDay;
+    Calendar birthDay;
     String mobileNo;
-    String highestEducation;
-    String sourceOfIncome;
+    String educationLevel;
+    String sourceFromCountry;
     String nationality;
     String maritalStatus;
     String placeOfBirth;
@@ -60,10 +62,12 @@ public class EAppResponse {
     String workTel;
     String workTelEx;
     String incomeBank;
-    String incomeAccount;
-    String cashFlow;
-    String sharePercent;
-    String incomeCountry;
+    String incomeBankAccountNo;
+    BigDecimal cashFlow;
+    BigDecimal sharePercent;
     String eStatement;
     String delivery;
+    String ncbModelAccept;
+    String AcceptBy;
+    Calendar AcceptDate;
 }
