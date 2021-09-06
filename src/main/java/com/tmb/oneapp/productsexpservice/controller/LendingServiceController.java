@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
@@ -34,18 +32,6 @@ import com.tmb.oneapp.productsexpservice.model.lending.loan.TmbOneServiceErrorRe
 import feign.FeignException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
 
 @RestController
 @Api(tags = "Lending Service")
@@ -121,24 +107,24 @@ public class LendingServiceController {
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
     }
 
-	@PostMapping(value = "/lending/get-product-orientation", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> getProductOrientation(
-			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
-			@RequestBody ProductDetailRequest request) throws TMBCommonException {
-		try {
-			return lendingServiceClient.fetchProductOrientation(xCorrelationId, crmId, request);
-		} catch (FeignException e) {
-			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
-			if (response != null && response.getStatus() != null) {
-				logger.info(
-						"Error while calling POST /apis/lending-service/loan/product-orientation. crmId: {}, code:{}, errMsg:{}",
-						crmId, response.getStatus().getCode(), response.getStatus().getMessage());
-				throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
-						response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
-			}
-		}
-		throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-				ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-	}
+    @PostMapping(value = "/lending/get-product-orientation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> getProductOrientation(
+            @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @RequestBody ProductDetailRequest request) throws TMBCommonException {
+        try {
+            return lendingServiceClient.fetchProductOrientation(xCorrelationId, crmId, request);
+        } catch (FeignException e) {
+            TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+            if (response != null && response.getStatus() != null) {
+                logger.info(
+                        "Error while calling POST /apis/lending-service/loan/product-orientation. crmId: {}, code:{}, errMsg:{}",
+                        crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+                throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
+                        response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+    }
 
 }
