@@ -37,5 +37,16 @@ public interface CacheServiceClient {
     ResponseEntity<TmbOneServiceResponse<String>> putCacheByKey(@RequestHeader Map<String, String> headers,
                                                                 @RequestBody CacheModel cacheModel);
 
+    /**
+     * Call cache service for get cache by key.
+     *
+     * @param correlationID  the headers parameter
+     * @param key the path parameter
+     * @return the cache response
+     */
+    @DeleteMapping(value = "/apis/cache/{key}")
+    ResponseEntity<TmbOneServiceResponse<String>> deleteCacheByKey(
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationID,
+            @PathVariable("key") String key);
 
 }
