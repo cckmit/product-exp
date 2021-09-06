@@ -209,5 +209,7 @@ public interface LendingServiceClient {
 
 	@GetMapping(value = "/apis/lending-service/loanOnlineSubmission/e-app")
 	ResponseEntity<TmbOneServiceResponse<EAppResponse>> getEApp(
-			@RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestParam(value = "caId") Long caId);
+			@RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
+			@RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestParam(value = "caId") Long caId);
 }

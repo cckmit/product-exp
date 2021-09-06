@@ -562,10 +562,11 @@ class LoanSubmissionOnlineServiceTest {
         EAppRequest request = new EAppRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
 
-        when(lendingServiceClient.getEApp(crmid, request.getCaId())).thenReturn(ResponseEntity.ok(mockEApp()));
+        when(lendingServiceClient.getEApp(correlationId,crmid, request.getCaId())).thenReturn(ResponseEntity.ok(mockEApp()));
 
-        EAppResponse actualResult = loanSubmissionOnlineService.getEAppData(crmid, request.getCaId());
+        EAppResponse actualResult = loanSubmissionOnlineService.getEAppData(correlationId,crmid, request.getCaId());
 
         Assert.assertNotNull(actualResult);
 
@@ -577,15 +578,16 @@ class LoanSubmissionOnlineServiceTest {
         EAppRequest request = new EAppRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
 
         TmbOneServiceResponse<EAppResponse> oneServiceResponse = new TmbOneServiceResponse<EAppResponse>();
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(lendingServiceClient.getEApp(anyString(), anyLong())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.getEApp(anyString(),anyString(), anyLong())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
-                loanSubmissionOnlineService.getEAppData(crmid, request.getCaId()));
+                loanSubmissionOnlineService.getEAppData(correlationId,crmid, request.getCaId()));
 
     }
 

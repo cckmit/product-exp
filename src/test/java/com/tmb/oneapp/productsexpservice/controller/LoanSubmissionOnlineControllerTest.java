@@ -32,8 +32,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 class LoanSubmissionOnlineControllerTest {
@@ -86,9 +85,11 @@ class LoanSubmissionOnlineControllerTest {
         EAppRequest request = new EAppRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+
         EAppResponse response = new EAppResponse();
-        when(loanSubmissionOnlineService.getEAppData(any(),anyLong())).thenReturn(response);
-        ResponseEntity<TmbOneServiceResponse<EAppResponse>> responseEntity = loanSubmissionOnlineController.getEAppData(crmid,request);
+        when(loanSubmissionOnlineService.getEAppData(anyString(),any(),anyLong())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<EAppResponse>> responseEntity = loanSubmissionOnlineController.getEAppData(correlationId,crmid,request);
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
@@ -97,8 +98,10 @@ class LoanSubmissionOnlineControllerTest {
         EAppRequest request = new EAppRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
-        when(loanSubmissionOnlineService.getEAppData(any(),anyLong())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<TmbOneServiceResponse<EAppResponse>> responseEntity = loanSubmissionOnlineController.getEAppData(crmid,request);
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+
+        when(loanSubmissionOnlineService.getEAppData(anyString(),any(),anyLong())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<EAppResponse>> responseEntity = loanSubmissionOnlineController.getEAppData(correlationId,crmid,request);
         assertTrue(responseEntity.getStatusCode().isError());
     }
 

@@ -216,9 +216,9 @@ public class LoanSubmissionOnlineService {
     }
 
 
-    public EAppResponse getEAppData(String crmId, Long caId) throws TMBCommonException {
+    public EAppResponse getEAppData(String correlationId, String crmId, Long caId) throws TMBCommonException {
         try {
-            TmbOneServiceResponse<EAppResponse> responseEntity = lendingServiceClient.getEApp(crmId, caId).getBody();
+            TmbOneServiceResponse<EAppResponse> responseEntity = lendingServiceClient.getEApp(correlationId, crmId, caId).getBody();
 
             if (responseEntity.getStatus().getCode().equals("0000")) {
                 return responseEntity.getData();
