@@ -249,6 +249,8 @@ public class ProductsExpServiceConstant {
     /* INVESTMENT FIRST TRADE FLAG */
     public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
     
+    public static final String C2G = "c2g";
+    public static final String RC = "rc";
 	public static final String FLEXI = "flexi";
 	public static final String LOAN_SUBMISSION = "loan-submission";
 	public static final String APPLY_PERSONAL_LOAN = "apply-personal-loan";

@@ -427,4 +427,47 @@ public class LoanServiceTest {
 		Assertions.assertEquals(ProductsExpServiceConstant.LOAN_CAL,
 				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
 	}
+	
+	@Test
+	void fetchProductOrientationSuccessCCLoanIncome() throws TMBCommonException {
+		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+		String crmId = "001100000000000000000018593707";
+		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
+		loanStagingbarReq.setLoanType("loan-submission");
+		loanStagingbarReq.setProductHeaderKey("apply-credit-card");
+		LoanStagingbar loanStagingbar = new LoanStagingbar();
+		loanStagingbar.setLoanType("flexi");
+		loanStagingbar.setProductHeaderKey("apply-personal-loan");
+		loanStagingbar.setProductHeaderTh("สมัครสินเชื่อบุคคล");
+		List<StagingDetails> stagingDetailsList = new ArrayList<>();
+		StagingDetails stagingDetails = new StagingDetails();
+		stagingDetails.setStageNo("1");
+		stagingDetails.setStageKey("loan-cal");
+		stagingDetails.setStageTh("วงเงินสินเชื่อและระยะเวลาผ่อน");
+		stagingDetailsList.add(stagingDetails);
+		loanStagingbar.setStagingDetails(stagingDetailsList);
+		loanStagingbar.setStagesCount("1");
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
+				.thenReturn(loanStagingbar);
+		ProductDetailRequest request = new ProductDetailRequest();
+		request.setProductCode("vi");
+		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
+		dataProductDetailResponse.setProductCode("vi");
+		dataProductDetailResponse.setFlowType(FlowType.LOAN_SUBMISSION);
+		dataProductDetailResponse.setContinueApplyNextStep(ContinueApplyNextScreen.INCOME);
+		TmbOneServiceResponse<ProductDetailResponse> productDetailResponse = new TmbOneServiceResponse<ProductDetailResponse>();
+		productDetailResponse.setData(dataProductDetailResponse);
+		productDetailResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "", ""));
+		Mockito.when(lendingServiceClient.fetchProductOrientation(correlationId, crmId, request))
+				.thenReturn(ResponseEntity.ok(productDetailResponse));
+
+		loanService = new LoanService(lendingServiceClient, loanStagingBarService);
+
+		ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> actual = loanService
+				.fetchProductOrientation(correlationId, crmId, request);
+
+		Assertions.assertNotNull(actual);
+		Assertions.assertEquals(ProductsExpServiceConstant.WORK_DETAIL,
+				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
+	}
 }

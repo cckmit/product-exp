@@ -62,15 +62,15 @@ public class LoanService {
 			request.setLoanType(ProductsExpServiceConstant.LOAN_SUBMISSION);
 		}
 		String lowerCaseProductCode = data.getProductCode().toLowerCase();
-		if (lowerCaseProductCode.contains("c2g")) {
+		if (lowerCaseProductCode.contains(ProductsExpServiceConstant.C2G)) {
 			request.setProductHeaderKey(ProductsExpServiceConstant.APPLY_PERSONAL_LOAN);
-		} else if (lowerCaseProductCode.contains("rc")) {
+		} else if (lowerCaseProductCode.contains(ProductsExpServiceConstant.RC)) {
 			request.setProductHeaderKey(ProductsExpServiceConstant.APPLY_FLASH_CARD);
 		} else {
 			request.setProductHeaderKey(ProductsExpServiceConstant.APPLY_CREDIT_CARD);
 		}
 		LoanStagingbar loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, request);
-		if (data.getContinueApplyNextStep() != null) {
+		if (data.getContinueApplyNextStep() != null && loanStagingbarRes != null) {
 			switch (data.getContinueApplyNextStep()) {
 			case PERSONAL:
 				loanStagingbarRes.setCurrentStep(ProductsExpServiceConstant.PERSONAL_DETAIL);
