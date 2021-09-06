@@ -24,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
+import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.service.LoanService;
 
@@ -101,6 +103,41 @@ public class LendingServiceControllerTest {
             Assertions.assertEquals("0001", e.getErrorCode());
             Assertions.assertEquals("products-exp-service", e.getService());
         }
+    }
+    
+    @Test
+    void getProductOrientationSuccess() throws TMBCommonException {
+        HttpStatus status = HttpStatus.OK;
+        ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> mockResponse = new ResponseEntity<>(status);
+        when(loanService.fetchProductOrientation(any(),any(), any())).thenReturn(mockResponse);
+        LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
+        lendingServiceController.getProductOrientation("", "",new ProductDetailRequest());
+        verify(loanService, times(1)).fetchProductOrientation(any(), any(),any());
+    }
+
+    @Test
+    void getProductOrientationHandleErrorShouldThrowTMBCommonException() throws TMBCommonException {
+        when(loanService.fetchProductOrientation(any(), any(), any())).thenAnswer(invocation -> {
+            Map<String, Collection<String>> headers = new HashMap<>();
+            String errorBody = "{\"status\":{\"code\":\"0002\",\"message\":\"Data Not Found\",\"service\":\"lending-service\",\"description\":{\"en\":\"We cannot proceed your request right now. Please contact 1428 for more information. Sorry for the inconvenience.\",\"th\":\"ไม่สามารถทำรายการได้ ธนาคารขออภัยในความไม่สะดวกมา ณ ที่นี้  สอบถามเพิ่มเติม โทร.  1428\"}},\"data\":null}\n";
+
+            Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
+            RequestTemplate template = new RequestTemplate();
+            Request request = Request.create(Request.HttpMethod.POST, "http://localhost", headers, body, template);
+            FeignException.BadRequest e = new FeignException.BadRequest("", request, errorBody.getBytes(StandardCharsets.UTF_8));
+            throw e;
+        });
+        try {
+            LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
+            lendingServiceController.getProductOrientation("", "",new ProductDetailRequest());
+            fail("Should get exception");
+        } catch (TMBCommonException e) {
+            Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatus().value());
+            Assertions.assertEquals("0002", e.getErrorCode());
+            Assertions.assertEquals("lending-service", e.getService());
+            Assertions.assertEquals("Data Not Found", e.getErrorMessage());
+        }
+
     }
     
 }
