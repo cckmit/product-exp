@@ -10,17 +10,14 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
-import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
-import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -496,28 +493,6 @@ public class ProductExpServiceTest {
         }
 
         Assert.assertNotNull(responseCustomerExp);
-    }
-
-    @Test
-    public void testInsertActivityLog() {
-        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
-        fundFactSheetRequestBody.setProcessFlag("N");
-        fundFactSheetRequestBody.setLanguage("en");
-        fundFactSheetRequestBody.setFundCode("TMONEY");
-        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
-
-        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
-        alternativeBuyRequest.setFundCode(fundFactSheetRequestBody.getFundCode());
-        alternativeBuyRequest.setProcessFlag(fundFactSheetRequestBody.getProcessFlag());
-        alternativeBuyRequest.setUnitHolderNumber(fundFactSheetRequestBody.getUnitHolderNumber());
-        alternativeBuyRequest.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
-
-        ActivityLogs activityLogs = productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-                crmId,
-                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_FAILURE,
-                ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeBuyRequest);
-
-        Assert.assertNotNull(activityLogs);
     }
 
     @Test

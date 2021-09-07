@@ -482,63 +482,6 @@ public class ProductsExpService {
         return mutualFundWithFundSuggestedAllocationList;
     }
 
-    /**
-     * Method constructActivityLogDataForBuyHoldingFund
-     *
-     * @param correlationId
-     * @param activityType
-     * @param trackingStatus
-     * @param alternativeBuyRequest
-     */
-    @LogAround
-    public ActivityLogs constructActivityLogDataForBuyHoldingFund(String correlationId,
-                                                                  String crmId,
-                                                                  String activityType,
-                                                                  String trackingStatus,
-                                                                  AlternativeBuyRequest alternativeBuyRequest) {
-        String failReason = alternativeBuyRequest.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
-                ProductsExpServiceConstant.SUCCESS_MESSAGE : ProductsExpServiceConstant.FAILED_MESSAGE;
-
-        ActivityLogs activityData = new ActivityLogs(correlationId, String.valueOf(System.currentTimeMillis()), trackingStatus);
-        activityData.setActivityStatus(failReason);
-        activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_CHANNEL);
-        activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_APP_VERSION);
-        activityData.setFailReason(failReason);
-        activityData.setActivityType(activityType);
-        activityData.setCrmId(crmId);
-        activityData.setVerifyFlag(alternativeBuyRequest.getProcessFlag());
-        activityData.setReason(failReason);
-        activityData.setFundCode(alternativeBuyRequest.getFundCode());
-        activityData.setFundClass(alternativeBuyRequest.getFundClassThaiHubName());
-        if (!StringUtils.isEmpty(alternativeBuyRequest.getUnitHolderNumber())) {
-            activityData.setUnitHolderNo(alternativeBuyRequest.getUnitHolderNumber());
-        } else {
-            activityData.setUnitHolderNo(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_UNIT_HOLDER);
-        }
-        return activityData;
-    }
-
-    /**
-     * Method logactivity
-     * suitabilityScore
-     *
-     * @param data
-     */
-    @Async
-    @LogAround
-    public void logActivity(ActivityLogs data) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String output = mapper.writeValueAsString(data);
-            logger.info("Activity Data request is  {} : ", output);
-            logger.info("Activity Data request topicName is  {} : ", topicName);
-            kafkaProducerService.sendMessageAsync(topicName, output);
-            logger.info("callPostEventService -  data posted to activity_service : {}", System.currentTimeMillis());
-        } catch (Exception e) {
-            logger.info("Unable to log the activity request : {}", e.toString());
-        }
-    }
-
     private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
         return fundSummaryByPort == null || fundSummaryByPort.getData() == null ||
                 fundSummaryByPort.getData().getBody() == null || fundSummaryByPort.getData().getBody().getPortfolioList().isEmpty();
