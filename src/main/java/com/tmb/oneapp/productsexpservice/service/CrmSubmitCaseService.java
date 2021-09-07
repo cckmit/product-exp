@@ -54,13 +54,17 @@ public class CrmSubmitCaseService {
         String crmId = requestHeaders.get(X_CRMID);
         String activityId = "";
         String screenName = "";
+        String caseName = "";
         if(serviceTypeMatrixCode.equals(SERVICE_TYPE_MATRIC_CODE_PWA_SEND_EMAIL_TO_ADVISOR)) {
             activityId = CASE_SUBMIT_PWA_BY_EMAIL_ACTIVITY_ID;
+            caseName = PWA_SEND_EMAIL_TO_ADVISOR;
         } else if(serviceTypeMatrixCode.equals(SERVICE_TYPE_MATRIC_CODE_PWA_CALL_TO_ADVISOR)) {
             activityId = CASE_SUBMIT_PWA_BY_CALL_ACTIVITY_ID;
+            caseName = PWA_CALL_TO_ADVISOR;
         } else if(serviceTypeMatrixCode.equals(SERVICE_TYPE_MATRIC_CODE_PWA_SEND_MESSAGE_TO_ADVISOR)) {
             activityId = CASE_SUBMIT_PWA_BY_LEAVE_MSG_ACTIVITY_ID;
             screenName = PWA_LEAVE_NOTE_SCREEN_NAME;
+            caseName = PWA_SEND_MESSAGE_TO_ADVISOR;
         }
 
         try {
@@ -106,7 +110,7 @@ public class CrmSubmitCaseService {
                             .setRequestDate(""),
                     requestHeaders,
                     FAILURE,
-                    "Feign Error occured when calling GET /apis/customers/case/submit : " + e.toString());
+                    "crm create case failed \"" + caseName + "\"");
 
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
