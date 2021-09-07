@@ -229,7 +229,7 @@ public class ProductsExpService {
             result.setUnrealizedProfitPercent(fundSummary.getData().getBody().getUnrealizedProfitPercent());
             result.setSummaryMarketValue(fundSummary.getData().getBody().getSummaryMarketValue());
             result.setSummaryUnrealizedProfit(fundSummary.getData().getBody().getSummaryUnrealizedProfit());
-            result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
+            result.setSummaryUnrealizedProfitPercent(fundSummary.getData().getBody().getSummaryUnrealizedProfitPercent());
             result.setSummarySmartPortMarketValue(fundSummary.getData().getBody().getSummarySmartPortMarketValue());
             result.setSummarySmartPortUnrealizedProfit(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfit());
             result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
