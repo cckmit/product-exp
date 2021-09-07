@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
