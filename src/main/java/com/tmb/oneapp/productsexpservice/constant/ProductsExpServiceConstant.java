@@ -227,6 +227,10 @@ public class ProductsExpServiceConstant {
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_MESSAGE_TO_ADVISOR = "O0012";
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_EMAIL_TO_ADVISOR = "O0013";
 
+    public static final String PWA_CALL_TO_ADVISOR = "call";
+    public static final String PWA_SEND_MESSAGE_TO_ADVISOR = "leave note";
+    public static final String PWA_SEND_EMAIL_TO_ADVISOR = "email";
+
     public static final String SERVICE_HOUR_MODULE = "service_hour";
     public static final String HEADER_SERVICE_HOUR_MODULE = "X-SERVICE-MODULE";
     public static final String EKYC_SERVICE_HOUR_MODULE = "ekyc";
