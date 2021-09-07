@@ -3,13 +3,11 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.CommonData;
-import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
@@ -20,8 +18,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
@@ -29,26 +25,21 @@ import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.FundDetail;
 import com.tmb.oneapp.productsexpservice.model.response.investment.Order;
 import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProcess;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
-import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
-import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -66,15 +57,13 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ProductExpServiceTest {
-
-    @Mock
-    private ProductExpAsyncService productExpAsyncService;
 
     @Mock
     private AccountRequestClient accountRequestClient;
@@ -83,26 +72,21 @@ public class ProductExpServiceTest {
     private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    private AlternativeService alternativeService;
+    private CustomerService customerService;
 
     @Mock
-    private CustomerService customerService;
+    private ProductExpAsyncService productExpAsyncService;
 
     @InjectMocks
     private ProductsExpService productsExpService;
-
-    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
-
-    private final String crmId = "001100000000000000000012025950";
 
     private AccountDetailResponse accountDetailResponse = null;
 
     private FundRuleResponse fundRuleResponse = null;
 
-    @BeforeEach
-    public void setUp() {
+    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
-    }
+    private final String crmId = "001100000000000000000012025950";
 
     private void initAccountDetailResponse() {
         accountDetailResponse = new AccountDetailResponse();
@@ -445,35 +429,6 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void isBusinessClose() {
-        FundFactSheetRequestBody fundAccountRequest = new FundFactSheetRequestBody();
-        fundAccountRequest.setCrmId("001100000000000000000012025950");
-        fundAccountRequest.setFundCode("SCBTMF");
-        fundAccountRequest.setFundHouseCode("SCBAM");
-        fundAccountRequest.setLanguage("en");
-        fundAccountRequest.setProcessFlag("Y");
-        fundAccountRequest.setOrderType("1");
-        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
-            responseEntity.setData(fundRuleResponse);
-            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            mockIsHourClose();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundAccountRequest);
-        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getErrorCode());
-    }
-
-    @Test
     public void testGetFundPrePaymentDetailNotFoundException() {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
         fundPaymentDetailRequest.setFundCode("SCBTMF");
@@ -523,236 +478,6 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void isBusinessCloseException() {
-        // given
-        FundFactSheetRequestBody fundAccountRequest = new FundFactSheetRequestBody();
-        fundAccountRequest.setCrmId("001100000000000000000012025950");
-
-        // when
-        mockExceptionServiceHour();
-
-        // then
-        FundFactSheetValidationResponse actual = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundAccountRequest);
-        Assert.assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getErrorCode());
-
-    }
-
-    @Test
-    public void isCASADormantException() {
-        try {
-            when(accountRequestClient.getAccountList(any(), any())).thenThrow(MockitoException.class);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        boolean getFundSummary = productsExpService.isCASADormant(correlationId, crmId);
-        Assert.assertTrue(getFundSummary);
-    }
-
-    @Test
-    public void isCustomerIdExpired() {
-        try {
-            CustGeneralProfileResponse fundHolidayBody;
-            ObjectMapper mapper = new ObjectMapper();
-            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customers_profile.json").toFile(), CustGeneralProfileResponse.class);
-
-            when(productExpAsyncService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        boolean getFundSummary = productsExpService.isCustomerIdExpired(crmId);
-        Assert.assertFalse(getFundSummary);
-    }
-
-    @Test
-    public void getFundFactSheetAndValidation() {
-        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
-        fundFactSheetRequestBody.setFundCode("SCBTMF");
-        fundFactSheetRequestBody.setFundHouseCode("SCBAM");
-        fundFactSheetRequestBody.setLanguage("en");
-        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
-        fundFactSheetRequestBody.setProcessFlag("Y");
-        fundFactSheetRequestBody.setOrderType("1");
-
-        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
-        String responseCustomerExp;
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-
-            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
-            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
-
-            responseEntity.setData(fundRuleResponse);
-            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
-            bypassServiceHour();
-            mockGetFatcaResponseFromCustomerSearch();
-            mockSuccessAllAlternative();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
-        Assert.assertNotNull(serviceRes);
-    }
-
-    @Test
-    public void getFundFactSheetAndValidationWithError() {
-        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
-        fundFactSheetRequestBody.setFundCode("SCBTMF");
-        fundFactSheetRequestBody.setFundHouseCode("SCBAM");
-        fundFactSheetRequestBody.setLanguage("en");
-        fundFactSheetRequestBody.setCrmId("001100000000000000000012025950");
-        fundFactSheetRequestBody.setProcessFlag("Y");
-        fundFactSheetRequestBody.setOrderType("1");
-
-        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
-        String responseCustomerExp;
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
-            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
-
-            responseEntity.setData(fundRuleResponse);
-            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
-            bypassServiceHour();
-            mockGetFatcaResponseFromCustomerSearch();
-            mockSuccessAllAlternative();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
-        Assert.assertNotNull(serviceRes);
-    }
-
-    @Test
-    public void validateAlternativeSellAndSwitch() {
-        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
-        alternativeBuyRequest.setFundCode("SCBTMF");
-        alternativeBuyRequest.setFundHouseCode("SCBAM");
-        alternativeBuyRequest.setProcessFlag("Y");
-        alternativeBuyRequest.setOrderType("1");
-
-        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
-        TmbOneServiceResponse<SuitabilityInfo> responseResponseEntity = new TmbOneServiceResponse<>();
-        String responseCustomerExp;
-        SuitabilityInfo suitabilityInfo;
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-
-            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
-            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
-            suitabilityInfo = mapper.readValue(Paths.get("src/test/resources/investment/suitability.json").toFile(), SuitabilityInfo.class);
-
-            responseEntity.setData(fundRuleResponse);
-            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            responseResponseEntity.setData(suitabilityInfo);
-            responseResponseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.getAccountList(any(), anyString())).thenReturn(responseCustomerExp);
-            mockSuccessAllAlternative();
-            when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseResponseEntity));
-            mockGetFatcaResponseFromCustomerSearch();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        FundResponse fundResponse = new FundResponse();
-        productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
-        fundResponse = productsExpService.validationAlternativeSellAndSwitchFlow(correlationId, crmId, fundResponse, CustomerSearchResponse.builder().build());
-        Assert.assertNotNull(fundResponse);
-    }
-
-    @Test
-    public void should_return_error_age_not_over_twenty_when_call_validateAlternativeSellAndSwitch() {
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setCode("9999");
-
-        // when
-        bypassServiceHour();
-        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
-        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
-        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(tmbStatus);
-
-        // then
-        FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
-        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getErrorCode());
-    }
-
-    @Test
-    public void should_return_error_suitability_expired_when_call_validateAlternativeSellAndSwitch() {
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setCode("9999");
-
-        // when
-        bypassServiceHour();
-        bypassAgeNotOverTwenty();
-        TmbOneServiceResponse<SuitabilityInfo> suitabilityResponse = new TmbOneServiceResponse<>();
-        suitabilityResponse.setData(SuitabilityInfo.builder().suitabilityScore("2").suitValidation("2").build());
-        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
-        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
-        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok(suitabilityResponse));
-
-        // then
-        FundResponse actual = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
-        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(), actual.getErrorCode());
-    }
-
-    private void bypassServiceHour() {
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-    }
-
-    private ValidateServiceHourResponse mockTmbStatusWithTimeSuccess(String code, String message, String desc) {
-        ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
-        validateServiceHourResponse.setCode(code);
-        validateServiceHourResponse.setDescription(desc);
-        validateServiceHourResponse.setMessage(message);
-        return validateServiceHourResponse;
-    }
-
-    private void bypassAgeNotOverTwenty() {
-        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(TmbStatusUtil.successStatus());
-    }
-
-    private void mockExceptionServiceHour() {
-        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
-        status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-        status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-        status.setDescription(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
-        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(status);
-    }
-
-    private void mockIsHourClose() {
-        ValidateServiceHourResponse status = new ValidateServiceHourResponse();
-        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
-        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(status);
-    }
-
-    @Test
     public void convertAccountType() {
         String accType = UtilMap.convertAccountType(ProductsExpServiceConstant.ACC_TYPE_SDA);
         Assert.assertEquals(ProductsExpServiceConstant.ACC_TYPE_SAVING, accType);
@@ -799,75 +524,6 @@ public class ProductExpServiceTest {
                 ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, alternativeBuyRequest);
 
         Assert.assertNotNull(activityLogs);
-    }
-
-    @Test
-    public void getFundFactSheetAndValidationOfShelf() {
-        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
-        fundFactSheetRequestBody.setFundCode("AAAAA");
-        fundFactSheetRequestBody.setFundHouseCode("SCBAM");
-        fundFactSheetRequestBody.setLanguage("en");
-        fundFactSheetRequestBody.setProcessFlag("N");
-        fundFactSheetRequestBody.setOrderType("1");
-
-        FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
-        fundRuleRequestBody.setFundCode(fundFactSheetRequestBody.getFundCode());
-        fundRuleRequestBody.setFundHouseCode(fundFactSheetRequestBody.getFundHouseCode());
-        fundRuleRequestBody.setTranType(ProductsExpServiceConstant.FUND_RULE_TRANS_TYPE);
-
-        String responseCustomerExp;
-        TmbOneServiceResponse<FundRuleResponse> responseEntity = new TmbOneServiceResponse<>();
-        Map<String, String> headers = createHeader(correlationId);
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
-            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
-
-            responseEntity.setData(fundRuleResponse);
-            responseEntity.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            when(investmentRequestClient.callInvestmentFundRuleService(headers, fundRuleRequestBody)).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseEntity));
-            when(accountRequestClient.getAccountList(headers, "00000012025950")).thenReturn(responseCustomerExp);
-            mockGetFatcaResponseFromCustomerSearch();
-            bypassServiceHour();
-            mockSuccessAllAlternative();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        boolean isCASADormant = productsExpService.isCASADormant(correlationId, crmId);
-        Assert.assertEquals(false, isCASADormant);
-
-        FundFactSheetValidationResponse serviceRes = productsExpService.validateAlternativeBuyFlow(correlationId, crmId, fundFactSheetRequestBody);
-        Assert.assertNotNull(serviceRes);
-    }
-
-    public void bypassAlternative() {
-        TmbStatus tmbStatusSuccess = TmbStatusUtil.successStatus();
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(tmbStatusSuccess);
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(tmbStatusSuccess);
-    }
-
-    private TmbStatus mockTmbStatusError(String code, String message, String desc) {
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setCode(code);
-        tmbStatus.setDescription(desc);
-        tmbStatus.setMessage(message);
-        return tmbStatus;
-    }
-
-    private void mockSuccessAllAlternative() {
-        when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 
     @Test
@@ -967,10 +623,5 @@ public class ProductExpServiceTest {
         when(accountRequestClient.getPortList(any(), anyString())).thenThrow(RuntimeException.class);
         SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(correlationId, crmId);
         Assert.assertNull(suggestAllocationDTO);
-    }
-
-    private void mockGetFatcaResponseFromCustomerSearch() {
-        CustomerSearchResponse response = CustomerSearchResponse.builder().fatcaFlag("0").build();
-        when(customerService.getCustomerInfo(any(), any())).thenReturn(response);
     }
 }

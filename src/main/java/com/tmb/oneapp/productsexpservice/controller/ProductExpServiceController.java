@@ -11,16 +11,11 @@ import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocati
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
-import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -63,7 +58,7 @@ public class ProductExpServiceController {
      * Description:- Inquiry MF Service
      *
      * @param correlationId      the correlation id
-     * @param fundAccountRequest the fund account rq
+     * @param fundAccountRequest the fund account request
      * @return return account full details
      */
     @LogAround
@@ -165,139 +160,15 @@ public class ProductExpServiceController {
     }
 
     /**
-     * @param oneServiceResponse
+     * @param oneServiceResponse the one service response
      * @return
      */
-    ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> dataNotFoundError(TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse) {
+    public ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> dataNotFoundError(TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse) {
         oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
                 ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
         oneServiceResponse.setData(null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-    }
-
-    /**
-     * Description:- Inquiry MF Service
-     *
-     * @param correlationId         the correlation id
-     * @param crmId                 the crm id
-     * @param alternativeBuyRequest the fund fact sheet request body
-     * @return return fund sheet
-     */
-    @ApiOperation(value = "Validation alternative case, then return fund sheet")
-    @LogAround
-    @PostMapping(value = "/alternative/validation")
-    public ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> getFundFactSheetValidation(
-            @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
-                    defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody AlternativeBuyRequest alternativeBuyRequest) {
-
-        TmbOneServiceResponse<FundFactSheetResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundFactSheetValidationResponse fundFactSheetValidationResponse;
-
-        try {
-            String trackingStatus = ProductsExpServiceConstant.ACTIVITY_ID_INVESTMENT_STATUS_TRACKING;
-
-            if (ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(alternativeBuyRequest.getProcessFlag())) {
-                fundFactSheetValidationResponse = productsExpService.validateAlternativeBuyFlow(
-                        correlationId, crmId, UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmId), alternativeBuyRequest));
-
-                if (fundFactSheetValidationResponse.isError()) {
-                    productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-                            crmId,
-                            ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING,
-                            trackingStatus, alternativeBuyRequest));
-
-                    oneServiceResponse.setStatus(new TmbStatus(fundFactSheetValidationResponse.getErrorCode(),
-                            fundFactSheetValidationResponse.getErrorMsg(),
-                            ProductsExpServiceConstant.SERVICE_NAME, fundFactSheetValidationResponse.getErrorDesc()));
-                    oneServiceResponse.setData(null);
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-                } else {
-                    productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-                            crmId,
-                            ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeBuyRequest));
-
-                    FundFactSheetResponse fundFactSheetResponse = new FundFactSheetResponse();
-                    fundFactSheetResponse.setBody(fundFactSheetValidationResponse.getBody());
-                    oneServiceResponse.setData(fundFactSheetResponse);
-                    oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                            ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                            ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-                    return ResponseEntity.status(HttpStatus.OK).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-                }
-            } else {
-                productsExpService.logActivity(productsExpService.constructActivityLogDataForBuyHoldingFund(correlationId,
-                        crmId,
-                        ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING, trackingStatus, alternativeBuyRequest));
-
-                oneServiceResponse.setData(null);
-                oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_CODE,
-                        ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_MESSAGE,
-                        ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.BUSINESS_HOURS_CLOSE_DESC));
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-            }
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
-            oneServiceResponse.setData(null);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-                    ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-        }
-    }
-
-    /**
-     * Description:- Inquiry MF Service
-     *
-     * @param correlationId the correlation id
-     * @param crmId         the crm id
-     * @return return fund sheet
-     */
-    @ApiOperation(value = "Validation alternative case for Sale and Switch")
-    @LogAround
-    @PostMapping(value = "/alternative/sellAndSwitch")
-    public ResponseEntity<TmbOneServiceResponse<FundResponse>> validateAlternativeSellAndSwitch(
-            @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
-                    defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
-
-        TmbOneServiceResponse<FundResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundResponse fundResponse;
-        try {
-            fundResponse = productsExpService.validateAlternativeSellAndSwitch(correlationId, crmId);
-            if (fundResponse.isError()) {
-                return errorResponse(oneServiceResponse, fundResponse);
-            } else {
-                oneServiceResponse.setData(fundResponse);
-                oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                        ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                        ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-                return ResponseEntity.status(HttpStatus.OK).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-            }
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
-            oneServiceResponse.setData(null);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-                    ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-        }
-    }
-
-    ResponseEntity<TmbOneServiceResponse<FundResponse>> errorResponse(TmbOneServiceResponse<FundResponse> oneServiceResponse, FundResponse fundResponse) {
-        oneServiceResponse.setStatus(new TmbStatus(fundResponse.getErrorCode(),
-                fundResponse.getErrorMsg(),
-                ProductsExpServiceConstant.SERVICE_NAME, fundResponse.getErrorDesc()));
-        oneServiceResponse.setData(null);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 
     /**
