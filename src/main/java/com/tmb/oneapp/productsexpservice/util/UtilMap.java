@@ -484,25 +484,6 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingRequestFundFactSheet
-     *
-     * @param alternativeBuyRequest
-     * @return FundFactSheetRequestBody
-     */
-    @LogAround
-    public static FundFactSheetRequestBody mappingRequestAlternative(String crmId, AlternativeBuyRequest alternativeBuyRequest) {
-        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
-        fundFactSheetRequestBody.setCrmId(crmId);
-        fundFactSheetRequestBody.setFundCode(alternativeBuyRequest.getFundCode());
-        fundFactSheetRequestBody.setProcessFlag(alternativeBuyRequest.getProcessFlag());
-        fundFactSheetRequestBody.setUnitHolderNumber(alternativeBuyRequest.getUnitHolderNumber());
-        fundFactSheetRequestBody.setFundHouseCode(alternativeBuyRequest.getFundHouseCode());
-        fundFactSheetRequestBody.setOrderType(alternativeBuyRequest.getOrderType());
-        fundFactSheetRequestBody.setFundClassThaiHubName(alternativeBuyRequest.getFundClassThaiHubName());
-        return fundFactSheetRequestBody;
-    }
-
-    /**
      * Generic Method to mapTmbOneServiceResponse
      *
      * @param optionalResponse

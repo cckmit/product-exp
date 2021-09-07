@@ -263,17 +263,6 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingRequestAlternative() {
-        String crmId = "4488";
-        FundFactSheetRequestBody body = new FundFactSheetRequestBody();
-        body.setFundCode("1234");
-        AlternativeBuyRequest result = UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmId), body);
-        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
-        alternativeBuyRequest.setFundCode("1234");
-        Assert.assertEquals(alternativeBuyRequest.getFundCode(), result.getFundCode());
-    }
-
-    @Test
     public void testMapTmbOneServiceResponse() {
         TmbOneServiceResponse result = UtilMap.mapTmbOneServiceResponse(null);
         Assert.assertEquals(null, result);
