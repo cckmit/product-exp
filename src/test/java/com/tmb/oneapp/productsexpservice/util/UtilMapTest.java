@@ -179,17 +179,6 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testCreateHeader() {
-        Map<String, Object> result = UtilMap.createHeader("1234", 0, 0);
-        HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("X-Correlation-ID", "1234");
-        hashMap.put("content-type", "application/json");
-        hashMap.put("pageNo", "0");
-        hashMap.put("pageSize", "0");
-        Assert.assertNotEquals(hashMap, result);
-    }
-
-    @Test
     public void testCreateHeader2() {
         String correlationId = "1234";
         Map<String, String> result = UtilMap.createHeader(correlationId);

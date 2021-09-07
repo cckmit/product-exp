@@ -486,12 +486,6 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testCreateHeader() {
-        Map<String, Object> header = UtilMap.createHeader(correlationId, 10, 1);
-        Assert.assertNotNull(header);
-    }
-
-    @Test
     public void testisCASADormant() {
         String responseCustomerExp = null;
 
