@@ -92,7 +92,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertNull(actual.getStatus());
         assertNull(actual.getData());
-        verify(buyActivityLogService, times(0)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(0)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getMsg(),
                 actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class BuyAlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
                 actual.getStatus().getMessage());
         assertEquals("19:00-20:00", (actual.getData()));
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -159,7 +159,7 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
                 actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -183,7 +183,7 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
                 actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -207,7 +207,7 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg(),
                 actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg(),
                 actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -255,7 +255,7 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(),
                 actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 
     @Test
@@ -279,6 +279,6 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
                 actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).ClickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
 }

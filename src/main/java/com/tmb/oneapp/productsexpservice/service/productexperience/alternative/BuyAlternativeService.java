@@ -122,7 +122,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
     private TmbOneServiceResponse<String> returnResponseAfterSavingActivityLog(String correlationId, String crmId, String reason,
                                                                                AlternativeBuyRequest alternativeBuyRequest,
                                                                                TmbOneServiceResponse<String> tmbOneServiceResponse) {
-        buyActivityLogService.ClickPurchaseButtonAtFundFactSheetScreen(correlationId, crmId, alternativeBuyRequest, reason);
+        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen(correlationId, crmId, alternativeBuyRequest, reason);
         return tmbOneServiceResponse;
     }
 }

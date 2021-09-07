@@ -30,7 +30,7 @@ class BuyActivityLogServiceTest {
                 .build();
 
         // When
-        buyActivityLogService.ClickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", alternativeBuyRequest, "reason");
+        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", alternativeBuyRequest, "reason");
 
         // Then
         verify(logActivityService).createLog(any());
@@ -45,7 +45,7 @@ class BuyActivityLogServiceTest {
                 .build();
 
         // When
-        buyActivityLogService.ClickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", alternativeBuyRequest, "reason");
+        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", alternativeBuyRequest, "reason");
 
         // Then
         verify(logActivityService).createLog(any());

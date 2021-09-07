@@ -33,7 +33,7 @@ public class BuyActivityLogService {
      * @return
      */
     @LogAround
-    public void ClickPurchaseButtonAtFundFactSheetScreen(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest, String reason) {
+    public void clickPurchaseButtonAtFundFactSheetScreen(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest, String reason) {
         BuyActivityLog activityData = new BuyActivityLog(
                 correlationId, String.valueOf(System.currentTimeMillis()),
                 BuyActivityEnums.CLICK_PURCHASE_BUTTON_AT_FUND_FACT_SHEET_SCREEN.getActivityTypeId());
