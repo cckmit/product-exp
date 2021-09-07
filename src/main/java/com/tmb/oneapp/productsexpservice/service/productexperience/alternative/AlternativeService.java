@@ -60,11 +60,11 @@ public class AlternativeService {
 
     @Autowired
     public AlternativeService(
-                              CommonServiceClient commonServiceClient,
-                              CustomerServiceClient customerServiceClient,
-                              AccountRequestClient accountRequestClient,
-                              InvestmentRequestClient investmentRequestClient,
-                              ProductExpAsyncService productExpAsyncService
+            CommonServiceClient commonServiceClient,
+            CustomerServiceClient customerServiceClient,
+            AccountRequestClient accountRequestClient,
+            InvestmentRequestClient investmentRequestClient,
+            ProductExpAsyncService productExpAsyncService
     ) {
         this.commonServiceClient = commonServiceClient;
         this.customerServiceClient = customerServiceClient;
@@ -75,6 +75,7 @@ public class AlternativeService {
 
     /**
      * Method validateServiceHour method  validate working hour for customer
+     *
      * @param correlationId
      * @param status
      * @return TmbStatusWithTime
@@ -83,7 +84,7 @@ public class AlternativeService {
     public ValidateServiceHourResponse validateServiceHour(String correlationId, TmbStatus status) {
         ValidateServiceHourResponse statusWithTime = new ValidateServiceHourResponse();
         try {
-            BeanUtils.copyProperties(status,statusWithTime);
+            BeanUtils.copyProperties(status, statusWithTime);
 
             ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = commonServiceClient
                     .getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
@@ -105,22 +106,21 @@ public class AlternativeService {
                     statusWithTime.setStartTime(startTime);
                     statusWithTime.setEndTime(endTime);
                 }
-
             }
             return statusWithTime;
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             statusWithTime.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
             statusWithTime.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            statusWithTime.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateServiceHour failed"));
+            statusWithTime.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE, "validateServiceHour failed"));
             statusWithTime.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return statusWithTime;
         }
     }
 
-
     /**
      * Method validateDateNotOverTwentyYearOld method vaidate age of customer
+     *
      * @param birthDate
      * @param status
      * @return TmbStatus
@@ -152,7 +152,6 @@ public class AlternativeService {
         }
     }
 
-
     /**
      * Method isCASADormant get Customer account and check dormant status
      *
@@ -161,12 +160,12 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateCASADormant(String correlationId, String crmId,TmbStatus status) {
+    public TmbStatus validateCASADormant(String correlationId, String crmId, TmbStatus status) {
         try {
             Map<String, String> invHeaderReqParameter = UtilMap.createHeader(correlationId);
             String responseCustomerExp = accountRequestClient.getAccountList(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
-            if(UtilMap.isCASADormant(responseCustomerExp)){
+            if (UtilMap.isCASADormant(responseCustomerExp)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
                 status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
@@ -175,7 +174,7 @@ public class AlternativeService {
         } catch (Exception e) {
             logger.error("========== accountRequestClient error ==========");
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateCASADormant failed"));
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE, "validateCASADormant failed"));
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
@@ -190,22 +189,21 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateSuitabilityExpired(String correlationId, String crmId,TmbStatus status) {
-
+    public TmbStatus validateSuitabilityExpired(String correlationId, String crmId, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
             ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity = investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
-            if(UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData())){
-                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg());
+            if (UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData())) {
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
             logger.error("========== investment callInvestmentFundSuitabilityService error ==========");
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateSuitabilityExpired failed"));
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE, "validateSuitabilityExpired failed"));
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC);
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
@@ -219,14 +217,14 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateIdCardExpired(String crmId,TmbStatus status) {
+    public TmbStatus validateIdCardExpired(String crmId, TmbStatus status) {
         CompletableFuture<CustGeneralProfileResponse> responseResponseEntity;
         try {
             responseResponseEntity = productExpAsyncService.fetchCustomerProfile(UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture.allOf(responseResponseEntity);
             CustGeneralProfileResponse responseData = responseResponseEntity.get();
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
-            if(UtilMap.isCustIDExpired(responseData)){
+            if (UtilMap.isCustIdExpired(responseData)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
                 status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
@@ -235,15 +233,15 @@ public class AlternativeService {
         } catch (Exception e) {
             logger.error("========== investment callInvestmentFundSuitabilityService error ==========");
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
-            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"validateIdCardExpired failed"));
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE, "validateIdCardExpired failed"));
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
     }
 
-
     /**
      * Method validateCasaAccountActiveOnce method validate customer active casa account
+     *
      * @param depositAccountList
      * @param status
      * @return TmbStatus
@@ -269,9 +267,9 @@ public class AlternativeService {
         return status;
     }
 
-
     /**
      * Method validateFatcaFlagNotValid method validate customer fatcaFlag
+     *
      * @param fatcaFlag
      * @param status
      * @return TmbStatus
@@ -295,6 +293,7 @@ public class AlternativeService {
 
     /**
      * Method validateKycAndIdCardExpire method validate ekyc and cardid expired
+     *
      * @param kycLimitFlag
      * @param expireDate
      * @param status
@@ -336,6 +335,7 @@ public class AlternativeService {
 
     /**
      * Method validateIdentityAssuranceLevel method validate customer assurance level
+     *
      * @param ekycIdentifyAssuranceLevel
      * @param status
      * @return TmbStatus
@@ -371,6 +371,7 @@ public class AlternativeService {
 
     /**
      * Method validateNationality method validate customer nationality
+     *
      * @param correlationId
      * @param mainNationality
      * @param secondNationality
@@ -399,20 +400,20 @@ public class AlternativeService {
 
     /**
      * Method validateCustomerRiskLevel method validate customer risk level
+     *
      * @param correlationId
      * @param customerInfo
      * @param status
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateCustomerRiskLevel(String correlationId,CustomerSearchResponse customerInfo, TmbStatus status,boolean isBuyFlow,boolean isFirstTrade) {
-        EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId,customerInfo);
+    public TmbStatus validateCustomerRiskLevel(String correlationId, CustomerSearchResponse customerInfo, TmbStatus status, boolean isBuyFlow, boolean isFirstTrade) {
+        EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId, customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
-
             String[] values = new String[2];
             values[0] = "C3";
-            if(isBuyFlow && isFirstTrade){
+            if (isBuyFlow && isFirstTrade) {
                 values[1] = "B3";
             }
 
@@ -420,14 +421,12 @@ public class AlternativeService {
                 isCustomerRiskLevelNotValid = true;
             }
 
-        }else{
-
+        } else {
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
             status.setMessage(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE);
-            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"));
+            status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE, "Customer Cal Risk"));
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
-
         }
 
         if (isCustomerRiskLevelNotValid) {
@@ -446,22 +445,20 @@ public class AlternativeService {
             EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
             ResponseEntity<TmbServiceResponse<EkycRiskCalculateResponse>> customerRiskResponse = customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
             return customerRiskResponse.getBody().getData();
-        }catch (FeignException feignException){
-            if(feignException.status() == HttpStatus.BAD_REQUEST.value()){
+        } catch (FeignException feignException) {
+            if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
                 try {
                     TmbServiceResponse<String> body = getResponseFromBadRequest(feignException);
-                    if(!StringUtils.isEmpty(body.getData())){
+                    if (!StringUtils.isEmpty(body.getData())) {
                         ObjectMapper obj = new ObjectMapper();
-                        return obj.convertValue(body.getData(),EkycRiskCalculateResponse.class);
+                        return obj.convertValue(body.getData(), EkycRiskCalculateResponse.class);
                     }
-                    logger.info("========== no data risk return from customer cal risk  ========== : {}",body);
+                    logger.info("========== no data risk return from customer cal risk  ========== : {}", body);
                 } catch (JsonProcessingException e) {
-                    logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED,e);
+                    logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
                 }
             }
-
         }
-
         return null;
     }
 
@@ -478,11 +475,9 @@ public class AlternativeService {
                     TmbServiceResponse.class));
         }
         return response;
-
     }
 
     private EkycRiskCalculateRequest mappingFieldToRequestEkycRiskCalculate(CustomerSearchResponse customerInfo) {
-
         return EkycRiskCalculateRequest.builder()
                 .businessCode(customerInfo.getBusinessTypeCode())
                 .cardId(customerInfo.getIdNumber())
@@ -540,7 +535,5 @@ public class AlternativeService {
                                 .build()
                 )
                 .build();
-
     }
-
 }

@@ -72,6 +72,6 @@ public class TimeUtil {
     }
 
     private static Date formatDateTime(String argStartTime) throws ParseException {
-        return new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM).parse(argStartTime);
+        return new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HH_MM).parse(argStartTime);
     }
 }

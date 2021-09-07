@@ -32,18 +32,18 @@ public class EligibleDepositAccountService {
         this.accountRequestClient = accountRequestClient;
     }
 
-    public List<DepositAccount> getEligibleDepositAccounts(String correlationId, String crmId,boolean isBuyAccount) {
+    public List<DepositAccount> getEligibleDepositAccounts(String correlationId, String crmId, boolean isBuyAccount) {
         List<DepositAccount> depositAccountList;
         try {
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
             CompletableFuture<String> accountInfo = CompletableFuture.completedFuture(accountRequestClient.getAccountList(UtilMap.createHeader(correlationId), crmId));
             CompletableFuture.allOf(fetchCommonConfigByModule, accountInfo);
 
-            depositAccountList = UtilMap.mappingAccount(fetchCommonConfigByModule.get(), accountInfo.get(),isBuyAccount);
+            depositAccountList = UtilMap.mappingAccount(fetchCommonConfigByModule.get(), accountInfo.get(), isBuyAccount);
             validateAccountList(depositAccountList);
             return depositAccountList;
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return newArrayList();
         }
     }

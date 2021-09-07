@@ -28,6 +28,9 @@ public class AlternativeBuyRequest {
 
     private String processFlag;
 
-    @JsonProperty(value = "fundClassNameThHub")
-    private String fundClassThaiHubName;
+    private String fundName;
+
+    private String fundThaiClassName;
+
+    private String fundEnglishClassName;
 }
