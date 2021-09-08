@@ -97,12 +97,14 @@ public class AlternativeServiceTest {
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
                 ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-        when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));    }
+        when(commonServiceClient.getCommonConfigByModule(anyString(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseCommon));
+    }
 
     @Test
     void should_return_status_code_2000001_when_call_validate_service_hour() {
         // Given
         mockNotPassServiceHour();
+
         // When
         ValidateServiceHourResponse actual = alternativeService.validateServiceHour(correlationId, TmbStatusUtil.successStatus());
 
@@ -110,12 +112,13 @@ public class AlternativeServiceTest {
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(), actual.getMessage());
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc(), actual.getDescription());
-        assertEquals("00:00",actual.getStartTime());
-        assertEquals("00:00",actual.getEndTime());
+        assertEquals("00:00", actual.getStartTime());
+        assertEquals("00:00", actual.getEndTime());
     }
 
     @Test
     void should_return_status_code_2000025_when_call_validate_age_is_not_over_twenty() {
+        // Given
         // When
         TmbStatus actual = alternativeService.validateDateNotOverTwentyYearOld("2010-07-08", TmbStatusUtil.successStatus());
 
@@ -127,7 +130,7 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000003_when_call_validate_casa_dormant() {
-        // given
+        // Given
         String accountResponse = "{\n" +
                 "\t\"status\": {\n" +
                 "\t\t\"code\": \"0000\",\n" +
@@ -156,10 +159,10 @@ public class AlternativeServiceTest {
                 "\t\t\"account_status_text\": \"ACTIVE\"\n" +
                 "\t}]\n" +
                 "}";
-        when(accountRequestClient.callCustomerExpService(any(),any())).thenReturn(accountResponse);
+        when(accountRequestClient.getAccountList(any(), any())).thenReturn(accountResponse);
 
         // When
-        TmbStatus actual = alternativeService.validateCASADormant("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateCASADormant("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(), actual.getCode());
@@ -169,26 +172,26 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000004_when_call_validate_suitability_expired() throws Exception {
-        // given
+        // Given
         TmbOneServiceResponse<SuitabilityInfo> suitabilityInfo = new TmbOneServiceResponse<>();
         ObjectMapper mapper = new ObjectMapper();
         SuitabilityInfo suitabilityInfoResponse = mapper.readValue(Paths.get("src/test/resources/investment/suitability/suitabilityinfo.json").toFile(), SuitabilityInfo.class);
         suitabilityInfo.setData(suitabilityInfoResponse);
 
-        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenReturn(ResponseEntity.ok(suitabilityInfo));
+        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(), any())).thenReturn(ResponseEntity.ok(suitabilityInfo));
 
         // When
-        TmbStatus actual = alternativeService.validateSuitabilityExpired("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","00000018592884", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateSuitabilityExpired("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXIRED.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc(), actual.getDescription());
     }
 
     @Test
     void should_return_status_code_2000009_when_call_validate_id_card_expired() throws Exception {
-        // given
+        // Given
         CustGeneralProfileResponse fundHolidayBody;
         ObjectMapper mapper = new ObjectMapper();
         fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/customer/customers_profile_idcard_expired.json").toFile(), CustGeneralProfileResponse.class);
@@ -227,10 +230,10 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000018_when_call_validate_risk_level_not_valid_at_buy_flow() {
-        //given
+        // Given
         TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
-        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
+        when(customerServiceClient.customerEkycRiskCalculate(any(), any())).thenReturn(ResponseEntity.ok(response));
 
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
@@ -240,7 +243,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),true,true);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), true, true);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
@@ -250,10 +253,10 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_0000_when_call_validate_risk_level_not_valid_at_sell_flow() {
-        //given
+        // Given
         TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
-        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
+        when(customerServiceClient.customerEkycRiskCalculate(any(), any())).thenReturn(ResponseEntity.ok(response));
 
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
@@ -263,7 +266,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), false, true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
@@ -273,10 +276,10 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_mf999_when_call_validate_risk_level_not_valid() {
-        //given
+        // Given
         TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(null);
-        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenReturn(ResponseEntity.ok(response));
+        when(customerServiceClient.customerEkycRiskCalculate(any(), any())).thenReturn(ResponseEntity.ok(response));
 
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
@@ -286,18 +289,18 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), false, true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY_MESSAGE, actual.getMessage());
-        assertEquals(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE,"Customer Cal Risk"), actual.getDescription());
+        assertEquals(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE, "Customer Cal Risk"), actual.getDescription());
     }
 
     @Test
     void should_return_error_mf999_when_call_validate_risk_level_not_valid() {
-        //given
-        when(customerServiceClient.customerEkycRiskCalculate(any(),any())).thenThrow(FeignException.class);
+        // Given
+        when(customerServiceClient.customerEkycRiskCalculate(any(), any())).thenThrow(FeignException.class);
 
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
@@ -307,7 +310,7 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId,customerSearchResponse,  TmbStatusUtil.successStatus(),false,true);
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), false, true);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
@@ -315,9 +318,9 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000018_when_call_validate_customer_assurance_level() {
-
+        // Given
         // When
-        TmbStatus actual = alternativeService.validateIdentityAssuranceLevel("100",  TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateIdentityAssuranceLevel("100", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getCode());
@@ -327,12 +330,11 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000018_when_call_validate_customer_nationality() throws Exception {
-
-        // given
+        // Given
         mockCommonConfig();
 
         // When
-        TmbStatus actual = alternativeService.validateNationality(correlationId,"TH","US",TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateNationality(correlationId, "TH", "US", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getCode());
@@ -342,8 +344,9 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000034_when_call_validateOpenPortfolioService_validate_customer_not_fill_fatca_form() throws Exception {
+        // Given
         // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("0",TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("0", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getCode());
@@ -353,14 +356,13 @@ public class AlternativeServiceTest {
 
     @Test
     void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired() throws Exception {
+        // Given
         // When
-        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0","2021-07-08",TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0", "2021-07-08", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getMessage());
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc(), actual.getDescription());
     }
-
-
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustGeneralProfileResponse;
@@ -11,12 +12,10 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
-import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -26,14 +25,13 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassLi
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementList;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -56,8 +54,9 @@ public class UtilMap {
      * @param accountDetailResponse
      * @param fundRuleResponse
      * @param statementResponse
-     * @return FundAccountRs
+     * @return FundAccountResponse
      */
+    @LogAround
     public static FundAccountResponse validateTMBResponse(AccountDetailResponse accountDetailResponse,
                                                           FundRuleResponse fundRuleResponse,
                                                           StatementResponse statementResponse) {
@@ -77,8 +76,10 @@ public class UtilMap {
      *
      * @param accountDetailResponse
      * @param fundRuleResponse
+     * @param statementResponse
      * @return FundAccountDetail
      */
+    @LogAround
     public static FundAccountDetail mappingResponse(AccountDetailResponse accountDetailResponse,
                                                     FundRuleResponse fundRuleResponse,
                                                     StatementResponse statementResponse) {
@@ -109,8 +110,9 @@ public class UtilMap {
      * @param fundHolidayBody
      * @param responseCommon
      * @param responseCustomerExp
-     * @return FundPaymentDetailRs
+     * @return FundPaymentDetailResponse
      */
+    @LogAround
     public FundPaymentDetailResponse mappingPaymentResponse(FundRuleResponse fundRuleResponse,
                                                             FundHolidayBody fundHolidayBody,
                                                             List<CommonData> responseCommon,
@@ -140,7 +142,7 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
-            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp,true));
+            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp, true));
             return fundPaymentDetailResponse;
         }
     }
@@ -150,9 +152,11 @@ public class UtilMap {
      *
      * @param responseCommon
      * @param responseCustomerExp
-     * @return FundPaymentDetailRs
+     * @param isBuyAccount
+     * @return List<DepositAccount>
      */
-    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp,boolean isBuyAccount) {
+    @LogAround
+    public static List<DepositAccount> mappingAccount(List<CommonData> responseCommon, String responseCustomerExp, boolean isBuyAccount) {
         List<DepositAccount> depositAccountList = new ArrayList<>();
 
         try {
@@ -164,9 +168,9 @@ public class UtilMap {
             DepositAccount depositAccount;
             List<String> eligibleAccountCodeBuy;
 
-            if(isBuyAccount){
+            if (isBuyAccount) {
                 eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeBuy();
-            }else{
+            } else {
                 eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeSell();
             }
 
@@ -191,7 +195,7 @@ public class UtilMap {
                 }
             }
         } catch (JsonProcessingException e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return depositAccountList;
     }
@@ -200,8 +204,9 @@ public class UtilMap {
      * Generic Method to convert Account Type form 3 digits to 1 digit
      *
      * @param productType
-     * @return String Account Type
+     * @return account type string
      */
+    @LogAround
     public static String convertAccountType(String productType) {
         String accType = "";
         switch (productType) {
@@ -220,23 +225,24 @@ public class UtilMap {
     /**
      * Generic Method to Get Current Date with Format
      *
-     * @param startTime the start HHMM
-     * @param endTime   the end HHMM
+     * @param startTime the start time
+     * @param endTime   the end time
      * @return boolean
      */
+    @LogAround
     public static boolean isBusinessClose(String startTime, String endTime) {
         boolean isClose = false;
         try {
             if (!StringUtils.isEmpty(startTime) && !StringUtils.isEmpty(endTime)) {
                 Calendar currentDate = Calendar.getInstance();
-                SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HHMM);
+                SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat(ProductsExpServiceConstant.MF_TIME_WITH_COLON_HH_MM);
                 String getCurrentTime = simpleDateTimeFormat.format(currentDate.getTime());
                 if (isTimeBetweenTwoTime(startTime, endTime, getCurrentTime)) {
                     isClose = true;
                 }
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return isClose;
     }
@@ -245,23 +251,9 @@ public class UtilMap {
      * Generic Method to create HTTP Header
      *
      * @param correlationId
-     * @return
+     * @return Map
      */
-    public static Map<String, Object> createHeader(String correlationId, int pageSize, int pageNo) {
-        Map<String, Object> invHeaderReqParameter = new HashMap<>();
-        invHeaderReqParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
-        invHeaderReqParameter.put(ProductsExpServiceConstant.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        invHeaderReqParameter.put(ProductsExpServiceConstant.PAGE_SIZE, pageSize);
-        invHeaderReqParameter.put(ProductsExpServiceConstant.PAGE_NO, pageNo);
-        return invHeaderReqParameter;
-    }
-
-    /**
-     * Generic Method to create HTTP Header
-     *
-     * @param correlationId
-     * @return
-     */
+    @LogAround
     public static Map<String, String> createHeader(String correlationId) {
         Map<String, String> investmentHeader = new HashMap<>();
         investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
@@ -272,8 +264,9 @@ public class UtilMap {
      * Method to check suitability is expire from MF service
      *
      * @param suitabilityInfo
-     * @return
+     * @return boolean
      */
+    @LogAround
     public static boolean isSuitabilityExpire(SuitabilityInfo suitabilityInfo) {
         boolean isExpire = true;
         try {
@@ -282,7 +275,7 @@ public class UtilMap {
                 return isExpire;
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return false;
     }
@@ -291,18 +284,19 @@ public class UtilMap {
      * Method to check citizen id expire with current date
      *
      * @param customerProfileResponseData
-     * @return
+     * @return boolean
      */
-    public static boolean isCustIDExpired(CustGeneralProfileResponse customerProfileResponseData) {
+    @LogAround
+    public static boolean isCustIdExpired(CustGeneralProfileResponse customerProfileResponseData) {
         try {
             if (!StringUtils.isEmpty(customerProfileResponseData) && customerProfileResponseData.getIdExpireDate() != null) {
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_DATE_YYYYMMDD);
+                SimpleDateFormat sdf = new SimpleDateFormat(ProductsExpServiceConstant.MF_DATE_YYYY_MM_DD);
                 String getCurrentTime = sdf.format(cal.getTime());
                 return getCurrentTime.compareTo(customerProfileResponseData.getIdExpireDate()) > 0;
             }
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
         return false;
     }
@@ -313,6 +307,7 @@ public class UtilMap {
      * @param responseCustomerExp
      * @return boolean
      */
+    @LogAround
     public static boolean isCASADormant(String responseCustomerExp) {
         if (StringUtils.isEmpty(responseCustomerExp)) {
             return true;
@@ -343,7 +338,7 @@ public class UtilMap {
                 }
                 return (size == countDormant.size());
             } catch (JsonProcessingException e) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             }
             return false;
         }
@@ -355,6 +350,7 @@ public class UtilMap {
      * @param timeHHmm
      * @return String
      */
+    @LogAround
     public static String deleteColonDateFormat(String timeHHmm) {
         String changeTime = "";
         if (!StringUtils.isEmpty(timeHHmm)) {
@@ -369,6 +365,7 @@ public class UtilMap {
      * @param fundClass
      * @return List<FundClass>
      */
+    @LogAround
     public static List<FundClass> mappingFundListData(List<FundClass> fundClass) {
         List<FundClass> fundClassData = new ArrayList<>();
         try {
@@ -382,7 +379,7 @@ public class UtilMap {
                 fundClassData.add(fundClassLoop);
             }
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return fundClassData;
     }
@@ -393,6 +390,7 @@ public class UtilMap {
      * @param fundClass
      * @return List<FundSearch>
      */
+    @LogAround
     public static List<FundSearch> mappingFundSearchListData(List<FundClass> fundClass) {
         FundSearch fundSearch;
         List<FundSearch> searchList = new ArrayList<>();
@@ -423,7 +421,7 @@ public class UtilMap {
             fundListDistinctByFundCode = searchList.stream().filter(e -> nameSet.add(e.getFundCode())).collect(Collectors.toList());
             return fundListDistinctByFundCode;
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return searchList;
     }
@@ -434,6 +432,7 @@ public class UtilMap {
      * @param fundAccountRequest
      * @return FundAccountRequestBody
      */
+    @LogAround
     public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRequest fundAccountRequest) {
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
         fundAccountRequestBody.setFundCode(fundAccountRequest.getFundCode());
@@ -447,6 +446,7 @@ public class UtilMap {
      * @param fundAccountRequest
      * @return FundRuleRequestBody
      */
+    @LogAround
     public static FundRuleRequestBody mappingRequestFundRule(Object fundAccountRequest) {
         FundRuleRequestBody fundRuleRequestBody = new FundRuleRequestBody();
         if (fundAccountRequest instanceof FundAccountRequest) {
@@ -467,8 +467,11 @@ public class UtilMap {
      * Generic Method to mappingRequestStmtByPort
      *
      * @param fundAccountRequest
-     * @return OrderStmtByPortRq
+     * @param startPage
+     * @param endPage
+     * @return OrderStmtByPortRequest
      */
+    @LogAround
     public static OrderStmtByPortRequest mappingRequestStmtByPort(FundAccountRequest fundAccountRequest, String startPage, String endPage) {
         OrderStmtByPortRequest orderStmtByPortRequest = new OrderStmtByPortRequest();
         orderStmtByPortRequest.setPortfolioNumber(fundAccountRequest.getPortfolioNumber());
@@ -479,23 +482,12 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingRequestFundFactSheet
+     * Generic Method to mapTmbOneServiceResponse
      *
-     * @param alternativeBuyRequest
-     * @return fundFactSheetRequestBody
+     * @param optionalResponse
+     * @return TmbOneServiceResponse
      */
-    public static FundFactSheetRequestBody mappingRequestAlternative(String crmId, AlternativeBuyRequest alternativeBuyRequest) {
-        FundFactSheetRequestBody fundFactSheetRequestBody = new FundFactSheetRequestBody();
-        fundFactSheetRequestBody.setCrmId(crmId);
-        fundFactSheetRequestBody.setFundCode(alternativeBuyRequest.getFundCode());
-        fundFactSheetRequestBody.setProcessFlag(alternativeBuyRequest.getProcessFlag());
-        fundFactSheetRequestBody.setUnitHolderNumber(alternativeBuyRequest.getUnitHolderNumber());
-        fundFactSheetRequestBody.setFundHouseCode(alternativeBuyRequest.getFundHouseCode());
-        fundFactSheetRequestBody.setOrderType(alternativeBuyRequest.getOrderType());
-        fundFactSheetRequestBody.setFundClassThaiHubName(alternativeBuyRequest.getFundClassThaiHubName());
-        return fundFactSheetRequestBody;
-    }
-
+    @LogAround
     @SuppressWarnings("all")
     public static TmbOneServiceResponse mapTmbOneServiceResponse(Optional<ByteBuffer> optionalResponse) {
         try {
@@ -513,15 +505,16 @@ public class UtilMap {
     /**
      * Generic Method to mappingCache
      *
-     * @param jsonStr
+     * @param jsonString
      * @param key
      * @return CacheModel
      */
-    public static CacheModel mappingCache(String jsonStr, String key) {
+    @LogAround
+    public static CacheModel mappingCache(String jsonString, String key) {
         CacheModel cacheModel = new CacheModel();
         cacheModel.setKey(key);
         cacheModel.setTtl(ProductsExpServiceConstant.INVESTMENT_CACHE_TIME_EXPIRE);
-        cacheModel.setValue(jsonStr);
+        cacheModel.setValue(jsonString);
         return cacheModel;
     }
 
@@ -532,6 +525,7 @@ public class UtilMap {
      * @param customerFavoriteFundDataList
      * @return List<FundClassList>
      */
+    @LogAround
     public static List<FundClassListInfo> mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustomerFavoriteFundData> customerFavoriteFundDataList) {
         List<FundClassListInfo> fundClassLists = new ArrayList<>();
         for (FundClassListInfo fundClass : fundClassList) {
@@ -555,6 +549,7 @@ public class UtilMap {
      * @param fundSummaryResponse
      * @return List<FundClassList>
      */
+    @LogAround
     public static List<FundClassListInfo> mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryResponse fundSummaryResponse) {
         List<FundClassListInfo> fundClassLists = new ArrayList<>();
         try {
@@ -569,7 +564,7 @@ public class UtilMap {
                 fundClassLists.add(fundClass);
             }
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return fundClassLists;
     }
@@ -581,6 +576,7 @@ public class UtilMap {
      * @param fundHouseList
      * @return FundClassListInfo
      */
+    @LogAround
     public static FundClassListInfo mappingBoughtFlagWithFundHouse(FundClassListInfo fundClass, List<FundHouse> fundHouseList) {
         try {
             for (FundHouse fundHouse : fundHouseList) {
@@ -593,15 +589,16 @@ public class UtilMap {
                 }
             }
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return fundClass;
     }
 
     /**
      * @param crmId
-     * @return
+     * @return full digit of crmId
      */
+    @LogAround
     public static String fullCrmIdFormat(String crmId) {
         if (crmId.length() > 14) {
             return crmId;
@@ -614,6 +611,7 @@ public class UtilMap {
      * @param crmId
      * @return half digit of crmId
      */
+    @LogAround
     public static String halfCrmIdFormat(String crmId) {
         if (crmId.length() <= 14) {
             return crmId;
@@ -621,29 +619,29 @@ public class UtilMap {
         return crmId.substring(crmId.length() - ProductsExpServiceConstant.DIGIT_OF_CRM_ID);
     }
 
-    public static String getAccountTypeFromAccountNumber(String accountNumber){
+    @LogAround
+    public static String getAccountTypeFromAccountNumber(String accountNumber) {
         int accLength = accountNumber.length();
-        char fouthDigit;
+        char fourthDigit;
         String accountType = "";
 
-        if(accLength == 14){
-            fouthDigit = accountNumber.charAt(7);
-        }else{
-            fouthDigit = accountNumber.charAt(3);
+        if (accLength == 14) {
+            fourthDigit = accountNumber.charAt(7);
+        } else {
+            fourthDigit = accountNumber.charAt(3);
         }
 
-        if(fouthDigit == '2' || fouthDigit == '7' || fouthDigit == '9'){
+        if (fourthDigit == '2' || fourthDigit == '7' || fourthDigit == '9') {
             accountType = ProductsExpServiceConstant.ACC_TYPE_SDA; // "SA/SDA"
-        }else if (fouthDigit == '1'){
+        } else if (fourthDigit == '1') {
             accountType = ProductsExpServiceConstant.ACC_TYPE_DDA; // "CA/DDA"
-        }else if (fouthDigit == '3'){
+        } else if (fourthDigit == '3') {
             accountType = ProductsExpServiceConstant.ACC_TYPE_CCA; // "TD/CDA"
-        }else if (fouthDigit == '0' || fouthDigit == '5' || fouthDigit == '6'){
+        } else if (fourthDigit == '0' || fourthDigit == '5' || fourthDigit == '6') {
             accountType = ""; // "LOAN"
-        }else{
+        } else {
             accountType = ""; // "CC"
         }
         return accountType;
     }
-
 }

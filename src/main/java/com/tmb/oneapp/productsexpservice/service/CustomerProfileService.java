@@ -23,6 +23,7 @@ import com.tmb.common.model.address.District;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.address.SubDistrict;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
+import com.tmb.common.model.legacy.rsl.common.ob.facility.InstantFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
@@ -36,6 +37,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanInstant
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustAddressProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CustIndividualProfileInfo;
 import com.tmb.oneapp.productsexpservice.model.request.AddressCommonSearchReq;
+import com.tmb.oneapp.productsexpservice.model.request.FetchWorkInfoReq;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.DependDefaultEntry;
 import com.tmb.oneapp.productsexpservice.model.response.WorkingInfoResponse;
@@ -51,7 +53,6 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoR
 public class CustomerProfileService {
 
 	private static final TMBLogger<CustomerProfileService> logger = new TMBLogger<>(CustomerProfileService.class);
-	
 
 	private CustomerServiceClient customerServiceClient;
 
@@ -109,12 +110,12 @@ public class CustomerProfileService {
 			individualProfile.setCitizenId(generalProfile.getCitizenId());
 			individualProfile.setCustomerFullEN(generalProfile.getEngFname() + " " + generalProfile.getEngLname());
 			individualProfile.setCustomerFullTh(generalProfile.getThaFname() + " " + generalProfile.getThaLname());
-			if(isPermanentType(generalProfile.getIdExpireDate())) {
+			if (isPermanentType(generalProfile.getIdExpireDate())) {
 				individualProfile.setExpireDate(null);
-			}else {
+			} else {
 				individualProfile.setExpireDate(generalProfile.getIdExpireDate());
 			}
-			
+
 			individualProfile.setMobileNo(generalProfile.getPhoneNoFull());
 			individualProfile.setNationality(generalProfile.getNationality());
 			individualProfile.setFirstNameTh(generalProfile.getThaFname());
@@ -128,9 +129,10 @@ public class CustomerProfileService {
 		}
 		return individualProfile;
 	}
-	
+
 	/**
 	 * Logic for handle expire date
+	 * 
 	 * @param idExpireDate
 	 * @return
 	 */
@@ -251,6 +253,7 @@ public class CustomerProfileService {
 	 * Look up working information
 	 *
 	 * @param crmId
+	 * @param workInfoReq
 	 * @param businessTypeCode
 	 * @param countryOfIncome
 	 * @param occupationCode
@@ -258,7 +261,7 @@ public class CustomerProfileService {
 	 * @throws ServiceException
 	 * @throws RemoteException
 	 */
-	public WorkingInfoResponse getWorkingInformation(String crmId, String correlationId)
+	public WorkingInfoResponse getWorkingInformation(String crmId, String correlationId, FetchWorkInfoReq workInfoReq)
 			throws RemoteException, ServiceException {
 		WorkingInfoResponse response = new WorkingInfoResponse();
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
@@ -304,7 +307,7 @@ public class CustomerProfileService {
 
 		createdIncomeCriteriaDependency(response, response.getIncomeBaseSalary());
 
-		createSourceOfData(response, crmId);
+		createSourceOfData(response, crmId, workInfoReq);
 
 		return response;
 	}
@@ -314,17 +317,51 @@ public class CustomerProfileService {
 	 * 
 	 * @param response
 	 * @param crmId
+	 * @param workInfoReq
 	 */
-	private void createSourceOfData(WorkingInfoResponse response, String crmId) {
+	private void createSourceOfData(WorkingInfoResponse response, String crmId, FetchWorkInfoReq workInfoReq) {
 		try {
 			ResponseInstantLoanGetEligibleProduct responseInstantLoadGetEligibleProduct = instnceGetEligibleProductClient
 					.getEligibleProduct(crmId);
-
-			InstantCreditCard instamtCard = responseInstantLoadGetEligibleProduct.getBody().getInstantCreditCard()[0];
-			response.setSourceOfData(instamtCard.getSourceOfData());
+			String sourceOfData = mappingSourceOfData(responseInstantLoadGetEligibleProduct, workInfoReq);
+			response.setSourceOfData(sourceOfData);
 		} catch (RemoteException | ServiceException e) {
 			logger.error(e.toString(), e);
 		}
+	}
+
+	/**
+	 * Mapping source of Data in come request
+	 * 
+	 * @param responseInstantLoadGetEligibleProduct
+	 * @param workInfoReq
+	 * @return
+	 */
+	private String mappingSourceOfData(ResponseInstantLoanGetEligibleProduct responseInstantLoadGetEligibleProduct,
+			FetchWorkInfoReq workInfoReq) {
+		com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body body = responseInstantLoadGetEligibleProduct
+				.getBody();
+
+		InstantCreditCard[] instanceCreditCardArry = body.getInstantCreditCard();
+		if (Objects.nonNull(instanceCreditCardArry)) {
+			for (InstantCreditCard creditcard : instanceCreditCardArry) {
+				if (creditcard.getProductType().equals(workInfoReq.getProductCode())) {
+					return creditcard.getSourceOfData();
+				}
+
+			}
+		}
+
+		InstantFacility[] instanceFacilityArry = body.getInstantFacility();
+		if (Objects.nonNull(instanceFacilityArry)) {
+			for (InstantFacility instanceFacility : instanceFacilityArry) {
+				if (instanceFacility.getCaCampaignCode().equals(workInfoReq.getProductCode())) {
+					return instanceFacility.getSourceOfData();
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**

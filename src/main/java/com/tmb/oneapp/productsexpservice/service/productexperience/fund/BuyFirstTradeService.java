@@ -32,13 +32,13 @@ public class BuyFirstTradeService {
     }
 
     @LogAround
-    public TmbOneServiceResponse<TradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest){
+    public TmbOneServiceResponse<TradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest) {
         TmbOneServiceResponse<TradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         try {
-            CompletableFuture<OccupationInquiryResponseBody> occupationInquiry = investmentAsyncService.fetchOccupationInquiry(headerParameter,crmId);
-            CompletableFuture<FirstTradeResponseBody> firstTrade = investmentAsyncService.getFirstTrade(headerParameter,FirstTradeRequestBody.builder()
+            CompletableFuture<OccupationInquiryResponseBody> occupationInquiry = investmentAsyncService.fetchOccupationInquiry(headerParameter, crmId);
+            CompletableFuture<FirstTradeResponseBody> firstTrade = investmentAsyncService.getFirstTrade(headerParameter, FirstTradeRequestBody.builder()
                     .fundCode(tradeOccupationRequest.getFundCode())
                     .portfolioNumber(tradeOccupationRequest.getPortfolioNumber())
                     .build());
@@ -52,14 +52,11 @@ public class BuyFirstTradeService {
                     .occupationDescription(occupationInquiryResponseBody.getOccupationDescription())
                     .build());
             return tmbOneServiceResponse;
-
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
             return tmbOneServiceResponse;
         }
-
     }
-
 }

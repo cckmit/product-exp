@@ -22,33 +22,30 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
 
     @LogAround
     public TmbOneServiceResponse<String> validationSell(String correlationId, String crmId) {
-
         TmbOneServiceResponse<String> tmbOneServicesResponse = new TmbOneServiceResponse();
         try {
 
-            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
+            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId, crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServicesResponse.setStatus(status);
 
-            tmbOneServicesResponse = validateSellAndSwitch(correlationId,customerInfo,tmbOneServicesResponse,status);
-            if(!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+            tmbOneServicesResponse = validateSellAndSwitch(correlationId, customerInfo, tmbOneServicesResponse, status);
+            if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServicesResponse;
             }
 
             // validate suitability expired
-            tmbOneServicesResponse = validateSuitabilityExpired(correlationId,crmId,tmbOneServicesResponse,status);
+            tmbOneServicesResponse = validateSuitabilityExpired(correlationId, crmId, tmbOneServicesResponse, status);
             if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServicesResponse;
             }
 
             return tmbOneServicesResponse;
-
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             tmbOneServicesResponse.setStatus(null);
             tmbOneServicesResponse.setData(null);
             return tmbOneServicesResponse;
         }
     }
-
 }

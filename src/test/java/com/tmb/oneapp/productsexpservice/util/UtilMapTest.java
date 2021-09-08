@@ -160,7 +160,7 @@ public class UtilMapTest {
         list.setFundHouseCode("1234");
         FundPaymentDetailResponse fundPaymentDetailResponse = new FundPaymentDetailResponse();
         fundPaymentDetailResponse.setFundRule(list);
-        List<DepositAccount> depositAccountList = UtilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp",true);
+        List<DepositAccount> depositAccountList = UtilMap.mappingAccount(Arrays.asList(data), "responseCustomerExp", true);
         fundPaymentDetailResponse.setDepositAccountList(depositAccountList);
         data.setAccount290Url("1234");
         assertNotEquals(data.getAccount290Url(), depositAccountList);
@@ -176,17 +176,6 @@ public class UtilMapTest {
     public void testIsBusinessClose() {
         boolean result = UtilMap.isBusinessClose("startTime", "endTime");
         Assert.assertEquals(false, result);
-    }
-
-    @Test
-    public void testCreateHeader() {
-        Map<String, Object> result = UtilMap.createHeader("1234", 0, 0);
-        HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("X-Correlation-ID", "1234");
-        hashMap.put("content-type", "application/json");
-        hashMap.put("pageNo", "0");
-        hashMap.put("pageSize", "0");
-        Assert.assertNotEquals(hashMap, result);
     }
 
     @Test
@@ -209,7 +198,7 @@ public class UtilMapTest {
 
     @Test
     public void testIsCustIDExpired() {
-        boolean result = UtilMap.isCustIDExpired(null);
+        boolean result = UtilMap.isCustIdExpired(null);
         Assert.assertEquals(false, result);
     }
 
@@ -271,17 +260,6 @@ public class UtilMapTest {
         OrderStmtByPortRequest portRequest = new OrderStmtByPortRequest();
         portRequest.setFundCode("1234");
         Assert.assertEquals(portRequest.getFundCode(), result.getFundCode());
-    }
-
-    @Test
-    public void testMappingRequestAlternative() {
-        String crmId = "4488";
-        FundFactSheetRequestBody body = new FundFactSheetRequestBody();
-        body.setFundCode("1234");
-        AlternativeBuyRequest result = UtilMap.mappingRequestAlternative(UtilMap.fullCrmIdFormat(crmId), body);
-        AlternativeBuyRequest alternativeBuyRequest = new AlternativeBuyRequest();
-        alternativeBuyRequest.setFundCode("1234");
-        Assert.assertEquals(alternativeBuyRequest.getFundCode(), result.getFundCode());
     }
 
     @Test

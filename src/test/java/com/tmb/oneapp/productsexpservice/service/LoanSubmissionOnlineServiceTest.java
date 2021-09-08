@@ -18,14 +18,12 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
+import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
-import com.tmb.oneapp.productsexpservice.model.response.lending.CustomerInformationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.LoanSubmissionGetCustomerAgeResponse;
-import com.tmb.oneapp.productsexpservice.model.response.lending.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
+import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.Dropdowns;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
@@ -348,11 +346,6 @@ class LoanSubmissionOnlineServiceTest {
         response.setIdIssueCtry1("111");
         response.setAddress(address1);
         response.setResidentFlag(Collections.singletonList(resident));
-//        ResponseIndividual response = new ResponseIndividual();
-//        Header header = new Header();
-//        header.setResponseCode("MSG_000");
-//        response.setHeader(header);
-//        response.setBody(null);
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
         oneServiceResponse.setData(response);
@@ -500,8 +493,9 @@ class LoanSubmissionOnlineServiceTest {
         instantLoanCalUWRequest.setCaId(BigDecimal.TEN);
         instantLoanCalUWRequest.setProduct("RC01");
         instantLoanCalUWRequest.setTriggerFlag("Y");
+        instantLoanCalUWRequest.setLoanDay1Set("Y");
 
-        when(lendingServiceClient.checkApprovedStatus(instantLoanCalUWRequest.getCaId(),instantLoanCalUWRequest.getTriggerFlag(),instantLoanCalUWRequest.getProduct())).thenReturn(ResponseEntity.ok(mockCalUW()));
+        when(lendingServiceClient.checkApprovedStatus(instantLoanCalUWRequest.getCaId(),instantLoanCalUWRequest.getTriggerFlag(),instantLoanCalUWRequest.getProduct(),instantLoanCalUWRequest.getLoanDay1Set())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
         InstantLoanCalUWResponse actualResult = loanSubmissionOnlineService.checkCalculateUnderwriting(instantLoanCalUWRequest);
 
@@ -515,12 +509,13 @@ class LoanSubmissionOnlineServiceTest {
         instantLoanCalUWRequest.setCaId(BigDecimal.TEN);
         instantLoanCalUWRequest.setProduct("RC01");
         instantLoanCalUWRequest.setTriggerFlag("Y");
+        instantLoanCalUWRequest.setLoanDay1Set("Y");
 
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneServiceResponse = new TmbOneServiceResponse<InstantLoanCalUWResponse>();
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
                 loanSubmissionOnlineService.checkCalculateUnderwriting(instantLoanCalUWRequest));
@@ -533,9 +528,10 @@ class LoanSubmissionOnlineServiceTest {
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G");
         calUWReq.setTriggerFlag("Y");
+        calUWReq.setLoanDay1Set("Y");
         calUWReq.setCaId(BigDecimal.TEN);
 
-        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(mockCalUW()));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any(),any())).thenReturn(ResponseEntity.ok(mockCalUW()));
 
         InstantLoanCalUWResponse actualResult = loanSubmissionOnlineService.checkCalculateUnderwriting(calUWReq);
 
@@ -548,6 +544,7 @@ class LoanSubmissionOnlineServiceTest {
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G");
+        calUWReq.setLoanDay1Set("Y");
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.TEN);
 
@@ -555,10 +552,46 @@ class LoanSubmissionOnlineServiceTest {
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(lendingServiceClient.checkApprovedStatus(any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.checkApprovedStatus(any(),any(),any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
                 loanSubmissionOnlineService.checkCalculateUnderwriting(calUWReq));
+
+    }
+
+
+    @Test
+    public void testGetEAppSuccess() throws TMBCommonException {
+
+        EAppRequest request = new EAppRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+
+        when(lendingServiceClient.getEApp(correlationId,crmid, request.getCaId())).thenReturn(ResponseEntity.ok(mockEApp()));
+
+        EAppResponse actualResult = loanSubmissionOnlineService.getEAppData(correlationId,crmid, request.getCaId());
+
+        Assert.assertNotNull(actualResult);
+
+    }
+
+    @Test
+    public void testGetEAppDetailFailed() {
+
+        EAppRequest request = new EAppRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+
+        TmbOneServiceResponse<EAppResponse> oneServiceResponse = new TmbOneServiceResponse<EAppResponse>();
+
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+
+        when(lendingServiceClient.getEApp(anyString(),anyString(), anyLong())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+
+        assertThrows(Exception.class, () ->
+                loanSubmissionOnlineService.getEAppData(correlationId,crmid, request.getCaId()));
 
     }
 
@@ -694,6 +727,56 @@ class LoanSubmissionOnlineServiceTest {
         pricingList.add(pricing);
         instantLoanCalUWResponse.setPricings(pricingList);
         return pricings;
+    }
+
+    private TmbOneServiceResponse<EAppResponse>  mockEApp() {
+        TmbOneServiceResponse<EAppResponse> oneServiceResponse = new TmbOneServiceResponse<EAppResponse>();
+        EAppResponse response = new EAppResponse();
+        response.setProductNameTh("xx");
+        response.setProductType("xx");
+        response.setAppNo("xx");
+        response.setEmploymentStatus("xx");
+        response.setSalary(BigDecimal.ONE);
+        response.setOtherIncome(BigDecimal.ONE);
+        response.setInterest(BigDecimal.ONE);
+        response.setPaymentMethod("xx");
+        response.setPaymentAccountName("xx");
+        response.setPaymentPlan("xx");
+        response.setPaymentCriteria("xx");
+        response.setIdType("xx");
+        response.setIssueCountry("xx");
+        response.setIssueDate(Calendar.getInstance());
+        response.setExpiryDate(Calendar.getInstance());
+        response.setNameTh("xxx");
+        response.setNameEn("xxx");
+        response.setBirthDay(Calendar.getInstance());
+        response.setMobileNo("xxx");
+        response.setEducationLevel("02");
+        response.setNationality("xxx");
+        response.setMaritalStatus("xxx");
+        response.setPlaceOfBirth("xxx");
+        response.setEmail("xxx");
+        response.setContactAddress("xxx");
+        response.setResidentStatus("xxx");
+        response.setOccupation("xxx");
+        response.setRmOccupation("xxx");
+        response.setBusinessType("xxx");
+        response.setBusinessSubType("xxx");
+        response.setContractType("xxx");
+        response.setWorkPeriodYear("xxx");
+        response.setWorkPeriodMonth("xxx");
+        response.setWorkName("xxx");
+        response.setWorkAddress("xxx");
+        response.setWorkTel("xxx");
+        response.setWorkTelEx("xxx");
+        response.setIncomeBank("xxx");
+        response.setCashFlow(BigDecimal.ONE);
+        response.setSharePercent(BigDecimal.ONE);
+        response.setEStatement("xxx");
+        response.setDelivery("xxx");
+        oneServiceResponse.setData(response);
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
+        return oneServiceResponse;
     }
 
 }

@@ -1,32 +1,38 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
+import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.TmbOneServiceErrorResponse;
+import com.tmb.oneapp.productsexpservice.service.LoanService;
 import feign.FeignException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
 
 @RestController
 @Api(tags = "Lending Service")
@@ -34,9 +40,11 @@ public class LendingServiceController {
     private static final TMBLogger<LendingServiceController> logger =
             new TMBLogger<>(LendingServiceController.class);
     private final LendingServiceClient lendingServiceClient;
+    private final LoanService loanService;
 
-    public LendingServiceController(LendingServiceClient lendingServiceClient) {
+    public LendingServiceController(LendingServiceClient lendingServiceClient, LoanService loanService) {
         this.lendingServiceClient = lendingServiceClient;
+        this.loanService = loanService;
     }
 
     /**
@@ -84,11 +92,9 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
             @ApiParam(value = HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
-            @ApiParam(value = "file", required = true) @Valid @RequestPart MultipartFile file,
-            @ApiParam(value = "caId", required = true) @Valid @RequestPart String caId,
-            @ApiParam(value = "docCode", required = true) @Valid @RequestPart String docCode) throws TMBCommonException {
+            @Valid @RequestBody UploadDocumentRequest request) throws TMBCommonException {
         try {
-            return lendingServiceClient.uploadDocument(xCorrelationId, crmId, file, caId, docCode);
+            return lendingServiceClient.uploadDocument(xCorrelationId, crmId, request);
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -109,7 +115,7 @@ public class LendingServiceController {
 			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
 			@RequestBody ProductDetailRequest request) throws TMBCommonException {
 		try {
-			return lendingServiceClient.fetchProductOrientation(xCorrelationId, crmId, request);
+			return loanService.fetchProductOrientation(xCorrelationId, crmId, request);
 		} catch (FeignException e) {
 			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
 			if (response != null && response.getStatus() != null) {
@@ -123,4 +129,5 @@ public class LendingServiceController {
 		throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 				ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
 	}
+	
 }

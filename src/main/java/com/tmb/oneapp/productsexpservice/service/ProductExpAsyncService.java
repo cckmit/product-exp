@@ -84,7 +84,7 @@ public class ProductExpAsyncService {
                     .callInvestmentFundAccountDetailService(header, fundAccountRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -104,7 +104,7 @@ public class ProductExpAsyncService {
                     .callInvestmentFundRuleService(header, fundRuleRequestBody);
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -124,7 +124,7 @@ public class ProductExpAsyncService {
                     .callInvestmentStatementByPortService(header, orderStmtByPortRequest);
             return CompletableFuture.completedFuture(responseStmt.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -144,7 +144,7 @@ public class ProductExpAsyncService {
                     callInvestmentFundHolidayService(invHeaderReqParameter, fundCode);
             return CompletableFuture.completedFuture(responseFundHoliday.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -160,10 +160,10 @@ public class ProductExpAsyncService {
     @Async
     public CompletableFuture<String> fetchCustomerExp(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
-            String responseFundHoliday = accountRequestClient.callCustomerExpService(headerParameter, crmId);
+            String responseFundHoliday = accountRequestClient.getAccountList(headerParameter, crmId);
             return CompletableFuture.completedFuture(responseFundHoliday);
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -183,7 +183,7 @@ public class ProductExpAsyncService {
                     getCommonConfigByModule(correlationId, module);
             return CompletableFuture.completedFuture(responseCommon.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -202,7 +202,7 @@ public class ProductExpAsyncService {
                     getCustomerProfile(crmId);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -222,7 +222,7 @@ public class ProductExpAsyncService {
         try {
             return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -242,7 +242,7 @@ public class ProductExpAsyncService {
                     investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -263,7 +263,7 @@ public class ProductExpAsyncService {
                     investmentRequestClient.callInvestmentFundFavoriteService(headerParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }
@@ -283,7 +283,7 @@ public class ProductExpAsyncService {
                     investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
     }

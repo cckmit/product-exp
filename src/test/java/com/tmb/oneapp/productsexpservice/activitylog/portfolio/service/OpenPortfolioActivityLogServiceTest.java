@@ -61,7 +61,7 @@ class OpenPortfolioActivityLogServiceTest {
     void should_call_create_log_when_call_enter_correct_pin_given_correlation_id_and_crm_id_and_status_and_portfolio_number_and_portfolio_nickname() {
         // Given
         // When
-        openPortfolioActivityLogService.enterCorrectPin("1234567890", "00000018592884", "Success", "PT12345", "Buy house");
+        openPortfolioActivityLogService.enterPinIsCorrect("1234567890", "00000018592884", "Success", "PT12345", "Buy house");
 
         // Then
         verify(logActivityService).createLog(any());

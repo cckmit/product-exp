@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.tmb.common.model.RslCode;
+import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +27,5 @@ public class ProductDetailResponse {
     private ContinueApplyParams continueApplyParams;
     private Object productData;
     private List<RslCode> defaultRslCode;
+    private LoanStagingbar loanStagingBar;
 }

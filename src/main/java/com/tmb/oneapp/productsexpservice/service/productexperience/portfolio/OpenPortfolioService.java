@@ -8,6 +8,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
@@ -58,19 +59,23 @@ public class OpenPortfolioService {
 
     private CustomerExpServiceClient customerExpServiceClient;
 
+    private CacheServiceClient cacheServiceClient;
+
     @Autowired
     public OpenPortfolioService(
             InvestmentRequestClient investmentRequestClient,
             InvestmentAsyncService investmentAsyncService,
             OpenPortfolioActivityLogService openPortfolioActivityLogService,
             OpenPortfolioMapper openPortfolioMapper,
-            CustomerExpServiceClient customerExpServiceClient) {
+            CustomerExpServiceClient customerExpServiceClient,
+            CacheServiceClient cacheServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.investmentAsyncService = investmentAsyncService;
         this.openPortfolioActivityLogService = openPortfolioActivityLogService;
         this.openPortfolioMapper = openPortfolioMapper;
         this.customerExpServiceClient = customerExpServiceClient;
+        this.cacheServiceClient = cacheServiceClient;
 
     }
 
@@ -94,7 +99,7 @@ public class OpenPortfolioService {
 
                 DepositAccount depositAccount = null;
                 if (customerRequest.isExistingCustomer()) {
-                    depositAccount = getDepositAccountForExisitngCustomer(correlationId,investmentRequestHeader, crmId);
+                    depositAccount = getDepositAccountForExisitngCustomer(correlationId, investmentRequestHeader, crmId);
                 }
 
                 return OpenPortfolioValidationResponse.builder()
@@ -104,12 +109,12 @@ public class OpenPortfolioService {
                         .build();
             }
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId,Map<String, String> investmentRequestHeader,  String crmId)  {
+    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId, Map<String, String> investmentRequestHeader, String crmId) {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
         String accountNumber = accountRedeem.getAccountRedeem();
@@ -138,18 +143,18 @@ public class OpenPortfolioService {
             accountBalance = dataNode.get("accountBalance").textValue();
 
         } catch (JsonProcessingException e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, e);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
 
-         return DepositAccount.builder()
-                 .accountNumber(accountNumber)
-                 .accountType(accountType)
-                 .accountStatus(accountStatus)
-                 .availableBalance(StringUtils.isEmpty(accountBalance)? null : new BigDecimal(accountBalance))
-                 .productNickname(accountNickName)
-                 .productNameTH(productNameTh)
-                 .productNameEN(productNameEn)
-                 .build();
+        return DepositAccount.builder()
+                .accountNumber(accountNumber)
+                .accountType(accountType)
+                .accountStatus(accountStatus)
+                .availableBalance(StringUtils.isEmpty(accountBalance) ? null : new BigDecimal(accountBalance))
+                .productNickname(accountNickName)
+                .productNameTH(productNameTh)
+                .productNameEN(productNameEn)
+                .build();
     }
 
     /**
@@ -181,7 +186,7 @@ public class OpenPortfolioService {
                 occupationResponseBody = occupation.get();
             }
 
-            openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
+            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
             PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
@@ -190,6 +195,9 @@ public class OpenPortfolioService {
                     .build();
             ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> portfolioNickname = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
 
+            String fullCrmId = UtilMap.fullCrmIdFormat(crmId);
+            removeCacheAfterSuccessOpenPortfolio(correlationId, fullCrmId);
+
             return PortfolioResponse.builder()
                     .relationshipResponse(relationship.get())
                     .openPortfolioResponse(openPortfolio.get())
@@ -197,9 +205,23 @@ public class OpenPortfolioService {
                     .occupationResponse(occupationResponseBody != null ? occupationResponseBody : null)
                     .build();
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
-            openPortfolioActivityLogService.enterCorrectPin(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
+            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
             return null;
+        }
+    }
+
+    private void removeCacheAfterSuccessOpenPortfolio(String correlationId, String fullCrmId) {
+        String depositWithCrmIdKey = String.format("%s_deposit", fullCrmId);
+        String investmentWithCrmIdKey = String.format("%s_investment", fullCrmId);
+
+        try {
+            cacheServiceClient.deleteCacheByKey(correlationId, depositWithCrmIdKey);
+            cacheServiceClient.deleteCacheByKey(correlationId, investmentWithCrmIdKey);
+            logger.info("========== remove cache success ==========");
+        } catch (Exception ex) {
+            logger.info("========== Can't Remove Key Redis complete ==========");
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
     }
 }

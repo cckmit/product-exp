@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.activitylog.portfolio.service.OpenPortfolioActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.mapper.portfolio.OpenPortfolioMapper;
@@ -48,8 +49,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OpenPortfolioServiceTest {
@@ -68,6 +68,9 @@ class OpenPortfolioServiceTest {
 
     @Mock
     private CustomerExpServiceClient customerExpServiceClient;
+
+    @Mock
+    private CacheServiceClient cacheServiceClient;
 
     @Mock
     private OpenPortfolioMapper openPortfolioMapper;
@@ -137,7 +140,7 @@ class OpenPortfolioServiceTest {
                 .build();
 
         String depositAccountReponse = "{\"status\":{\"code\":\"0000\",\"message\":\"success\",\"service\":\"customers-ex-service\",\"description\":\"success\"},\"data\":{\"accountNo\":\"1112469166\",\"accountType\":\"SDA\",\"accountBalance\":\"0.31\",\"branchNameTh\":\"ถนนติวานนท์\",\"branchNameEn\":\"THANONTIWANON\",\"accountName\":\"NAMETEST\",\"ledgerBalance\":\"0.31\",\"interestRate\":\"0.824193\",\"accruedInterest\":\"0.0\",\"accountStatus\":\"Active|ปกติ(Active)\",\"productNameTh\":\"บัญชีโนฟิกซ์\",\"productNameEn\":\"NoFixedAccount\",\"productCode\":\"221\",\"productBonesRateUrl\":\"https://www.tmbbank.com/accounts/savings/tmb-no-fixed-account.html\",\"accountDetailView\":\"5\",\"iconId\":\"https://storage.googleapis.com/oneapp-vit.appspot.com/product/logo/icon_03.png\",\"linkedAccount\":\"\",\"openingDate\":\"9-2021\"}}";
-        when(customerExpServiceClient.getAccountDetail(any(),any())).thenReturn(depositAccountReponse);
+        when(customerExpServiceClient.getAccountDetail(any(), any())).thenReturn(depositAccountReponse);
 
         // When
         OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
@@ -325,7 +328,8 @@ class OpenPortfolioServiceTest {
         // Then
         assertNotNull(actual);
         assertNotNull(actual.getOccupationResponse());
-        verify(openPortfolioActivityLogService).enterCorrectPin(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(cacheServiceClient, times(2)).deleteCacheByKey(anyString(), anyString());
     }
 
     @Test
@@ -383,6 +387,7 @@ class OpenPortfolioServiceTest {
         // Then
         assertNotNull(actual);
         assertNull(actual.getOccupationResponse());
-        verify(openPortfolioActivityLogService).enterCorrectPin(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(cacheServiceClient, times(2)).deleteCacheByKey(anyString(), anyString());
     }
 }
