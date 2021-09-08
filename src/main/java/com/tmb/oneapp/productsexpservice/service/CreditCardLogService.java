@@ -114,13 +114,13 @@ public class CreditCardLogService {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setNewLimit(formateForCurrency(requestBody.getCurrentCreditLimit()));
 			creditCardEvent.setCurrentLimit(formateForCurrency(requestBody.getPreviousCreditLimit()));
-			creditCardEvent.setType(requestBody.getType());
+			creditCardEvent.setType("Adjust Permanent Limit");
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
 			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setExpiryDateForTempRequest(requestBody.getExpiryDate());
 			creditCardEvent.setReasonForRequest(requestBody.getReasonDescEn());
-			creditCardEvent.setType(requestBody.getType());
+			creditCardEvent.setType("Request Temporary Limit");
 		}
 		populateBaseEvents(creditCardEvent, reqHeader);
 
@@ -151,12 +151,12 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent completeUsageListEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
-			SetCreditLimitReq requestBody) {
+			SetCreditLimitReq requestBody,String result) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
 
-		creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
+		creditCardEvent.setResult(result);
 		return creditCardEvent;
 	}
 

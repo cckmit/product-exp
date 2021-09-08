@@ -113,7 +113,7 @@ public class CreditCardLogServiceTest {
 		reqHeader.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078680266000215");
 		SetCreditLimitReq requestBody = new SetCreditLimitReq();
 		requestBody.setAccountId("0000000050078680266000215");
-		creditCardEvent = logService.completeUsageListEvent(creditCardEvent, reqHeader, requestBody);
+		creditCardEvent = logService.completeUsageListEvent(creditCardEvent, reqHeader, requestBody,ProductsExpServiceConstant.SUCCESS);
 		assertEquals("Success", creditCardEvent.getActivityStatus());
 	}
 
@@ -396,7 +396,7 @@ public class CreditCardLogServiceTest {
 		limitReq.setRequestReason("1234");
 		limitReq.setPreviousCreditLimit("12345");
 		limitReq.setAccountId("0000000050078670143000945");
-		CreditCardEvent result = logService.completeUsageListEvent(creditCardEvent, hashMap, limitReq);
+		CreditCardEvent result = logService.completeUsageListEvent(creditCardEvent, hashMap, limitReq,ProductsExpServiceConstant.SUCCESS);
 		Assert.assertEquals(creditCardEvent, result);
 	}
 
