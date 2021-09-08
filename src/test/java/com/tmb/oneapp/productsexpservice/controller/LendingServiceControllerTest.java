@@ -140,4 +140,39 @@ public class LendingServiceControllerTest {
 
     }
     
+    @Test
+    void transferApplicationSuccess() throws TMBCommonException {
+        HttpStatus status = HttpStatus.OK;
+        ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> mockResponse = new ResponseEntity<>(status);
+        when(lendingServiceClient.transferApplication(any(),any(), any())).thenReturn(mockResponse);
+        LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
+        lendingServiceController.transferApplication("", "", new com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body());
+        verify(lendingServiceClient, times(1)).transferApplication(any(), any(),any());
+    }
+
+    @Test
+    void transferApplicationHandleErrorShouldThrowTMBCommonException() throws TMBCommonException {
+        when(lendingServiceClient.transferApplication(any(), any(), any())).thenAnswer(invocation -> {
+            Map<String, Collection<String>> headers = new HashMap<>();
+            String errorBody = "{\"status\":{\"code\":\"0002\",\"message\":\"Data Not Found\",\"service\":\"lending-service\",\"description\":{\"en\":\"We cannot proceed your request right now. Please contact 1428 for more information. Sorry for the inconvenience.\",\"th\":\"ไม่สามารถทำรายการได้ ธนาคารขออภัยในความไม่สะดวกมา ณ ที่นี้  สอบถามเพิ่มเติม โทร.  1428\"}},\"data\":null}\n";
+
+            Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
+            RequestTemplate template = new RequestTemplate();
+            Request request = Request.create(Request.HttpMethod.POST, "http://localhost", headers, body, template);
+            FeignException.BadRequest e = new FeignException.BadRequest("", request, errorBody.getBytes(StandardCharsets.UTF_8));
+            throw e;
+        });
+        try {
+            LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
+            lendingServiceController.transferApplication("", "", new com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body());
+            fail("Should get exception");
+        } catch (TMBCommonException e) {
+            Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatus().value());
+            Assertions.assertEquals("0002", e.getErrorCode());
+            Assertions.assertEquals("lending-service", e.getService());
+            Assertions.assertEquals("Data Not Found", e.getErrorMessage());
+        }
+
+    }
+    
 }

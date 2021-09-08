@@ -130,4 +130,24 @@ public class LendingServiceController {
 				ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
 	}
 	
+	@PostMapping(value = "/lending/transfer-application", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> transferApplication(
+			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+			@RequestBody com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body request) throws TMBCommonException {
+		try {
+			return lendingServiceClient.transferApplication(xCorrelationId, crmId, request);
+		} catch (FeignException e) {
+			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+			if (response != null && response.getStatus() != null) {
+				logger.info(
+						"Error while calling POST /apis/lending-service/rsl/LoanSubmissionInstantLoanTransferApplication. crmId: {}, code:{}, errMsg:{}",
+						crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+				throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
+						response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+			}
+		}
+		throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+				ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+	}
+	
 }
