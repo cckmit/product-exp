@@ -29,6 +29,7 @@ import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRe
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanCalculatorResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
@@ -234,5 +235,11 @@ public interface LendingServiceClient {
     ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> transferApplication(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body request);
+
+
+    @GetMapping(value = "/apis/lending-service/loan/preloadLoanCalculator")
+    ResponseEntity<TmbOneServiceResponse<LoanCalculatorResponse>> getPreloadLoanCalculator(
+            @RequestParam(value = "caId") Long caId,
+            @RequestParam(value = "product") String product);
 
 }

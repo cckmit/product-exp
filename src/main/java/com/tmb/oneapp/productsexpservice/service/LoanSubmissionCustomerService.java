@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +44,6 @@ public class LoanSubmissionCustomerService {
         List<RangeIncome> rangeIncomeList = new ArrayList<>();
         List<InterestRate> interestRateList = new ArrayList<>();
 
-        response.setTenure(BigDecimal.valueOf(36));
-        response.setPayAmount(BigDecimal.valueOf(25));
         for (var receiveAccount : loanCustomerResponse) {
             LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
             if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("PRIIND")) {
