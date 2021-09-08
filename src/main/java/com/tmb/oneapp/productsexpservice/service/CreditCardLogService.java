@@ -114,7 +114,7 @@ public class CreditCardLogService {
 			creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setNewLimit(formateForCurrency(requestBody.getCurrentCreditLimit()));
 			creditCardEvent.setCurrentLimit(formateForCurrency(requestBody.getPreviousCreditLimit()));
-			creditCardEvent.setType("Adjust Permanent Limit");
+			creditCardEvent.setType("Adjust Permanent Limit");
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
 			creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
