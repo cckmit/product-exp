@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
@@ -29,6 +31,7 @@ import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.TmbOneServiceErrorResponse;
+import com.tmb.oneapp.productsexpservice.model.request.TransferApplicationRequest;
 import com.tmb.oneapp.productsexpservice.service.LoanService;
 import feign.FeignException;
 import io.swagger.annotations.Api;
@@ -133,9 +136,11 @@ public class LendingServiceController {
 	@PostMapping(value = "/lending/transfer-application", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> transferApplication(
 			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
-			@RequestBody com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body request) throws TMBCommonException {
+			@RequestBody TransferApplicationRequest request) throws TMBCommonException {
 		try {
-			return lendingServiceClient.transferApplication(xCorrelationId, crmId, request);
+			com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body body = new Body();
+			body.setCaId(new BigDecimal(request.getCaId()));
+			return lendingServiceClient.transferApplication(xCorrelationId, crmId, body);
 		} catch (FeignException e) {
 			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
 			if (response != null && response.getStatus() != null) {

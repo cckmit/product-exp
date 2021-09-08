@@ -27,6 +27,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
+import com.tmb.oneapp.productsexpservice.model.request.TransferApplicationRequest;
 import com.tmb.oneapp.productsexpservice.service.LoanService;
 
 import feign.FeignException;
@@ -146,7 +147,7 @@ public class LendingServiceControllerTest {
         ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> mockResponse = new ResponseEntity<>(status);
         when(lendingServiceClient.transferApplication(any(),any(), any())).thenReturn(mockResponse);
         LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
-        lendingServiceController.transferApplication("", "", new com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body());
+        lendingServiceController.transferApplication("", "", new TransferApplicationRequest());
         verify(lendingServiceClient, times(1)).transferApplication(any(), any(),any());
     }
 
@@ -164,7 +165,7 @@ public class LendingServiceControllerTest {
         });
         try {
             LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
-            lendingServiceController.transferApplication("", "", new com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body());
+            lendingServiceController.transferApplication("", "", new TransferApplicationRequest());
             fail("Should get exception");
         } catch (TMBCommonException e) {
             Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatus().value());
