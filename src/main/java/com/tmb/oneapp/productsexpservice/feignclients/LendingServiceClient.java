@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.lending.loan.LoanStagingbarReques
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanCalculatorResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
@@ -220,5 +221,11 @@ public interface LendingServiceClient {
     ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> fetchLoanStagingBar(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody LoanStagingbarRequest request);
+
+
+    @GetMapping(value = "/apis/lending-service/loan/preloadLoanCalculator")
+    ResponseEntity<TmbOneServiceResponse<LoanCalculatorResponse>> getPreloadLoanCalculator(
+            @RequestParam(value = "caId") Long caId,
+            @RequestParam(value = "product") String product);
 
 }
