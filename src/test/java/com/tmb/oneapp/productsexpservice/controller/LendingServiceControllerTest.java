@@ -147,7 +147,9 @@ public class LendingServiceControllerTest {
         ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> mockResponse = new ResponseEntity<>(status);
         when(lendingServiceClient.transferApplication(any(),any(), any())).thenReturn(mockResponse);
         LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
-        lendingServiceController.transferApplication("", "", new TransferApplicationRequest("2014"));
+        TransferApplicationRequest req = new TransferApplicationRequest();
+        req.setCaId("2021");
+        lendingServiceController.transferApplication("", "", req);
         verify(lendingServiceClient, times(1)).transferApplication(any(), any(),any());
     }
 
@@ -165,7 +167,9 @@ public class LendingServiceControllerTest {
         });
         try {
             LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
-            lendingServiceController.transferApplication("", "", new TransferApplicationRequest("2021"));
+            TransferApplicationRequest req = new TransferApplicationRequest();
+            req.setCaId("2021");
+            lendingServiceController.transferApplication("", "", req);
             fail("Should get exception");
         } catch (TMBCommonException e) {
             Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatus().value());
