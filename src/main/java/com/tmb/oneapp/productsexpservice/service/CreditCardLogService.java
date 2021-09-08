@@ -111,13 +111,13 @@ public class CreditCardLogService {
 			SetCreditLimitReq requestBody, String mode) {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
-			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+			creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setNewLimit(formateForCurrency(requestBody.getCurrentCreditLimit()));
 			creditCardEvent.setCurrentLimit(formateForCurrency(requestBody.getPreviousCreditLimit()));
 			creditCardEvent.setType("Adjust Permanent Limit");
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
-			creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
+			creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setExpiryDateForTempRequest(requestBody.getExpiryDate());
 			creditCardEvent.setReasonForRequest(requestBody.getReasonDescEn());
 			creditCardEvent.setType("Request Temporary Limit");

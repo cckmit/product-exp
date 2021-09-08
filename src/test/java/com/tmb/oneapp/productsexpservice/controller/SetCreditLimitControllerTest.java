@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.tmb.common.model.StatusResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -72,7 +73,7 @@ public class SetCreditLimitControllerTest {
 		requestBodyParameter.setExpiryDate("22");
 		requestBodyParameter.setMode(limit);
 		requestBodyParameter.setRequestReason("22");
-		Status status = new Status();
+		StatusResponse status = new StatusResponse();
 		status.setStatusCode("0");
 		Map<String, String> requestHeadersParameter = headerRequestParameter();
 		SetCreditLimitResp setCreditLimitResp = new SetCreditLimitResp();
@@ -102,7 +103,7 @@ public class SetCreditLimitControllerTest {
 		requestBodyParameter.setExpiryDate("22");
 		requestBodyParameter.setMode("22");
 		requestBodyParameter.setRequestReason("22");
-		Status status = new Status();
+		StatusResponse status = new StatusResponse();
 		status.setStatusCode("0");
 		SetCreditLimitResp setCreditLimitResp = new SetCreditLimitResp();
 		setCreditLimitResp.setStatus(status);
