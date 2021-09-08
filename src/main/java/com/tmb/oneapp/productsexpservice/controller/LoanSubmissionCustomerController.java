@@ -73,7 +73,7 @@ public class LoanSubmissionCustomerController {
     }
 
 
-    @GetMapping("/getPreloadLoanCalculator")
+    @GetMapping("/preloadLoanCalculator")
     @LogAround
     @ApiOperation("Get Preload Loan Calculator")
     public ResponseEntity<TmbOneServiceResponse<LoanCalculatorResponse>> getPreloadLoanCal(@Valid LoanCalculatorRequest request) {
