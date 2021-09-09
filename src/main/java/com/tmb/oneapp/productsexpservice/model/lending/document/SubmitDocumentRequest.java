@@ -5,18 +5,11 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 
-
 @Getter
 @Setter
-public class UploadDocumentRequest {
+public class SubmitDocumentRequest {
 
     @NotEmpty
     private String caId;
-    @NotEmpty
-    private String docCode;
-    @NotEmpty
-    private String fileName;
-    @NotEmpty
-    private String file;
 
 }
