@@ -101,8 +101,8 @@ public class ProductsExpServiceConstant {
 
     public static final String PROCESS_FLAG_Y = "Y";
     public static final String BUSINESS_HR_CLOSE = "N";
-    public static final String ACTIVITY_ID_TEMP = "100700200";
-    public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "100700201";
+    public static final String ACTIVITY_ID_CHANGE_USAGE_PERMANENT = "100700200";
+    public static final String ACTIVITY_ID_CHANGE_USAGE_TEMPORARY = "100700201";
     public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "100700203";
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "100700701";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";

@@ -36,8 +36,6 @@ public class LoanStagingBarServiceTest {
 
 	@Test
 	void fetchLoanStagingBarSuccess() throws TMBCommonException {
-		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-		String crmId = "001100000000000000000018593707";
 		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
 		loanStagingbarReq.setLoanType("flexi");
 		loanStagingbarReq.setProductHeaderKey("apply-personal-loan");
@@ -56,11 +54,10 @@ public class LoanStagingBarServiceTest {
 		TmbOneServiceResponse<LoanStagingbar> loanStagingbarRes = new TmbOneServiceResponse<LoanStagingbar>();
 		loanStagingbarRes.setData(loanStagingbar);
 		loanStagingbarRes.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "", ""));
-		Mockito.when(commonServiceFeignClient.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbarRes);
+		Mockito.when(commonServiceFeignClient.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbarRes);
 		loanStagingBarService = new LoanStagingBarService(commonServiceFeignClient);
 
-		LoanStagingbar actual = loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
+		LoanStagingbar actual = loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq);
 
 		Assertions.assertNotNull(actual);
 		Assertions.assertEquals(loanStagingbar.getLoanType(), actual.getLoanType());
@@ -69,8 +66,6 @@ public class LoanStagingBarServiceTest {
 
 	@Test
 	void fetchLoanStagingBarFail() throws TMBCommonException {
-		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-		String crmId = "001100000000000000000018593707";
 		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
 		loanStagingbarReq.setLoanType("flexi");
 		loanStagingbarReq.setProductHeaderKey("apply-personal-loan");
@@ -89,12 +84,11 @@ public class LoanStagingBarServiceTest {
 		TmbOneServiceResponse<LoanStagingbar> loanStagingbarRes = new TmbOneServiceResponse<LoanStagingbar>();
 		loanStagingbarRes.setData(loanStagingbar);
 		loanStagingbarRes.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "", ""));
-		Mockito.when(commonServiceFeignClient.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbarRes);
+		Mockito.when(commonServiceFeignClient.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbarRes);
 		loanStagingBarService = new LoanStagingBarService(commonServiceFeignClient);
 
 		try {
-			loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
+			loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq);
 			Assertions.fail("Should have TMBCommonException");
 		} catch (TMBCommonException e) {
 		}
