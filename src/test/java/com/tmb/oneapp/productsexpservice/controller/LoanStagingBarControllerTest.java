@@ -40,8 +40,6 @@ public class LoanStagingBarControllerTest {
 
 	@Test
 	public void fetchLoanStagingBarSuccess() throws TMBCommonException {
-		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-		String crmId = "001100000000000000000018593707";
 		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
 		loanStagingbarReq.setLoanType("flexi");
 		loanStagingbarReq.setProductHeaderKey("apply-personal-loan");
@@ -58,18 +56,16 @@ public class LoanStagingBarControllerTest {
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
 
-		when(loanStagingBarService.fetchLoanStagingBar(any(), any(), any())).thenReturn(loanStagingbar);
+		when(loanStagingBarService.fetchLoanStagingBar(any())).thenReturn(loanStagingbar);
 
 		ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> result = loanStagingBarController
-				.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
+				.fetchLoanStagingBar(loanStagingbarReq);
 		assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
 
 	}
 
 	@Test
 	public void fetchLoanStagingBarFailKeyNull() throws TMBCommonException {
-		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-		String crmId = "001100000000000000000018593707";
 		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
 		loanStagingbarReq.setLoanType(null);
 		loanStagingbarReq.setProductHeaderKey(null);
@@ -86,7 +82,7 @@ public class LoanStagingBarControllerTest {
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
 		try {
-			loanStagingBarController.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
+			loanStagingBarController.fetchLoanStagingBar(loanStagingbarReq);
 			Assertions.fail("Should have TMBCommonException");
 		} catch (TMBCommonException e) {
 		}
@@ -94,9 +90,6 @@ public class LoanStagingBarControllerTest {
 
 	@Test
 	public void fetchLoanStagingBarFail() throws TMBCommonException {
-
-		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-		String crmId = "001100000000000000000018593707";
 		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
 		loanStagingbarReq.setLoanType("flexi");
 		loanStagingbarReq.setProductHeaderKey("apply-personal-loan");
@@ -113,10 +106,10 @@ public class LoanStagingBarControllerTest {
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
 
-		when(loanStagingBarService.fetchLoanStagingBar(any(), any(), any())).thenThrow(new TMBCommonException(crmId));
+		when(loanStagingBarService.fetchLoanStagingBar(any())).thenThrow(new TMBCommonException(""));
 
 		try {
-			loanStagingBarController.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
+			loanStagingBarController.fetchLoanStagingBar(loanStagingbarReq);
 			Assertions.fail("Should have TMBCommonException");
 		} catch (TMBCommonException e) {
 		}
