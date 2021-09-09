@@ -63,8 +63,6 @@ public interface CommonServiceClient {
 
 	@PostMapping(value = "/apis/common/fetch/staging-bar")
 	TmbOneServiceResponse<LoanStagingbar> fetchLoanStagingBar(
-			@RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-			@RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
 			@RequestBody(required = true) LoanStagingbarRequest request);
 
 }
