@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class UploadDocumentResponse {
+public class DeleteDocumentResponse {
 
     private String docCode;
     private String fileName;

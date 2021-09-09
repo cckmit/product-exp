@@ -6,8 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
-import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
-import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
+import com.tmb.oneapp.productsexpservice.model.lending.document.*;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.TmbOneServiceErrorResponse;
 import feign.FeignException;
@@ -89,6 +88,59 @@ public class LendingServiceController {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
                 logger.info("Error while calling POST /apis/lending-service/document/upload. crmId: {}, code:{}, errMsg:{}",
+                        crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+                throw new TMBCommonException(response.getStatus().getCode(),
+                        response.getStatus().getMessage(),
+                        response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+    }
+
+    @PostMapping(value = "/lending/document/submit")
+    public ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitDocument(
+            @ApiParam(value = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
+            @ApiParam(value = HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestBody SubmitDocumentRequest request) throws TMBCommonException {
+        try {
+            return lendingServiceClient.submitDocument(xCorrelationId, crmId, request);
+        } catch (FeignException e) {
+            TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+            if (response != null && response.getStatus() != null) {
+                logger.info("Error while calling POST /apis/lending-service/document/submit. crmId: {}, code:{}, errMsg:{}",
+                        crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+                throw new TMBCommonException(response.getStatus().getCode(),
+                        response.getStatus().getMessage(),
+                        response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+    }
+
+    @DeleteMapping(value = "/lending/document/{caId}/{docCode}/{fileName}")
+    public ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> deleteDocument(
+            @ApiParam(value = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
+            @ApiParam(value = HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @ApiParam(value = "caId", required = true)
+            @Valid @PathVariable("caId") String caId,
+            @ApiParam(value = "docCode", required = true)
+            @Valid @PathVariable("docCode") String docCode,
+            @ApiParam(value = "fileName", required = true)
+            @Valid @PathVariable("fileName") String fileName) throws TMBCommonException {
+        try {
+            return lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileName);
+        } catch (FeignException e) {
+            TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+            if (response != null && response.getStatus() != null) {
+                logger.info("Error while calling DELETE /apis/lending-service/document. crmId: {}, code:{}, errMsg:{}",
                         crmId, response.getStatus().getCode(), response.getStatus().getMessage());
                 throw new TMBCommonException(response.getStatus().getCode(),
                         response.getStatus().getMessage(),
