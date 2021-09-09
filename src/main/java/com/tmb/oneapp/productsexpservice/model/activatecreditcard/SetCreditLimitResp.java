@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.model.activatecreditcard;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.tmb.common.model.StatusResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,6 @@ import lombok.Setter;
 public class SetCreditLimitResp {
 
 	@JsonProperty("status")
-	private Status status;
+	private StatusResponse status;
 
 }

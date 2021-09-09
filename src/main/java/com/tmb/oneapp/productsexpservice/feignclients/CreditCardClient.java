@@ -63,7 +63,7 @@ public interface CreditCardClient {
 	ResponseEntity<TmbOneServiceResponse<VerifyCvvResponse>> verifyCvv(@RequestHeader Map<String, String> headers);
 
 	@PostMapping(value = "/apis/creditcard/set-credit-limit")
-	ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> fetchSetCreditLimit(
+	ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> setCreditLimit(
 			@RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationID,
 			@RequestBody SetCreditLimitReq requestBodyParameter);
 

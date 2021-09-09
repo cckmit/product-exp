@@ -49,7 +49,7 @@ public class InformationService {
                     .dailyNav(fetchFundDailyNav.get())
                     .build();
         } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURED, ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
     }

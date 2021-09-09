@@ -36,7 +36,7 @@ public class ProductsExpServiceConstant {
     public static final String FAILED_MESSAGE = "failed";
     public static final String DATA_NOT_FOUND_CODE = "0009";
     public static final String DATA_NOT_FOUND_MESSAGE = "DATA NOT FOUND";
-    public static final String EXCEPTION_OCCURED = "Exception occured : {}";
+    public static final String EXCEPTION_OCCURRED = "Exception occurred : {}";
 
     public static final int ZERO = 0;
     public static final String STRING_ZERO = "0";
@@ -52,9 +52,9 @@ public class ProductsExpServiceConstant {
     public static final String FUND_RULE_TRANS_TYPE = "1";
 
     /* DATETIME FORMAT */
-    public static final String MF_TIME_HHMM = "HHmm";
-    public static final String MF_TIME_WITH_COLON_HHMM = "HH:mm";
-    public static final String MF_DATE_YYYYMMDD = "yyyy-MM-dd";
+    public static final String MF_TIME_HH_MM = "HHmm";
+    public static final String MF_TIME_WITH_COLON_HH_MM = "HH:mm";
+    public static final String MF_DATE_YYYY_MM_DD = "yyyy-MM-dd";
     public static final String APPLICATION_STATUS_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String HP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
@@ -101,8 +101,8 @@ public class ProductsExpServiceConstant {
 
     public static final String PROCESS_FLAG_Y = "Y";
     public static final String BUSINESS_HR_CLOSE = "N";
-    public static final String ACTIVITY_ID_TEMP = "100700200";
-    public static final String ACTIVITY_ID_TEMP_REASON_OF_REQUEST = "100700201";
+    public static final String ACTIVITY_ID_CHANGE_USAGE_PERMANENT = "100700200";
+    public static final String ACTIVITY_ID_CHANGE_USAGE_TEMPORARY = "100700201";
     public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "100700203";
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "100700701";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
@@ -170,7 +170,7 @@ public class ProductsExpServiceConstant {
     public static final String PTES_PORT_FOLIO_FLAG = "2";
     public static final String TRANSACTION_DATE = "transaction_date";
 
-    public static final String FATCA_FLAG = "fatca_flag";
+    public static final String FAT_CA_FLAG = "fatca_flag";
 
     /* Channel */
     public static final String CHANNEL_MOBILE_BANKING = "mb";
@@ -205,6 +205,9 @@ public class ProductsExpServiceConstant {
     public static final String CASE_SUBMIT_PWA_BY_CALL_ACTIVITY_ID = "101500503";
     public static final String CASE_SUBMIT_PWA_BY_LEAVE_MSG_ACTIVITY_ID = "101500505";
 
+    /* Activity Log Description */
+    public static final String ACTIVITY_LOG_OPEN_PORTFOLIO_DESCRIPTION = "MF Open portfolio";
+
     /* ACTIVITY LOG MESSAGE */
     public static final String ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING = "Buy holding fund ";
     public static final String ACTIVITY_LOG_INVESTMENT_CHANNEL = "mb";
@@ -227,6 +230,10 @@ public class ProductsExpServiceConstant {
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_MESSAGE_TO_ADVISOR = "O0012";
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_EMAIL_TO_ADVISOR = "O0013";
 
+    public static final String PWA_CALL_TO_ADVISOR = "call";
+    public static final String PWA_SEND_MESSAGE_TO_ADVISOR = "leave note";
+    public static final String PWA_SEND_EMAIL_TO_ADVISOR = "email";
+
     public static final String SERVICE_HOUR_MODULE = "service_hour";
     public static final String HEADER_SERVICE_HOUR_MODULE = "X-SERVICE-MODULE";
     public static final String EKYC_SERVICE_HOUR_MODULE = "ekyc";
@@ -248,19 +255,19 @@ public class ProductsExpServiceConstant {
 
     /* INVESTMENT FIRST TRADE FLAG */
     public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
-    
+
     public static final String C2G = "c2g";
     public static final String RC = "rc";
-	public static final String FLEXI = "flexi";
-	public static final String LOAN_SUBMISSION = "loan-submission";
-	public static final String APPLY_PERSONAL_LOAN = "apply-personal-loan";
-	public static final String APPLY_FLASH_CARD = "apply-flash-card";
-	public static final String APPLY_CREDIT_CARD = "apply-credit-card";
-	public static final String PERSONAL_DETAIL = "personal-detail";
-	public static final String WORK_DETAIL = "work-detail";
-	public static final String UPLOAD_DOCUMENTS = "upload-documents";
-	public static final String LOAN_DAY1 = "loan-day1";
-	public static final String FINAL_APPROVAL = "final-approval";
-	public static final String CONFIRM_APPLICATION = "confirm-application";
-	public static final String LOAN_CAL = "loan-cal";
+    public static final String FLEXI = "flexi";
+    public static final String LOAN_SUBMISSION = "loan-submission";
+    public static final String APPLY_PERSONAL_LOAN = "apply-personal-loan";
+    public static final String APPLY_FLASH_CARD = "apply-flash-card";
+    public static final String APPLY_CREDIT_CARD = "apply-credit-card";
+    public static final String PERSONAL_DETAIL = "personal-detail";
+    public static final String WORK_DETAIL = "work-detail";
+    public static final String UPLOAD_DOCUMENTS = "upload-documents";
+    public static final String LOAN_DAY1 = "loan-day1";
+    public static final String FINAL_APPROVAL = "final-approval";
+    public static final String CONFIRM_APPLICATION = "confirm-application";
+    public static final String LOAN_CAL = "loan-cal";
 }

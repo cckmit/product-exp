@@ -79,7 +79,7 @@ public class DcaValidationServiceTest {
         BeanUtils.copyProperties(successStatus, validateServiceHourResponse);
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(validateServiceHourResponse);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(),anyBoolean())).thenReturn(successStatus);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(successStatus);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
@@ -102,9 +102,9 @@ public class DcaValidationServiceTest {
         TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "N");
 
         // Then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getCode(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CANT_BUY_FUND.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getMsg(),
                 actual.getStatus().getMessage());
     }
 
@@ -273,7 +273,7 @@ public class DcaValidationServiceTest {
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
                 actual.getStatus().getMessage());
-        assertEquals("19:00-20:00",(actual.getData()));
+        assertEquals("19:00-20:00", (actual.getData()));
     }
 
     @Test
@@ -308,7 +308,7 @@ public class DcaValidationServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(),anyBoolean())).thenReturn(status);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(status);
 
         // When
         TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");

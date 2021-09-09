@@ -10,13 +10,9 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -25,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.FileInputStream;
@@ -33,20 +28,19 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductsExpServiceTest {
 
     @Mock
-    private CustomerService customerService;
+    private TMBLogger<ProductsExpServiceTest> logger;
 
     @Mock
     private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    private TMBLogger<ProductsExpServiceTest> logger;
+    private CustomerService customerService;
 
     @InjectMocks
     private ProductsExpService productsExpService;
@@ -232,61 +226,5 @@ public class ProductsExpServiceTest {
         Assert.assertEquals(expectedResponse.getBody().getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertNull(expectedResponse.getBody().getSummaryByPort());
-    }
-
-    @Test
-    void testFundResponseSuccess() {
-        FundResponse fundResponse = getFundResponse();
-        productsExpService.fundResponseSuccess(fundResponse);
-        assertNotNull(fundResponse);
-    }
-
-    private FundResponse getFundResponse() {
-        FundResponse fundResponse = new FundResponse();
-        fundResponse.setError(false);
-        fundResponse.setErrorCode(ProductsExpServiceConstant.ID_EXPIRED_CODE);
-        fundResponse.setErrorDesc(ProductsExpServiceConstant.ID_EXPIRED_MESSAGE);
-        fundResponse.setErrorMsg(ProductsExpServiceConstant.ID_EXPIRED_DESC);
-        return fundResponse;
-    }
-
-    @Test
-    void testFundResponseError() {
-        FundResponse fundResponse = getFundResponse();
-        productsExpService.fundResponseError(getFundResponse(), true);
-        assertNotNull(fundResponse);
-    }
-
-    @Test
-    void testErrorResponse() {
-        FundFactSheetValidationResponse validation = new FundFactSheetValidationResponse();
-        validation.setError(true);
-        productsExpService.errorResponse(validation, true);
-        assertNotNull(validation);
-    }
-
-    @Test
-    void testFfsData() {
-        FundFactSheetValidationResponse validation = new FundFactSheetValidationResponse();
-        validation.setError(true);
-        TmbOneServiceResponse<FundFactSheetResponse> response = new TmbOneServiceResponse<>();
-        FundFactSheetResponse data = new FundFactSheetResponse();
-        FundFactSheetData body = new FundFactSheetData();
-        body.setFactSheetData("test");
-        data.setBody(body);
-        response.setData(data);
-        ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
-        productsExpService.ffsData(validation, responseEntity);
-        assertNotNull(responseEntity);
-    }
-
-    @Test
-    void testErrorData() {
-        FundFactSheetValidationResponse validation = new FundFactSheetValidationResponse();
-        validation.setError(true);
-        FundResponse fundResponse = new FundResponse();
-        fundResponse.setError(true);
-        productsExpService.errorData(validation, fundResponse);
-        assertNotNull(fundResponse);
     }
 }

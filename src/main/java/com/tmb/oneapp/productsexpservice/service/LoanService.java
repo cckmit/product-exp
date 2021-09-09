@@ -42,7 +42,7 @@ public class LoanService {
 						ResponseCode.DATA_NOT_FOUND_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
 			}
 
-			LoanStagingbar loanStagingbarRes = processMappingStagingBarResponse(correlationId, crmId,
+			LoanStagingbar loanStagingbarRes = processMappingStagingBarResponse(
 					productDetailResponse.getBody().getData());
 			productDetailResponse.getBody().getData().setLoanStagingBar(loanStagingbarRes);
 			return productDetailResponse;
@@ -53,8 +53,7 @@ public class LoanService {
 		}
 	}
 
-	private LoanStagingbar processMappingStagingBarResponse(String correlationId, String crmId,
-			ProductDetailResponse data) throws TMBCommonException {
+	private LoanStagingbar processMappingStagingBarResponse(ProductDetailResponse data) throws TMBCommonException {
 		LoanStagingbarRequest request = new LoanStagingbarRequest();
 		if (FlowType.FLEXI == data.getFlowType()) {
 			request.setLoanType(ProductsExpServiceConstant.FLEXI);
@@ -71,7 +70,7 @@ public class LoanService {
 		}
 
 		LoanStagingbar loanStagingbarRes;
-		loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, request);
+		loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(request);
 		if (loanStagingbarRes == null) {
 			loanStagingbarRes = new LoanStagingbar();
 		}

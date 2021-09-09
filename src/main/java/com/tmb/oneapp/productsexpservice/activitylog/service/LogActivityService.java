@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.oneapp.productsexpservice.model.activitylog.ActivityLogs;
+import com.tmb.common.model.BaseEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class LogActivityService {
      */
     @Async
     @LogAround
-    public void createLog(ActivityLogs data) {
+    public void createLog(BaseEvent data) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String output = mapper.writeValueAsString(data);
