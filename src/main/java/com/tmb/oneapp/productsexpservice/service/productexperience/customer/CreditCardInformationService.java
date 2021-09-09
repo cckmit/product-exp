@@ -3,10 +3,12 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.customer;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCard;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
+import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +43,8 @@ public class CreditCardInformationService {
         TmbOneServiceResponse<CreditCardInformationResponse> response = new TmbOneServiceResponse<>();
         try {
             ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> creditCardInformationResponse =
-                    customerExpServiceClient.getCustomerCreditCard(correlationId, crmId);
+                    customerExpServiceClient.getCustomerCreditCard(correlationId, UtilMap
+                            .fullCrmIdFormat(crmId));
 
             if (!creditCardInformationResponse.getStatusCode().equals(HttpStatus.OK)) {
                 throw new TMBCommonException("failed call customer-exp-service for get credit card");
@@ -50,7 +53,7 @@ public class CreditCardInformationService {
             List<CreditCard> creditCards = creditCardInformationResponse.getBody().getData().getCreditCards();
             return filterCreditCardWithStatusAndType(creditCards, response);
         } catch (Exception ex) {
-            logger.info("error : {}", ex);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             response.setStatus(null);
             response.setData(null);
             return response;
@@ -59,7 +62,11 @@ public class CreditCardInformationService {
 
     private TmbOneServiceResponse<CreditCardInformationResponse> filterCreditCardWithStatusAndType(List<CreditCard> creditCards, TmbOneServiceResponse<CreditCardInformationResponse> response) {
         CreditCardInformationResponse creditcardInformationResponse = new CreditCardInformationResponse();
-        creditcardInformationResponse.setCreditCards(creditCards.stream().filter(t -> t.getAccountStatus().equals("active") && !t.getCardType().equals("SUP")).collect(Collectors.toList()));
+        creditcardInformationResponse.setCreditCards(creditCards.stream()
+                .filter(t -> t.getAccountStatus()
+                .equals(ProductsExpServiceConstant.CREDIT_CARD_ACTIVE_STATUS) &&
+                        !t.getCardType().equals(ProductsExpServiceConstant.CREDIT_CARD_SUP_TYPE))
+                .collect(Collectors.toList()));
         response.setStatus(TmbStatusUtil.successStatus());
         response.setData(creditcardInformationResponse);
         return response;

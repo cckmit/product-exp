@@ -70,4 +70,5 @@ public class CreditCard {
 
     @JsonAlias("supplementary_infos")
     private List<SupplementaryInfo> supplementaryInfos;
+
 }

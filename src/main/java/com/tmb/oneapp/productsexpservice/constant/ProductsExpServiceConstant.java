@@ -256,6 +256,10 @@ public class ProductsExpServiceConstant {
     /* INVESTMENT FIRST TRADE FLAG */
     public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
 
+    /* INVESTMENT CREDIT CARD FLAG */
+    public static final String CREDIT_CARD_ACTIVE_STATUS = "active";
+    public static final String CREDIT_CARD_SUP_TYPE = "sup";
+
     public static final String C2G = "c2g";
     public static final String RC = "rc";
     public static final String FLEXI = "flexi";
