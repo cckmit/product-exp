@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.controller;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -34,19 +35,7 @@ import com.tmb.oneapp.productsexpservice.service.LoanService;
 import feign.FeignException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
 
 @RestController
 @Api(tags = "Lending Service")
@@ -99,48 +88,48 @@ public class LendingServiceController {
                 ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
     }
-    
-	@PostMapping(value = "/lending/get-product-orientation", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> getProductOrientation(
-			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
-			@RequestBody ProductDetailRequest request) throws TMBCommonException {
-		try {
-			return loanService.fetchProductOrientation(xCorrelationId, crmId, request);
-		} catch (FeignException e) {
-			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
-			if (response != null && response.getStatus() != null) {
-				logger.info(
-						"Error while calling POST /apis/lending-service/loan/product-orientation. crmId: {}, code:{}, errMsg:{}",
-						crmId, response.getStatus().getCode(), response.getStatus().getMessage());
-				throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
-						response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
-			}
-		}
-		throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-				ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-	}
 
-	@PostMapping(value = "/lending/transfer-application", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> transferApplication(
-			@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
-			@RequestBody TransferApplicationRequest request) throws TMBCommonException {
-		try {
-			com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body body = new Body();
-			body.setCaId(new BigDecimal(request.getCaId()));
-			return lendingServiceClient.transferApplication(xCorrelationId, crmId, body);
-		} catch (FeignException e) {
-			TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
-			if (response != null && response.getStatus() != null) {
-				logger.info(
-						"Error while calling POST /apis/lending-service/rsl/LoanSubmissionInstantLoanTransferApplication. crmId: {}, code:{}, errMsg:{}",
-						crmId, response.getStatus().getCode(), response.getStatus().getMessage());
-				throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
-						response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
-			}
-		}
-		throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-				ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-	}
+    @PostMapping(value = "/lending/get-product-orientation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> getProductOrientation(
+            @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @RequestBody ProductDetailRequest request) throws TMBCommonException {
+        try {
+            return loanService.fetchProductOrientation(xCorrelationId, crmId, request);
+        } catch (FeignException e) {
+            TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+            if (response != null && response.getStatus() != null) {
+                logger.info(
+                        "Error while calling POST /apis/lending-service/loan/product-orientation. crmId: {}, code:{}, errMsg:{}",
+                        crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+                throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
+                        response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+    }
+
+    @PostMapping(value = "/lending/transfer-application", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> transferApplication(
+            @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @RequestBody TransferApplicationRequest request) throws TMBCommonException {
+        try {
+            com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body body = new Body();
+            body.setCaId(new BigDecimal(request.getCaId()));
+            return lendingServiceClient.transferApplication(xCorrelationId, crmId, body);
+        } catch (FeignException e) {
+            TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+            if (response != null && response.getStatus() != null) {
+                logger.info(
+                        "Error while calling POST /apis/lending-service/rsl/LoanSubmissionInstantLoanTransferApplication. crmId: {}, code:{}, errMsg:{}",
+                        crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+                throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
+                        response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+    }
 
     @PostMapping(value = "/lending/document/upload")
     public ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
