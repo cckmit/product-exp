@@ -278,9 +278,16 @@ public class CustomerProfileService {
 				.searchAddressByField(reqSearch);
 		List<Province> provinceInfos = addressInfoRes.getBody().getData();
 		CustAddressProfileInfo workingAddress = fillUpParamWorkAddressInfo(provinceInfos, profileResponse);
-		String requestBusinessType = profileResponse.getBusinessTypeCode().substring(0, 1);
+		String requestBusinessType = StringUtils.EMPTY;
+		if (StringUtils.isNotBlank(profileResponse.getBusinessTypeCode())) {
+			requestBusinessType = profileResponse.getBusinessTypeCode().substring(0, 1);
+		}
+		String occupationCode = StringUtils.EMPTY;
+		if (StringUtils.isNoneBlank(profileResponse.getOccupationCode())) {
+			occupationCode = profileResponse.getOccupationCode();
+		}
 		ResponseEntity<TmbOneServiceResponse<WorkProfileInfoResponse>> workingProfile = lendingServiceClient
-				.getWorkInformationWithProfile(correlationId, profileResponse.getOccupationCode(), requestBusinessType,
+				.getWorkInformationWithProfile(correlationId, occupationCode, requestBusinessType,
 						profileResponse.getNationality());
 
 		WorkProfileInfoResponse workProfileResponse = workingProfile.getBody().getData();
