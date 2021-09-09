@@ -8,9 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class UploadDocumentResponse {
+public class SubmitDocumentResponse {
 
-    private String docCode;
-    private String fileName;
+    private String appRefNo;
+    private String appType;
+    private String productDescTh;
+    private String ncbConsentFlag;
 
 }

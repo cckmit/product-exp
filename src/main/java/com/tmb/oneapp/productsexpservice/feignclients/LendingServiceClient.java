@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.tmb.oneapp.productsexpservice.model.lending.document.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +25,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
-import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentRequest;
-import com.tmb.oneapp.productsexpservice.model.lending.document.UploadDocumentResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.ProductRequest;
@@ -46,6 +45,7 @@ import com.tmb.oneapp.productsexpservice.model.response.lending.WorkProfileInfoR
 import com.tmb.oneapp.productsexpservice.model.response.lending.WorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * LendingServiceClient to retrieve lending data
@@ -205,6 +205,16 @@ public interface LendingServiceClient {
     ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody UploadDocumentRequest request);
+
+    @PostMapping(value = "/apis/lending-service/document/submit")
+    ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitDocument(
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @RequestBody SubmitDocumentRequest request);
+
+    @DeleteMapping(value = "/apis/lending-service/document/{caId}/{docCode}/{fileName}")
+    ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> deleteDocument(
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @PathVariable("caId") String caId, @PathVariable("docCode") String docCode, @PathVariable("fileName") String fileName);
 
     @PostMapping(value = "/apis/lending-service/loanOnlineSubmission/update-flag-and-store-ncb-consent")
     ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
