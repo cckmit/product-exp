@@ -21,7 +21,6 @@ import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
-import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
@@ -398,7 +397,7 @@ class LoanSubmissionOnlineServiceTest {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
         oneServiceResponse.setData(responseApplication);
         when(lendingServiceClient.updateApplication(anyString(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
-        ResponseApplication result = loanSubmissionOnlineService.updateApplication("crmId",new UpdateApplicationRequest());
+        ResponseApplication result = loanSubmissionOnlineService.updateApplication("crmId",new LoanSubmissionCreateApplicationReq());
         assertEquals("MSG_000", result.getHeader().getResponseCode());
     }
 
@@ -408,7 +407,7 @@ class LoanSubmissionOnlineServiceTest {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
         when(lendingServiceClient.updateApplication(anyString(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
         assertThrows(Exception.class, () ->
-                loanSubmissionOnlineService.updateApplication("crmId",new UpdateApplicationRequest()));
+                loanSubmissionOnlineService.updateApplication("crmId",new LoanSubmissionCreateApplicationReq()));
     }
 
 

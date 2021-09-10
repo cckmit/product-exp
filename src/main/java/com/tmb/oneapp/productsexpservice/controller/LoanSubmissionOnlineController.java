@@ -12,13 +12,14 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
-import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -340,7 +341,7 @@ public class LoanSubmissionOnlineController {
     @ApiOperation("Update Application")
     @PutMapping(value = "updateApplication", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse> updateApplication(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-                                                                   @Valid @RequestBody UpdateApplicationRequest request) {
+                                                                   @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
 
         TmbOneServiceResponse oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {

@@ -16,7 +16,6 @@ import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
-import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
@@ -231,6 +230,6 @@ public interface LendingServiceClient {
 
     @PostMapping(value = "/apis/lending-service/loanOnlineSubmission/updateApplication")
     ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateApplication(
-            @RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestBody UpdateApplicationRequest request);
+            @RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestBody LoanSubmissionCreateApplicationReq request);
 
 }

@@ -13,7 +13,6 @@ import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResp
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
-import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
@@ -233,7 +232,7 @@ public class LoanSubmissionOnlineService {
         }
     }
 
-    public ResponseApplication updateApplication(String crmId, UpdateApplicationRequest req) throws TMBCommonException {
+    public ResponseApplication updateApplication(String crmId, LoanSubmissionCreateApplicationReq req) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<ResponseApplication>> response = lendingServiceClient.updateApplication(crmId, req);
             if (response.getBody().getData().getHeader().getResponseCode().equals("MSG_000")) {
