@@ -108,7 +108,7 @@ public class CreditCardInformationService {
     }
 
     @LogAround
-    private TmbOneServiceResponse<CreditCardInformationResponse> filterCreditCardWithStatusAndType(List<ProductConfig> productConfigList, List<CreditCard> creditCards, TmbOneServiceResponse<CreditCardInformationResponse> response) throws TMBCommonException {
+    private TmbOneServiceResponse<CreditCardInformationResponse> filterCreditCardWithStatusAndType(List<ProductConfig> productConfigList, List<CreditCard> creditCards, TmbOneServiceResponse<CreditCardInformationResponse> response) {
         CreditCardInformationResponse creditcardInformationResponse = new CreditCardInformationResponse();
         List<CreditCard> creditCardWithFilterStatusAndType = creditCards.stream()
                 .filter(t -> t.getAccountStatus()
