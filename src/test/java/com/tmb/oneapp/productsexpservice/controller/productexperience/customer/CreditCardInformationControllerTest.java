@@ -47,10 +47,11 @@ public class CreditCardInformationControllerTest {
 
         //When
         ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> actual =
-                creditcardInformationController.getCreditCardInformation(correlationId, CreditCardInformationRequestBody.builder().crmId(crmId).build());
+                creditcardInformationController.getCreditCardInformation(correlationId, crmId);
         //Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(creditcardInformationResponse, actual.getBody().getData());
+
     }
 
     @Test
@@ -68,7 +69,7 @@ public class CreditCardInformationControllerTest {
 
         //When
         ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> actual =
-                creditcardInformationController.getCreditCardInformation(correlationId, CreditCardInformationRequestBody.builder().crmId(crmId).build());
+                creditcardInformationController.getCreditCardInformation(correlationId, crmId);
         //Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(TmbStatusUtil.notFoundStatus().getCode(), actual.getBody().getStatus().getCode());

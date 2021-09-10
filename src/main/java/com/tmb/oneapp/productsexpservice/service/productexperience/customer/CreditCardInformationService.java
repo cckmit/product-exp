@@ -1,10 +1,14 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.customer;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCard;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -12,10 +16,14 @@ import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * CreditCardInformationService get credit information
@@ -27,9 +35,13 @@ public class CreditCardInformationService {
 
     private final CustomerExpServiceClient customerExpServiceClient;
 
+    private final CommonServiceClient commonServiceFeignClient;
+
     @Autowired
-    public CreditCardInformationService(CustomerExpServiceClient customerExpServiceClient) {
+    public CreditCardInformationService(CustomerExpServiceClient customerExpServiceClient,
+                                        CommonServiceClient commonServiceFeignClient) {
         this.customerExpServiceClient = customerExpServiceClient;
+        this.commonServiceFeignClient = commonServiceFeignClient;
     }
 
     /**
@@ -39,19 +51,19 @@ public class CreditCardInformationService {
      * @param crmId
      * @return CreditCardInformationResponse
      */
+    @LogAround
     public TmbOneServiceResponse<CreditCardInformationResponse> getCreditCardInformation(String correlationId, String crmId) {
         TmbOneServiceResponse<CreditCardInformationResponse> response = new TmbOneServiceResponse<>();
         try {
-            ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> creditCardInformationResponse =
-                    customerExpServiceClient.getCustomerCreditCard(correlationId, UtilMap
-                            .fullCrmIdFormat(crmId));
+            CompletableFuture<List<ProductConfig>> fetchProductConfigs = fetchAyncProductConfig(correlationId);
+            CompletableFuture<CreditCardInformationResponse> creditCardInformation = fetchAyncCustomerCreditCard(correlationId,UtilMap.fullCrmIdFormat(crmId));
+            CompletableFuture.allOf(fetchProductConfigs, creditCardInformation);
 
-            if (!creditCardInformationResponse.getStatusCode().equals(HttpStatus.OK)) {
-                throw new TMBCommonException("failed call customer-exp-service for get credit card");
-            }
+            CreditCardInformationResponse creditCardInformationResponse = creditCardInformation.get();
+            List<ProductConfig> productConfigs = fetchProductConfigs.get();
+            List<CreditCard> creditCards = creditCardInformationResponse.getCreditCards();
+            return filterCreditCardWithStatusAndType(productConfigs,creditCards, response);
 
-            List<CreditCard> creditCards = creditCardInformationResponse.getBody().getData().getCreditCards();
-            return filterCreditCardWithStatusAndType(creditCards, response);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             response.setStatus(null);
@@ -60,15 +72,93 @@ public class CreditCardInformationService {
         }
     }
 
-    private TmbOneServiceResponse<CreditCardInformationResponse> filterCreditCardWithStatusAndType(List<CreditCard> creditCards, TmbOneServiceResponse<CreditCardInformationResponse> response) {
+    @Async
+    @LogAround
+    public CompletableFuture<CreditCardInformationResponse> fetchAyncCustomerCreditCard(String correlationId,String crmId) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> response =
+                    customerExpServiceClient.getCustomerCreditCard(correlationId, crmId);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error("Error getCustomerCreditCard", e);
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+    @Async
+    @LogAround
+    public CompletableFuture<List<ProductConfig>> fetchAyncProductConfig(String correlationId) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceFeignClient.getProductConfig(correlationId);
+            return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (Exception e) {
+            logger.error("Error fetchProductConfig", e);
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
+        }
+    }
+
+    @LogAround
+    private TmbOneServiceResponse<CreditCardInformationResponse> filterCreditCardWithStatusAndType(List<ProductConfig> productConfigList, List<CreditCard> creditCards, TmbOneServiceResponse<CreditCardInformationResponse> response) throws TMBCommonException {
         CreditCardInformationResponse creditcardInformationResponse = new CreditCardInformationResponse();
-        creditcardInformationResponse.setCreditCards(creditCards.stream()
+        List<CreditCard> creditCardWithFilterStatusAndType = creditCards.stream()
                 .filter(t -> t.getAccountStatus()
-                .equals(ProductsExpServiceConstant.CREDIT_CARD_ACTIVE_STATUS) &&
-                        !t.getCardType().equals(ProductsExpServiceConstant.CREDIT_CARD_SUP_TYPE))
-                .collect(Collectors.toList()));
+                        .equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ACTIVE_STATUS) &&
+                        !t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_SUP_TYPE))
+                .collect(Collectors.toList());
+
+        List<CreditCard> creditCardEligiblePurchaseMutualFund =
+                mappingEligiblePurchaseValue(productConfigList,creditCardWithFilterStatusAndType);
+        creditcardInformationResponse.setCreditCards(creditCardEligiblePurchaseMutualFund);
+
         response.setStatus(TmbStatusUtil.successStatus());
         response.setData(creditcardInformationResponse);
         return response;
     }
+
+    @LogAround
+    private List<CreditCard> mappingEligiblePurchaseValue(List<ProductConfig> productConfigList, List<CreditCard> creditCardWithFilterStatusAndType) throws TMBCommonException {
+
+        List<ProductConfig> productConfigStream = getCreditCardAllowPurchaseProductConfig(productConfigList);
+
+        for (CreditCard creditCard: creditCardWithFilterStatusAndType) {
+
+            Optional<ProductConfig> productConfigOptional = productConfigStream.stream().filter(pc -> pc.getProductCode().equals(creditCard.getProductCode())).findFirst();
+
+            if(productConfigOptional.isPresent()){
+
+                ProductConfig productConfig = productConfigOptional.get();
+                if(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND
+                        .equals(productConfig.getEligibleForPurchasingMf())){
+                    creditCard.setEligibleForPurchasingMutualfund(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND);
+                }else{
+                    creditCard.setEligibleForPurchasingMutualfund(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND);
+                }
+
+            }else{
+                creditCard.setEligibleForPurchasingMutualfund(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND);
+            }
+        }
+
+        return creditCardWithFilterStatusAndType;
+    }
+
+    public List<ProductConfig> getCreditCardAllowPurchaseProductConfig(List<ProductConfig> productConfigs) {
+        return productConfigs
+                .stream()
+                .filter(pc -> Stream.of("VABSIN", "VBKDSI", "VABSSN","MABSSN","VSOFAS",
+                        "MSOFAS","VSOSMT","MSOSMT","VSOCHI","MSCHIL",
+                        "VTOPBR","VTTBCP").anyMatch(t -> t.equals(pc.getProductCode()))).collect(Collectors.toList());
+    }
+
+
 }

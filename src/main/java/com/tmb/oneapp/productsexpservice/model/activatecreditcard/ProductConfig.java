@@ -19,5 +19,7 @@ public class ProductConfig {
     public String getOpenEKyc() {
         return openEkyc;
     }
+
+    private String eligibleForPurchasingMf;
     
 }
