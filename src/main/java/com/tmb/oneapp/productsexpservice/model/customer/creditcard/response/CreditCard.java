@@ -70,4 +70,10 @@ public class CreditCard {
 
     @JsonAlias("supplementary_infos")
     private List<SupplementaryInfo> supplementaryInfos;
+
+    @JsonAlias("product_code")
+    private String productCode;
+
+    private String eligibleForPurchasingMutualfund;
+
 }
