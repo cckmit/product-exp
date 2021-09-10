@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,14 +17,12 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.common.util.TMBUtils;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.LoanStagingbarRequest;
 import com.tmb.oneapp.productsexpservice.service.LoanStagingBarService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -40,8 +37,6 @@ public class LoanStagingBarController {
 	@PostMapping(value = "/get-staging-bar", produces = MediaType.APPLICATION_JSON_VALUE)
 	@LogAround
 	public ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> fetchLoanStagingBar(
-			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-			@ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
 			@Valid @RequestBody LoanStagingbarRequest request) throws TMBCommonException {
 		TmbOneServiceResponse<LoanStagingbar> response = new TmbOneServiceResponse<>();
 		if (request.getLoanType() == null || request.getProductHeaderKey() == null) {
@@ -50,7 +45,7 @@ public class LoanStagingBarController {
 					ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
 		}
 		try {
-			LoanStagingbar loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, request);
+			LoanStagingbar loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(request);
 			response.setData(loanStagingbarRes);
 			response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

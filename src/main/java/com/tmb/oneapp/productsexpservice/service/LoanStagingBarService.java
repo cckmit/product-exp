@@ -23,11 +23,11 @@ public class LoanStagingBarService {
 	private static final TMBLogger<LoanStagingBarService> logger = new TMBLogger<>(LoanStagingBarService.class);
 	private final CommonServiceClient commonServiceFeignClient;
 
-	public LoanStagingbar fetchLoanStagingBar(String correlationId, String crmId, LoanStagingbarRequest request)
+	public LoanStagingbar fetchLoanStagingBar(LoanStagingbarRequest request)
 			throws TMBCommonException {
 		try {
 			TmbOneServiceResponse<LoanStagingbar> loanStagingbar = commonServiceFeignClient
-					.fetchLoanStagingBar(correlationId, crmId, request);
+					.fetchLoanStagingBar(request);
 			if (!ResponseCode.SUCESS.getCode().equals(loanStagingbar.getStatus().getCode())) {
 				String errorMessage = String.format("[%s] %s", loanStagingbar.getStatus().getCode(),
 						loanStagingbar.getStatus().getMessage());
