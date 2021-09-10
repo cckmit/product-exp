@@ -21,6 +21,7 @@ import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
@@ -381,6 +382,36 @@ class LoanSubmissionOnlineServiceTest {
         assertThrows(Exception.class, () ->
                 loanSubmissionOnlineService.updateWorkingDetail(new UpdateWorkingDetailReq()));
     }
+
+
+    @Test
+    public void testUpdateApplicationSuccess() throws TMBCommonException {
+
+        Header header = new Header();
+        header.setResponseCode("MSG_000");
+        Body body = new Body();
+        body.setAppType("test");
+        ResponseApplication responseApplication = new ResponseApplication();
+        responseApplication.setHeader(header);
+        responseApplication.setBody(body);
+        TmbOneServiceResponse<ResponseApplication> oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
+        oneServiceResponse.setData(responseApplication);
+        when(lendingServiceClient.updateApplication(anyString(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        ResponseApplication result = loanSubmissionOnlineService.updateApplication("crmId",new UpdateApplicationRequest());
+        assertEquals("MSG_000", result.getHeader().getResponseCode());
+    }
+
+    @Test
+    public void testUpdateApplicationFailed() {
+        TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+        when(lendingServiceClient.updateApplication(anyString(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        assertThrows(Exception.class, () ->
+                loanSubmissionOnlineService.updateApplication("crmId",new UpdateApplicationRequest()));
+    }
+
+
 
 
     @Test

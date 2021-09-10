@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
@@ -322,7 +323,7 @@ public class LoanSubmissionOnlineController {
             @Valid EAppRequest request) {
         TmbOneServiceResponse<EAppResponse> response = new TmbOneServiceResponse<>();
         try {
-            EAppResponse eAppResponses = loanSubmissionOnlineService.getEAppData(correlationId,crmId, request.getCaId());
+            EAppResponse eAppResponses = loanSubmissionOnlineService.getEAppData(correlationId, crmId, request.getCaId());
             response.setData(eAppResponses);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
@@ -332,6 +333,29 @@ public class LoanSubmissionOnlineController {
             response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+    }
+
+    @LogAround
+    @ApiOperation("Update Application")
+    @PutMapping(value = "updateApplication", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse> updateApplication(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+                                                                   @Valid @RequestBody UpdateApplicationRequest request) {
+
+        TmbOneServiceResponse oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            loanSubmissionOnlineService.updateApplication(crmId, request);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+
+            logger.error("Error while update application : {}", e);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
 

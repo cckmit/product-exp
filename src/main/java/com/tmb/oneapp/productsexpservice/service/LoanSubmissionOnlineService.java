@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResp
 import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
@@ -228,6 +229,21 @@ public class LoanSubmissionOnlineService {
                     ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("get e-app got exception:{}", e);
+            throw e;
+        }
+    }
+
+    public ResponseApplication updateApplication(String crmId, UpdateApplicationRequest req) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<ResponseApplication>> response = lendingServiceClient.updateApplication(crmId, req);
+            if (response.getBody().getData().getHeader().getResponseCode().equals("MSG_000")) {
+                return response.getBody().getData();
+            }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    response.getBody().getData().getHeader().getResponseDescriptionEN(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+        } catch (Exception e) {
+            logger.error("createApplication got exception:{}", e);
             throw e;
         }
     }

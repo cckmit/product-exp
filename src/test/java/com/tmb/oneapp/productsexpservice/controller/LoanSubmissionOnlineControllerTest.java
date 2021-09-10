@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateApplicationRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
@@ -222,6 +223,21 @@ class LoanSubmissionOnlineControllerTest {
         when(loanSubmissionOnlineService.getPersonalDetailInfo(any(),any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> responseEntity = loanSubmissionOnlineController.getPersonalDetail(correlationId, request);
         Assert.assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
+    public void testUpdateApplicationSuccess() throws TMBCommonException {
+        ResponseApplication responseApplication = new ResponseApplication();
+        when(loanSubmissionOnlineService.updateApplication(anyString(),any())).thenReturn(responseApplication);
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanSubmissionOnlineController.updateApplication("crmId", new UpdateApplicationRequest());
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testUpdateApplicationFail() throws TMBCommonException {
+        when(loanSubmissionOnlineService.updateApplication(anyString(),any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanSubmissionOnlineController.updateApplication("crmId",new UpdateApplicationRequest());
+        assertTrue(responseEntity.getStatusCode().isError());
     }
 
     @Test
