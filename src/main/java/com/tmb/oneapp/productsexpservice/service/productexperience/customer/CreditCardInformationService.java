@@ -126,7 +126,7 @@ public class CreditCardInformationService {
     }
 
     @LogAround
-    private List<CreditCard> mappingEligiblePurchaseValue(List<ProductConfig> productConfigList, List<CreditCard> creditCardWithFilterStatusAndType) throws TMBCommonException {
+    private List<CreditCard> mappingEligiblePurchaseValue(List<ProductConfig> productConfigList, List<CreditCard> creditCardWithFilterStatusAndType) {
 
         List<ProductConfig> productConfigStream = getCreditCardAllowPurchaseProductConfig(productConfigList);
 

@@ -3,7 +3,6 @@ package com.tmb.oneapp.productsexpservice.controller.productexperience.customer;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.customer.creditcard.CreditCardInformationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CreditCardInformationService;
 import io.swagger.annotations.Api;
@@ -13,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -36,7 +38,7 @@ public class CreditCardInformationController {
      *
      * @param correlationId                    the correlation id
      * @param crmId the crm id request
-     * @return return dca list
+     * @return return list creditcard
      */
     @ApiOperation(value = "Get credit card list information for customer")
     @LogAround
