@@ -116,7 +116,7 @@ public class CreditCardController {
      * @return
      */
     ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> dataNotFoundError(HttpHeaders responseHeaders, TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse, CreditCardEvent creditCardEvent) {
-        creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+        creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
         /*  Activity log */
         creditCardLogService.logActivity(creditCardEvent);
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
@@ -132,7 +132,7 @@ public class CreditCardController {
      * @return
      */
     ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> getFailedResponse(HttpHeaders responseHeaders, TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse, CreditCardEvent creditCardEvent) {
-        creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+        creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
         /*  Activity log */
         creditCardLogService.logActivity(creditCardEvent);
         return this.handlingFailedResponse(oneServiceResponse, responseHeaders);

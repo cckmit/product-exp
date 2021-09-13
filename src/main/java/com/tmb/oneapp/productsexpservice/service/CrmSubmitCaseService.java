@@ -109,7 +109,7 @@ public class CrmSubmitCaseService {
                             .setCaseNumber("")
                             .setRequestDate(""),
                     requestHeaders,
-                    FAILURE,
+                    FAILURE_ACT_LOG,
                     "crm create case failed \"" + caseName + "\"");
 
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),

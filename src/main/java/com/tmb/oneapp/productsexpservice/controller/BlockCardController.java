@@ -113,7 +113,7 @@ public class BlockCardController {
                     oneServiceResponse.setStatus(
                             new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
                                     ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
-                    creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE, activityId,
+                    creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG, activityId,
                             correlationId, activityDate, accountId, ProductsExpServiceConstant.INTERNAL_SERVER);
                     return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
                 }
@@ -124,7 +124,7 @@ public class BlockCardController {
                 return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
             }
         } catch (Exception e) {
-            creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE, activityId,
+            creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG, activityId,
                     correlationId, activityDate, accountId, ProductsExpServiceConstant.INTERNAL_SERVER);
             throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
                     ResponseCode.GENERAL_ERROR.getService(), HttpStatus.BAD_REQUEST, null);

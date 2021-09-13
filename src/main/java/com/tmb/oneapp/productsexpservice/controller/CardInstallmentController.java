@@ -124,8 +124,8 @@ public class CardInstallmentController {
 				return dataNotFoundErrorResponse(responseHeaders, oneServiceResponse);
 			}
 		} catch (Exception e) {
-			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
-			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
+			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
+			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE_ACT_LOG);
 			creditCardEvent.setFailReason(e.getMessage());
 			creditCardLogService.logActivity(creditCardEvent);
 
