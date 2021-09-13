@@ -247,8 +247,8 @@ public class CreditCardLogService {
 			creditCardEvent.setTotalAmountTotalIntrest(formateForCurrency(interestInDouble.toString()) + "+"
 					+ formateForCurrency(amountPlusTotalInterest.toString()));
 		} else {
-			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE);
-			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE);
+			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE_ACT_LOG);
+			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
 			ErrorStatus errorStatus = e.getStatus().getErrorStatus().get(0);
 			creditCardEvent.setReasonForRequest(errorStatus.getErrorCode());
 		}
@@ -337,7 +337,7 @@ public class CreditCardLogService {
 	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
 			String accountId, String failReason) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
-		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE)) {
+		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
 
@@ -359,7 +359,7 @@ public class CreditCardLogService {
 	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
 			String accountId, String failReason) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
-		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE)) {
+		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(ProductsExpServiceConstant.FAILED);
 		}
 		creditCardEvent.setResult(status);

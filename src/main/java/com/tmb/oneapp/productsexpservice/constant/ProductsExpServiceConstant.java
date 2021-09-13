@@ -108,7 +108,7 @@ public class ProductsExpServiceConstant {
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
     public static final String SUCCESS = "Success";
     public static final String FAILED = "Failed";
-    public static final String FAILURE = "Failure";
+    public static final String FAILURE_ACT_LOG = "Failure";
     public static final String X_FORWARD_FOR = "x-forward-for";
     public static final String OS_VERSION = "os-version";
     public static final String CHANNEL = "channel";

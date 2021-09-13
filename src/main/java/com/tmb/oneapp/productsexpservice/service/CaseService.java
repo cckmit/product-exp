@@ -146,7 +146,7 @@ public class CaseService {
                                 CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
                                 .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
                         requestHeaders,
-                        FAILURE,
+                        FAILURE_ACT_LOG,
                         "Feign Error occured when calling GET /apis/customers/firstTimeUsage : " + e.toString());
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getMessage(),
@@ -159,7 +159,7 @@ public class CaseService {
                             CASE_TRACKING_TUTORIAL_ACTIVITY_ID)
                             .setScreenName(ACTIVITY_SCREEN_NAME_TUTORIAL_CST),
                     requestHeaders,
-                    FAILURE,
+                    FAILURE_ACT_LOG,
                     "Unexpected Error occured when calling GET /apis/customers/firstTimeUsage : " + e.toString());
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
