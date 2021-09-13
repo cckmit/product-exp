@@ -48,16 +48,6 @@ public class SetCreditLimitControllerTest {
 
 	}
 
-	@Test
-	void testSetCreditLimitPermanentLimitSuccess() throws Exception {
-		testLimit(ProductsExpServiceConstant.MODE_PERMANENT);
-	}
-
-	@Test
-	void testSetCreditLimitTempLimitSuccess() throws Exception {
-		testLimit(ProductsExpServiceConstant.MODE_TEMPORARY);
-
-	}
 
 	@Test
 	void testSetCreditLimitNoLimitSuccess() throws Exception {
@@ -80,6 +70,10 @@ public class SetCreditLimitControllerTest {
 		setCreditLimitResp.setStatus(status);
 		CreditCardEvent creditCardEvent = new CreditCardEvent("", "", "");
 		creditCardEvent.setActivityDate("01-09-1990");
+		when(creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,
+				ProductsExpServiceConstant.SUCCESS)).thenReturn(creditCardEvent);
+		when(creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter, limit)).thenReturn(creditCardEvent);
+		
 		when(creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,
 				ProductsExpServiceConstant.SUCCESS)).thenReturn(creditCardEvent);
 		TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<SetCreditLimitResp>();
