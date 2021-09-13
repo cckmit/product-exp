@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.response.CreditCardInformationResponse;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -34,6 +38,9 @@ public class CreditCardInformationServiceTest {
     @Mock
     private CustomerExpServiceClient customerExpServiceClient;
 
+    @Mock
+    private CommonServiceClient commonServiceFeignClient;
+
     @Test
     void should_return_credit_card_information_when_call_get_credit_card_information_given_correlation_id_and_crm_id() throws IOException {
         //Given
@@ -47,12 +54,21 @@ public class CreditCardInformationServiceTest {
         tmbFundSummaryResponse.setData(creditcardInformationResponse);
         when(customerExpServiceClient.getCustomerCreditCard(any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundSummaryResponse));
 
+        ProductConfig productConfig = new ProductConfig();
+        productConfig.setProductCode("VABSIN");
+        List<ProductConfig> productConfigList = new ArrayList<>();
+        productConfigList.add(productConfig);
+        TmbOneServiceResponse tmbOneServiceResponse = new TmbOneServiceResponse();
+        tmbOneServiceResponse.setData(productConfigList);
+        when(commonServiceFeignClient.getProductConfig(any())).thenReturn(ResponseEntity.ok(tmbOneServiceResponse));
+
         //When
         TmbOneServiceResponse<CreditCardInformationResponse> actual = creditcardInformationService.getCreditCardInformation(correlationId,crmId);
 
         //Then
         assertEquals(TmbStatusUtil.successStatus().getCode(),actual.getStatus().getCode());
         assertEquals(creditcardInformationResponse, actual.getData());
+        assertEquals("N",actual.getData().getCreditCards().get(0).getEligibleForPurchasingMutualfund());
     }
 
     @Test
@@ -62,7 +78,7 @@ public class CreditCardInformationServiceTest {
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";;
 
-        when(customerExpServiceClient.getCustomerCreditCard(any(), any())).thenThrow(new RuntimeException("Error"));
+        when(commonServiceFeignClient.getProductConfig(any())).thenThrow(new RuntimeException("Error"));
 
         //When
         TmbOneServiceResponse<CreditCardInformationResponse> actual = creditcardInformationService.getCreditCardInformation(correlationId,crmId);

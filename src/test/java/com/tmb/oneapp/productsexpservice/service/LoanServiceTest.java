@@ -62,8 +62,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("c2g");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -105,8 +104,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("c2g");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -146,8 +144,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("rc");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -169,7 +166,7 @@ public class LoanServiceTest {
 		Assertions.assertEquals(ProductsExpServiceConstant.PERSONAL_DETAIL,
 				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
 	}
-	
+
 	@Test
 	void fetchProductOrientationSuccessCCLoanWork() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
@@ -189,8 +186,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("vi");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -212,7 +208,7 @@ public class LoanServiceTest {
 		Assertions.assertEquals(ProductsExpServiceConstant.WORK_DETAIL,
 				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
 	}
-	
+
 	@Test
 	void fetchProductOrientationSuccessCCLoanUpload() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
@@ -232,8 +228,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("vi");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -275,8 +270,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("vi");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -298,7 +292,7 @@ public class LoanServiceTest {
 		Assertions.assertEquals(ProductsExpServiceConstant.LOAN_DAY1,
 				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
 	}
-	
+
 	@Test
 	void fetchProductOrientationSuccessCCLoanFinalApprove() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
@@ -318,8 +312,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("vi");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -341,7 +334,7 @@ public class LoanServiceTest {
 		Assertions.assertEquals(ProductsExpServiceConstant.FINAL_APPROVAL,
 				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
 	}
-	
+
 	@Test
 	void fetchProductOrientationSuccessCCLoanCal() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
@@ -361,8 +354,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("vi");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -384,7 +376,7 @@ public class LoanServiceTest {
 		Assertions.assertEquals(ProductsExpServiceConstant.LOAN_CAL,
 				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
 	}
-	
+
 	@Test
 	void fetchProductOrientationSuccessCCLoanCalCaseNull() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
@@ -404,8 +396,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("vi");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();
@@ -427,7 +418,7 @@ public class LoanServiceTest {
 		Assertions.assertEquals(ProductsExpServiceConstant.LOAN_CAL,
 				actual.getBody().getData().getLoanStagingBar().getCurrentStep());
 	}
-	
+
 	@Test
 	void fetchProductOrientationSuccessCCLoanIncome() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
@@ -447,8 +438,7 @@ public class LoanServiceTest {
 		stagingDetailsList.add(stagingDetails);
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
-		Mockito.when(loanStagingBarService.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq))
-				.thenReturn(loanStagingbar);
+		Mockito.when(loanStagingBarService.fetchLoanStagingBar(loanStagingbarReq)).thenReturn(loanStagingbar);
 		ProductDetailRequest request = new ProductDetailRequest();
 		request.setProductCode("vi");
 		ProductDetailResponse dataProductDetailResponse = new ProductDetailResponse();

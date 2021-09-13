@@ -19,7 +19,9 @@
       "shortcuts": [],
       "accountStatus": "active",
       "productOrder": "20001",
-      "supplementaryInfos": null
+      "supplementaryInfos": null,
+      "productCode": "VABSIN",
+      "eligibleForPurchasingMutualfund": "N"
     }
   ],
   "flashCards": null
