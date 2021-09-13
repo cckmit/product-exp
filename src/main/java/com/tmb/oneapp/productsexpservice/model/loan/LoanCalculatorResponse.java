@@ -17,6 +17,12 @@ public class LoanCalculatorResponse {
     private BigDecimal incomeOtherIncome;
     private Boolean isWaiveDoc;
     private String employmentStatus;
+    private String paymentCriteria;
+    private String payMethodCriteria;
+    private String loanWithOtherBank;
+    private String considerLoanWithOtherBank;
+    private BigDecimal limitApplied;
+    private BigDecimal tenure;
     private LoanCustomerDisburstAccount receiveAccount;
     private LoanCustomerDisburstAccount paymentAccount;
 }
