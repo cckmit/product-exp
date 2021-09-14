@@ -223,9 +223,6 @@ public class ProductsExpServiceConstant {
     public static final String CRM_ID_FORMAT = "00000000000000";
     public static final Integer DIGIT_OF_CRM_ID = 14;
 
-    /* CUSTOMER CARD EXPIRE */
-    public static final String EXPIRE_DATE_DEFAULT = "1357-01-01";
-
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_CALL_TO_ADVISOR = "O0011";
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_MESSAGE_TO_ADVISOR = "O0012";
     public static final String SERVICE_TYPE_MATRIC_CODE_PWA_SEND_EMAIL_TO_ADVISOR = "O0013";
