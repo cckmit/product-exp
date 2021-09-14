@@ -19,6 +19,8 @@ public class InstantLoanCalUWResponse {
     private BigDecimal outStandingBalance;
     private BigDecimal requestAmount;
     private BigDecimal installmentAmount;
+    private BigDecimal limitApplied;
+    private BigDecimal requestApplied;
     private BigDecimal tenor;
     private BigDecimal interestRate;
     private String payDate;
