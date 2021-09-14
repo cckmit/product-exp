@@ -110,11 +110,7 @@ public class CustomerProfileService {
 			individualProfile.setCitizenId(generalProfile.getCitizenId());
 			individualProfile.setCustomerFullEN(generalProfile.getEngFname() + " " + generalProfile.getEngLname());
 			individualProfile.setCustomerFullTh(generalProfile.getThaFname() + " " + generalProfile.getThaLname());
-			if (isPermanentType(generalProfile.getIdExpireDate())) {
-				individualProfile.setExpireDate(null);
-			} else {
-				individualProfile.setExpireDate(generalProfile.getIdExpireDate());
-			}
+			individualProfile.setExpireDate(generalProfile.getIdExpireDate());
 
 			individualProfile.setMobileNo(generalProfile.getPhoneNoFull());
 			individualProfile.setNationality(generalProfile.getNationality());
@@ -128,16 +124,6 @@ public class CustomerProfileService {
 
 		}
 		return individualProfile;
-	}
-
-	/**
-	 * Logic for handle expire date
-	 * 
-	 * @param idExpireDate
-	 * @return
-	 */
-	private boolean isPermanentType(String idExpireDate) {
-		return ProductsExpServiceConstant.EXPIRE_DATE_DEFAULT.equals(idExpireDate);
 	}
 
 	/**
