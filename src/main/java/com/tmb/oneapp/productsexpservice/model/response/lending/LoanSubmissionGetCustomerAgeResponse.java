@@ -11,4 +11,6 @@ import lombok.Setter;
 public class LoanSubmissionGetCustomerAgeResponse {
     private Long age;
     private String birthDate;
+    private String expireDate;
+    private String idType;
 }
