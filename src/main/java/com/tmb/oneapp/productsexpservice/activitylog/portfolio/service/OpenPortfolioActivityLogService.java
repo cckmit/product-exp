@@ -36,7 +36,7 @@ public class OpenPortfolioActivityLogService {
     public void openPortfolio(String correlationId, String crmId, String initialOpenPortfolio, String reasonValue) {
         OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, OpenPortfolioActivityEnums.OPEN_PORTFOLIO.getActivityTypeId());
         activityData.setInitialOpenPortfolio(initialOpenPortfolio);
-        activityData.setReasonValue(reasonValue);
+        activityData.setReason(reasonValue);
         logActivityService.createLog(activityData);
     }
 
@@ -66,7 +66,7 @@ public class OpenPortfolioActivityLogService {
     @LogAround
     public void clickConfirm(String correlationId, String crmId, OpenPortfolioActivityLogRequest openPortfolioActivityLogRequest) {
         OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, OpenPortfolioActivityEnums.CLICK_CONFIRM_BUTTON.getActivityTypeId());
-        activityData.setScoreValue(openPortfolioActivityLogRequest.getScoreValue());
+        activityData.setScore(openPortfolioActivityLogRequest.getScoreValue());
         activityData.setNickname(openPortfolioActivityLogRequest.getNickname());
         activityData.setPurposeOfInvestment(openPortfolioActivityLogRequest.getPurposeOfInvestment());
         activityData.setReceivingAccount(openPortfolioActivityLogRequest.getReceivingAccount());
