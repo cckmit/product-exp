@@ -54,8 +54,6 @@ public class LoanDetailsControllerTest {
     @Mock
     CommonServiceClient commonServiceClient;
     @Mock
-    CreditCardLogService creditCardLogService;
-    @Mock
     CustomerServiceClient customerServiceClient;
     @Mock
 	ApplyEStatementService applyEStatementService;
@@ -65,7 +63,7 @@ public class LoanDetailsControllerTest {
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		homeLoanController = new LoanDetailsController(accountRequestClient, commonServiceClient, creditCardLogService,
+		homeLoanController = new LoanDetailsController(accountRequestClient, commonServiceClient,
 				customerServiceClient, applyEStatementService,instantLoanService);
 	}
 
@@ -203,10 +201,6 @@ public class LoanDetailsControllerTest {
         listTmbOneServiceResponse.setData(List.of(productConfig1));
         final ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> tmbOneServiceResponseEntity1 = new ResponseEntity<>(listTmbOneServiceResponse, HttpStatus.OK);
         when(commonServiceClient.getProductConfig("correlationID")).thenReturn(tmbOneServiceResponseEntity1);
-
-        // Configure CreditCardLogService.viewLoanLandingScreenEvent(...).
-        final CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
-        when(creditCardLogService.viewLoanLandingScreenEvent(any(), any(), any())).thenReturn(creditCardEvent);
 
         // Run the test
         final ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(requestHeadersParameter, requestBody);
@@ -464,7 +458,6 @@ public class LoanDetailsControllerTest {
         Map<String, String> requestHeadersParameter = headerRequestParameter("1234");
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000018593707";
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, "", "");
         HomeLoanFullInfoResponse loanDetails = new HomeLoanFullInfoResponse();
         loanDetails.setAccount(account);
         StatusResponse status = new StatusResponse();
@@ -508,7 +501,7 @@ public class LoanDetailsControllerTest {
         res.setStatus(tmbStatus);
         res.setData(data);
         ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse = new ResponseEntity<>(res, HttpStatus.OK);
-        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, crmId, correlationId, creditCardEvent, loanResponse);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, crmId, correlationId, loanResponse);
         assertNotNull(responseEntity);
     }
 }

@@ -1,5 +1,24 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
+
+import java.text.DecimalFormat;
+import java.time.Instant;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.google.common.base.Strings;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -16,39 +35,20 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardEmail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.EStatementDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.Payment;
 import com.tmb.oneapp.productsexpservice.model.loan.Rates;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.InstantLoanService;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
-
-import java.text.DecimalFormat;
-import java.time.Instant;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @Api(tags = "Loan detail controller")
@@ -56,7 +56,6 @@ public class LoanDetailsController {
 	private static final TMBLogger<LoanDetailsController> log = new TMBLogger<>(LoanDetailsController.class);
 	private final AccountRequestClient accountRequestClient;
 	private final CommonServiceClient commonServiceClient;
-	private final CreditCardLogService creditCardLogService;
 	private final CustomerServiceClient customerServiceClient;
 	private final ApplyEStatementService applyEStatementService;
 	private final InstantLoanService instanceLoanService;
@@ -70,11 +69,10 @@ public class LoanDetailsController {
 	 */
 	@Autowired
 	public LoanDetailsController(AccountRequestClient accountRequestClient, CommonServiceClient commonServiceClient,
-			CreditCardLogService creditCardLogService, CustomerServiceClient customerServiceClient,
+			CustomerServiceClient customerServiceClient,
 			ApplyEStatementService applyEStatementService, InstantLoanService instantLoanService) {
 		this.accountRequestClient = accountRequestClient;
 		this.commonServiceClient = commonServiceClient;
-		this.creditCardLogService = creditCardLogService;
 		this.customerServiceClient = customerServiceClient;
 		this.applyEStatementService = applyEStatementService;
 		this.instanceLoanService = instantLoanService;
@@ -101,14 +99,8 @@ public class LoanDetailsController {
 
 		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
-		String activityDate = Long.toString(System.currentTimeMillis());
-		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_VIEW_LOAN_LENDING_SCREEN;
-		CreditCardEvent creditCardEvent = new CreditCardEvent(
-				requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()),
-				activityDate, activityId);
 
 		try {
-
 			String accountId = requestBody.getAccountNo();
 			if (!Strings.isNullOrEmpty(accountId)) {
 				ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse = accountRequestClient
@@ -119,7 +111,7 @@ public class LoanDetailsController {
 				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
 					return getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders,
-							oneServiceResponse, crmId, correlationId, creditCardEvent, loanResponse);
+							oneServiceResponse, crmId, correlationId, loanResponse);
 				} else {
 					return getFailedResponse(responseHeaders, oneServiceResponse);
 
@@ -140,7 +132,6 @@ public class LoanDetailsController {
 	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getTmbOneServiceResponseResponseEntity(
 			Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders,
 			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse, String crmId, String correlationId,
-			CreditCardEvent creditCardEvent,
 			ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse) {
 		HomeLoanFullInfoResponse loanDetails = loanResponse.getBody().getData();
 		String productId = loanResponse.getBody().getData().getAccount().getProductId();
@@ -174,10 +165,7 @@ public class LoanDetailsController {
 		}
 		processSetEStatementDetail(loanDetails, crmId, correlationId);
 		processSetAccountID(loanDetails);
-		/* Activity log */
-		creditCardEvent = creditCardLogService.viewLoanLandingScreenEvent(creditCardEvent, requestHeadersParameter,
-				loanDetails);
-		creditCardLogService.logActivity(creditCardEvent);
+		
 		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		oneServiceResponse.setData(loanDetails);

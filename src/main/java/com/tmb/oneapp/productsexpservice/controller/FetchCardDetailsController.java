@@ -30,8 +30,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -48,7 +46,6 @@ import io.swagger.annotations.ApiParam;
 public class FetchCardDetailsController {
 	private final CreditCardClient creditCardClient;
 	private final CommonServiceClient commonServiceClient;
-	private final CreditCardLogService creditCardLogService;
 	private final CustomerServiceClient customerServiceClient;
 	private static final TMBLogger<FetchCardDetailsController> logger = new TMBLogger<>(
 			FetchCardDetailsController.class);
@@ -61,11 +58,10 @@ public class FetchCardDetailsController {
 	 */
 	@Autowired
 	public FetchCardDetailsController(CreditCardClient creditCardClient, CommonServiceClient commonServiceClient,
-			CreditCardLogService creditCardLogService, CustomerServiceClient customerServiceClient) {
+			CustomerServiceClient customerServiceClient) {
 		super();
 		this.creditCardClient = creditCardClient;
 		this.commonServiceClient = commonServiceClient;
-		this.creditCardLogService = creditCardLogService;
 		this.customerServiceClient = customerServiceClient;
 	}
 
@@ -90,9 +86,7 @@ public class FetchCardDetailsController {
 		TmbOneServiceResponse<FetchCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
-		String activityDate = Long.toString(System.currentTimeMillis());
-		String activityId = ProductsExpServiceConstant.ACTIVITY_ID_LOAD_CARD_DETAILS;
-		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+
 		try {
 			String accountId = request.getAccountId();
 			if (!Strings.isNullOrEmpty(accountId)) {
@@ -118,9 +112,6 @@ public class FetchCardDetailsController {
 					EStatementDetail eStatementDetail = getEStatementDetail(fetchCardResponse, crmId);
 					fetchCardResponse.setEStatementDetail(eStatementDetail);
 					
-					creditCardEvent = creditCardLogService.loadCardDetailsEvent(creditCardEvent,
-							requestHeadersParameter, fetchCardResponse);
-					creditCardLogService.logActivity(creditCardEvent);
 					logger.info("calling FetchCardDetails end Time : {} ", System.currentTimeMillis());
 
 					oneServiceResponse
