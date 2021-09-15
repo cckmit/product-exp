@@ -15,15 +15,15 @@ public class OpenPortfolioActivityLog extends BaseEvent {
     @JsonProperty(value = "initial_open_portfolio")
     private String initialOpenPortfolio;
 
-    @JsonProperty(value = "reason_value")
-    private String reasonValue;
+    @JsonProperty(value = "reason")
+    private String reason;
 
     /* Accept term and condition */
     private String value;
 
     /* Click confirm */
-    @JsonProperty(value = "score_value")
-    private String scoreValue;
+    @JsonProperty(value = "score")
+    private String score;
 
     private String nickname;
 

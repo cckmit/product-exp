@@ -232,4 +232,19 @@ public class LoanSubmissionOnlineService {
         }
     }
 
+    public ResponseApplication updateApplication(String crmId, LoanSubmissionCreateApplicationReq req) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<ResponseApplication>> response = lendingServiceClient.updateApplication(crmId, req);
+            if (response.getBody().getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+                return response.getBody().getData();
+            }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    response.getBody().getData().getHeader().getResponseDescriptionEN(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+        } catch (Exception e) {
+            logger.error("createApplication got exception:{}", e);
+            throw e;
+        }
+    }
+
 }
