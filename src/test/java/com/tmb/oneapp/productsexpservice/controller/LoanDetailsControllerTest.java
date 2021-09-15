@@ -1,24 +1,15 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 
-import com.tmb.common.model.CustGeneralProfileResponse;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
-import com.tmb.oneapp.productsexpservice.model.loan.*;
-import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
-import com.tmb.oneapp.productsexpservice.service.InstantLoanService;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -33,16 +24,33 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
+import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
+import com.tmb.oneapp.productsexpservice.model.loan.Account;
+import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
+import com.tmb.oneapp.productsexpservice.model.loan.AdditionalStatus;
+import com.tmb.oneapp.productsexpservice.model.loan.Balances;
+import com.tmb.oneapp.productsexpservice.model.loan.CreditLimit;
+import com.tmb.oneapp.productsexpservice.model.loan.DebitAccount;
+import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.LoanDetailsFullResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.Payment;
+import com.tmb.oneapp.productsexpservice.model.loan.Rates;
+import com.tmb.oneapp.productsexpservice.model.loan.Status;
+import com.tmb.oneapp.productsexpservice.model.loan.StatusResponse;
+import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
+import com.tmb.oneapp.productsexpservice.service.InstantLoanService;
 
 @RunWith(JUnit4.class)
 public class LoanDetailsControllerTest {
@@ -54,8 +62,6 @@ public class LoanDetailsControllerTest {
     @Mock
     CommonServiceClient commonServiceClient;
     @Mock
-    CreditCardLogService creditCardLogService;
-    @Mock
     CustomerServiceClient customerServiceClient;
     @Mock
 	ApplyEStatementService applyEStatementService;
@@ -65,7 +71,7 @@ public class LoanDetailsControllerTest {
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		homeLoanController = new LoanDetailsController(accountRequestClient, commonServiceClient, creditCardLogService,
+		homeLoanController = new LoanDetailsController(accountRequestClient, commonServiceClient,
 				customerServiceClient, applyEStatementService,instantLoanService);
 	}
 
@@ -203,10 +209,6 @@ public class LoanDetailsControllerTest {
         listTmbOneServiceResponse.setData(List.of(productConfig1));
         final ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> tmbOneServiceResponseEntity1 = new ResponseEntity<>(listTmbOneServiceResponse, HttpStatus.OK);
         when(commonServiceClient.getProductConfig("correlationID")).thenReturn(tmbOneServiceResponseEntity1);
-
-        // Configure CreditCardLogService.viewLoanLandingScreenEvent(...).
-        final CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
-        when(creditCardLogService.viewLoanLandingScreenEvent(any(), any(), any())).thenReturn(creditCardEvent);
 
         // Run the test
         final ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> result = homeLoanController.getLoanAccountDetail(requestHeadersParameter, requestBody);
@@ -461,10 +463,8 @@ public class LoanDetailsControllerTest {
         payment.setMonthlyPaymentAmount("1234");
         account.setPayment(payment);
         oneServiceResponse.setData(data);
-        Map<String, String> requestHeadersParameter = headerRequestParameter("1234");
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000018593707";
-        CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, "", "");
         HomeLoanFullInfoResponse loanDetails = new HomeLoanFullInfoResponse();
         loanDetails.setAccount(account);
         StatusResponse status = new StatusResponse();
@@ -508,7 +508,7 @@ public class LoanDetailsControllerTest {
         res.setStatus(tmbStatus);
         res.setData(data);
         ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse = new ResponseEntity<>(res, HttpStatus.OK);
-        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders, oneServiceResponse, crmId, correlationId, creditCardEvent, loanResponse);
+        ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> responseEntity = homeLoanController.getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse, crmId, correlationId, loanResponse);
         assertNotNull(responseEntity);
     }
 }
