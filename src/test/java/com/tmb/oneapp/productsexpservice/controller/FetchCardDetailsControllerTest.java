@@ -34,7 +34,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 
 @RunWith(JUnit4.class)
 public class FetchCardDetailsControllerTest {
@@ -45,16 +44,13 @@ public class FetchCardDetailsControllerTest {
     CommonServiceClient commonServiceClient;
 
     @Mock
-    CreditCardLogService creditCardLogService;
-    
-    @Mock
     CustomerServiceClient customerServiceClient;
     
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
         fetchCardDetailsController = new FetchCardDetailsController(creditCardClient, commonServiceClient, 
-        		creditCardLogService, customerServiceClient);
+        		 customerServiceClient);
 
     }
 
