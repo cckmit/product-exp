@@ -384,6 +384,36 @@ class LoanSubmissionOnlineServiceTest {
 
 
     @Test
+    public void testUpdateApplicationSuccess() throws TMBCommonException {
+
+        Header header = new Header();
+        header.setResponseCode("MSG_000");
+        Body body = new Body();
+        body.setAppType("test");
+        ResponseApplication responseApplication = new ResponseApplication();
+        responseApplication.setHeader(header);
+        responseApplication.setBody(body);
+        TmbOneServiceResponse<ResponseApplication> oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
+        oneServiceResponse.setData(responseApplication);
+        when(lendingServiceClient.updateApplication(anyString(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        ResponseApplication result = loanSubmissionOnlineService.updateApplication("crmId",new LoanSubmissionCreateApplicationReq());
+        assertEquals("MSG_000", result.getHeader().getResponseCode());
+    }
+
+    @Test
+    public void testUpdateApplicationFailed() {
+        TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+        when(lendingServiceClient.updateApplication(anyString(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        assertThrows(Exception.class, () ->
+                loanSubmissionOnlineService.updateApplication("crmId",new LoanSubmissionCreateApplicationReq()));
+    }
+
+
+
+
+    @Test
     void testUpdateNCBConsentFlagAndStoreFile() throws Exception {
 
         CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();

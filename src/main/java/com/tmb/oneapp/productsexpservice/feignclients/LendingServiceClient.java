@@ -252,4 +252,8 @@ public interface LendingServiceClient {
             @RequestParam(value = "caId") Long caId,
             @RequestParam(value = "product") String product);
 
+    @PostMapping(value = "/apis/lending-service/loanOnlineSubmission/updateApplication")
+    ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateApplication(
+            @RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestBody LoanSubmissionCreateApplicationReq request);
+
 }

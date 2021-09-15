@@ -225,6 +225,21 @@ class LoanSubmissionOnlineControllerTest {
     }
 
     @Test
+    public void testUpdateApplicationSuccess() throws TMBCommonException {
+        ResponseApplication responseApplication = new ResponseApplication();
+        when(loanSubmissionOnlineService.updateApplication(anyString(),any())).thenReturn(responseApplication);
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanSubmissionOnlineController.updateApplication("crmId", new LoanSubmissionCreateApplicationReq());
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testUpdateApplicationFail() throws TMBCommonException {
+        when(loanSubmissionOnlineService.updateApplication(anyString(),any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanSubmissionOnlineController.updateApplication("crmId",new LoanSubmissionCreateApplicationReq());
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
     public void testSavePersonalDetailInfoSuccess() throws TMBCommonException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
