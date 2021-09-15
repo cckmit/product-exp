@@ -110,7 +110,7 @@ public class LoanDetailsController {
 
 				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-					return getTmbOneServiceResponseResponseEntity(requestHeadersParameter, responseHeaders,
+					return getTmbOneServiceResponseResponseEntity(responseHeaders,
 							oneServiceResponse, crmId, correlationId, loanResponse);
 				} else {
 					return getFailedResponse(responseHeaders, oneServiceResponse);
@@ -130,8 +130,8 @@ public class LoanDetailsController {
 	}
 
 	ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> getTmbOneServiceResponseResponseEntity(
-			Map<String, String> requestHeadersParameter, HttpHeaders responseHeaders,
-			TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse, String crmId, String correlationId,
+			HttpHeaders responseHeaders, TmbOneServiceResponse<HomeLoanFullInfoResponse> oneServiceResponse,
+			String crmId, String correlationId,
 			ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse) {
 		HomeLoanFullInfoResponse loanDetails = loanResponse.getBody().getData();
 		String productId = loanResponse.getBody().getData().getAccount().getProductId();
