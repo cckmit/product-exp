@@ -19,8 +19,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.CreditCardServiceHour;
+import com.tmb.oneapp.productsexpservice.service.CreditCardServiceHourService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -33,11 +33,11 @@ import io.swagger.annotations.ApiParam;
 public class CreditCardServiceHourController {
 	private static final TMBLogger<CreditCardServiceHourController> logger = new TMBLogger<>(
 			CreditCardServiceHourController.class);
-	private final CreditCardClient creditCardClient;
+	private final CreditCardServiceHourService creditCardServiceHourService;
 
 	@Autowired
-	public CreditCardServiceHourController(CreditCardClient creditCardClient) {
-		this.creditCardClient = creditCardClient;
+	public CreditCardServiceHourController(CreditCardServiceHourService creditCardServiceHourService) {
+		this.creditCardServiceHourService = creditCardServiceHourService;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class CreditCardServiceHourController {
 		TmbOneServiceResponse<CreditCardServiceHour> oneServiceResponse = new TmbOneServiceResponse<>();
 		CreditCardServiceHour creditCardServiceHour = new CreditCardServiceHour();
 		try {
-			ResponseEntity<TmbOneServiceResponse<CreditCardServiceHour>> response = creditCardClient
+			ResponseEntity<TmbOneServiceResponse<CreditCardServiceHour>> response = creditCardServiceHourService
 					.getCreditCardServiceHour();
 			if (response != null && response.getStatusCode() == HttpStatus.OK) {
 				creditCardServiceHour = response.getBody().getData();
