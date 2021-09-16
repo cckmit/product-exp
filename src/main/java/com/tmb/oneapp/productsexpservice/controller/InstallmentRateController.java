@@ -70,14 +70,13 @@ public class InstallmentRateController {
 			oneServiceResponse
 					.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 							ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+			return ResponseEntity.ok(oneServiceResponse);
 		} catch (Exception e) {
 			logger.error("Error while getting installment rate controller: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService()));
+			 return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 		}
-
-		return ResponseEntity.ok(oneServiceResponse);
-
 	}
 
 	/**

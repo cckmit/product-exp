@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,18 +62,20 @@ public class CashForUService {
 
 			BigDecimal cashTransferFee = new BigDecimal(rateCashForUInfo.getCashTransferFee());
 			BigDecimal cashTransferVat = new BigDecimal(rateCashForUInfo.getCashTransferVat());
-			BigDecimal fee = new BigDecimal("0");
+			BigDecimal fee = BigDecimal.ZERO;
 			if (allowWaiveFeeProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
-				responseModelInfo.setCashFeeRate(formateDigit("0"));
+				responseModelInfo.setCashFeeRate(formateDigit(BigDecimal.ZERO.toString()));
 			} else {
-				fee = new BigDecimal(requestBody.getAmount() != null ? requestBody.getAmount() : "0")
-						.multiply(cashTransferFee);
+				fee = new BigDecimal(
+						requestBody.getAmount() != null ? requestBody.getAmount() : BigDecimal.ZERO.toString())
+								.multiply(cashTransferFee);
 				responseModelInfo.setCashFeeRate(formateDigit(fee.toString()));
 			}
 			if (allowWaiveVatProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
-				responseModelInfo.setCashVatRate(formateDigit("0"));
+				responseModelInfo.setCashVatRate(formateDigit(BigDecimal.ZERO.toString()));
 			} else {
-				responseModelInfo.setCashVatRate(formateDigit(fee.multiply(cashTransferVat).toString()));
+				fee = fee.multiply(cashTransferVat);
+				responseModelInfo.setCashVatRate(formateDigit(fee.toString()));
 			}
 
 		} else {
@@ -90,7 +93,7 @@ public class CashForUService {
 	private String formateDigit(String cashTransferVat) {
 
 		BigDecimal number = new BigDecimal(cashTransferVat);
-		number = number.setScale(2);
+		number = number.setScale(2, RoundingMode.HALF_UP);
 
 		return number.toString();
 	}
@@ -164,7 +167,7 @@ public class CashForUService {
 	private boolean allowWaiveVatProduct(CashForUConfigInfo rateCashForUInfo, String productId) {
 		List<String> waiveVatProducts = rateCashForUInfo.getWaiveVatProducts();
 		boolean isAllow = false;
-		if(CollectionUtils.isNotEmpty(waiveVatProducts)) {
+		if (CollectionUtils.isNotEmpty(waiveVatProducts)) {
 			for (String code : waiveVatProducts) {
 				if (productId.equals(code)) {
 					isAllow = true;
@@ -184,7 +187,7 @@ public class CashForUService {
 	private boolean allowWaiveFeeProduct(CashForUConfigInfo rateCashForUInfo, String productId) {
 		List<String> waiveFeeProducts = rateCashForUInfo.getWaiveFeeProducts();
 		boolean isAllow = false;
-		if(CollectionUtils.isNotEmpty(waiveFeeProducts)) {
+		if (CollectionUtils.isNotEmpty(waiveFeeProducts)) {
 			for (String code : waiveFeeProducts) {
 				if (productId.equals(code)) {
 					isAllow = true;
