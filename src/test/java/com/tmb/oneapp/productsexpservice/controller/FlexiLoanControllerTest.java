@@ -2,7 +2,6 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffRequest;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffResponse;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
@@ -93,23 +92,19 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testCheckSystemOffSuccess() {
-        CheckSystemOffRequest request = new CheckSystemOffRequest();
-        request.setCurrentTime("17:00");
+    public void testCheckSystemOffSuccess()  {
         String correlationId = "xxx";
         CheckSystemOffResponse response = new CheckSystemOffResponse();
-        when(flexiCheckSystemOffService.checkSystemOff(any(),any())).thenReturn(response);
-        ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> responseEntity = flexiLoanController.checkSystemOff(correlationId, request);
+        when(flexiCheckSystemOffService.checkSystemOff(any())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> responseEntity = flexiLoanController.checkSystemOff(correlationId);
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testCheckSystemOffFail() {
-        CheckSystemOffRequest request = new CheckSystemOffRequest();
-        request.setCurrentTime("17:00");
+    public void testCheckSystemOffFail()  {
         String correlationId = "xxx";
-        when(flexiCheckSystemOffService.checkSystemOff(any(),any())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> responseEntity = flexiLoanController.checkSystemOff(correlationId, request);
+        when(flexiCheckSystemOffService.checkSystemOff(any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> responseEntity = flexiLoanController.checkSystemOff(correlationId);
         assertTrue(responseEntity.getStatusCode().isError());
     }
 
