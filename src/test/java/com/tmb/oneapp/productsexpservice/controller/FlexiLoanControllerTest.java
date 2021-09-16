@@ -2,6 +2,8 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffRequest;
+import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffResponse;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.FlexiLoanConfirmResponse;
@@ -18,8 +20,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetSubmissionInfoSuccess() throws TMBCommonException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";
@@ -58,7 +58,7 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetSubmissionInfoFail() throws TMBCommonException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";
@@ -89,6 +89,27 @@ public class FlexiLoanControllerTest {
         when(flexiLoanConfirmService.confirm(any(), any())).thenThrow(new IllegalArgumentException());
         Map<String, String> requestHeader = new HashMap<>();
         ResponseEntity<TmbOneServiceResponse<FlexiLoanConfirmResponse>> responseEntity = flexiLoanController.submit(requestHeader, request);
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
+    public void testCheckSystemOffSuccess() {
+        CheckSystemOffRequest request = new CheckSystemOffRequest();
+        request.setCurrentTime("17:00");
+        String correlationId = "xxx";
+        CheckSystemOffResponse response = new CheckSystemOffResponse();
+        when(flexiCheckSystemOffService.checkSystemOff(any(),any())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> responseEntity = flexiLoanController.checkSystemOff(correlationId, request);
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testCheckSystemOffFail() {
+        CheckSystemOffRequest request = new CheckSystemOffRequest();
+        request.setCurrentTime("17:00");
+        String correlationId = "xxx";
+        when(flexiCheckSystemOffService.checkSystemOff(any(),any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> responseEntity = flexiLoanController.checkSystemOff(correlationId, request);
         assertTrue(responseEntity.getStatusCode().isError());
     }
 
