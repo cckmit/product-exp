@@ -1,4 +1,5 @@
 package com.tmb.oneapp.productsexpservice.model.customer.creditcard;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -21,10 +22,18 @@ import lombok.ToString;
 @JsonInclude(Include.NON_NULL)
 public class CreditCardServiceHour {
 
-    private String id;
-    private String setPinStarttimeEndtime;
-    private String applyEStatementStarttimeEndtime;
-    private String changeCreditLimitStarttimeEndtime;
-    private String applySogooodStarttimeEndtime;
+	private String id;
+	private String setPinStarttimeEndtime;
+	private String applyEStatementStarttimeEndtime;
+	private String changeCreditLimitStarttimeEndtime;
+	private String applySogooodStarttimeEndtime;
+	private String cardDetailsStarttimeEndtime;
+	private String applyEStatementLoanStarttimeEndtime;
+	private String setPinIsAvailable;
+	private String applyEStatementIsAvailable;
+	private String changeCreditLimitIsAvailable;
+	private String applySogooodIsAvailable;
+	private String cardDetailsIsAvailable;
+	private String applyEStatementLoanIsAvailable;
 
 }
