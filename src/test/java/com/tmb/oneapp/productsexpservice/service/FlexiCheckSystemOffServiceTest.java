@@ -6,7 +6,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffRequest;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,9 +49,7 @@ public class FlexiCheckSystemOffServiceTest {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
         when(commonServiceClient.getCommonConfigByModule(any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
-        CheckSystemOffRequest request = new CheckSystemOffRequest();
-        request.setCurrentTime("17:00");
-        flexiCheckSystemOffService.checkSystemOff("001100000000000000000018593707", request);
+        flexiCheckSystemOffService.checkSystemOff("001100000000000000000018593707");
         Assert.assertTrue(true);
     }
 
@@ -63,10 +60,8 @@ public class FlexiCheckSystemOffServiceTest {
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(), "lending-service"));
 
         when(commonServiceClient.getCommonConfigByModule(any(),any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
-        CheckSystemOffRequest request = new CheckSystemOffRequest();
-        request.setCurrentTime("17:00");
         assertThrows(Exception.class, () ->
-                flexiCheckSystemOffService.checkSystemOff("001100000000000000000018593707", request));
+                flexiCheckSystemOffService.checkSystemOff("001100000000000000000018593707"));
     }
 
 

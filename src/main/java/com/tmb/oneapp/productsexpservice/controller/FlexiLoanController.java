@@ -7,7 +7,6 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffRequest;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffResponse;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
@@ -114,8 +113,7 @@ public class FlexiLoanController {
             @ApiImplicitParam(name = "X-Correlation-ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
     })
     @GetMapping(value = "/checkSystemOff", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> checkSystemOff(@Valid @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
-                                                                                        @Valid CheckSystemOffRequest request) {
+    public ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> checkSystemOff(@Valid @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -124,7 +122,7 @@ public class FlexiLoanController {
         TmbOneServiceResponse<CheckSystemOffResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            CheckSystemOffResponse response = flexiCheckSystemOffService.checkSystemOff(correlationId, request);
+            CheckSystemOffResponse response = flexiCheckSystemOffService.checkSystemOff(correlationId);
             oneTmbOneServiceResponse.setData(response);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
