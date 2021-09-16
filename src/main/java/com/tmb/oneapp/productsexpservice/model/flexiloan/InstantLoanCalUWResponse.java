@@ -20,7 +20,7 @@ public class InstantLoanCalUWResponse {
     private BigDecimal requestAmount;
     private BigDecimal installmentAmount;
     private BigDecimal limitApplied;
-    private BigDecimal requestApplied;
+    private BigDecimal requestCreditLimit;
     private BigDecimal tenor;
     private BigDecimal interestRate;
     private String payDate;
