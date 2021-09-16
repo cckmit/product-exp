@@ -7,10 +7,13 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffRequest;
+import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffResponse;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfirmRequest;
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.FlexiLoanConfirmResponse;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
+import com.tmb.oneapp.productsexpservice.service.FlexiCheckSystemOffService;
 import com.tmb.oneapp.productsexpservice.service.FlexiLoanConfirmService;
 import com.tmb.oneapp.productsexpservice.service.FlexiLoanService;
 import io.swagger.annotations.*;
@@ -38,6 +41,7 @@ public class FlexiLoanController {
 
     private final FlexiLoanConfirmService flexiLoanConfirmService;
     private final FlexiLoanService flexiLoanService;
+    private final FlexiCheckSystemOffService flexiCheckSystemOffService;
 
     @LogAround
     @ApiOperation("Flexi Loan Confirm")
@@ -86,7 +90,7 @@ public class FlexiLoanController {
         TmbOneServiceResponse<SubmissionInfoResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            SubmissionInfoResponse response = flexiLoanService.getSubmissionInfo(correlationId,request);
+            SubmissionInfoResponse response = flexiLoanService.getSubmissionInfo(correlationId, request);
             oneTmbOneServiceResponse.setData(response);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -97,6 +101,38 @@ public class FlexiLoanController {
 
         } catch (Exception e) {
             logger.error("Error while submission info : {}", e);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+
+    }
+
+    @LogAround
+    @ApiOperation("check system off")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-Correlation-ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
+    })
+    @GetMapping(value = "/checkSystemOff", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> checkSystemOff(@Valid @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId,
+                                                                                        @Valid CheckSystemOffRequest request) {
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        logger.info("check system off  for correlation id: {}", correlationId);
+
+        TmbOneServiceResponse<CheckSystemOffResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+
+        try {
+            CheckSystemOffResponse response = flexiCheckSystemOffService.checkSystemOff(correlationId, request);
+            oneTmbOneServiceResponse.setData(response);
+            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+
+        } catch (Exception e) {
+            logger.error("Error while check system off  : {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);

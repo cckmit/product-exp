@@ -17,6 +17,8 @@ public class ProductsExpServiceConstant {
 
     public static final String INVESTMENT_MODULE_VALUE = "investment_module";
 
+    public static final String LENDING_MODULE = "lending_module";
+
     /* RESPONSE MESSAGE FORMAT */
     public static final String INVESTMENT_SERVICE_RESPONSE = "Response from investment service : {}";
     public static final String CUSTOMER_EXP_SERVICE_RESPONSE = "Response from customer-exp service : {}";

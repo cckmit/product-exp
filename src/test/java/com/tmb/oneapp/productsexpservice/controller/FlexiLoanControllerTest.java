@@ -6,6 +6,7 @@ import com.tmb.oneapp.productsexpservice.model.request.flexiloan.FlexiLoanConfir
 import com.tmb.oneapp.productsexpservice.model.request.flexiloan.SubmissionInfoRequest;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.FlexiLoanConfirmResponse;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
+import com.tmb.oneapp.productsexpservice.service.FlexiCheckSystemOffService;
 import com.tmb.oneapp.productsexpservice.service.FlexiLoanConfirmService;
 import com.tmb.oneapp.productsexpservice.service.FlexiLoanService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,8 @@ public class FlexiLoanControllerTest {
     FlexiLoanConfirmService flexiLoanConfirmService;
     @Mock
     FlexiLoanService flexiLoanService;
+    @Mock
+    FlexiCheckSystemOffService flexiCheckSystemOffService;
     @InjectMocks
     FlexiLoanController flexiLoanController;
 
@@ -40,7 +43,7 @@ public class FlexiLoanControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        flexiLoanController = new FlexiLoanController(flexiLoanConfirmService, flexiLoanService);
+        flexiLoanController = new FlexiLoanController(flexiLoanConfirmService, flexiLoanService,flexiCheckSystemOffService);
     }
 
     @Test
