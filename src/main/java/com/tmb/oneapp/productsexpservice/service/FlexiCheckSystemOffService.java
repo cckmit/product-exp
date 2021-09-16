@@ -1,31 +1,35 @@
 package com.tmb.oneapp.productsexpservice.service;
 
+import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.FlexiLoanNoneServiceHour;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffRequest;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.CheckSystemOffResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class FlexiCheckSystemOffService {
+    private static final TMBLogger<FlexiCheckSystemOffService> logger = new TMBLogger<>(FlexiCheckSystemOffService.class);
     private final CommonServiceClient commonServiceClient;
 
-    public CheckSystemOffResponse checkSystemOff(String correlationId, CheckSystemOffRequest request) {
+    public CheckSystemOffResponse checkSystemOff(String correlationId) {
         CheckSystemOffResponse response = new CheckSystemOffResponse();
         FlexiLoanNoneServiceHour systemHour = getAllConfig(correlationId).getData().get(0).getFlexiLoanNoneServiceHour();
+
         if (systemHour != null) {
+            LocalTime current = LocalTime.parse((getCurrentTime()));
             LocalTime start = LocalTime.parse(systemHour.getStart());
             LocalTime end = LocalTime.parse(systemHour.getEnd());
-            LocalTime current = LocalTime.parse(request.getCurrentTime());
 
             Boolean isNowInRange = (!current.isBefore(end)) && current.isBefore(start);
             response.setIsSystemOff(isNowInRange);
@@ -45,6 +49,15 @@ public class FlexiCheckSystemOffService {
         }
 
         return oneTmbOneServiceResponse;
+    }
+
+    private String getCurrentTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        Date date = new Date();
+        String currentMinute = formatter.format(date);
+        logger.info("currentMinute is  {} ", currentMinute);
+        return currentMinute;
+
     }
 
 }
