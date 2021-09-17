@@ -179,7 +179,7 @@ public class LendingServiceController {
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
     }
 
-    @DeleteMapping(value = "/lending/document/{caId}/{docCode}/{fileName}")
+    @DeleteMapping(value = "/lending/document/{caId}/{docCode}/{fileType}/{fileName}")
     public ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> deleteDocument(
             @ApiParam(value = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
@@ -189,10 +189,12 @@ public class LendingServiceController {
             @Valid @PathVariable("caId") String caId,
             @ApiParam(value = "docCode", required = true)
             @Valid @PathVariable("docCode") String docCode,
+            @ApiParam(value = "fileType", required = true)
+            @Valid @PathVariable("fileType") String fileType,
             @ApiParam(value = "fileName", required = true)
             @Valid @PathVariable("fileName") String fileName) throws TMBCommonException {
         try {
-            return lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileName);
+            return lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileType, fileName);
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {

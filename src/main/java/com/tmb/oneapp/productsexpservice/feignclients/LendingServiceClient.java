@@ -194,10 +194,10 @@ public interface LendingServiceClient {
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody SubmitDocumentRequest request);
 
-    @DeleteMapping(value = "/apis/lending-service/document/{caId}/{docCode}/{fileName}")
+    @DeleteMapping(value = "/apis/lending-service/document/{caId}/{docCode}/{fileType}/{fileName}")
     ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> deleteDocument(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
-            @PathVariable("caId") String caId, @PathVariable("docCode") String docCode, @PathVariable("fileName") String fileName);
+            @PathVariable("caId") String caId, @PathVariable("docCode") String docCode, @PathVariable("fileType") String fileType, @PathVariable("fileName") String fileName);
 
     @PostMapping(value = "/apis/lending-service/loanOnlineSubmission/update-flag-and-store-ncb-consent")
     ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> updateNCBConsentFlagAndStoreFile(
