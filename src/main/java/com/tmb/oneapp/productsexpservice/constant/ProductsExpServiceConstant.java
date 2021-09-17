@@ -120,8 +120,6 @@ public class ProductsExpServiceConstant {
     public static final String ACCEPT_LANGUAGE = "accept-language";
     public static final String MODE_PERMANENT = "permanent";
     public static final String MODE_TEMPORARY = "temporary";
-    public static final String ACTIVITY_ID_VERIFY_CARD_NO = "100700100";
-    public static final String METHOD = "";
     public static final String SUITABILITY_EXPIRED = "2";
     public static final String CASE_STATUS_CLOSED = "Closed";
 

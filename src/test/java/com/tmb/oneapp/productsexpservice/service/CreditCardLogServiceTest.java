@@ -1,15 +1,18 @@
 package com.tmb.oneapp.productsexpservice.service;
 
-import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.model.creditcard.CardInstallment;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
-import com.tmb.oneapp.productsexpservice.model.loan.Account;
-import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
-import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +20,27 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
-import java.math.BigDecimal;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import com.tmb.common.kafka.service.KafkaProducerService;
+import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardCreditLimit;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.TemporaryCreditLimit;
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CreditCardModel;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
+import com.tmb.oneapp.productsexpservice.model.loan.Account;
+import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
+import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
 
 @RunWith(JUnit4.class)
 public class CreditCardLogServiceTest {
@@ -93,16 +111,6 @@ public class CreditCardLogServiceTest {
 		assertEquals("Apple", creditCardEvent.getDeviceModel());
 	}
 
-	@Test
-	void testCallVerifyCardNoEventSuccess() {
-		CreditCardEvent creditCardEvent = new CreditCardEvent("", "", "");
-		Map<String, String> reqHeader = new HashMap<>();
-		reqHeader.put(ProductsExpServiceConstant.X_FORWARD_FOR, "213123");
-		reqHeader.put(ProductsExpServiceConstant.OS_VERSION, "1.2");
-		reqHeader.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078680266000215");
-		creditCardEvent = logService.callVerifyCardNoEvent(creditCardEvent, reqHeader);
-		assertEquals(null, creditCardEvent.getDeviceModel());
-	}
 
 	@Test
 	void testCompleteUsageListEventSuccess() {
@@ -343,18 +351,6 @@ public class CreditCardLogServiceTest {
 		assertNotNull(creditCardEvent);
 	}
 
-	@Test
-	public void testCallVerifyCardNoEvent() {
-		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
-		Map<String, String> hashMap = new HashMap();
-		hashMap.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078670143000945");
-		hashMap.put("2", "debitCard");
-		hashMap.put("3", "1234");
-		creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
-		creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
-		CreditCardEvent result = logService.callVerifyCardNoEvent(creditCardEvent, hashMap);
-		Assert.assertEquals(creditCardEvent, result);
-	}
 
 	@Test
 	public void testOnClickNextButtonEvent() {
@@ -400,38 +396,6 @@ public class CreditCardLogServiceTest {
 		Assert.assertEquals(creditCardEvent, result);
 	}
 
-	@Test
-	public void testOnVerifyPinEvent() {
-		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
-		Map<String, String> hashMap = new HashMap();
-		hashMap.put("1", "creditCard");
-		hashMap.put("2", "debitCard");
-		hashMap.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078670143000945");
-		creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
-		creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
-		CreditCardEvent result = logService.onVerifyPinEvent(creditCardEvent, hashMap);
-		Assert.assertEquals(creditCardEvent, result);
-	}
-
-	@Test
-	void getCreditCardEvent() {
-		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
-		Map<String, String> hashMap = new HashMap();
-		hashMap.put("1", "creditCard");
-		hashMap.put("2", "debitCard");
-		hashMap.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078670143000945");
-		creditCardEvent.setCardNumber(hashMap.get(ProductsExpServiceConstant.ACCOUNT_ID));
-		creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
-		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-		CardInstallmentQuery requestBody = getCardInstallmentQuery();
-		List<CardInstallmentResponse> data = new ArrayList<>();
-		for (CardInstallmentResponse response : data) {
-			CreditCardModel creditCard = getCreditCardModel();
-			response.setCreditCard(creditCard);
-		}
-		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, data);
-		Assert.assertNotNull(creditCardEvent);
-	}
 
 	private CreditCardModel getCreditCardModel() {
 		CreditCardModel creditCard = new CreditCardModel();
