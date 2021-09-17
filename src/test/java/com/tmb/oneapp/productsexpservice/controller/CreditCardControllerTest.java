@@ -1,15 +1,13 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCreditCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -20,25 +18,26 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStatus;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCreditCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 
 @RunWith(JUnit4.class)
 public class CreditCardControllerTest {
     CreditCardController creditCardController;
     @Mock
     CreditCardClient creditCardClient;
-    @Mock
-    CreditCardLogService creditCardLogService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        creditCardController = new CreditCardController(creditCardClient, creditCardLogService);
+        creditCardController = new CreditCardController(creditCardClient);
 
     }
 
@@ -142,8 +141,7 @@ public class CreditCardControllerTest {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("test", "test");
         TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        CreditCardEvent creditCardEvent = testData(oneServiceResponse);
-        ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> errorResponse = creditCardController.dataNotFoundError(httpHeaders, oneServiceResponse, creditCardEvent);
+        ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> errorResponse = creditCardController.dataNotFoundError(httpHeaders, oneServiceResponse);
         assertEquals(400, errorResponse.getStatusCodeValue());
     }
 
@@ -168,8 +166,7 @@ public class CreditCardControllerTest {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("test", "test");
         TmbOneServiceResponse<VerifyCreditCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        CreditCardEvent creditCardEvent = testData(oneServiceResponse);
-        ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> failedResponse = creditCardController.getFailedResponse(responseHeaders, oneServiceResponse, creditCardEvent);
+        ResponseEntity<TmbOneServiceResponse<VerifyCreditCardResponse>> failedResponse = creditCardController.getFailedResponse(responseHeaders, oneServiceResponse);
         assertEquals(400, failedResponse.getStatusCodeValue());
     }
 }

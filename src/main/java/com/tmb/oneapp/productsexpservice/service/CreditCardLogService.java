@@ -49,20 +49,6 @@ public class CreditCardLogService {
 		this.creditCardClient = creditCardClient;
 	}
 
-	/**
-	 * Call Activity logs for activate card event
-	 **/
-
-	public CreditCardEvent callVerifyCardNoEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader) {
-
-		logger.info("Inside callActivityBaseEvent");
-
-		populateBaseEvents(creditCardEvent, reqHeader);
-
-		creditCardEvent.setCardNumber(reqHeader.get(ProductsExpServiceConstant.ACCOUNT_ID).substring(21, 25));
-		creditCardEvent.setMethod(ProductsExpServiceConstant.METHOD);
-		return creditCardEvent;
-	}
 
 	/**
 	 * @param creditCardEvent
