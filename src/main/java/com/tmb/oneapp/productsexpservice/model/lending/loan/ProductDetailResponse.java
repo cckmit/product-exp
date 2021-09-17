@@ -25,7 +25,8 @@ public class ProductDetailResponse {
     private FlowType flowType;
     private ContinueApplyNextScreen continueApplyNextStep;
     private ContinueApplyParams continueApplyParams;
-    private Object productData;
+    private List<DepositAccount> depositAccountLists;
+    private OneAppEligibleProduct[] eligibleProducts;
     private List<RslCode> defaultRslCode;
     private LoanStagingbar loanStagingBar;
 }
