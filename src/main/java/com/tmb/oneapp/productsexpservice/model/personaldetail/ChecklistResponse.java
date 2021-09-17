@@ -22,5 +22,4 @@ public class ChecklistResponse {
     private BigDecimal id;
     private String isMandatory;
     private BigDecimal losCifId;
-
 }
