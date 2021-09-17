@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.tmb.common.model.RslCode;
 import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
+import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 
 import lombok.Getter;
 import lombok.Setter;
