@@ -325,7 +325,7 @@ public class CreditCardLogService {
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
-		creditCardEvent.setCardNumber(accountId.substring(21, 25));
+		creditCardEvent.setCardNumber("xx"+accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
 		creditCardEvent.setResult(status);
 		logActivity(creditCardEvent);
