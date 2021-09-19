@@ -151,7 +151,7 @@ public class ProductsExpServiceConstant {
 
     public static final String INTERNAL_SERVER = "Internal Server Error";
     public static final String UTF_8 = "utf-8";
-    public static final String SET_PIN_ACTIVITY_LOG = "00700302";
+    public static final String SET_PIN_ACTIVITY_LOG = "100700301";
 
     /* Redis */
     public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
