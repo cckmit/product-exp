@@ -139,8 +139,7 @@ public class CreditCardLogService {
 			SetCreditLimitReq requestBody,String result) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
-		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-
+		creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
 		creditCardEvent.setResult(result);
 		return creditCardEvent;
 	}
