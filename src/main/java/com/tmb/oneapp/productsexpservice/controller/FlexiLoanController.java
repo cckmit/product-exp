@@ -110,7 +110,7 @@ public class FlexiLoanController {
     @LogAround
     @ApiOperation("check system off")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-Correlation-ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
+            @ApiImplicitParam(name = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
     })
     @GetMapping(value = "/checkSystemOff", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<CheckSystemOffResponse>> checkSystemOff(@Valid @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId) {
