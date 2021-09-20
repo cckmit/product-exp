@@ -5,6 +5,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
@@ -22,6 +23,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoLis
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.FundDetail;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -223,7 +225,10 @@ public class ProductExpServiceControllerTest {
         try {
             ObjectMapper mapper = new ObjectMapper();
             fundPaymentDetailResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_payment_detail.json").toFile(), FundPaymentDetailResponse.class);
-            when(productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest)).thenReturn(fundPaymentDetailResponse);
+            TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
+            tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+            tmbOneServiceResponse.setData(fundPaymentDetailResponse);
+            when(productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest)).thenReturn(tmbOneServiceResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -327,11 +332,33 @@ public class ProductExpServiceControllerTest {
 
     @Test
     void testGetFundPrePaymentDetailNull() {
-        when(productsExpService.getFundPrePaymentDetail(anyString(), anyString(), any())).thenReturn(null);
+        TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        tmbOneServiceResponse.setStatus(null);
+        tmbOneServiceResponse.setData(null);
+        when(productsExpService.getFundPrePaymentDetail(anyString(), anyString(), any())).thenReturn(tmbOneServiceResponse);
 
         ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> result = productExpServiceController.getFundPrePaymentDetail(
                 "correlationId", "crmId", new FundPaymentDetailRequest());
         Assert.assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatusCode().value());
+    }
+
+    @Test
+    void should_return_casa_dormant_error_code_when_call_get_fund_pre_payment_detail_given_fundpayment_request() {
+        TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        tmbOneServiceResponse.setStatus(status);
+        tmbOneServiceResponse.setData(null);
+        when(productsExpService.getFundPrePaymentDetail(anyString(), anyString(), any())).thenReturn(tmbOneServiceResponse);
+
+        ResponseEntity<TmbOneServiceResponse<FundPaymentDetailResponse>> result = productExpServiceController.getFundPrePaymentDetail(
+                "correlationId", "crmId", new FundPaymentDetailRequest());
+        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatusCode().value());
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(),
+                result.getBody().getStatus().getCode());
     }
 
     @Test

@@ -21,6 +21,7 @@ public class AlternativeBuyRequest {
     private String fundCode;
 
     @JsonProperty(value = "unitHolderNo")
+    @NotNull
     private String unitHolderNumber;
 
     @NotNull

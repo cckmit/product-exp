@@ -318,7 +318,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc()));
@@ -505,7 +505,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(), anyBoolean())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 
 }

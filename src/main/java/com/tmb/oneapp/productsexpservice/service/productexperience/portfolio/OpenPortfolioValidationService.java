@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.mapper.customer.CustomerInformationMapper;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.BuyFlowFirstTrade;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioValidationRequest;
@@ -172,7 +173,8 @@ public class OpenPortfolioValidationService {
         }
 
         // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, status, false, false));
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(false).build();
+        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, status, buyFlowFirstTrade));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
             return tmbOneServiceResponse;

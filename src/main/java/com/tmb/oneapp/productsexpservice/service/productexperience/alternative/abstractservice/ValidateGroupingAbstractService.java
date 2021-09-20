@@ -5,6 +5,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.BuyFlowFirstTrade;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
@@ -32,12 +33,12 @@ public class ValidateGroupingAbstractService {
 
     }
 
-    protected TmbOneServiceResponse<String> validateServiceHourAgeAndRisk(String correlationId,
-                                                                  CustomerSearchResponse customerInfo,
-                                                                  TmbOneServiceResponse<String> tmbOneServiceResponse,
-                                                                  TmbStatus status,
-                                                                  boolean isBuyFlow,
-                                                                  boolean isFirstTrade){
+    protected TmbOneServiceResponse<String> validateGroupingService(String crmId,
+                                                                    String correlationId,
+                                                                    CustomerSearchResponse customerInfo,
+                                                                    TmbOneServiceResponse<String> tmbOneServiceResponse,
+                                                                    TmbStatus status,
+                                                                    BuyFlowFirstTrade buyFlowFirstTrade){
 
         // validate service hour
         ValidateServiceHourResponse validateServiceHourResponse = alternativeService.validateServiceHour(correlationId, status);
@@ -56,11 +57,25 @@ public class ValidateGroupingAbstractService {
         }
 
         // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status,isBuyFlow,isFirstTrade));
+        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status,buyFlowFirstTrade));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SERVICE_NOT_READY)){
                 tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
             }
+            return tmbOneServiceResponse;
+        }
+
+        // validate id card expired
+        tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
+        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
+            return tmbOneServiceResponse;
+        }
+
+        // validate flatca flag not valid
+        tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
+        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
             return tmbOneServiceResponse;
         }
 

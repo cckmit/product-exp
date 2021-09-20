@@ -4,6 +4,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -22,7 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -59,8 +61,9 @@ public class SwitchAlternativeServiceTest {
         BeanUtils.copyProperties(successStatus, validateServiceHourResponse);
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(validateServiceHourResponse);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(),anyBoolean())).thenReturn(successStatus);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateIdCardExpired(any(),any())).thenReturn(successStatus);
     }
 
     @Test
@@ -137,7 +140,7 @@ public class SwitchAlternativeServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), anyBoolean(),anyBoolean())).thenReturn(status);
+        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), any())).thenReturn(status);
 
         // when
         TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);
@@ -148,6 +151,51 @@ public class SwitchAlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
                 actual.getStatus().getMessage());
 
+    }
+
+    @Test
+    public void should_return_failed_customer_id_card_expired_when_call_validation_switch_given_correlation_id_and_crm_id() {
+        // given
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
+        byPassAllAlternative();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(status);
+
+        // when
+        TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);
+
+         // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(),
+                actual.getStatus().getMessage());
+    }
+
+    @Test
+    public void should_return_failed_customer_not_fill_fatca_form_when_call_validation_switch_given_correlation_id_and_crm_id() {
+        // given
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
+        byPassAllAlternative();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(status);
+
+
+        // when
+        TmbOneServiceResponse<String>  actual = switchAlternativeService.validationSwitch(correlationId,crmId);
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
+                actual.getStatus().getMessage());
     }
 
 

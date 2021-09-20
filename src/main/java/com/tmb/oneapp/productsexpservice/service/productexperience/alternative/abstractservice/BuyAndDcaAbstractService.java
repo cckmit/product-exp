@@ -6,6 +6,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.BuyFlowFirstTrade;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
@@ -78,7 +79,8 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
                                                               boolean isFirstTrade) {
 
 
-        tmbOneServiceResponse = validateServiceHourAgeAndRisk(correlationId, customerInfo, tmbOneServiceResponse, status, isBuyFlow, isFirstTrade);
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(isBuyFlow).isFirstTrade(isFirstTrade).build();
+        tmbOneServiceResponse = validateGroupingService(crmId,correlationId, customerInfo, tmbOneServiceResponse, status, buyFlowFirstTrade);
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
@@ -89,19 +91,6 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
             return tmbOneServiceResponse;
         }
 
-        // validate id card expired
-        tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-            return tmbOneServiceResponse;
-        }
-
-        // validate flatca flag not valid
-        tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-            return tmbOneServiceResponse;
-        }
 
         return tmbOneServiceResponse;
     }
