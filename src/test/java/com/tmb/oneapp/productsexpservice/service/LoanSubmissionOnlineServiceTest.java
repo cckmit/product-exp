@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.creditcard.ApprovalMemoCreditCard;
@@ -14,7 +15,9 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
@@ -49,6 +52,9 @@ class LoanSubmissionOnlineServiceTest {
 
     @Mock
     private LendingServiceClient lendingServiceClient;
+
+    @Mock
+    private CommonServiceClient commonServiceClient;
 
     @InjectMocks
     LoanSubmissionOnlineService loanSubmissionOnlineService;
@@ -434,10 +440,20 @@ class LoanSubmissionOnlineServiceTest {
         ChecklistRequest request = new ChecklistRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        CommonData commonData = new CommonData();
+        List<CommonData> commonDataList = new ArrayList<>();
+        commonData.setMaxPerDoctype("5");
+        commonData.setUploadFileSizeMb("5");
+        commonDataList.add(commonData);
+        TmbOneServiceResponse<List<CommonData>> oneServiceResponse = new TmbOneServiceResponse<List<CommonData>>();
+        oneServiceResponse.setData(commonDataList);
+
 
         when(lendingServiceClient.getDocuments(crmid, request.getCaId())).thenReturn(ResponseEntity.ok(mockChecklistResponseData()));
+        when(commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE)).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
-        List<ChecklistResponse> actualResult = loanSubmissionOnlineService.getDocuments(crmid, request.getCaId());
+        DocumentResponse actualResult = loanSubmissionOnlineService.getDocuments(correlationId,crmid, request.getCaId());
 
         Assert.assertNotNull(actualResult);
 
@@ -449,6 +465,7 @@ class LoanSubmissionOnlineServiceTest {
         ChecklistRequest request = new ChecklistRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
         TmbOneServiceResponse<List<ChecklistResponse>> oneServiceResponse = new TmbOneServiceResponse<List<ChecklistResponse>>();
 
@@ -457,7 +474,7 @@ class LoanSubmissionOnlineServiceTest {
         when(lendingServiceClient.getDocuments(anyString(), anyLong())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         assertThrows(Exception.class, () ->
-                loanSubmissionOnlineService.getDocuments(crmid, request.getCaId()));
+                loanSubmissionOnlineService.getDocuments(correlationId,crmid, request.getCaId()));
 
     }
 

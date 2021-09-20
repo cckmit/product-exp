@@ -2,15 +2,15 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.ChecklistResponse;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.personaldetail.PersonalDetailSaveInfoRequest;
+import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.loan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +30,7 @@ import java.util.List;
 public class LoanSubmissionOnlineService {
     private static final TMBLogger<LoanSubmissionOnlineService> logger = new TMBLogger<>(LoanSubmissionOnlineService.class);
     private final LendingServiceClient lendingServiceClient;
+    private final CommonServiceClient commonServiceClient;
 
     public IncomeInfo getIncomeInfoByRmId(String rmId) throws TMBCommonException {
         try {
@@ -151,12 +153,34 @@ public class LoanSubmissionOnlineService {
         }
     }
 
-    public List<ChecklistResponse> getDocuments(String crmId, Long caId) throws TMBCommonException {
+    public DocumentResponse getDocuments(String correlationId, String crmId, Long caId) throws TMBCommonException {
         try {
+            DocumentResponse documentResponse = new DocumentResponse();
+            ChecklistResponse response = new ChecklistResponse();
+            List<ChecklistResponse> responseList = new ArrayList<>();
             TmbOneServiceResponse<List<ChecklistResponse>> responseEntity = lendingServiceClient.getDocuments(crmId, caId).getBody();
-
             if (responseEntity.getStatus().getCode().equals("0000")) {
-                return responseEntity.getData();
+                ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonData = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
+
+                for (ChecklistResponse checklistResponse : responseEntity.getData()) {
+                    response.setStatus(checklistResponse.getStatus());
+                    response.setChecklistType(checklistResponse.getChecklistType());
+                    response.setCifRelCode(checklistResponse.getCifRelCode());
+                    response.setDocId(checklistResponse.getDocId());
+                    response.setDocumentCode(checklistResponse.getDocumentCode());
+                    response.setDocDescription(checklistResponse.getDocDescription());
+                    response.setId(checklistResponse.getId());
+                    response.setIncompletedDocReasonCd(checklistResponse.getIncompletedDocReasonCd());
+                    response.setIncompletedDocReasonDesc(checklistResponse.getIncompletedDocReasonDesc());
+                    response.setLosCifId(checklistResponse.getLosCifId());
+                    response.setIsMandatory(checklistResponse.getIsMandatory());
+                    responseList.add(response);
+                }
+                responseEntity.setData(responseList);
+                documentResponse.setChecklistResponses(responseList);
+                documentResponse.setMaxPerDocType(commonData.getBody().getData().get(0).getMaxPerDoctype());
+                documentResponse.setUploadFileSizeMb(commonData.getBody().getData().get(0).getUploadFileSizeMb());
+                return documentResponse;
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),

@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Instant;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -295,14 +294,15 @@ public class LoanSubmissionOnlineController {
     @GetMapping(value = "/documents")
     @LogAround
     @ApiOperation("Checklist Document")
-    public ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(
+    public ResponseEntity<TmbOneServiceResponse<DocumentResponse>> getDocuments(
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid ChecklistRequest request) {
-        TmbOneServiceResponse<List<ChecklistResponse>> response = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<DocumentResponse> response = new TmbOneServiceResponse<>();
         try {
-            List<ChecklistResponse> checklistResponses = loanSubmissionOnlineService.getDocuments(crmId, request.getCaId());
-            response.setData(checklistResponses);
+            DocumentResponse documentResponse = loanSubmissionOnlineService.getDocuments(correlationId,crmId, request.getCaId());
+            response.setData(documentResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
