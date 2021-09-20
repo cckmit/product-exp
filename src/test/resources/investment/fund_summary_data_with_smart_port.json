@@ -1,5 +1,4 @@
 {
-  "body": {
     "fundClassList": {
       "fundClass": [
         {
@@ -1356,17 +1355,4 @@
       "localFixedIncome": 101613.00,
       "others": "1"
     }
-  },
-  "header": {
-    "rqUID": "bbbb2222222",
-    "channelID": "MIB",
-    "serviceName": "MutualFundsUnitHolderInqRs",
-    "rqDateTime": "2021-02-15T19:37:34.000132+07.00",
-    "rsDateTime": "2021-02-15T19:37:34.5102961+07:00",
-    "status": {
-      "statusCode": "0000",
-      "severity": "Info",
-      "statusDesc": "Success"
-    }
-  }
 }

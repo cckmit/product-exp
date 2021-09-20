@@ -9,6 +9,7 @@ import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -320,13 +321,13 @@ public class ProductExpAsyncServiceTest {
     @Test
     public void fetchFundSummary() throws Exception {
         try {
-            FundSummaryResponse fundHolidayBody = null;
-            TmbOneServiceResponse<FundSummaryResponse> serviceResponseStmt = new TmbOneServiceResponse<>();
+            FundSummaryBody fundSummaryBody = null;
+            TmbOneServiceResponse<FundSummaryBody> serviceResponseStmt = new TmbOneServiceResponse<>();
 
             ObjectMapper mapper = new ObjectMapper();
-            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(), FundSummaryResponse.class);
+            fundSummaryBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(), FundSummaryBody.class);
 
-            serviceResponseStmt.setData(fundHolidayBody);
+            serviceResponseStmt.setData(fundSummaryBody);
             serviceResponseStmt.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
@@ -336,7 +337,7 @@ public class ProductExpAsyncServiceTest {
             ex.printStackTrace();
         }
 
-        CompletableFuture<FundSummaryResponse> response = productExpAsyncService.fetchFundSummary(any(), any());
+        CompletableFuture<FundSummaryBody> response = productExpAsyncService.fetchFundSummary(any(), any());
         Assert.assertNotNull(response);
     }
 
@@ -344,7 +345,7 @@ public class ProductExpAsyncServiceTest {
     public void fetchFundSummaryWithException() {
         try {
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any())).thenThrow(MockitoException.class);
-            CompletableFuture<FundSummaryResponse> response = productExpAsyncService.fetchFundSummary(any(), any());
+            CompletableFuture<FundSummaryBody> response = productExpAsyncService.fetchFundSummary(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();

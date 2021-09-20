@@ -135,7 +135,7 @@ public class ProductsExpService {
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, String crmId) {
         FundSummaryBody result = new FundSummaryBody();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummary;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary;
         UnitHolder unitHolder = new UnitHolder();
         ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse;
         Map<String, String> header = UtilMap.createHeader(correlationId);
@@ -215,27 +215,27 @@ public class ProductsExpService {
      * @param fundSummaryByPort
      */
     private void setFundSummaryBody(FundSummaryBody result, List<String> ports,
-                                    TmbOneServiceResponse<FundSummaryResponse> fundSummary,
+                                    TmbOneServiceResponse<FundSummaryBody> fundSummary,
                                     TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
 
         if (fundSummary != null) {
-            FundClassList fundClassList = fundSummary.getData().getBody().getFundClassList();
+            FundClassList fundClassList = fundSummary.getData().getFundClassList();
             List<FundClass> fundClass = fundClassList.getFundClass();
             List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
             List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
             result.setFundClass(fundClassData);
             result.setSearchList(searchList);
             result.setFundClassList(null);
-            result.setFeeAsOfDate(fundSummary.getData().getBody().getFeeAsOfDate());
-            result.setPercentOfFundType(fundSummary.getData().getBody().getPercentOfFundType());
-            result.setSumAccruedFee(fundSummary.getData().getBody().getSumAccruedFee());
-            result.setUnrealizedProfitPercent(fundSummary.getData().getBody().getUnrealizedProfitPercent());
-            result.setSummaryMarketValue(fundSummary.getData().getBody().getSummaryMarketValue());
-            result.setSummaryUnrealizedProfit(fundSummary.getData().getBody().getSummaryUnrealizedProfit());
-            result.setSummaryUnrealizedProfitPercent(fundSummary.getData().getBody().getSummaryUnrealizedProfitPercent());
-            result.setSummarySmartPortMarketValue(fundSummary.getData().getBody().getSummarySmartPortMarketValue());
-            result.setSummarySmartPortUnrealizedProfit(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfit());
-            result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
+            result.setFeeAsOfDate(fundSummary.getData().getFeeAsOfDate());
+            result.setPercentOfFundType(fundSummary.getData().getPercentOfFundType());
+            result.setSumAccruedFee(fundSummary.getData().getSumAccruedFee());
+            result.setUnrealizedProfitPercent(fundSummary.getData().getUnrealizedProfitPercent());
+            result.setSummaryMarketValue(fundSummary.getData().getSummaryMarketValue());
+            result.setSummaryUnrealizedProfit(fundSummary.getData().getSummaryUnrealizedProfit());
+            result.setSummaryUnrealizedProfitPercent(fundSummary.getData().getSummaryUnrealizedProfitPercent());
+            result.setSummarySmartPortMarketValue(fundSummary.getData().getSummarySmartPortMarketValue());
+            result.setSummarySmartPortUnrealizedProfit(fundSummary.getData().getSummarySmartPortUnrealizedProfit());
+            result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getSummarySmartPortUnrealizedProfitPercent());
 
             List<FundClass> smartPort = fundClassData.stream()
                     .filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
@@ -335,12 +335,12 @@ public class ProductsExpService {
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
                     productExpAsyncService.fetchFundListInfo(headerParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
-            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(headerParameter, unitHolder);
+            CompletableFuture<FundSummaryBody> fetchFundSummary = productExpAsyncService.fetchFundSummary(headerParameter, unitHolder);
             CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(headerParameter, crmId);
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();
-            FundSummaryResponse fundSummaryResponse = fetchFundSummary.get();
+            FundSummaryBody fundSummaryResponse = fetchFundSummary.get();
             List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
             listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
@@ -365,7 +365,7 @@ public class ProductsExpService {
         try {
             List<String> portList = getPortListForFundSummary(investmentHeaderRequest, crmId);
             unitHolder.setUnitHolderNumber(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(investmentHeaderRequest, unitHolder);
+            CompletableFuture<FundSummaryBody> fundSummary = productExpAsyncService.fetchFundSummary(investmentHeaderRequest, unitHolder);
             CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(investmentHeaderRequest, crmId);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
@@ -374,7 +374,7 @@ public class ProductsExpService {
                     FundAllocationRequestBody.builder()
                             .suitabilityScore(suitabilityScore)
                             .build());
-            return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
+            return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
