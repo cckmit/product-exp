@@ -35,6 +35,7 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.OrderToBeProc
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -389,7 +390,7 @@ public class ProductExpServiceTest {
         FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp);
         Assert.assertNotNull(response);
 
-        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
+        TmbOneServiceResponse<FundPaymentDetailResponse> serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         Assert.assertNotNull(serviceRes);
     }
 
@@ -440,7 +441,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundPaymentDetailResponse serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
+        TmbOneServiceResponse<FundPaymentDetailResponse> serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         Assert.assertNull(serviceRes);
     }
 

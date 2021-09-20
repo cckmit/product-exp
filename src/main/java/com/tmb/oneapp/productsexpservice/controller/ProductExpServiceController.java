@@ -144,16 +144,13 @@ public class ProductExpServiceController {
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody FundPaymentDetailRequest fundPaymentDetailRequest) {
 
-        TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundPaymentDetailResponse fundPaymentDetailResponse = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
-        if (fundPaymentDetailResponse != null) {
-            oneServiceResponse.setData(fundPaymentDetailResponse);
-            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+        TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
+        if (oneServiceResponse.getStatus() != null) {
+            if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
+                return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+            }
         } else {
             return dataNotFoundError(oneServiceResponse);
         }

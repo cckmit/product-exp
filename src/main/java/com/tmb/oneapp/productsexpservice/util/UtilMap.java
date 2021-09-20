@@ -142,6 +142,7 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
+            mappingAccount(responseCommon, responseCustomerExp, true);
             fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp, true));
             return fundPaymentDetailResponse;
         }
@@ -164,7 +165,7 @@ public class UtilMap {
             ObjectMapper mapper = new ObjectMapper();
             node = mapper.readValue(responseCustomerExp, JsonNode.class);
             ArrayNode arrayNode = (ArrayNode) node.get("data");
-            int size = arrayNode.size();
+            int accountSize = arrayNode.size();
             DepositAccount depositAccount;
             List<String> eligibleAccountCodeBuy;
 
@@ -174,9 +175,11 @@ public class UtilMap {
                 eligibleAccountCodeBuy = responseCommon.get(0).getEligibleAccountCodeSell();
             }
 
-            for (int i = 0; i < size; i++) {
+            int countDormantAccount = 0;
+            for (int i = 0; i < accountSize; i++) {
                 JsonNode itr = arrayNode.get(i);
                 String accCode = itr.get("product_code").textValue();
+
                 for (String productCode : eligibleAccountCodeBuy) {
                     if (productCode.equals(accCode)) {
                         depositAccount = new DepositAccount();
@@ -187,16 +190,32 @@ public class UtilMap {
                         depositAccount.setAccountTypeShort(accType);
                         depositAccount.setProductNameEN(itr.get("product_name_Eng").textValue());
                         depositAccount.setProductNameTH(itr.get("product_name_TH").textValue());
-                        depositAccount.setAvailableBalance(new BigDecimal(itr.get("current_balance").textValue()));
+                        BigDecimal balance = new BigDecimal(itr.get("current_balance").textValue());
+                        depositAccount.setAvailableBalance(balance);
                         String accStatusCode = itr.get("account_status_code").textValue();
                         depositAccount.setAccountStatusCode(accStatusCode);
+
+                        if(ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)){
+                            BigDecimal zeroBalance = new BigDecimal("0");
+                            if ((balance.compareTo(zeroBalance) == 0)){
+                                countDormantAccount++;
+                            }
+                        }
+
                         depositAccountList.add(depositAccount);
                     }
                 }
             }
+
+            if(countDormantAccount == accountSize){
+                depositAccountList = new ArrayList<>();
+                return depositAccountList;
+            }
+
         } catch (JsonProcessingException e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
         }
+
         return depositAccountList;
     }
 

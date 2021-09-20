@@ -9,8 +9,10 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
@@ -25,6 +27,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countproce
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundSuggestAllocationList;
+import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
@@ -39,6 +42,7 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetail
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -275,7 +279,9 @@ public class ProductsExpService {
      * @return FundPaymentDetailResponse
      */
     @LogAround
-    public FundPaymentDetailResponse getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+    public TmbOneServiceResponse<FundPaymentDetailResponse> getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+        TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
+        tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRequest);
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         FundPaymentDetailResponse fundPaymentDetailResponse;
@@ -290,14 +296,25 @@ public class ProductsExpService {
             FundHolidayBody fundHolidayBody = fetchFundHoliday.get();
             String customerExp = fetchCustomerExp.get();
             List<CommonData> commonDataList = fetchCommonConfigByModule.get();
-
             UtilMap map = new UtilMap();
             fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp);
+
+            if(fundPaymentDetailResponse.getDepositAccountList().size() == 0){
+                TmbStatus status = tmbOneServiceResponse.getStatus();
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                return tmbOneServiceResponse;
+            }
+
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
+            tmbOneServiceResponse.setStatus(null);
+            tmbOneServiceResponse.setData(null);
             return null;
         }
-        return fundPaymentDetailResponse;
+        return tmbOneServiceResponse;
     }
 
     /**
