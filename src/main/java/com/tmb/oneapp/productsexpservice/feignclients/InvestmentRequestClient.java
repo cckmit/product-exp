@@ -5,6 +5,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.FundListBySuitScoreBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
@@ -99,7 +100,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.summary.by.port.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> callInvestmentFundSummaryByPortService(
+    ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> callInvestmentFundSummaryByPortService(
             @RequestHeader Map<String, String> headers, @RequestBody UnitHolder unitHolder);
 
     /***

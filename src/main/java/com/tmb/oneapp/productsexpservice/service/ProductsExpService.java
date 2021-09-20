@@ -17,6 +17,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
@@ -137,7 +138,7 @@ public class ProductsExpService {
         FundSummaryBody result = new FundSummaryBody();
         ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary;
         UnitHolder unitHolder = new UnitHolder();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse;
         Map<String, String> header = UtilMap.createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
 
@@ -216,7 +217,7 @@ public class ProductsExpService {
      */
     private void setFundSummaryBody(FundSummaryBody result, List<String> ports,
                                     TmbOneServiceResponse<FundSummaryBody> fundSummary,
-                                    TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
+                                    TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
 
         if (fundSummary != null) {
             FundClassList fundClassList = fundSummary.getData().getFundClassList();
@@ -251,7 +252,7 @@ public class ProductsExpService {
             result.setPtPortList(ptPort);
 
             if (!isPortfolioListEmpty(fundSummaryByPort)) {
-                result.setSummaryByPort(fundSummaryByPort.getData().getBody().getPortfolioList());
+                result.setSummaryByPort(fundSummaryByPort.getData().getPortfolioList());
 
                 boolean individualAccountExist = isIndividualAccountExist(fundSummaryByPort);
                 result.setIsJointPortOnly(!individualAccountExist);
@@ -490,13 +491,13 @@ public class ProductsExpService {
         return mutualFundWithFundSuggestedAllocationList;
     }
 
-    private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
+    private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
         return fundSummaryByPort == null || fundSummaryByPort.getData() == null ||
-                fundSummaryByPort.getData().getBody() == null || fundSummaryByPort.getData().getBody().getPortfolioList().isEmpty();
+                fundSummaryByPort.getData() == null || fundSummaryByPort.getData().getPortfolioList().isEmpty();
     }
 
-    private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
-        List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getBody().getPortfolioList();
+    private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
+        List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getPortfolioList();
         return portfolioList.stream()
                 .filter(portfolioByPort -> portfolioByPort.getPortfolioNumber().startsWith("PT"))
                 .anyMatch(portfolioByPort -> INVESTMENT_JOINT_FLAG_INDIVIDUAL.equals(portfolioByPort.getJointFlag()));

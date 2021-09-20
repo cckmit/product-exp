@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -54,9 +55,9 @@ class PortfolioServiceTest {
 
         when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
 
-        TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
-        FundSummaryByPortResponse fundSummaryByPortResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/portfolio/fund_summary_by_port_normal.json").toFile(),
-                FundSummaryByPortResponse.class);
+        TmbOneServiceResponse<FundSummaryByPortBody> portResponse = new TmbOneServiceResponse<>();
+        FundSummaryByPortBody fundSummaryByPortResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/portfolio/fund_summary_by_port_normal.json").toFile(),
+                FundSummaryByPortBody.class);
         portResponse.setData(fundSummaryByPortResponse);
         portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -80,9 +81,9 @@ class PortfolioServiceTest {
 
         when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
 
-        TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
-        FundSummaryByPortResponse fundSummaryByPortResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/portfolio/fund_summary_by_port_joint.json").toFile(),
-                FundSummaryByPortResponse.class);
+        TmbOneServiceResponse<FundSummaryByPortBody> portResponse = new TmbOneServiceResponse<>();
+        FundSummaryByPortBody fundSummaryByPortResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/portfolio/fund_summary_by_port_joint.json").toFile(),
+                FundSummaryByPortBody.class);
         portResponse.setData(fundSummaryByPortResponse);
         portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                 ProductsExpServiceConstant.SUCCESS_MESSAGE,
