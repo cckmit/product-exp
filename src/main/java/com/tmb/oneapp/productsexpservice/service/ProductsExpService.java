@@ -494,8 +494,8 @@ public class ProductsExpService {
     }
 
     private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
-        return fundSummaryByPort == null || fundSummaryByPort.getData() == null ||
-                fundSummaryByPort.getData() == null || fundSummaryByPort.getData().getPortfolioList().isEmpty();
+        return fundSummaryByPort == null || fundSummaryByPort.getData() == null
+                 || fundSummaryByPort.getData().getPortfolioList().isEmpty();
     }
 
     private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
