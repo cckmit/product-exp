@@ -75,7 +75,7 @@ public class BuyAlternativeServiceTest {
 
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(statusWithTime);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(successStatus);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
@@ -172,7 +172,7 @@ public class BuyAlternativeServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(status);
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(status);
 
         // when
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();

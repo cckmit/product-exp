@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.BuyFlowFirstTrade;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
@@ -243,7 +244,8 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), true, true);
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(true).isFirstTrade(true).build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), buyFlowFirstTrade);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
@@ -266,7 +268,8 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), false, true);
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(true).build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), buyFlowFirstTrade);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
@@ -289,7 +292,8 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), false, true);
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(true).build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), buyFlowFirstTrade);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());
@@ -310,7 +314,8 @@ public class AlternativeServiceTest {
                 .registeredAddressData(AddressWithPhone.builder().build())
                 .primaryAddressData(AddressWithPhone.builder().build())
                 .build();
-        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), false, true);
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(true).build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), buyFlowFirstTrade);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SERVICE_NOT_READY, actual.getCode());

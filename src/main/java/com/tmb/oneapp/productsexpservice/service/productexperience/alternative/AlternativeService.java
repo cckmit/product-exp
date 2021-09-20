@@ -16,6 +16,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.AddressModel;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.BuyFlowFirstTrade;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
@@ -407,13 +408,13 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateCustomerRiskLevel(String correlationId, CustomerSearchResponse customerInfo, TmbStatus status, boolean isBuyFlow, boolean isFirstTrade) {
+    public TmbStatus validateCustomerRiskLevel(String correlationId, CustomerSearchResponse customerInfo, TmbStatus status, BuyFlowFirstTrade buyFlowFirstTrade) {
         EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId, customerInfo);
         boolean isCustomerRiskLevelNotValid = false;
         if (!StringUtils.isEmpty(customerRiskLevel)) {
             String[] values = new String[2];
             values[0] = "C3";
-            if (isBuyFlow && isFirstTrade) {
+            if (buyFlowFirstTrade.isBuyFlow() && buyFlowFirstTrade.isFirstTrade()) {
                 values[1] = "B3";
             }
 
