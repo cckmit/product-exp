@@ -103,9 +103,7 @@ public class ProductsExpServiceConstant {
 
     public static final String PROCESS_FLAG_Y = "Y";
     public static final String BUSINESS_HR_CLOSE = "N";
-    public static final String ACTIVITY_ID_CHANGE_USAGE_PERMANENT = "100700200";
-    public static final String ACTIVITY_ID_CHANGE_USAGE_TEMPORARY = "100700201";
-    public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "100700203";
+    public static final String CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT = "100700202";
     public static final String APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON = "100700701";
     public static final String CHANGE_TYPE_PERMANENT = "change-type-permanent";
     public static final String SUCCESS = "Success";
@@ -153,7 +151,7 @@ public class ProductsExpServiceConstant {
 
     public static final String INTERNAL_SERVER = "Internal Server Error";
     public static final String UTF_8 = "utf-8";
-    public static final String SET_PIN_ACTIVITY_LOG = "00700302";
+    public static final String SET_PIN_ACTIVITY_LOG = "100700301";
 
     /* Redis */
     public static final String INVESTMENT_CACHE_KEY = "investment_fundlist";
@@ -192,7 +190,7 @@ public class ProductsExpServiceConstant {
     public static final String PWA_LEAVE_NOTE_SCREEN_NAME = "Send Note Success";
 
     /* ACTIVITY IDs */
-    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "100700402";
+    public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "100700401";
     public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING = "101000101";
     public static final String ACTIVITY_ID_INVESTMENT_STATUS_OPEN_PORTFOLIO = "101000701";

@@ -139,8 +139,7 @@ public class CreditCardLogService {
 			SetCreditLimitReq requestBody,String result) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
-		creditCardEvent.setCardNumber(requestBody.getAccountId().substring(21, 25));
-
+		creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
 		creditCardEvent.setResult(result);
 		return creditCardEvent;
 	}
@@ -325,9 +324,9 @@ public class CreditCardLogService {
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
-
-		creditCardEvent.setCardNumber(accountId.substring(21, 25));
+		creditCardEvent.setCardNumber("xx"+accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
+		creditCardEvent.setResult(status);
 		logActivity(creditCardEvent);
 	}
 
@@ -348,7 +347,7 @@ public class CreditCardLogService {
 			creditCardEvent.setFailReason(ProductsExpServiceConstant.FAILED);
 		}
 		creditCardEvent.setResult(status);
-		creditCardEvent.setCardNumber(accountId.substring(21, 25));
+		creditCardEvent.setCardNumber("xx"+accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
 		logActivity(creditCardEvent);
 	}

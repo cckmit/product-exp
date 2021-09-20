@@ -1,17 +1,14 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.model.StatusResponse;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Status;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
-import com.tmb.oneapp.productsexpservice.service.NotificationService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -21,14 +18,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import com.tmb.common.model.StatusResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
 @RunWith(JUnit4.class)
 public class SetCreditLimitControllerTest {
@@ -66,16 +66,15 @@ public class SetCreditLimitControllerTest {
 		StatusResponse status = new StatusResponse();
 		status.setStatusCode("0");
 		Map<String, String> requestHeadersParameter = headerRequestParameter();
+		requestHeadersParameter.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, "c28f91e4-881e-4387-a597-4a39c2822b3c");
+		String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+		String activityDate = Long.toString(System.currentTimeMillis());
 		SetCreditLimitResp setCreditLimitResp = new SetCreditLimitResp();
 		setCreditLimitResp.setStatus(status);
-		CreditCardEvent creditCardEvent = new CreditCardEvent("", "", "");
-		creditCardEvent.setActivityDate("01-09-1990");
-		when(creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,
-				ProductsExpServiceConstant.SUCCESS)).thenReturn(creditCardEvent);
-		when(creditCardLogService.onClickNextButtonLimitEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter, limit)).thenReturn(creditCardEvent);
-		
-		when(creditCardLogService.completeUsageListEvent(creditCardEvent, requestHeadersParameter, requestBodyParameter,
-				ProductsExpServiceConstant.SUCCESS)).thenReturn(creditCardEvent);
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate,
+				ProductsExpServiceConstant.CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT);
+		when(creditCardLogService.completeUsageListEvent(any(), any(), any(),
+				any())).thenReturn(creditCardEvent);
 		TmbOneServiceResponse<SetCreditLimitResp> oneServiceResponse = new TmbOneServiceResponse<SetCreditLimitResp>();
 		oneServiceResponse.setData(setCreditLimitResp);
 		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
