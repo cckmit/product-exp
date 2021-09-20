@@ -34,6 +34,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactShe
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
+import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
@@ -148,7 +149,7 @@ public interface InvestmentRequestClient {
      */
     @PostMapping(value = "${investment.service.fund.fact.sheet.url}")
     @ResponseBody
-    ResponseEntity<TmbOneServiceResponse<FundFactSheetResponse>> callInvestmentFundFactSheetService(
+    ResponseEntity<TmbOneServiceResponse<FundFactSheetData>> callInvestmentFundFactSheetService(
             @RequestHeader Map<String, String> headers, @RequestBody FundFactSheetRequestBody fundFactSheetRequestBody);
 
     /**
