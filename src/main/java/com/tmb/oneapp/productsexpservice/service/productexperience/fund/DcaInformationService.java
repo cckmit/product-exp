@@ -62,7 +62,7 @@ public class DcaInformationService {
             List<String> portList = productsExpService.getPortList(headerParameter, crmId, false);
             UnitHolder unitHolder = new UnitHolder();
             unitHolder.setUnitHolderNumber(portList.stream().collect(Collectors.joining(",")));
-            ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(headerParameter,
+            ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(headerParameter,
                     unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody = investmentRequestClient.callInvestmentFundListInfoService(headerParameter);
             return mappingDcaInformationDto(fundSummaryResponse, fundListBody, dcaInformationDto);
@@ -74,8 +74,8 @@ public class DcaInformationService {
         }
     }
 
-    private TmbOneServiceResponse<DcaInformationDto> mappingDcaInformationDto(ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummaryResponse, ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody, TmbOneServiceResponse<DcaInformationDto> dcaInformationDto) {
-        FundSummaryBody fundSummaryBody = fundSummaryResponse.getBody().getData().getBody();
+    private TmbOneServiceResponse<DcaInformationDto> mappingDcaInformationDto(ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse, ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody, TmbOneServiceResponse<DcaInformationDto> dcaInformationDto) {
+        FundSummaryBody fundSummaryBody = fundSummaryResponse.getBody().getData();
         List<FundClass> fundClass = fundSummaryBody.getFundClassList().getFundClass();
         List<FundHouse> fundHouseList = fundClass.stream()
                 .map(FundClass::getFundHouseList)

@@ -61,9 +61,9 @@ public class DcaInformationServiceTest {
 
         when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
 
-        TmbOneServiceResponse<FundSummaryResponse> tmbFundSummaryResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundSummaryBody> tmbFundSummaryResponse = new TmbOneServiceResponse<>();
         FundSummaryBody fundSummaryBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/fundsummarybody.json").toFile(), FundSummaryBody.class);
-        tmbFundSummaryResponse.setData(FundSummaryResponse.builder().body(fundSummaryBody).build());
+        tmbFundSummaryResponse.setData(fundSummaryBody);
         when(investmentRequestClient.callInvestmentFundSummaryService(any(),
                 any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundSummaryResponse));
 

@@ -140,9 +140,9 @@ public class DcaValidationServiceTest {
         when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundRuleResponse));
 
-        TmbOneServiceResponse<FundFactSheetResponse> tmbFundFactSheetResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FundFactSheetData> tmbFundFactSheetResponse = new TmbOneServiceResponse<>();
         tmbFundFactSheetResponse.setStatus(TmbStatusUtil.successStatus());
-        tmbFundFactSheetResponse.setData(FundFactSheetResponse.builder().body(FundFactSheetData.builder().factSheetData(fundFactSheetData).build()).build());
+        tmbFundFactSheetResponse.setData(FundFactSheetData.builder().factSheetData(fundFactSheetData).build());
         when(investmentRequestClient.callInvestmentFundFactSheetService(any(), any())).thenReturn(
                 ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundFactSheetResponse));
 

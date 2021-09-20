@@ -565,11 +565,11 @@ public class UtilMap {
      * @return List<FundClassList>
      */
     @LogAround
-    public static List<FundClassListInfo> mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryResponse fundSummaryResponse) {
+    public static List<FundClassListInfo> mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryBody fundSummaryResponse) {
         List<FundClassListInfo> fundClassLists = new ArrayList<>();
         try {
             for (FundClassListInfo fundClass : fundClassList) {
-                for (FundClass fundClassLoop : fundSummaryResponse.getBody().getFundClassList().getFundClass()) {
+                for (FundClass fundClassLoop : fundSummaryResponse.getFundClassList().getFundClass()) {
                     List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
                     mappingBoughtFlagWithFundHouse(fundClass, fundHouseList);
                 }

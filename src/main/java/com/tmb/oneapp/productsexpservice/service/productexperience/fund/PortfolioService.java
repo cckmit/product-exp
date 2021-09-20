@@ -6,7 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.response.PortfolioResponseBody;
@@ -52,7 +52,7 @@ public class PortfolioService {
     public PortfolioResponse getPortfolioList(String correlationId, String crmId, String type) {
         List<PortfolioByPort> portfolioByPortList;
         UnitHolder unitHolder = new UnitHolder();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse;
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
 
         try {
@@ -60,7 +60,7 @@ public class PortfolioService {
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
             summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(headerParameter, unitHolder);
-            List<PortfolioByPort> portfolioList = summaryByPortResponse.getBody().getData().getBody().getPortfolioList();
+            List<PortfolioByPort> portfolioList = summaryByPortResponse.getBody().getData().getPortfolioList();
 
             portfolioByPortList = filterTypeOfPortfolioByPorts(type, portfolioList);
             List<PortfolioResponseBody> portfolioResponseBodyList = buildPortfolioResponseBodyList(portfolioByPortList);

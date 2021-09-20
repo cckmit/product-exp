@@ -16,8 +16,11 @@ import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorE
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundClass;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundClassList;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.PortfolioByPort;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
@@ -135,9 +138,9 @@ public class ProductsExpService {
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, String crmId) {
         FundSummaryBody result = new FundSummaryBody();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryResponse>> fundSummary;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary;
         UnitHolder unitHolder = new UnitHolder();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortResponse>> summaryByPortResponse;
+        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse;
         Map<String, String> header = UtilMap.createHeader(correlationId);
         ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
 
@@ -215,27 +218,27 @@ public class ProductsExpService {
      * @param fundSummaryByPort
      */
     private void setFundSummaryBody(FundSummaryBody result, List<String> ports,
-                                    TmbOneServiceResponse<FundSummaryResponse> fundSummary,
-                                    TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
+                                    TmbOneServiceResponse<FundSummaryBody> fundSummary,
+                                    TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
 
         if (fundSummary != null) {
-            FundClassList fundClassList = fundSummary.getData().getBody().getFundClassList();
+            FundClassList fundClassList = fundSummary.getData().getFundClassList();
             List<FundClass> fundClass = fundClassList.getFundClass();
             List<FundClass> fundClassData = UtilMap.mappingFundListData(fundClass);
             List<FundSearch> searchList = UtilMap.mappingFundSearchListData(fundClass);
             result.setFundClass(fundClassData);
             result.setSearchList(searchList);
             result.setFundClassList(null);
-            result.setFeeAsOfDate(fundSummary.getData().getBody().getFeeAsOfDate());
-            result.setPercentOfFundType(fundSummary.getData().getBody().getPercentOfFundType());
-            result.setSumAccruedFee(fundSummary.getData().getBody().getSumAccruedFee());
-            result.setUnrealizedProfitPercent(fundSummary.getData().getBody().getUnrealizedProfitPercent());
-            result.setSummaryMarketValue(fundSummary.getData().getBody().getSummaryMarketValue());
-            result.setSummaryUnrealizedProfit(fundSummary.getData().getBody().getSummaryUnrealizedProfit());
-            result.setSummaryUnrealizedProfitPercent(fundSummary.getData().getBody().getSummaryUnrealizedProfitPercent());
-            result.setSummarySmartPortMarketValue(fundSummary.getData().getBody().getSummarySmartPortMarketValue());
-            result.setSummarySmartPortUnrealizedProfit(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfit());
-            result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getBody().getSummarySmartPortUnrealizedProfitPercent());
+            result.setFeeAsOfDate(fundSummary.getData().getFeeAsOfDate());
+            result.setPercentOfFundType(fundSummary.getData().getPercentOfFundType());
+            result.setSumAccruedFee(fundSummary.getData().getSumAccruedFee());
+            result.setUnrealizedProfitPercent(fundSummary.getData().getUnrealizedProfitPercent());
+            result.setSummaryMarketValue(fundSummary.getData().getSummaryMarketValue());
+            result.setSummaryUnrealizedProfit(fundSummary.getData().getSummaryUnrealizedProfit());
+            result.setSummaryUnrealizedProfitPercent(fundSummary.getData().getSummaryUnrealizedProfitPercent());
+            result.setSummarySmartPortMarketValue(fundSummary.getData().getSummarySmartPortMarketValue());
+            result.setSummarySmartPortUnrealizedProfit(fundSummary.getData().getSummarySmartPortUnrealizedProfit());
+            result.setSummarySmartPortUnrealizedProfitPercent(fundSummary.getData().getSummarySmartPortUnrealizedProfitPercent());
 
             List<FundClass> smartPort = fundClassData.stream()
                     .filter(port -> ProductsExpServiceConstant.SMART_PORT_CODE.equalsIgnoreCase(port.getFundClassCode()))
@@ -251,7 +254,7 @@ public class ProductsExpService {
             result.setPtPortList(ptPort);
 
             if (!isPortfolioListEmpty(fundSummaryByPort)) {
-                result.setSummaryByPort(fundSummaryByPort.getData().getBody().getPortfolioList());
+                result.setSummaryByPort(fundSummaryByPort.getData().getPortfolioList());
 
                 boolean individualAccountExist = isIndividualAccountExist(fundSummaryByPort);
                 result.setIsJointPortOnly(!individualAccountExist);
@@ -335,12 +338,12 @@ public class ProductsExpService {
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
                     productExpAsyncService.fetchFundListInfo(headerParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
-            CompletableFuture<FundSummaryResponse> fetchFundSummary = productExpAsyncService.fetchFundSummary(headerParameter, unitHolder);
+            CompletableFuture<FundSummaryBody> fetchFundSummary = productExpAsyncService.fetchFundSummary(headerParameter, unitHolder);
             CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(headerParameter, crmId);
 
             CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
             listFund = fetchFundListInfo.get();
-            FundSummaryResponse fundSummaryResponse = fetchFundSummary.get();
+            FundSummaryBody fundSummaryResponse = fetchFundSummary.get();
             List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
             listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
@@ -365,7 +368,7 @@ public class ProductsExpService {
         try {
             List<String> portList = getPortListForFundSummary(investmentHeaderRequest, crmId);
             unitHolder.setUnitHolderNumber(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            CompletableFuture<FundSummaryResponse> fundSummary = productExpAsyncService.fetchFundSummary(investmentHeaderRequest, unitHolder);
+            CompletableFuture<FundSummaryBody> fundSummary = productExpAsyncService.fetchFundSummary(investmentHeaderRequest, unitHolder);
             CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(investmentHeaderRequest, crmId);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
@@ -374,7 +377,7 @@ public class ProductsExpService {
                     FundAllocationRequestBody.builder()
                             .suitabilityScore(suitabilityScore)
                             .build());
-            return mappingSuggestAllocationDto(fundSummary.get().getBody().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
+            return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
@@ -490,13 +493,13 @@ public class ProductsExpService {
         return mutualFundWithFundSuggestedAllocationList;
     }
 
-    private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
-        return fundSummaryByPort == null || fundSummaryByPort.getData() == null ||
-                fundSummaryByPort.getData().getBody() == null || fundSummaryByPort.getData().getBody().getPortfolioList().isEmpty();
+    private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
+        return fundSummaryByPort == null || fundSummaryByPort.getData() == null
+                 || fundSummaryByPort.getData().getPortfolioList().isEmpty();
     }
 
-    private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortResponse> fundSummaryByPort) {
-        List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getBody().getPortfolioList();
+    private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
+        List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getPortfolioList();
         return portfolioList.stream()
                 .filter(portfolioByPort -> portfolioByPort.getPortfolioNumber().startsWith("PT"))
                 .anyMatch(portfolioByPort -> INVESTMENT_JOINT_FLAG_INDIVIDUAL.equals(portfolioByPort.getJointFlag()));

@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.countprocessorder.response.CountOrderProcessingResponseBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
@@ -49,7 +50,7 @@ public class ProductsExpServiceTest {
     public void testGetFundSummary() {
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
-        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+        FundSummaryBody expectedResponse = new FundSummaryBody();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -70,9 +71,9 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
-            TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+            TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
             expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
-                    FundSummaryResponse.class);
+                    FundSummaryBody.class);
             oneServiceResponse.setData(expectedResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -80,9 +81,9 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
-            TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
-            FundSummaryByPortResponse fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
-                    FundSummaryByPortResponse.class);
+            TmbOneServiceResponse<FundSummaryByPortBody> portResponse = new TmbOneServiceResponse<>();
+            FundSummaryByPortBody fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
+                    FundSummaryByPortBody.class);
             portResponse.setData(fundSummaryByPortResponse);
             portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -104,7 +105,7 @@ public class ProductsExpServiceTest {
         }
 
         FundSummaryBody result = productsExpService.getFundSummary(corrId, crmId);
-        Assert.assertEquals(expectedResponse.getBody().getFundClassList().getFundClass().size(), result.getFundClass().size());
+        Assert.assertEquals(expectedResponse.getFundClassList().getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE, result.getIsPtes());
         Assert.assertEquals(0, result.getSmartPortList().size());
         assertEquals(Boolean.FALSE, result.getIsJointPortOnly());
@@ -115,7 +116,7 @@ public class ProductsExpServiceTest {
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
         ObjectMapper mapperPort = new ObjectMapper();
-        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+        FundSummaryBody expectedResponse = new FundSummaryBody();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -135,9 +136,9 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
                     .body(oneServiceResponsePtes));
 
-            TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+            TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
             expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data_with_smart_port.json").toFile(),
-                    FundSummaryResponse.class);
+                    FundSummaryBody.class);
             oneServiceResponse.setData(expectedResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -145,9 +146,9 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
-            TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
-            FundSummaryByPortResponse fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
-                    FundSummaryByPortResponse.class);
+            TmbOneServiceResponse<FundSummaryByPortBody> portResponse = new TmbOneServiceResponse<>();
+            FundSummaryByPortBody fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port.json").toFile(),
+                    FundSummaryByPortBody.class);
             portResponse.setData(fundSummaryByPortResponse);
             portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -169,7 +170,7 @@ public class ProductsExpServiceTest {
         }
 
         FundSummaryBody result = productsExpService.getFundSummary(corrId, crmId);
-        Assert.assertEquals(expectedResponse.getBody().getFundClassList()
+        Assert.assertEquals(expectedResponse.getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
         Assert.assertEquals(Boolean.TRUE, result.getIsPtes());
         Assert.assertEquals(2, result.getSmartPortList().size());
@@ -180,7 +181,7 @@ public class ProductsExpServiceTest {
     public void testGetFundSummaryWithNoSummaryByPort() {
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
-        FundSummaryResponse expectedResponse = new FundSummaryResponse();
+        FundSummaryBody expectedResponse = new FundSummaryBody();
 
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/investment/investment_port_list.txt");
@@ -188,9 +189,9 @@ public class ProductsExpServiceTest {
             when(customerService.getAccountSaving(anyString(), anyString())).thenReturn(data);
 
             ObjectMapper mapper = new ObjectMapper();
-            TmbOneServiceResponse<FundSummaryResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+            TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
             expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_summary_data.json").toFile(),
-                    FundSummaryResponse.class);
+                    FundSummaryBody.class);
             oneServiceResponse.setData(expectedResponse);
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -199,9 +200,9 @@ public class ProductsExpServiceTest {
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
             ObjectMapper mapperPort = new ObjectMapper();
-            TmbOneServiceResponse<FundSummaryByPortResponse> portResponse = new TmbOneServiceResponse<>();
-            FundSummaryByPortResponse fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port_data_not_found.json").toFile(),
-                    FundSummaryByPortResponse.class);
+            TmbOneServiceResponse<FundSummaryByPortBody> portResponse = new TmbOneServiceResponse<>();
+            FundSummaryByPortBody fundSummaryByPortResponse = mapperPort.readValue(Paths.get("src/test/resources/investment/fund_summary_by_port_data_not_found.json").toFile(),
+                    FundSummaryByPortBody.class);
             portResponse.setData(fundSummaryByPortResponse);
             portResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
@@ -223,8 +224,8 @@ public class ProductsExpServiceTest {
         }
 
         FundSummaryBody result = productsExpService.getFundSummary(corrId, crmId);
-        Assert.assertEquals(expectedResponse.getBody().getFundClassList()
+        Assert.assertEquals(expectedResponse.getFundClassList()
                 .getFundClass().size(), result.getFundClass().size());
-        Assert.assertNull(expectedResponse.getBody().getSummaryByPort());
+        Assert.assertNull(expectedResponse.getSummaryByPort());
     }
 }
