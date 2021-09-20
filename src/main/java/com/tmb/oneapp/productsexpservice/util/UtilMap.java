@@ -193,8 +193,7 @@ public class UtilMap {
                         depositAccount.setAvailableBalance(balance);
                         String accStatusCode = itr.get("account_status_code").textValue();
                         depositAccount.setAccountStatusCode(accStatusCode);
-
-                        BigDecimal zeroBalance = new BigDecimal("0");
+                        
                         if(ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)){
                             countDormantAccount++;
                         }
