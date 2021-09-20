@@ -63,6 +63,7 @@ public class SwitchAlternativeServiceTest {
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateIdCardExpired(any(),any())).thenReturn(successStatus);
     }
 
     @Test
