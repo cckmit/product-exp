@@ -156,13 +156,14 @@ public class LoanSubmissionOnlineService {
     public DocumentResponse getDocuments(String correlationId, String crmId, Long caId) throws TMBCommonException {
         try {
             DocumentResponse documentResponse = new DocumentResponse();
-            ChecklistResponse response = new ChecklistResponse();
+
             List<ChecklistResponse> responseList = new ArrayList<>();
             TmbOneServiceResponse<List<ChecklistResponse>> responseEntity = lendingServiceClient.getDocuments(crmId, caId).getBody();
             if (responseEntity.getStatus().getCode().equals("0000")) {
                 ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonData = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
 
                 for (ChecklistResponse checklistResponse : responseEntity.getData()) {
+                    ChecklistResponse response = new ChecklistResponse();
                     response.setStatus(checklistResponse.getStatus());
                     response.setChecklistType(checklistResponse.getChecklistType());
                     response.setCifRelCode(checklistResponse.getCifRelCode());
@@ -176,6 +177,7 @@ public class LoanSubmissionOnlineService {
                     response.setIsMandatory(checklistResponse.getIsMandatory());
                     responseList.add(response);
                 }
+
                 responseEntity.setData(responseList);
                 documentResponse.setChecklistResponses(responseList);
                 documentResponse.setMaxPerDocType(commonData.getBody().getData().get(0).getMaxPerDoctype());
