@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocationDTO;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -392,6 +393,84 @@ public class ProductExpServiceTest {
 
         TmbOneServiceResponse<FundPaymentDetailResponse> serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         Assert.assertNotNull(serviceRes);
+    }
+
+    @Test
+    public void should_return_error_dormant_when_call_getFundPrePaymentDetail_given_correlationId_crmId_payment_detail_request() throws Exception {
+        FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
+        fundPaymentDetailRequest.setFundCode("SCBTMF");
+        fundPaymentDetailRequest.setFundHouseCode("SCBAM");
+        fundPaymentDetailRequest.setTranType("1");
+
+        List<String> eligibleAcc = Arrays.asList("200",
+                "205",
+                "212",
+                "212",
+                "219",
+                "221",
+                "225",
+                "207",
+                "208",
+                "251",
+                "252",
+                "253",
+                "255",
+                "101",
+                "107",
+                "108",
+                "109",
+                "151",
+                "152",
+                "153",
+                "154",
+                "155",
+                "171",
+                "172",
+                "173");
+
+        String responseCustomerExp;
+        FundHolidayBody fundHolidayBody;
+        FundRuleResponse fundRuleResponse;
+        CommonData commonData = new CommonData();
+        List<CommonData> commonDataList = new ArrayList<>();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            fundRuleResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_rule_payment.json").toFile(), FundRuleResponse.class);
+            fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_holiday.json").toFile(), FundHolidayBody.class);
+
+            responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/account_dormant.json")), StandardCharsets.UTF_8);
+
+            commonData.setEligibleAccountCodeBuy(eligibleAcc);
+            commonDataList.add(commonData);
+
+            when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleResponse));
+            when(productExpAsyncService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
+            when(productExpAsyncService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
+            when(productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(commonDataList));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        UtilMap utilMap = new UtilMap();
+        CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
+        CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(any(), anyString());
+        CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString());
+
+        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
+        FundRuleResponse fundRuleResponseCom = fetchFundRule.get();
+        FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
+        String customerExp = fetchCustomerExp.get();
+
+        List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
+        Assert.assertNotNull(customerExp);
+
+        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp);
+        Assert.assertNotNull(response);
+
+        TmbOneServiceResponse<FundPaymentDetailResponse> actual = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
+        Assert.assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(),actual.getStatus().getCode());
     }
 
     @Test

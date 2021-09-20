@@ -142,7 +142,6 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
-            mappingAccount(responseCommon, responseCustomerExp, true);
             fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp, true));
             return fundPaymentDetailResponse;
         }
@@ -195,11 +194,11 @@ public class UtilMap {
                         String accStatusCode = itr.get("account_status_code").textValue();
                         depositAccount.setAccountStatusCode(accStatusCode);
 
+                        BigDecimal zeroBalance = new BigDecimal("0");
                         if(ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)){
-                            BigDecimal zeroBalance = new BigDecimal("0");
-                            if ((balance.compareTo(zeroBalance) == 0)){
-                                countDormantAccount++;
-                            }
+                            countDormantAccount++;
+                        }else if(balance.compareTo(zeroBalance) == 0){
+                            countDormantAccount++;
                         }
 
                         depositAccountList.add(depositAccount);
