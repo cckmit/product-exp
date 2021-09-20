@@ -80,7 +80,7 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
 
 
         BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(isBuyFlow).isFirstTrade(isFirstTrade).build();
-        tmbOneServiceResponse = validateServiceHourAgeAndRisk(crmId,correlationId, customerInfo, tmbOneServiceResponse, status, buyFlowFirstTrade);
+        tmbOneServiceResponse = validateGroupingService(crmId,correlationId, customerInfo, tmbOneServiceResponse, status, buyFlowFirstTrade);
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
@@ -91,12 +91,6 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
             return tmbOneServiceResponse;
         }
 
-        // validate flatca flag not valid
-        tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-            return tmbOneServiceResponse;
-        }
 
         return tmbOneServiceResponse;
     }

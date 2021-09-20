@@ -63,6 +63,7 @@ public class SellAlternativeServiceTest {
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(),any())).thenReturn(successStatus);
+        when(alternativeService.validateFatcaFlagNotValid(any(),any())).thenReturn(successStatus);
     }
 
     @Test
@@ -186,6 +187,28 @@ public class SellAlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(),
+                actual.getStatus().getMessage());
+    }
+
+    @Test
+    public void should_return_failed_customer_not_fill_fatca_form_when_call_validation_sell_given_correlation_id_and_crm_id() {
+        // given
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED);
+        byPassAllAlternative();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(status);
+
+        // when
+        TmbOneServiceResponse<String> actual = sellAlternativeService.validationSell(correlationId, crmId);
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
                 actual.getStatus().getMessage());
     }
 }

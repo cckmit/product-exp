@@ -33,12 +33,12 @@ public class ValidateGroupingAbstractService {
 
     }
 
-    protected TmbOneServiceResponse<String> validateServiceHourAgeAndRisk(String crmId,
-                                                                          String correlationId,
-                                                                          CustomerSearchResponse customerInfo,
-                                                                          TmbOneServiceResponse<String> tmbOneServiceResponse,
-                                                                          TmbStatus status,
-                                                                          BuyFlowFirstTrade buyFlowFirstTrade){
+    protected TmbOneServiceResponse<String> validateGroupingService(String crmId,
+                                                                    String correlationId,
+                                                                    CustomerSearchResponse customerInfo,
+                                                                    TmbOneServiceResponse<String> tmbOneServiceResponse,
+                                                                    TmbStatus status,
+                                                                    BuyFlowFirstTrade buyFlowFirstTrade){
 
         // validate service hour
         ValidateServiceHourResponse validateServiceHourResponse = alternativeService.validateServiceHour(correlationId, status);
@@ -69,6 +69,13 @@ public class ValidateGroupingAbstractService {
         tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
+            return tmbOneServiceResponse;
+        }
+
+        // validate flatca flag not valid
+        tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
+        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
             return tmbOneServiceResponse;
         }
 
