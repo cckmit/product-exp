@@ -195,9 +195,8 @@ public class UtilMap {
                         depositAccount.setAccountStatusCode(accStatusCode);
 
                         BigDecimal zeroBalance = new BigDecimal("0");
-                        if(ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)){
-                            countDormantAccount++;
-                        }else if(balance.compareTo(zeroBalance) == 0){
+                        if(ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)
+                            || balance.compareTo(zeroBalance) == 0){
                             countDormantAccount++;
                         }
 
