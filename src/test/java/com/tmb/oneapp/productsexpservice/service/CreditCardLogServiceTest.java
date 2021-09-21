@@ -271,7 +271,12 @@ public class CreditCardLogServiceTest {
 		String status = "success";
 		String accountId = "0000000050078680266000215";
 		String failReason = "Exception";
-		logService.finishBlockCardActivityLog(status, activityId, correlationId, activityDate, accountId, failReason);
+		HashMap<String, String> reqHeader = new HashMap<>() {
+			{
+				put("accept", "application/json");
+			}
+		};
+		logService.finishBlockCardActivityLog(status, activityId, correlationId, activityDate, accountId, failReason, reqHeader);
 		assertNotNull(creditCardEvent);
 	}
 
@@ -284,7 +289,12 @@ public class CreditCardLogServiceTest {
 		String status = "success";
 		String accountId = "0000000050078680266000215";
 		String failReason = "Exception";
-		logService.finishSetPinActivityLog(status, activityId, correlationId, activityDate, accountId, failReason);
+		HashMap<String, String> reqHeader = new HashMap<>() {
+			{
+				put("accept", "application/json");
+			}
+		};
+		logService.finishSetPinActivityLog(status, activityId, correlationId, activityDate, accountId, failReason, reqHeader);
 		assertNotNull(creditCardEvent);
 	}
 
