@@ -1,5 +1,23 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.exception.model.TMBCommonExceptionWithResponse;
@@ -13,29 +31,17 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.OneappAuthClient;
-import com.tmb.oneapp.productsexpservice.model.setpin.*;
+import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
+import com.tmb.oneapp.productsexpservice.model.setpin.SetPinReqParameter;
+import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
+import com.tmb.oneapp.productsexpservice.model.setpin.SilverlakeErrorStatus;
+import com.tmb.oneapp.productsexpservice.model.setpin.TranslatePinRes;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
+
 import feign.FeignException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * SetPinController request mapping will handle apis call and then navigate to
@@ -104,7 +110,7 @@ public class SetPinController {
                 if (setPinResponse.getStatus().getStatusCode() == 0) {
                     creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.SUCCESS,
                             ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG, correlationId, activityDate, accountId,
-                            "");
+                            "", requestHeadersParameter);
                     oneServiceResponse
                             .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
@@ -116,7 +122,7 @@ public class SetPinController {
                     String desc = errorStatus.get(0).getDescription();
                     creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
                             ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG, correlationId, activityDate, accountId,
-                            desc);
+                            desc, requestHeadersParameter);
                     oneServiceResponse.setStatus(new TmbStatus(code, ResponseCode.FAILED.getMessage(),
                             ResponseCode.FAILED.getService(), desc));
                     return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);

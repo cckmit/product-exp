@@ -105,7 +105,7 @@ public class BlockCardController {
                             .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
                     creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.SUCCESS, activityId,
-                            correlationId, activityDate, accountId, "");
+                            correlationId, activityDate, accountId, "", requestHeadersParameter);
                     notificationService.doNotifySuccessForBlockCard(correlationId, accountId, crmId);
                     return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
@@ -114,7 +114,7 @@ public class BlockCardController {
                             new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
                                     ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
                     creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG, activityId,
-                            correlationId, activityDate, accountId, ProductsExpServiceConstant.INTERNAL_SERVER);
+                            correlationId, activityDate, accountId, ProductsExpServiceConstant.INTERNAL_SERVER, requestHeadersParameter);
                     return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
                 }
             } else {
@@ -125,7 +125,7 @@ public class BlockCardController {
             }
         } catch (Exception e) {
             creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG, activityId,
-                    correlationId, activityDate, accountId, ProductsExpServiceConstant.INTERNAL_SERVER);
+                    correlationId, activityDate, accountId, ProductsExpServiceConstant.INTERNAL_SERVER, requestHeadersParameter);
             throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
                     ResponseCode.GENERAL_ERROR.getService(), HttpStatus.BAD_REQUEST, null);
         }

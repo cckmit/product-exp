@@ -319,11 +319,12 @@ public class CreditCardLogService {
 	@Async
 	@LogAround
 	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason) {
+			String accountId, String failReason,  Map<String, String> reqHeader) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
+		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setCardNumber("xx"+accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
 		creditCardEvent.setResult(status);
@@ -341,11 +342,12 @@ public class CreditCardLogService {
 	@Async
 	@LogAround
 	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason) {
+			String accountId, String failReason,  Map<String, String> reqHeader) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(ProductsExpServiceConstant.FAILED);
 		}
+		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setResult(status);
 		creditCardEvent.setCardNumber("xx"+accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
