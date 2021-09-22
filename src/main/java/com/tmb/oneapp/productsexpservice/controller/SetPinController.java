@@ -93,7 +93,9 @@ public class SetPinController {
             String accountId = requestBodyParameter.getAccountId();
             String activityDate = Long.toString(System.currentTimeMillis());
             String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
-
+			requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
+					ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+			
             TmbOneServiceResponse<SetPinResponse> oneServiceResponse = new TmbOneServiceResponse<>();
             TranslatePinRes translatePinRes = oneappAuthClient.fetchEcasTranslatePinData(correlationId,
                     requestBodyParameter);
