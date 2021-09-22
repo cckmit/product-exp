@@ -37,7 +37,7 @@ public class LoanSubmissionOnlineController {
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
-    private final String timeStamp = "Timestamp";
+    private static final String timeStamp = "Timestamp";
 
     @GetMapping("/getIncomeInfo")
     @LogAround
