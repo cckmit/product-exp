@@ -310,6 +310,8 @@ public class ProductsExpService {
                 return tmbOneServiceResponse;
             }
 
+            tmbOneServiceResponse.setData(fundPaymentDetailResponse);
+
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
