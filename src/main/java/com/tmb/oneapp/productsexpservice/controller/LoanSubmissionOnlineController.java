@@ -37,7 +37,7 @@ public class LoanSubmissionOnlineController {
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
-    private String timeStamp = "Timestamp";
+    private final String timeStamp = "Timestamp";
 
     @GetMapping("/getIncomeInfo")
     @LogAround
@@ -314,6 +314,29 @@ public class LoanSubmissionOnlineController {
         }
     }
 
+    @GetMapping(value = "/documents/more")
+    @LogAround
+    @ApiOperation("Checklist More Document")
+    public ResponseEntity<TmbOneServiceResponse<DocumentResponse>> getMoreDocuments(
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid ChecklistRequest request) {
+        TmbOneServiceResponse<DocumentResponse> response = new TmbOneServiceResponse<>();
+        try {
+            DocumentResponse documentResponse = loanSubmissionOnlineService.getMoreDocuments(correlationId,crmId, request.getCaId());
+            response.setData(documentResponse);
+            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+        } catch (Exception e) {
+            logger.error("error while get checklist : {}", e);
+            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService()));
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+        }
+    }
+
     @GetMapping(value = "/e-app")
     @LogAround
     @ApiOperation("Get E-App Data")
@@ -340,10 +363,10 @@ public class LoanSubmissionOnlineController {
     @LogAround
     @ApiOperation("Update Application")
     @PutMapping(value = "updateApplication", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse> updateApplication(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+    public ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateApplication(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
                                                                    @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
 
-        TmbOneServiceResponse oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<ResponseApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
             loanSubmissionOnlineService.updateApplication(crmId, request);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,

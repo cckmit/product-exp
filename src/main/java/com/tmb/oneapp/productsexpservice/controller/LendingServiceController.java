@@ -58,7 +58,7 @@ public class LendingServiceController {
      */
     public static TmbOneServiceErrorResponse mapTmbOneServiceErrorResponse(Optional<ByteBuffer> optionalResponse) {
         try {
-            if (!optionalResponse.isPresent()) {
+            if (optionalResponse.isEmpty()) {
                 return null;
             }
 
@@ -71,7 +71,7 @@ public class LendingServiceController {
     }
 
     @PostMapping(value = "/lending/get-preload-data", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<Object>> getProducts(@RequestHeader("X-Correlation-ID") String xCorrelationId, @RequestBody ProductRequest request) throws TMBCommonException {
+    public ResponseEntity<TmbOneServiceResponse<Object>> getProducts(@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestBody ProductRequest request) throws TMBCommonException {
         try {
             return lendingServiceClient.getLoanProducts(xCorrelationId, request);
         } catch (FeignException e) {
@@ -168,6 +168,30 @@ public class LendingServiceController {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
                 logger.info("Error while calling POST /apis/lending-service/document/submit. crmId: {}, code:{}, errMsg:{}",
+                        crmId, response.getStatus().getCode(), response.getStatus().getMessage());
+                throw new TMBCommonException(response.getStatus().getCode(),
+                        response.getStatus().getMessage(),
+                        response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+    }
+
+    @PostMapping(value = "/lending/document/submit/more")
+    public ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitMoreDocument(
+            @ApiParam(value = HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId,
+            @ApiParam(value = HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestBody SubmitDocumentRequest request) throws TMBCommonException {
+        try {
+            return lendingServiceClient.submitMoreDocument(xCorrelationId, crmId, request);
+        } catch (FeignException e) {
+            TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
+            if (response != null && response.getStatus() != null) {
+                logger.info("Error while calling POST /apis/lending-service/document/submit/more. crmId: {}, code:{}, errMsg:{}",
                         crmId, response.getStatus().getCode(), response.getStatus().getMessage());
                 throw new TMBCommonException(response.getStatus().getCode(),
                         response.getStatus().getMessage(),

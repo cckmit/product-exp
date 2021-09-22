@@ -174,6 +174,10 @@ public interface LendingServiceClient {
     ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(
             @RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestParam(value = "caId") Long caId);
 
+    @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/documents/more")
+    ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getMoreDocuments(
+            @RequestHeader(HEADER_X_CRM_ID) String crmId, @RequestParam(value = "caId") Long caId);
+
     @GetMapping(value = "/apis/lending-service/loanOnlineSubmission/getWorkingDetail")
     ResponseEntity<TmbOneServiceResponse<WorkingDetail>> getLoanSubmissionWorkingDetail(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
@@ -191,6 +195,11 @@ public interface LendingServiceClient {
 
     @PostMapping(value = "/apis/lending-service/document/submit")
     ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitDocument(
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @RequestBody SubmitDocumentRequest request);
+
+    @PostMapping(value = "/apis/lending-service/document/submit/more")
+    ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitMoreDocument(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody SubmitDocumentRequest request);
 
