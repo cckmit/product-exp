@@ -4,8 +4,6 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Body;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
@@ -15,7 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,7 +26,6 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -209,7 +206,7 @@ class LoanSubmissionOnlineControllerTest {
         PersonalDetailResponse response = new PersonalDetailResponse();
         when(loanSubmissionOnlineService.getPersonalDetailInfo(any(), any())).thenReturn(response);
         ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> responseEntity = loanSubmissionOnlineController.getPersonalDetail(correlationId, request);
-        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
@@ -219,21 +216,21 @@ class LoanSubmissionOnlineControllerTest {
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         when(loanSubmissionOnlineService.getPersonalDetailInfo(any(), any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> responseEntity = loanSubmissionOnlineController.getPersonalDetail(correlationId, request);
-        Assert.assertTrue(responseEntity.getStatusCode().isError());
+        assertTrue(responseEntity.getStatusCode().isError());
     }
 
     @Test
     public void testUpdateApplicationSuccess() throws TMBCommonException {
         ResponseApplication responseApplication = new ResponseApplication();
         when(loanSubmissionOnlineService.updateApplication(anyString(), any())).thenReturn(responseApplication);
-        ResponseEntity<TmbOneServiceResponse> responseEntity = loanSubmissionOnlineController.updateApplication("crmId", new LoanSubmissionCreateApplicationReq());
+        ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.updateApplication("crmId", new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void testUpdateApplicationFail() throws TMBCommonException {
         when(loanSubmissionOnlineService.updateApplication(anyString(), any())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<TmbOneServiceResponse> responseEntity = loanSubmissionOnlineController.updateApplication("crmId", new LoanSubmissionCreateApplicationReq());
+        ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanSubmissionOnlineController.updateApplication("crmId", new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().isError());
     }
 
@@ -280,7 +277,7 @@ class LoanSubmissionOnlineControllerTest {
 
         when(loanSubmissionOnlineService.updatePersonalDetailInfo(any(), any())).thenReturn(mockResponseIndividual().getData());
         ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = loanSubmissionOnlineController.savePersonalDetail("001100000000000000000018593707", personalDetailSaveInfoRequest);
-        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+        Assertions.assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
     private TmbOneServiceResponse<PersonalDetailResponse> mockResponseIndividual() {
@@ -314,14 +311,7 @@ class LoanSubmissionOnlineControllerTest {
         response.setAddress(address1);
         response.setResidentFlag(Collections.singletonList(resident));
 
-        TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();
-        Body body = new Body();
-        Header header = new Header();
-//
-//        ResponseIndividual response = new ResponseIndividual();
-//
-//        response.setBody(body);
-//        response.setHeader(header);
+        TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
         oneServiceResponse.setData(response);
@@ -338,7 +328,7 @@ class LoanSubmissionOnlineControllerTest {
         DocumentResponse response = new DocumentResponse();
         when(loanSubmissionOnlineService.getDocuments(anyString(), any(), any())).thenReturn(response);
         ResponseEntity<TmbOneServiceResponse<DocumentResponse>> responseEntity = loanSubmissionOnlineController.getDocuments(correlationId,crmId, request);
-        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
@@ -349,7 +339,7 @@ class LoanSubmissionOnlineControllerTest {
         String crmId = "xx";
         when(loanSubmissionOnlineService.getDocuments(anyString(), any(), any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<DocumentResponse>> responseEntity = loanSubmissionOnlineController.getDocuments(correlationId, crmId, request);
-        Assert.assertTrue(responseEntity.getStatusCode().isError());
+        assertTrue(responseEntity.getStatusCode().isError());
     }
 
 }
