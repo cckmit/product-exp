@@ -26,11 +26,9 @@ public class CacheService {
 		try {
 			ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient
 					.getCacheByKey(correlationId, creditcardWithCrmIdKey);
-			if (ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
-				if (responseCache.getBody().getData() != null) {
-					cacheServiceClient.deleteCacheByKey(correlationId, creditcardWithCrmIdKey);
-					logger.info("========== remove cache success ==========");
-				}
+			if (responseCache.getBody().getData() != null) {
+				cacheServiceClient.deleteCacheByKey(correlationId, creditcardWithCrmIdKey);
+				logger.info("========== remove cache success ==========");
 			}
 
 		} catch (Exception ex) {
