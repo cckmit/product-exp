@@ -37,8 +37,6 @@ public class LoanSubmissionOnlineController {
     private final LoanSubmissionOnlineService loanSubmissionOnlineService;
     private static final TMBLogger<LoanSubmissionOnlineController> logger = new TMBLogger<>(LoanSubmissionOnlineController.class);
 
-    private static final String timeStamp = "Timestamp";
-
     @GetMapping("/getIncomeInfo")
     @LogAround
     @ApiOperation(value = "get income info")
@@ -54,7 +52,7 @@ public class LoanSubmissionOnlineController {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseHeaders.set(timeStamp, String.valueOf(Instant.now().toEpochMilli()));
+            responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while get income info: {}", e);
@@ -210,7 +208,7 @@ public class LoanSubmissionOnlineController {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            responseHeaders.set(timeStamp, String.valueOf(Instant.now().toEpochMilli()));
+            responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while update working detail : {}", e);
