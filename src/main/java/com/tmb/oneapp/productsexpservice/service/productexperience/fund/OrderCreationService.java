@@ -33,8 +33,9 @@ public class OrderCreationService {
 
     private final OrderCreationMapper orderCreationMapper;
 
-    public OrderCreationService(CacheServiceClient cacheServiceClient, OrderCreationMapper orderCreationMapper) {
+    public OrderCreationService(CacheServiceClient cacheServiceClient, OrderRequestClient orderRequestClient, OrderCreationMapper orderCreationMapper) {
         this.cacheServiceClient = cacheServiceClient;
+        this.orderRequestClient = orderRequestClient;
         this.orderCreationMapper = orderCreationMapper;
     }
 
