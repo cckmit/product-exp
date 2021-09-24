@@ -32,9 +32,10 @@ public class LoanService {
 	public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> fetchProductOrientation(String correlationId,
 			String crmId, ProductDetailRequest request) throws TMBCommonException {
 		try {
+			logger.info("ProductDetailRequest :{}", request);
 			ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> productDetailResponse = lendingServiceClient
 					.fetchProductOrientation(correlationId, crmId, request);
-
+			logger.info("ProductDetailResponse :{}", productDetailResponse);
 			if (productDetailResponse.getBody().getData() == null) {
 				String errorMessage = String.format("[%s] %s", productDetailResponse.getBody().getStatus().getCode(),
 						productDetailResponse.getBody().getStatus().getMessage());
@@ -68,9 +69,10 @@ public class LoanService {
 		} else {
 			request.setProductHeaderKey(ProductsExpServiceConstant.APPLY_CREDIT_CARD);
 		}
-
+		logger.info("LoanStagingbarRequest :{}", request);
 		LoanStagingbar loanStagingbarRes;
 		loanStagingbarRes = loanStagingBarService.fetchLoanStagingBar(request);
+		logger.info("LoanStagingbarRes :{}", loanStagingbarRes);
 		if (loanStagingbarRes == null) {
 			loanStagingbarRes = new LoanStagingbar();
 		}
