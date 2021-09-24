@@ -42,7 +42,7 @@ public class CustomerService {
      */
     public String getAccountSaving(String correlationId, String crmId){
         try {
-            return customerExpServiceClient.getAccountSaving(correlationId, UtilMap.halfCrmIdFormat(crmId));
+            return customerExpServiceClient.getAccountSaving(correlationId, UtilMap.fullCrmIdFormat(crmId));
         }catch (Exception ex){
             logger.error("customerExpServiceClient getAccountSaving error: {}",ex);
         }
@@ -61,7 +61,7 @@ public class CustomerService {
         try {
             CrmSearchBody request = CrmSearchBody.builder()
                     .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
-                    .searchValue(UtilMap.halfCrmIdFormat(crmId))
+                    .searchValue(UtilMap.fullCrmIdFormat(crmId))
                     .build();
             ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
                     customerServiceClient.customerSearch(correlationId, crmId, request);
