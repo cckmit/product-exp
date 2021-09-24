@@ -98,7 +98,7 @@ public class LendingServiceController {
 					.fetchProductOrientation(xCorrelationId, crmId, request);
 			logger.info(
 					"Success while calling POST /apis/lending-service/loan/product-orientation. response code:{} body :{}",
-					response.getStatusCode(), response.getBody());
+					response.getStatusCode(), response.getBody().toString());
 			return response;
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
