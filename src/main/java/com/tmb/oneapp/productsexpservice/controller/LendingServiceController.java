@@ -94,7 +94,10 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody ProductDetailRequest request) throws TMBCommonException {
         try {
-            return loanService.fetchProductOrientation(xCorrelationId, crmId, request);
+			ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> response = loanService
+					.fetchProductOrientation(xCorrelationId, crmId, request);
+			logger.info("Success while calling POST /apis/lending-service/loan/product-orientation. :{}", response);
+			return response;
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
