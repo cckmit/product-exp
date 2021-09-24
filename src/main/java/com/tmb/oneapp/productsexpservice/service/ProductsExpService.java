@@ -295,7 +295,7 @@ public class ProductsExpService {
      * @return FundPaymentDetailResponse
      */
     @LogAround
-    public TmbOneServiceResponse<FundPaymentDetailResponse> getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+    public TmbOneServiceResponse<FundPaymentDetailResponse> getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) throws TMBCommonException {
         TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRequest);
@@ -326,11 +326,16 @@ public class ProductsExpService {
 
             tmbOneServiceResponse.setData(fundPaymentDetailResponse);
 
+        } catch (ExecutionException e) {
+            if(e.getCause() instanceof TMBCommonException){
+                throw (TMBCommonException) e.getCause();
+            }
+            errorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
-            return null;
+            return tmbOneServiceResponse;
         }
         return tmbOneServiceResponse;
     }

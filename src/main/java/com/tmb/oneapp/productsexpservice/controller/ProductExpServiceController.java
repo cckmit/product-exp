@@ -143,7 +143,7 @@ public class ProductExpServiceController {
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody FundPaymentDetailRequest fundPaymentDetailRequest) {
+            @Valid @RequestBody FundPaymentDetailRequest fundPaymentDetailRequest) throws TMBCommonException {
 
         TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         if (oneServiceResponse.getStatus() != null) {

@@ -507,7 +507,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testGetFundPrePaymentDetailNotFoundException() {
+    public void testGetFundPrePaymentDetailNotFoundException() throws TMBCommonException {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
@@ -522,7 +522,7 @@ public class ProductExpServiceTest {
         }
 
         TmbOneServiceResponse<FundPaymentDetailResponse> serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
-        Assert.assertNull(serviceRes);
+        Assert.assertNull(serviceRes.getStatus());
     }
 
     @Test

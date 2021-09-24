@@ -215,7 +215,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundPrePaymentDetailNotNull() {
+    public void testGetFundPrePaymentDetailNotNull() throws TMBCommonException {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
@@ -332,7 +332,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void testGetFundPrePaymentDetailNull() {
+    void testGetFundPrePaymentDetailNull() throws TMBCommonException {
         TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(null);
         tmbOneServiceResponse.setData(null);
@@ -344,7 +344,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void should_return_casa_dormant_error_code_when_call_get_fund_pre_payment_detail_given_fundpayment_request() {
+    void should_return_casa_dormant_error_code_when_call_get_fund_pre_payment_detail_given_fundpayment_request() throws TMBCommonException {
         TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
