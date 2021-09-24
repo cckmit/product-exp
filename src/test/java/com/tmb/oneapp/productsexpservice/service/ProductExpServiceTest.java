@@ -630,7 +630,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void getFundListWithException() {
+    public void getFundListWithException() throws TMBCommonException {
         try {
             when(productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
             when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(null);
@@ -668,7 +668,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void should_return_null_when_get_suggest_allocation_given_correlationId_and_crmId() {
+    public void should_return_null_when_get_suggest_allocation_given_correlationId_and_crmId() throws TMBCommonException {
         String crmId = "00000018592884";
         when(accountRequestClient.getPortList(any(), anyString())).thenThrow(RuntimeException.class);
         SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(correlationId, crmId);

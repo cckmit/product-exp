@@ -349,7 +349,7 @@ public class ProductsExpService {
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
+    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) throws TMBCommonException {
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
@@ -369,10 +369,15 @@ public class ProductsExpService {
             listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
             return listFund;
-        } catch (Exception ex) {
+        } catch (ExecutionException e) {
+            if(e.getCause() instanceof TMBCommonException){
+                throw (TMBCommonException) e.getCause();
+            }
+            errorHandle();
+        }  catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            return listFund;
         }
+        return listFund;
     }
 
     /**
@@ -383,7 +388,7 @@ public class ProductsExpService {
      * @return SuggestAllocationDTO
      */
     @LogAround
-    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmId) {
+    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmId) throws TMBCommonException {
         UnitHolder unitHolder = new UnitHolder();
         Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
         try {
@@ -399,10 +404,15 @@ public class ProductsExpService {
                             .suitabilityScore(suitabilityScore)
                             .build());
             return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
-        } catch (Exception ex) {
+        } catch (ExecutionException e) {
+            if(e.getCause() instanceof TMBCommonException){
+                throw (TMBCommonException) e.getCause();
+            }
+            errorHandle();
+        }  catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            return null;
         }
+        return null;
     }
 
     private List<String> getPortListForFundSummary(Map<String, String> investmentHeaderRequest, String crmId) throws JsonProcessingException {

@@ -267,7 +267,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundListException() {
+    public void getFundListException() throws TMBCommonException {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -363,7 +363,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void should_return_SuggestAllocationDTO_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws IOException {
+    void should_return_SuggestAllocationDTO_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws IOException, TMBCommonException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -379,7 +379,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void should_return_not_found_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() {
+    void should_return_not_found_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws TMBCommonException {
         //Given
         when(productsExpService.getSuggestAllocation(correlationId, crmId)).thenThrow(RuntimeException.class);
 
