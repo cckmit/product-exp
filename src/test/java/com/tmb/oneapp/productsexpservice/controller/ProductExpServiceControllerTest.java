@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -142,7 +143,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetailFullReturn() {
+    public void testGetFundAccountDetailFullReturn() throws TMBCommonException {
         initSuccessResponseAccountDetail();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEEE");
@@ -169,7 +170,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetailNotFound() {
+    public void testGetFundAccountDetailNotFound() throws TMBCommonException {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEEE");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
@@ -189,7 +190,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetail() {
+    public void testGetFundAccountDetail() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
 
@@ -242,7 +243,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetailNull() {
+    public void testGetFundAccountDetailNull() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
 

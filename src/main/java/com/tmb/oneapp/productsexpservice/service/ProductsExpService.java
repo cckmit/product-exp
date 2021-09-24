@@ -5,12 +5,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -58,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.INVESTMENT_JOINT_FLAG_INDIVIDUAL;
@@ -103,8 +106,8 @@ public class ProductsExpService {
      * @return
      */
     @LogAround
-    public FundAccountResponse getFundAccountDetail(String correlationId, FundAccountRequest fundAccountRequest) {
-        FundAccountResponse fundAccountResponse;
+    public FundAccountResponse getFundAccountDetail(String correlationId, FundAccountRequest fundAccountRequest) throws TMBCommonException {
+        FundAccountResponse fundAccountResponse = null;
         FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAcc(fundAccountRequest);
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRequest);
         OrderStmtByPortRequest orderStmtByPortRequest = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
@@ -121,11 +124,22 @@ public class ProductsExpService {
             FundRuleResponse fundRuleResponse = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
-        } catch (Exception ex) {
+        } catch (ExecutionException e) {
+            if(e.getCause() instanceof TMBCommonException){
+                throw (TMBCommonException) e.getCause();
+            }
+            errorHandle();
+        }  catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
         return fundAccountResponse;
+    }
+
+    void errorHandle() throws TMBCommonException {
+        throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
     }
 
     /**

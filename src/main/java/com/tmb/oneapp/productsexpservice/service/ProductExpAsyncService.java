@@ -10,12 +10,13 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -28,14 +29,18 @@ import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetail
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -83,11 +88,49 @@ public class ProductExpAsyncService {
         try {
             ResponseEntity<TmbOneServiceResponse<AccountDetailResponse>> response = investmentRequestClient
                     .callInvestmentFundAccountDetailService(header, fundAccountRequestBody);
+            logger.info("fetchFundAccountDetail : {}", response);
             return CompletableFuture.completedFuture(response.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
         }
+    }
+
+    private void handleBadRequest(FeignException feignException) throws TMBCommonException {
+        if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
+            try {
+                TmbOneServiceResponse<String> response = getResponseFromBadRequest(feignException);
+                TmbStatus tmbStatus = response.getStatus();
+                throw new TMBCommonException(
+                        tmbStatus.getCode(),
+                        tmbStatus.getMessage(),
+                        tmbStatus.getService(),
+                        HttpStatus.BAD_REQUEST,
+                        null);
+            } catch (JsonProcessingException e) {
+                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
+            }
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    <T> TmbOneServiceResponse<T> getResponseFromBadRequest(final FeignException ex)
+            throws JsonProcessingException {
+        TmbOneServiceResponse<T> response = new TmbOneServiceResponse<>();
+        Optional<ByteBuffer> responseBody = ex.responseBody();
+        if (responseBody.isPresent()) {
+            ByteBuffer responseBuffer = responseBody.get();
+            String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
+            logger.info("response msg fail {}", responseObj);
+            response = ((TmbOneServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
+                    TmbOneServiceResponse.class));
+        }
+        return response;
     }
 
     /**
@@ -103,7 +146,12 @@ public class ProductExpAsyncService {
         try {
             ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> responseEntity = investmentRequestClient
                     .callInvestmentFundRuleService(header, fundRuleRequestBody);
+            logger.info("fetchFundRule : {}", responseEntity);
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -124,6 +172,10 @@ public class ProductExpAsyncService {
             ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseStmt = investmentRequestClient
                     .callInvestmentStatementByPortService(header, orderStmtByPortRequest);
             return CompletableFuture.completedFuture(responseStmt.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -144,6 +196,10 @@ public class ProductExpAsyncService {
             ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday = investmentRequestClient.
                     callInvestmentFundHolidayService(invHeaderReqParameter, fundCode);
             return CompletableFuture.completedFuture(responseFundHoliday.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -163,6 +219,10 @@ public class ProductExpAsyncService {
         try {
             String responseFundHoliday = accountRequestClient.getAccountList(headerParameter, crmId);
             return CompletableFuture.completedFuture(responseFundHoliday);
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -183,6 +243,10 @@ public class ProductExpAsyncService {
             ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = commonServiceClient.
                     getCommonConfigByModule(correlationId, module);
             return CompletableFuture.completedFuture(responseCommon.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -202,6 +266,10 @@ public class ProductExpAsyncService {
             ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseResponseEntity = customerServiceClient.
                     getCustomerProfile(crmId);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -222,6 +290,10 @@ public class ProductExpAsyncService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -242,6 +314,10 @@ public class ProductExpAsyncService {
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -263,6 +339,10 @@ public class ProductExpAsyncService {
             ResponseEntity<TmbOneServiceResponse<List<CustomerFavoriteFundData>>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundFavoriteService(headerParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();
@@ -283,6 +363,10 @@ public class ProductExpAsyncService {
             ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
+        } catch (FeignException feignException) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+            handleBadRequest(feignException);
+            throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             throw getTmbCommonException();

@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -222,7 +223,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testGetFundAccountDetailNull() {
+    public void testGetFundAccountDetailNull() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
@@ -285,7 +286,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testGetFundAccountDetailServiceNull() {
+    public void testGetFundAccountDetailServiceNull() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
@@ -525,7 +526,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testGetFundAccountDetailException() {
+    public void testGetFundAccountDetailException() throws TMBCommonException {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");

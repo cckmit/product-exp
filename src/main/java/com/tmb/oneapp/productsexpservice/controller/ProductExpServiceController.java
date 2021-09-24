@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -68,7 +69,7 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody FundAccountRequest fundAccountRequest) {
+            @Valid @RequestBody FundAccountRequest fundAccountRequest) throws TMBCommonException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         TmbOneServiceResponse<FundAccountResponse> oneServiceResponse = new TmbOneServiceResponse<>();
