@@ -345,7 +345,7 @@ public class CreditCardLogService {
 			String accountId, String failReason,  Map<String, String> reqHeader) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
-			creditCardEvent.setFailReason(ProductsExpServiceConstant.FAILED);
+			creditCardEvent.setFailReason(failReason);
 		}
 		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setResult(status);
