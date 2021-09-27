@@ -94,7 +94,12 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody ProductDetailRequest request) throws TMBCommonException {
         try {
-            return loanService.fetchProductOrientation(xCorrelationId, crmId, request);
+			ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> response = loanService
+					.fetchProductOrientation(xCorrelationId, crmId, request);
+			logger.info(
+					"Success while calling POST /apis/lending-service/loan/product-orientation. response code:{} body :{}",
+					response.getStatusCode(), response.getBody().toString());
+			return response;
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -104,7 +109,11 @@ public class LendingServiceController {
                 throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
                         response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
             }
-        }
+		} catch (Exception e) {
+			logger.error(e.toString(), e);
+			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+		}
         throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
     }
