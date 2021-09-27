@@ -6,10 +6,12 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body;
 import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.lending.document.*;
@@ -44,6 +47,7 @@ public class LendingServiceController {
             new TMBLogger<>(LendingServiceController.class);
     private final LendingServiceClient lendingServiceClient;
     private final LoanService loanService;
+    private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     public LendingServiceController(LendingServiceClient lendingServiceClient, LoanService loanService) {
         this.lendingServiceClient = lendingServiceClient;
@@ -93,14 +97,16 @@ public class LendingServiceController {
     public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> getProductOrientation(
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody ProductDetailRequest request) throws TMBCommonException {
-        try {
+		try {
 			ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> response = loanService
 					.fetchProductOrientation(xCorrelationId, crmId, request);
 			logger.info(
 					"Success while calling POST /apis/lending-service/loan/product-orientation. response code:{} body :{}",
-					response.getStatusCode(), response.getBody().toString());
-			return response;
-        } catch (FeignException e) {
+					response.getStatusCode(), response.getBody().getData().toString());
+			setHeader();
+			return ResponseEntity.ok().headers(responseHeaders).body(response.getBody());
+			
+		} catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
                 logger.info(
@@ -241,6 +247,10 @@ public class LendingServiceController {
         throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                 ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+    }
+    
+    private void setHeader() {
+        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
     }
 
 }

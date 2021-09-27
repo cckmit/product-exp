@@ -10,9 +10,11 @@ import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ProductDetailResponse {
     private LoanType loanType;
