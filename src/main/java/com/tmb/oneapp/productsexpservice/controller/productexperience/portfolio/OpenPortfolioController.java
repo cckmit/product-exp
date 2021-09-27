@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.portfolio;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -92,20 +93,17 @@ public class OpenPortfolioController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody CustomerRequest customerRequest) {
+            @Valid @RequestBody CustomerRequest customerRequest) throws TMBCommonException {
 
         TmbOneServiceResponse<OpenPortfolioValidationResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-        try {
-            OpenPortfolioValidationResponse openPortfolioValidationResponse = openPortfolioService.createCustomer(correlationId, crmId, customerRequest);
-            if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
-                return getTmbOneServiceResponseValidationEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
-            } else {
-                return getTmbOneServiceResponseValidationEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
-            }
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
+
+        OpenPortfolioValidationResponse openPortfolioValidationResponse = openPortfolioService.createCustomer(correlationId, crmId, customerRequest);
+        if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
+            return getTmbOneServiceResponseValidationEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
+        } else {
             return getTmbOneServiceResponseValidationEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
         }
+
     }
 
     /**

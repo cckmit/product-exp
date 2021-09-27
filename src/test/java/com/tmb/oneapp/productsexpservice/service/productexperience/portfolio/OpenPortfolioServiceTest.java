@@ -226,7 +226,7 @@ class OpenPortfolioServiceTest {
     }
 
     @Test
-    void should_return_null_when_call_create_customer_given_create_customer_failed() {
+    void should_return_null_when_call_create_customer_given_create_customer_failed() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<CustomerResponseBody> oneServiceCustomerResponse = new TmbOneServiceResponse<>();
         oneServiceCustomerResponse.setData(null);

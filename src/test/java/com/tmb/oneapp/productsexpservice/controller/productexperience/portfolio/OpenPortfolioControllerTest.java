@@ -122,7 +122,7 @@ class OpenPortfolioControllerTest {
     }
 
     @Test
-    void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws IOException {
+    void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws IOException, TMBCommonException {
         // Given
         CustomerRequest customerRequest = CustomerRequest.builder()
                 .wealthCrmId("D0000000988")
