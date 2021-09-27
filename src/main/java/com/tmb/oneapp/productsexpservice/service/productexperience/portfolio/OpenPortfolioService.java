@@ -175,7 +175,7 @@ public class OpenPortfolioService extends TmbErrorHandle {
      * @param openPortfolioRequestBody
      */
     @LogAround
-    public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
+    public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
         OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
 
@@ -215,11 +215,16 @@ public class OpenPortfolioService extends TmbErrorHandle {
                     .portfolioNicknameResponse(portfolioNickname.getBody().getData())
                     .occupationResponse(occupationResponseBody != null ? occupationResponseBody : null)
                     .build();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof TMBCommonException) {
+                throw (TMBCommonException) e.getCause();
+            }
+            failedErrorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
-            return null;
         }
+        return null;
     }
 
     private void removeCacheAfterSuccessOpenPortfolio(String correlationId, String fullCrmId) {
