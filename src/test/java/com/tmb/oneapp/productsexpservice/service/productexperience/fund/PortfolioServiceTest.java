@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -48,7 +49,7 @@ class PortfolioServiceTest {
     private String crmId = "001100000000000000000001184383";
 
     @Test
-    void should_return_portfolio_normal_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_type_normal() throws IOException {
+    void should_return_portfolio_normal_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_type_normal() throws IOException, TMBCommonException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
@@ -74,7 +75,7 @@ class PortfolioServiceTest {
     }
 
     @Test
-    void should_return_portfolio_joint_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_type_joint() throws IOException {
+    void should_return_portfolio_joint_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_type_joint() throws IOException, TMBCommonException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
@@ -100,7 +101,7 @@ class PortfolioServiceTest {
     }
 
     @Test
-    void should_return_null_when_call_get_get_portfolio_list_given_throw_runtime_exception_from_product_exp_service() throws JsonProcessingException {
+    void should_return_null_when_call_get_get_portfolio_list_given_throw_runtime_exception_from_product_exp_service() throws JsonProcessingException, TMBCommonException {
         //Given
         when(productsExpService.getPortList(any(), anyString(), anyBoolean()))
                 .thenThrow(new RuntimeException("Error"));

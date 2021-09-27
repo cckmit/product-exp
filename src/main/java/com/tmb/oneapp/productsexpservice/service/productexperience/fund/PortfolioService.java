@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -11,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.response.PortfolioResponseBody;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
  * PortfolioService class will get portfolio list from api services, and filter it with type from request
  */
 @Service
-public class PortfolioService {
+public class PortfolioService extends TmbErrorHandle {
 
     private static final TMBLogger<PortfolioService> logger = new TMBLogger<>(PortfolioService.class);
 
@@ -49,22 +51,23 @@ public class PortfolioService {
      * @return PortfolioResponse
      */
     @LogAround
-    public PortfolioResponse getPortfolioList(String correlationId, String crmId, String type) {
+    public PortfolioResponse getPortfolioList(String correlationId, String crmId, String type) throws TMBCommonException {
         List<PortfolioByPort> portfolioByPortList;
-        UnitHolder unitHolder = new UnitHolder();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse;
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
 
         try {
             List<String> ports = productsExpService.getPortList(headerParameter, crmId, false);
+            UnitHolder unitHolder = new UnitHolder();
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
-            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(headerParameter, unitHolder);
+            ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(headerParameter, unitHolder);
             List<PortfolioByPort> portfolioList = summaryByPortResponse.getBody().getData().getPortfolioList();
-
+            tmbResponseErrorHandle(summaryByPortResponse.getBody().getStatus());
             portfolioByPortList = filterTypeOfPortfolioByPorts(type, portfolioList);
             List<PortfolioResponseBody> portfolioResponseBodyList = buildPortfolioResponseBodyList(portfolioByPortList);
             return PortfolioResponse.builder().portfolioResponseBody(portfolioResponseBodyList).build();
+        } catch (TMBCommonException ex) {
+            throw ex;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
