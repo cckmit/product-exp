@@ -2,8 +2,10 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.dto.fund.dca.information.DcaInformationDto;
 import com.tmb.oneapp.productsexpservice.dto.fund.dca.information.DcaInformationModel;
@@ -53,23 +55,25 @@ public class DcaInformationServiceTest {
     public DcaInformationMapper dcaInformationMapper;
 
     @Test
-    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException {
+    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException, TMBCommonException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
         when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
-
+        TmbStatus successStatus = TmbStatusUtil.successStatus();
         TmbOneServiceResponse<FundSummaryBody> tmbFundSummaryResponse = new TmbOneServiceResponse<>();
         FundSummaryBody fundSummaryBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/fundsummarybody.json").toFile(), FundSummaryBody.class);
         tmbFundSummaryResponse.setData(fundSummaryBody);
+        tmbFundSummaryResponse.setStatus(successStatus);
         when(investmentRequestClient.callInvestmentFundSummaryService(any(),
                 any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundSummaryResponse));
 
         TmbOneServiceResponse<FundListBody> tmbFundListResponse = new TmbOneServiceResponse<>();
         FundListBody fundListBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/fundlistinfo.json").toFile(), FundListBody.class);
         tmbFundListResponse.setData(fundListBody);
+        tmbFundListResponse.setStatus(successStatus);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundListResponse));
 
         DcaInformationModel dcaInformationModel = mapper.readValue(Paths.get("src/test/resources/investment/fund/dca/dcainformationmodel.json").toFile(), DcaInformationModel.class);
@@ -85,7 +89,7 @@ public class DcaInformationServiceTest {
     }
 
     @Test
-    void should_return_null_when_call_get_dca_information_given_correlation_id_and_crm_id() throws JsonProcessingException {
+    void should_return_null_when_call_get_dca_information_given_correlation_id_and_crm_id() throws JsonProcessingException, TMBCommonException {
         // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";

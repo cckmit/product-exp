@@ -59,7 +59,7 @@ public class BuyFirstTradeService extends TmbErrorHandle {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();
             }
-            errorHandle();
+            failedErrorHandle();
         }   catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);

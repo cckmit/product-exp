@@ -12,7 +12,6 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.*;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -129,7 +128,7 @@ public class ProductsExpService extends TmbErrorHandle {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();
             }
-            errorHandle();
+            failedErrorHandle();
         }  catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
@@ -326,7 +325,7 @@ public class ProductsExpService extends TmbErrorHandle {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();
             }
-            errorHandle();
+            failedErrorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
@@ -369,7 +368,7 @@ public class ProductsExpService extends TmbErrorHandle {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();
             }
-            errorHandle();
+            failedErrorHandle();
         }  catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
@@ -404,7 +403,7 @@ public class ProductsExpService extends TmbErrorHandle {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();
             }
-            errorHandle();
+            failedErrorHandle();
         }  catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
