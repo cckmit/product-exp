@@ -10,8 +10,6 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
@@ -28,6 +26,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleRespons
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.async.AbstactAsyncHandleBadRequest;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +35,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * ProductExpAsyncService class this class use for async process
  */
 @Service
-public class ProductExpAsyncService {
+public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
 
     private static final TMBLogger<ProductExpAsyncService> logger = new TMBLogger<>(ProductExpAsyncService.class);
 
@@ -100,38 +96,7 @@ public class ProductExpAsyncService {
         }
     }
 
-    private void handleBadRequest(FeignException feignException) throws TMBCommonException {
-        if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
-            try {
-                TmbOneServiceResponse<String> response = getResponseFromBadRequest(feignException);
-                TmbStatus tmbStatus = response.getStatus();
-                throw new TMBCommonException(
-                        tmbStatus.getCode(),
-                        tmbStatus.getMessage(),
-                        tmbStatus.getService(),
-                        HttpStatus.BAD_REQUEST,
-                        null);
-            } catch (JsonProcessingException e) {
-                logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
-            }
-        }
 
-    }
-
-    @SuppressWarnings("unchecked")
-    <T> TmbOneServiceResponse<T> getResponseFromBadRequest(final FeignException ex)
-            throws JsonProcessingException {
-        TmbOneServiceResponse<T> response = new TmbOneServiceResponse<>();
-        Optional<ByteBuffer> responseBody = ex.responseBody();
-        if (responseBody.isPresent()) {
-            ByteBuffer responseBuffer = responseBody.get();
-            String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
-            logger.info("response msg fail {}", responseObj);
-            response = ((TmbOneServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
-                    TmbOneServiceResponse.class));
-        }
-        return response;
-    }
 
     /**
      * Method fetchFundRule to get Fund rule
@@ -396,12 +361,4 @@ public class ProductExpAsyncService {
         return fundClassLists;
     }
 
-    private TMBCommonException getTmbCommonException() {
-        return new TMBCommonException(
-                ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
-                null);
-    }
-}
+ }
