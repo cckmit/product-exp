@@ -21,6 +21,7 @@
 * [ONEAPP-21149](https://jira.tau2904.com/browse/ONEAPP-21149) (BE-UI) Check expiry date ID card
 * [ONEAPP-21288](https://jira.tau2904.com/browse/ONEAPP-21288) (BE) Check service off hour 
 * [ONEAPP-21355](https://jira.tau2904.com/browse/ONEAPP-21355) [BE] Modify API service hour
+* [ONEAPP-21818](https://jira.tau2904.com/browse/ONEAPP-21818) [Set PIN] Activity Log display incorrect
 * [ONEAPP-21892](https://jira.tau2904.com/browse/ONEAPP-21892) Activate Card - require clearing cache redis after success activation
 
 ## [ Version 2.3.0 ] ##
