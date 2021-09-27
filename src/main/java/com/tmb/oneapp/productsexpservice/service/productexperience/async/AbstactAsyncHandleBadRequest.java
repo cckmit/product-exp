@@ -15,7 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-abstract public class AbstactAsyncHandleBadRequest {
+public abstract class AbstactAsyncHandleBadRequest {
 
     private static final TMBLogger<AbstactAsyncHandleBadRequest> logger = new TMBLogger<>(AbstactAsyncHandleBadRequest.class);
 
