@@ -660,6 +660,7 @@ public class ProductExpServiceTest {
         FundAllocationResponse fundAllocationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation.json").toFile(), FundAllocationResponse.class);
         TmbOneServiceResponse<FundAllocationResponse> response = new TmbOneServiceResponse<>();
         response.setData(fundAllocationResponse);
+        response.setStatus(TmbStatusUtil.successStatus());
         when(investmentRequestClient.callInvestmentFundAllocation(any(), any())).thenReturn(ResponseEntity.ok(response));
         SuggestAllocationDTO suggestAllocationDTOMock = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation_dto.json").toFile(), SuggestAllocationDTO.class);
         SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(correlationId, crmId);

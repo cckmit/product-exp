@@ -382,7 +382,7 @@ public class ProductExpServiceControllerTest {
     @Test
     void should_return_not_found_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws TMBCommonException {
         //Given
-        when(productsExpService.getSuggestAllocation(correlationId, crmId)).thenThrow(RuntimeException.class);
+        when(productsExpService.getSuggestAllocation(correlationId, crmId)).thenReturn(null);
 
         //When
         ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> actual = productExpServiceController.getFundSuggestAllocation(correlationId, crmId);

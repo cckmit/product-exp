@@ -125,11 +125,11 @@ public class ProductsExpService extends TmbErrorHandle {
             StatementResponse statementResponse = fetchStmtByPort.get();
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
         } catch (ExecutionException e) {
-            if(e.getCause() instanceof TMBCommonException){
+            if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
             failedErrorHandle();
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
@@ -179,7 +179,7 @@ public class ProductsExpService extends TmbErrorHandle {
             return result;
         } catch (TMBCommonException ex) {
             throw ex;
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
@@ -315,7 +315,7 @@ public class ProductsExpService extends TmbErrorHandle {
             UtilMap map = new UtilMap();
             fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp);
 
-            if(fundPaymentDetailResponse.getDepositAccountList().isEmpty()){
+            if (fundPaymentDetailResponse.getDepositAccountList().isEmpty()) {
                 TmbStatus status = tmbOneServiceResponse.getStatus();
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
@@ -327,7 +327,7 @@ public class ProductsExpService extends TmbErrorHandle {
             tmbOneServiceResponse.setData(fundPaymentDetailResponse);
 
         } catch (ExecutionException e) {
-            if(e.getCause() instanceof TMBCommonException){
+            if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
             failedErrorHandle();
@@ -370,11 +370,11 @@ public class ProductsExpService extends TmbErrorHandle {
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
             return listFund;
         } catch (ExecutionException e) {
-            if(e.getCause() instanceof TMBCommonException){
+            if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
             failedErrorHandle();
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return listFund;
@@ -403,13 +403,16 @@ public class ProductsExpService extends TmbErrorHandle {
                     FundAllocationRequestBody.builder()
                             .suitabilityScore(suitabilityScore)
                             .build());
+            tmbResponseErrorHandle(fundAllocationResponse.getBody().getStatus());
             return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (ExecutionException e) {
-            if(e.getCause() instanceof TMBCommonException){
+            if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
             failedErrorHandle();
-        }  catch (Exception ex) {
+        } catch (TMBCommonException e) {
+            throw e;
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return null;
@@ -526,7 +529,7 @@ public class ProductsExpService extends TmbErrorHandle {
 
     private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
         return fundSummaryByPort == null || fundSummaryByPort.getData() == null
-                 || fundSummaryByPort.getData().getPortfolioList().isEmpty();
+                || fundSummaryByPort.getData().getPortfolioList().isEmpty();
     }
 
     private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
