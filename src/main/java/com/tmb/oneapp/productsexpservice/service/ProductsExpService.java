@@ -145,23 +145,26 @@ public class ProductsExpService extends TmbErrorHandle {
      * @return the fund summary response
      */
     @LogAround
-    public FundSummaryBody getFundSummary(String correlationId, String crmId) {
+    public FundSummaryBody getFundSummary(String correlationId, String crmId) throws TMBCommonException {
         FundSummaryBody result = new FundSummaryBody();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary;
-        UnitHolder unitHolder = new UnitHolder();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse;
-        Map<String, String> header = UtilMap.createHeader(correlationId);
-        ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
 
         try {
+            UnitHolder unitHolder = new UnitHolder();
+            Map<String, String> header = UtilMap.createHeader(correlationId);
             List<String> ports = getPortList(header, crmId, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             logger.info(unitHolder.toString());
-            fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
-            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
-            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
+
+            ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
+            tmbResponseErrorHandle(fundSummary.getBody().getStatus());
+
+            ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
+            tmbResponseErrorHandle(summaryByPortResponse.getBody().getStatus());
+
+            ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
                     CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
+            tmbResponseErrorHandle(countOrderProcessingResponse.getBody().getStatus());
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummary);
 
@@ -174,7 +177,9 @@ public class ProductsExpService extends TmbErrorHandle {
                 result.setCountProcessedOrder(countOrderProcessingResponse.getBody().getData().getCountProcessOrder());
             }
             return result;
-        } catch (Exception ex) {
+        } catch (TMBCommonException ex) {
+            throw ex;
+        }  catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }

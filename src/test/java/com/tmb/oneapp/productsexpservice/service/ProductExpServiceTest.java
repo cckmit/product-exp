@@ -544,7 +544,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void getFundSummaryException() {
+    public void getFundSummaryException() throws TMBCommonException {
         try {
             when(customerService.getAccountSaving(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {

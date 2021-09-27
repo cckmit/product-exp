@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -35,7 +36,7 @@ public class ProductExpServiceControllerTestFundSummary {
     }
 
     @Test
-    public void testGetFundSummary() {
+    public void testGetFundSummary() throws TMBCommonException {
         FundSummaryBody expectedResponse = null;
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "00000000028365";
@@ -60,7 +61,7 @@ public class ProductExpServiceControllerTestFundSummary {
     }
 
     @Test
-    public void testGetFundSummaryNotFound() {
+    public void testGetFundSummaryNotFound() throws TMBCommonException {
         FundSummaryBody expectedResponse = null;
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "00000000028365";
