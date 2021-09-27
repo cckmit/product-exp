@@ -273,15 +273,16 @@ public class ProductExpServiceControllerTest {
         FundListRequest fundListRequest = new FundListRequest();
         fundListRequest.setUnitHolderNumber(unitStr);
 
-        when(productsExpService.getFundList(correlationId, crmId, fundListRequest)).thenThrow(MockitoException.class);
+        when(productsExpService.getFundList(correlationId, crmId, fundListRequest)).thenReturn(null);
 
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
                 .getFundListInfo(correlationId, crmId, fundListRequest);
+
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
-    public void getFundListNotFound() {
+    public void getFundListNotFound() throws TMBCommonException {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -299,7 +300,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundList() {
+    public void getFundList() throws TMBCommonException {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
