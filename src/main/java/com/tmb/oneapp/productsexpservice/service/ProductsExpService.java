@@ -45,6 +45,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleRespons
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -70,7 +71,7 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
  * ProductsExpService class will get fund Details from MF Service
  */
 @Service
-public class ProductsExpService {
+public class ProductsExpService extends TmbErrorHandle {
 
     @Value("${com.tmb.oneapp.service.activity.topic.name}")
     private String topicName;
@@ -136,11 +137,6 @@ public class ProductsExpService {
         return fundAccountResponse;
     }
 
-    void errorHandle() throws TMBCommonException {
-        throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-    }
 
     /**
      * Get fund summary fund summary response.

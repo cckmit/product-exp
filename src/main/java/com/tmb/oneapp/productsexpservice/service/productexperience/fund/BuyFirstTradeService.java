@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -9,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.response.TradeOccupationResponse;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -18,9 +20,10 @@ import org.springframework.stereotype.Service;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
-public class BuyFirstTradeService {
+public class BuyFirstTradeService extends TmbErrorHandle {
 
     private static final TMBLogger<BuyFirstTradeService> logger = new TMBLogger<>(BuyFirstTradeService.class);
 
@@ -32,7 +35,7 @@ public class BuyFirstTradeService {
     }
 
     @LogAround
-    public TmbOneServiceResponse<TradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest) {
+    public TmbOneServiceResponse<TradeOccupationResponse> tradeOuccupationInquiry(@Valid String correlationId, @Valid String crmId, @Valid TradeOccupationRequest tradeOccupationRequest) throws TMBCommonException {
         TmbOneServiceResponse<TradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
@@ -52,11 +55,18 @@ public class BuyFirstTradeService {
                     .occupationDescription(occupationInquiryResponseBody.getOccupationDescription())
                     .build());
             return tmbOneServiceResponse;
-        } catch (Exception ex) {
+        } catch (ExecutionException e) {
+            if(e.getCause() instanceof TMBCommonException){
+                throw (TMBCommonException) e.getCause();
+            }
+            errorHandle();
+        }   catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
-            return tmbOneServiceResponse;
         }
+        return tmbOneServiceResponse;
     }
+
+
 }
