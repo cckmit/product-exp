@@ -19,6 +19,11 @@ public abstract class AbstactAsyncHandleBadRequest {
 
     private static final TMBLogger<AbstactAsyncHandleBadRequest> logger = new TMBLogger<>(AbstactAsyncHandleBadRequest.class);
 
+    protected void handleFeignException(FeignException feignException) throws TMBCommonException {
+        logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
+        handleBadRequest(feignException);
+    }
+
     protected void handleBadRequest(FeignException feignException) throws TMBCommonException {
         if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
             try {

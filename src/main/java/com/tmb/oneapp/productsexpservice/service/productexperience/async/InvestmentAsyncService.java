@@ -5,7 +5,6 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.request.RelationshipRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.client.response.RelationshipResponseBody;
@@ -23,7 +22,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -59,8 +57,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<InformationBody>> response = investmentRequestClient.getFundInformation(investmentRequestHeader, fundCodeRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -81,8 +78,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<DailyNavBody>> response = investmentRequestClient.getFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -102,8 +98,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<AccountPurposeResponseBody>> response = investmentRequestClient.getCustomerAccountPurpose(investmentRequestHeader);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -121,8 +116,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -140,8 +134,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<OccupationInquiryResponseBody>> response = investmentRequestClient.getCustomerOccupationInquiry(investmentRequestHeader, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -159,8 +152,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<FirstTradeResponseBody>> response = investmentRequestClient.getFirstTrade(investmentRequestHeader, firstTradeRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -178,8 +170,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<RelationshipResponseBody>> response = investmentRequestClient.updateClientRelationship(investmentRequestHeader, crmId, relationshipRequest);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -197,8 +188,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<OpenPortfolioResponseBody>> response = investmentRequestClient.openPortfolio(investmentRequestHeader, crmId, openPortfolioRequest);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -216,8 +206,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
             ResponseEntity<TmbOneServiceResponse<OccupationResponseBody>> response = investmentRequestClient.updateOccupation(investmentRequestHeader, crmId, occupationRequest);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);

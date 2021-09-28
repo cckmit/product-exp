@@ -85,8 +85,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
             logger.info("fetchFundAccountDetail : {}", response);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -112,8 +111,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
             logger.info("fetchFundRule : {}", responseEntity);
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -136,8 +134,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
                     .callInvestmentStatementByPortService(header, orderStmtByPortRequest);
             return CompletableFuture.completedFuture(responseStmt.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -160,8 +157,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
                     callInvestmentFundHolidayService(invHeaderReqParameter, fundCode);
             return CompletableFuture.completedFuture(responseFundHoliday.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -183,8 +179,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
             String responseFundHoliday = accountRequestClient.getAccountList(headerParameter, crmId);
             return CompletableFuture.completedFuture(responseFundHoliday);
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -207,8 +202,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
                     getCommonConfigByModule(correlationId, module);
             return CompletableFuture.completedFuture(responseCommon.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -230,8 +224,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
                     getCustomerProfile(crmId);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -254,8 +247,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
         try {
             return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -278,8 +270,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
                     investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -303,8 +294,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
                     investmentRequestClient.callInvestmentFundFavoriteService(headerParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
@@ -327,8 +317,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
                     investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
         } catch (FeignException feignException) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-            handleBadRequest(feignException);
+            handleFeignException(feignException);
             throw getTmbCommonException();
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
