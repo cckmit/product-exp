@@ -103,4 +103,33 @@ public class DcaInformationServiceTest {
         assertNull(actual.getStatus());
         assertNull(actual.getData());
     }
+
+    @Test
+    void should_throw_tmb_common_exception_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException, TMBCommonException {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        String crmId = "001100000000000000000001184383";
+
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        TmbOneServiceResponse<FundSummaryBody> tmbFundSummaryResponse = new TmbOneServiceResponse<>();
+        tmbFundSummaryResponse.setStatus(getMockBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.callInvestmentFundSummaryService(any(),
+                any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundSummaryResponse));
+        // When
+        try {
+            dcaInformationService.getDcaInformation(correlationId, crmId);
+        }catch (TMBCommonException ex){
+
+            // Then
+            assertEquals(errorCode,ex.getErrorCode());
+            assertEquals(errorMessage,ex.getErrorMessage());
+        }
+    }
+
+    private TmbStatus getMockBadRequest(String errorCode,String errorMessage){
+        return new TmbStatus(errorCode,errorMessage,"investment-service",errorMessage);
+    }
+
 }
