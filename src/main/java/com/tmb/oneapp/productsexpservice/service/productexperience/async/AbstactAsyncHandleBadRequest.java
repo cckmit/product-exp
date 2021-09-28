@@ -21,10 +21,6 @@ public abstract class AbstactAsyncHandleBadRequest {
 
     protected void handleFeignException(FeignException feignException) throws TMBCommonException {
         logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, feignException);
-        handleBadRequest(feignException);
-    }
-
-    protected void handleBadRequest(FeignException feignException) throws TMBCommonException {
         if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
             try {
                 TmbOneServiceResponse<String> response = getResponseFromBadRequest(feignException);
@@ -39,7 +35,6 @@ public abstract class AbstactAsyncHandleBadRequest {
                 logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
             }
         }
-
     }
 
     @SuppressWarnings("unchecked")
