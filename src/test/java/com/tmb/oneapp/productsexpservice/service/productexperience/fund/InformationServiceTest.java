@@ -88,7 +88,6 @@ class InformationServiceTest {
     void should_throw_common_exception_with_error_and_message_when_call_trade_ouccupation_inquiry_give_correlation_id_and_crm_id_and_trade_occupation_request() throws Exception {
 
         // Given
-        ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
                 .code("TMBCOF")

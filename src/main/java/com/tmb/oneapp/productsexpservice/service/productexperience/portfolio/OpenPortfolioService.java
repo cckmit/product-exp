@@ -117,7 +117,6 @@ public class OpenPortfolioService extends TmbErrorHandle {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
-            failedErrorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
