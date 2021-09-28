@@ -3,16 +3,19 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.dto.fund.information.InformationDto;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.dailynav.response.DailyNavResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -79,5 +82,40 @@ class InformationServiceTest {
 
         //Then
         assertNull(actual);
+    }
+
+    @Test
+    void should_throw_common_exception_with_error_and_message_when_call_trade_ouccupation_inquiry_give_correlation_id_and_crm_id_and_trade_occupation_request() throws Exception {
+
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
+                .code("TMBCOF")
+                .build();
+
+        String errorCode = "2000005";
+        String errorMessage = "Bad Request";
+        when(investmentAsyncService.fetchFundInformation(any(), any())).thenThrow(getMockCommonException(errorCode,errorMessage));
+
+
+        // when
+        try {
+            informationService.getFundInformation(correlationId, fundCodeRequestBody);
+        }catch (TMBCommonException e){
+
+            // then
+            assertEquals(errorCode,e.getErrorCode());
+            assertEquals(errorMessage,e.getErrorMessage());
+
+        }
+    }
+
+    private TMBCommonException getMockCommonException(String errorCode, String errorMessage){
+        return new TMBCommonException(
+                errorCode,
+                errorMessage,
+                ProductsExpServiceConstant.SERVICE_NAME,
+                HttpStatus.BAD_REQUEST,null);
     }
 }

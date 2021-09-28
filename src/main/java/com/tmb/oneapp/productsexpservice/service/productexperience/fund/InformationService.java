@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
  * InformationService class will get data from api services, and handle business criteria
  */
 @Service
-public class InformationService extends TmbErrorHandle {
+public class InformationService{
 
     private static final TMBLogger<InformationService> logger = new TMBLogger<>(InformationService.class);
 
@@ -55,7 +55,6 @@ public class InformationService extends TmbErrorHandle {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();
             }
-            failedErrorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
