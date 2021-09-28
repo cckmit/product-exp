@@ -26,6 +26,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupa
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequestBody;
@@ -34,6 +35,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.respo
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -226,7 +228,42 @@ class OpenPortfolioServiceTest {
     }
 
     @Test
-    void should_return_null_when_call_create_customer_given_create_customer_failed() {
+    void should_throw_common_exception_with_error_and_message_when_call_create_new_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
+        // Given
+
+
+        TmbOneServiceResponse<CustomerResponseBody> oneServiceCustomerResponse = new TmbOneServiceResponse<>();
+        oneServiceCustomerResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.createCustomer(any(), anyString(), any())).thenReturn(ResponseEntity.status(HttpStatus.OK).headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
+
+        String errorCode = "2000005";
+        String errorMessage = "Bad Request";
+        when(investmentAsyncService.fetchAccountPurpose(any())).thenThrow(getMockCommonException(errorCode,errorMessage));
+
+
+        // when
+        try {
+            CustomerRequest customerRequest = CustomerRequest.builder().build();
+            OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
+        }catch (TMBCommonException e){
+
+            // then
+            assertEquals(errorCode,e.getErrorCode());
+            assertEquals(errorMessage,e.getErrorMessage());
+
+        }
+    }
+
+    private TMBCommonException getMockCommonException(String errorCode, String errorMessage){
+        return new TMBCommonException(
+                errorCode,
+                errorMessage,
+                ProductsExpServiceConstant.SERVICE_NAME,
+                HttpStatus.BAD_REQUEST,null);
+    }
+
+    @Test
+    void should_return_null_when_call_create_customer_given_create_customer_failed() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<CustomerResponseBody> oneServiceCustomerResponse = new TmbOneServiceResponse<>();
         oneServiceCustomerResponse.setData(null);
@@ -390,4 +427,46 @@ class OpenPortfolioServiceTest {
         verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString());
         verify(cacheServiceClient, times(2)).deleteCacheByKey(anyString(), anyString());
     }
+
+    @Test
+    void should_throw_tmb_common_exception__when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
+
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        TmbOneServiceResponse<RelationshipResponseBody> oneServiceRelationshipResponse = new TmbOneServiceResponse<>();
+        oneServiceRelationshipResponse.setStatus(getMockBadRequest(errorCode,errorMessage));
+        when(investmentAsyncService.updateClientRelationship(any(), anyString(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceRelationshipResponse.getData()));
+
+        // When
+        try {
+            OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
+                    .jointType("Single")
+                    .preferredRedemptionAccountCode("0632964227")
+                    .preferredRedemptionAccountName("นาง สุนิสา ผลงาม 00000632964227 (SDA)")
+                    .preferredSubscriptionAccountCode("0632324919")
+                    .preferredSubscriptionAccountName("นาง สุนิสา ผลงาม 00000632324919 (SDA)")
+                    .registeredForVat("No")
+                    .vatEstablishmentBranchCode("nul")
+                    .withHoldingTaxPreference("TaxWithheld")
+                    .preferredAddressType("Contact")
+                    .status("Active")
+                    .suitabilityScore("5")
+                    .portfolioType("TMB_ADVTYPE_10_ADVISORY")
+                    .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
+                    .portfolioNickName("อนาคตเพื่อการศึกษ")
+                    .build();
+           openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
+        }catch (TMBCommonException ex){
+
+            // Then
+            assertEquals(errorCode,ex.getErrorCode());
+            assertEquals(errorMessage,ex.getErrorMessage());
+        }
+
+    }
+
+    private TmbStatus getMockBadRequest(String errorCode,String errorMessage){
+        return new TmbStatus(errorCode,errorMessage,"investment-service",errorMessage);
+    }
+
 }
