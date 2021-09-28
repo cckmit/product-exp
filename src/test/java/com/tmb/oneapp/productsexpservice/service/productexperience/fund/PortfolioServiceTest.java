@@ -9,6 +9,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortBody;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.byport.FundSummaryByPortResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.response.PortfolioResponse;
@@ -110,5 +111,36 @@ class PortfolioServiceTest {
 
         //Then
         assertNull(actual);
+    }
+
+    @Test
+    void should_throw_tmb_common_exception_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException, TMBCommonException {
+        // Given
+        ObjectMapper mapper = new ObjectMapper();
+        String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+        String crmId = "001100000000000000000001184383";
+
+        when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of("222222"));
+
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        TmbOneServiceResponse<FundSummaryByPortBody> portResponse = new TmbOneServiceResponse<>();
+        portResponse.setStatus(getMockBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
+                .thenReturn(ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(portResponse));
+
+        // When
+        try {
+            portfolioService.getPortfolioList(correlationId, crmId, "j");
+        }catch (TMBCommonException ex){
+
+            // Then
+            assertEquals(errorCode,ex.getErrorCode());
+            assertEquals(errorMessage,ex.getErrorMessage());
+        }
+    }
+
+    private TmbStatus getMockBadRequest(String errorCode,String errorMessage){
+        return new TmbStatus(errorCode,errorMessage,"investment-service",errorMessage);
     }
 }
