@@ -7,6 +7,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
+import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import feign.FeignException;
@@ -36,13 +37,16 @@ public class BlockCardControllerTest {
     CreditCardLogService creditCardLogService;
     @Mock
     NotificationService notificationService;
+    @Mock
+    CacheService cacheService;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        blockCardController = new BlockCardController(creditCardClient, creditCardLogService, notificationService);
+	void setUp() {
+		MockitoAnnotations.initMocks(this);
+		blockCardController = new BlockCardController(creditCardClient, creditCardLogService, notificationService,
+				cacheService);
 
-    }
+	}
 
     @Test
     void testBlockCardDetailsSuccess() throws Exception {

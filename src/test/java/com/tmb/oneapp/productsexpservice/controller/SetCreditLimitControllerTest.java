@@ -27,6 +27,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
@@ -39,12 +40,14 @@ public class SetCreditLimitControllerTest {
 	CreditCardLogService creditCardLogService;
 	@Mock
 	NotificationService notificationService;
+	@Mock
+	CacheService cacheService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		setCreditLimitController = new SetCreditLimitController(creditCardClient, creditCardLogService,
-				notificationService);
+				notificationService, cacheService);
 
 	}
 
