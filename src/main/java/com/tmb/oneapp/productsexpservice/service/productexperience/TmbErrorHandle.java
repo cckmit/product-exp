@@ -7,11 +7,6 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import org.springframework.http.HttpStatus;
 
 public class TmbErrorHandle {
-    protected void failedErrorHandle() throws TMBCommonException {
-        throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-    }
 
     protected void tmbResponseErrorHandle(TmbStatus tmbStatus) throws TMBCommonException{
         if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){

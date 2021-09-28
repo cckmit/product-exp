@@ -128,7 +128,6 @@ public class ProductsExpService extends TmbErrorHandle {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
-            failedErrorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
@@ -330,13 +329,12 @@ public class ProductsExpService extends TmbErrorHandle {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
-            failedErrorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
-            return tmbOneServiceResponse;
         }
+
         return tmbOneServiceResponse;
     }
 
@@ -373,7 +371,6 @@ public class ProductsExpService extends TmbErrorHandle {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
-            failedErrorHandle();
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
@@ -409,7 +406,6 @@ public class ProductsExpService extends TmbErrorHandle {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
-            failedErrorHandle();
         } catch (TMBCommonException e) {
             throw e;
         } catch (Exception ex) {
