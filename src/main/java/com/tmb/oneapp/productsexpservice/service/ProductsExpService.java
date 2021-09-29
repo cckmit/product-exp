@@ -347,7 +347,7 @@ public class ProductsExpService extends TmbErrorHandle {
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) throws TMBCommonException {
+    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest){
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
@@ -367,10 +367,6 @@ public class ProductsExpService extends TmbErrorHandle {
             listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
             return listFund;
-        } catch (ExecutionException e) {
-            if (e.getCause() instanceof TMBCommonException) {
-                throw (TMBCommonException) e.getCause();
-            }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }

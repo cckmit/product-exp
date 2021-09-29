@@ -630,7 +630,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void getFundListWithException() throws TMBCommonException {
+    public void getFundListWithException(){
         try {
             when(productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
             when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(null);
