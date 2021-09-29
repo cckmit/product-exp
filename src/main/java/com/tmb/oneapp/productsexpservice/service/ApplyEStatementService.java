@@ -125,7 +125,7 @@ public class ApplyEStatementService {
 				.getProductHoldingService(requestHeaders, crmId);
 
 		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
-		if (CollectionUtils.isNotEmpty(loanProducts)) {
+		if (CollectionUtils.isNotEmpty(loanProducts) && StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
 			statementFlag.setECashToGoStatementFlag("Y");
 			currentEstatementResponse.setProductGroupTH(groupLoanProductTh);
 			currentEstatementResponse.setProductGroupEN(groupLoanProductEn);
