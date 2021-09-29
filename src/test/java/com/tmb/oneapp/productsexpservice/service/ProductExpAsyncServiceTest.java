@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.*;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -18,6 +19,10 @@ import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBod
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
+import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,16 +33,12 @@ import org.springframework.http.ResponseEntity;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -471,4 +472,206 @@ public class ProductExpAsyncServiceTest {
 
         assertNotNull(response);
     }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchFundAccountDetail() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(investmentRequestClient.callInvestmentFundAccountDetailService(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchFundAccountDetail(any(), any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchFundRule() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchFundRule(any(), any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchStatementByPort() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(investmentRequestClient.callInvestmentStatementByPortService(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchStatementByPort(any(), any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchFundHoliday() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(investmentRequestClient.callInvestmentFundHolidayService(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchFundHoliday(any(), any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchCustomerExp() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(accountRequestClient.getAccountList(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchCustomerExp(any(), any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchCommonConfigByModule() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(commonServiceClient.
+                getCommonConfigByModule(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchCommonConfigByModule(any(), any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchCustomerProfile() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(customerServiceClient.getCustomerProfile(any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchCustomerProfile(any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchFundSummary() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(investmentRequestClient.callInvestmentFundSummaryService(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            productExpAsyncService.fetchFundSummary(any(), any());
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchFundFavorite() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(investmentRequestClient.callInvestmentFundFavoriteService(any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            Map<String, String> investmentHeaderRequest = UtilMap.createHeader("2323232323");
+            productExpAsyncService.fetchFundFavorite(investmentHeaderRequest, "1111111111111");
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    @Test
+    void should_throw_common_exception_when_call_fetchSuitabilityInquiry() {
+        //Given
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+        when(investmentRequestClient.callInvestmentFundSuitabilityService(any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
+
+        //When
+        try {
+            Map<String, String> investmentHeaderRequest = UtilMap.createHeader("2323232323");
+            productExpAsyncService.fetchSuitabilityInquiry(investmentHeaderRequest, "111111111111111");
+        } catch (TMBCommonException ex) {
+            // Then
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
+        }
+
+    }
+
+    private FeignException mockFeignExceptionBadRequest(String errorCode, String errorMessage) {
+        Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
+        RequestTemplate template = new RequestTemplate();
+        Map<String, Collection<String>> headers = new HashMap<>();
+        String errorBody = "{\n" +
+                "    \"status\": {\n" +
+                "        \"code\": \"" + errorCode + "\",\n" +
+                "        \"message\": \"" + errorMessage + "\",\n" +
+                "        \"service\": null,\n" +
+                "        \"description\": \"Please enter PIN\"\n" +
+                "    },\n" +
+                "    \"data\": null\n" +
+                "}";
+        Request request = Request.create(Request.HttpMethod.POST, "http://localhost", headers, body, template);
+        FeignException.BadRequest e = new FeignException.BadRequest("", request, errorBody.getBytes(StandardCharsets.UTF_8));
+        return e;
+    }
+
 }

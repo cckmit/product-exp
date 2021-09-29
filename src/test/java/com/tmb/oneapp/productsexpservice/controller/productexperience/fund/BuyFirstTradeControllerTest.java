@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.tradeoccupation.request.TradeOccupationRequest;
@@ -32,7 +33,7 @@ public class BuyFirstTradeControllerTest {
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     @Test
-    public void should_return_success_status_when_call_get_trade_occupation_inquiry_given_correlation_id_and_crmid_first_trade_occupation_request(){
+    public void should_return_success_status_when_call_get_trade_occupation_inquiry_given_correlation_id_and_crmid_first_trade_occupation_request() throws TMBCommonException {
 
         // given
         TmbOneServiceResponse<TradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
@@ -48,7 +49,7 @@ public class BuyFirstTradeControllerTest {
     }
 
     @Test
-    public void should_return_not_found_status_when_call_get_trade_occupation_inquiry_given_correlation_id_and_crmid_first_trade_occupation_request(){
+    public void should_return_not_found_status_when_call_get_trade_occupation_inquiry_given_correlation_id_and_crmid_first_trade_occupation_request() throws TMBCommonException {
 
         // given
         TmbOneServiceResponse<TradeOccupationResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();

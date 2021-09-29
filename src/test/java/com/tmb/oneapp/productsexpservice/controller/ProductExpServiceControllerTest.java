@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -142,7 +143,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetailFullReturn() {
+    public void testGetFundAccountDetailFullReturn() throws TMBCommonException {
         initSuccessResponseAccountDetail();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEEE");
@@ -169,7 +170,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetailNotFound() {
+    public void testGetFundAccountDetailNotFound() throws TMBCommonException {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEEE");
         fundAccountRequest.setFundHouseCode("TTTTTTT");
@@ -189,7 +190,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetail() {
+    public void testGetFundAccountDetail() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
 
@@ -214,7 +215,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundPrePaymentDetailNotNull() {
+    public void testGetFundPrePaymentDetailNotNull() throws TMBCommonException {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
@@ -242,7 +243,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void testGetFundAccountDetailNull() {
+    public void testGetFundAccountDetailNull() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
 
@@ -266,21 +267,22 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundListException() {
+    public void getFundListException() throws TMBCommonException {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
         fundListRequest.setUnitHolderNumber(unitStr);
 
-        when(productsExpService.getFundList(correlationId, crmId, fundListRequest)).thenThrow(MockitoException.class);
+        when(productsExpService.getFundList(correlationId, crmId, fundListRequest)).thenReturn(null);
 
         ResponseEntity<TmbOneServiceResponse<List<FundClassListInfo>>> actualResult = productExpServiceController
                 .getFundListInfo(correlationId, crmId, fundListRequest);
+
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
     @Test
-    public void getFundListNotFound() {
+    public void getFundListNotFound() throws TMBCommonException {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -298,7 +300,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundList() {
+    public void getFundList() throws TMBCommonException {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -331,7 +333,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void testGetFundPrePaymentDetailNull() {
+    void testGetFundPrePaymentDetailNull() throws TMBCommonException {
         TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(null);
         tmbOneServiceResponse.setData(null);
@@ -343,7 +345,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void should_return_casa_dormant_error_code_when_call_get_fund_pre_payment_detail_given_fundpayment_request() {
+    void should_return_casa_dormant_error_code_when_call_get_fund_pre_payment_detail_given_fundpayment_request() throws TMBCommonException {
         TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
@@ -362,7 +364,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void should_return_SuggestAllocationDTO_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws IOException {
+    void should_return_SuggestAllocationDTO_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws IOException, TMBCommonException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -378,9 +380,9 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    void should_return_not_found_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() {
+    void should_return_not_found_when_call_get_fund_suggest_allocation_given_correlation_id_and_crd_id() throws TMBCommonException {
         //Given
-        when(productsExpService.getSuggestAllocation(correlationId, crmId)).thenThrow(RuntimeException.class);
+        when(productsExpService.getSuggestAllocation(correlationId, crmId)).thenReturn(null);
 
         //When
         ResponseEntity<TmbOneServiceResponse<SuggestAllocationDTO>> actual = productExpServiceController.getFundSuggestAllocation(correlationId, crmId);

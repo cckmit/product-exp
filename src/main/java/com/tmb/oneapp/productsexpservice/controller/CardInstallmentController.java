@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import io.swagger.annotations.Api;
@@ -47,6 +48,7 @@ public class CardInstallmentController {
 	private final CreditCardClient creditCardClient;
 	private final CreditCardLogService creditCardLogService;
 	private final NotificationService notificationService;
+	private final CacheService cacheService;
 
 	/**
 	 * Constructor
@@ -58,10 +60,11 @@ public class CardInstallmentController {
 
 	@Autowired
 	public CardInstallmentController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService,
-			NotificationService notificationService) {
+			NotificationService notificationService, CacheService cacheService) {
 		this.creditCardClient = creditCardClient;
 		this.creditCardLogService = creditCardLogService;
 		this.notificationService = notificationService;
+		this.cacheService = cacheService;
 	}
 
 	/**
@@ -133,7 +136,7 @@ public class CardInstallmentController {
 			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), HttpStatus.OK, null);
 		}
-
+		cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 		return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
 	}

@@ -7,6 +7,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.constant.RslResponseCodeEnum;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.flexiloan.InstantLoanCalUWResponse;
@@ -35,7 +36,7 @@ public class LoanSubmissionOnlineService {
     public IncomeInfo getIncomeInfoByRmId(String rmId) throws TMBCommonException {
         try {
             TmbOneServiceResponse<IncomeInfo> responseEntity = lendingServiceClient.getIncomeInfo(rmId).getBody();
-            if (responseEntity.getStatus().getCode().equals("0000")) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -50,7 +51,7 @@ public class LoanSubmissionOnlineService {
     public LoanSubmissionGetCustomerAgeResponse getCustomerAge(String crmId) throws TMBCommonException {
         try {
             TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse> responseEntity = lendingServiceClient.getCustomerAge(crmId).getBody();
-            if (responseEntity.getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -65,7 +66,7 @@ public class LoanSubmissionOnlineService {
     public ResponseApplication createApplication(String crmId, LoanSubmissionCreateApplicationReq req) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<ResponseApplication>> response = lendingServiceClient.createApplication(crmId, req);
-            if (response.getBody().getData().getHeader().getResponseCode().equals("MSG_000")) {
+            if (RslResponseCodeEnum.SUCCESS.getCode().equals(response.getBody().getData().getHeader().getResponseCode())) {
                 return response.getBody().getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -81,7 +82,7 @@ public class LoanSubmissionOnlineService {
         try {
             TmbOneServiceResponse<PersonalDetailResponse> responseEntity = lendingServiceClient.getPersonalDetail(crmid, request.getCaId()).getBody();
 
-            if (responseEntity.getStatus().getCode().equals("0000")) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -96,7 +97,7 @@ public class LoanSubmissionOnlineService {
     public PersonalDetailResponse updatePersonalDetailInfo(String crmId, PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest) throws TMBCommonException {
         try {
             TmbOneServiceResponse<PersonalDetailResponse> responseEntity = lendingServiceClient.saveCustomerInfo(crmId, personalDetailSaveInfoRequest).getBody();
-            if (responseEntity.getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -111,7 +112,7 @@ public class LoanSubmissionOnlineService {
     public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException {
         try {
             TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail> responseEntity = lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(correlationId, crmId).getBody();
-            if (responseEntity.getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -126,7 +127,7 @@ public class LoanSubmissionOnlineService {
     public WorkingDetail getWorkingDetail(String correlationId, String crmId, long caId) throws TMBCommonException {
         try {
             TmbOneServiceResponse<WorkingDetail> responseEntity = lendingServiceClient.getLoanSubmissionWorkingDetail(correlationId, crmId, caId).getBody();
-            if (responseEntity.getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -141,7 +142,7 @@ public class LoanSubmissionOnlineService {
     public ResponseApplication updateWorkingDetail(UpdateWorkingDetailReq req) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<ResponseApplication>> response = lendingServiceClient.updateWorkingDetail(req);
-            if (response.getBody().getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
                 return response.getBody().getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -155,34 +156,9 @@ public class LoanSubmissionOnlineService {
 
     public DocumentResponse getDocuments(String correlationId, String crmId, Long caId) throws TMBCommonException {
         try {
-            DocumentResponse documentResponse = new DocumentResponse();
-
-            List<ChecklistResponse> responseList = new ArrayList<>();
             TmbOneServiceResponse<List<ChecklistResponse>> responseEntity = lendingServiceClient.getDocuments(crmId, caId).getBody();
-            if (responseEntity.getStatus().getCode().equals("0000")) {
-                ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonData = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
-
-                for (ChecklistResponse checklistResponse : responseEntity.getData()) {
-                    ChecklistResponse response = new ChecklistResponse();
-                    response.setStatus(checklistResponse.getStatus());
-                    response.setChecklistType(checklistResponse.getChecklistType());
-                    response.setCifRelCode(checklistResponse.getCifRelCode());
-                    response.setDocId(checklistResponse.getDocId());
-                    response.setDocumentCode(checklistResponse.getDocumentCode());
-                    response.setDocDescription(checklistResponse.getDocDescription());
-                    response.setId(checklistResponse.getId());
-                    response.setIncompletedDocReasonCd(checklistResponse.getIncompletedDocReasonCd());
-                    response.setIncompletedDocReasonDesc(checklistResponse.getIncompletedDocReasonDesc());
-                    response.setLosCifId(checklistResponse.getLosCifId());
-                    response.setIsMandatory(checklistResponse.getIsMandatory());
-                    responseList.add(response);
-                }
-
-                responseEntity.setData(responseList);
-                documentResponse.setChecklistResponses(responseList);
-                documentResponse.setMaxPerDocType(commonData.getBody().getData().get(0).getMaxPerDoctype());
-                documentResponse.setUploadFileSizeMb(commonData.getBody().getData().get(0).getUploadFileSizeMb());
-                return documentResponse;
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
+                return parseDocumentListResponse(responseEntity, correlationId);
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     ResponseCode.FAILED.getMessage(),
@@ -193,11 +169,26 @@ public class LoanSubmissionOnlineService {
         }
     }
 
+    public DocumentResponse getMoreDocuments(String correlationId, String crmId, long caId) throws TMBCommonException {
+        try {
+            TmbOneServiceResponse<List<ChecklistResponse>> responseEntity = lendingServiceClient.getMoreDocuments(crmId, caId).getBody();
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
+                return parseDocumentListResponse(responseEntity, correlationId);
+            }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+        } catch (Exception e) {
+            logger.error("get checklist more document got exception:{}", e);
+            throw e;
+        }
+    }
+
     public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(String correlationId, String crmId, UpdateNCBConsentFlagRequest request) throws TMBCommonException {
         try {
             TmbOneServiceResponse<CustomerInformationResponse> responseEntity = lendingServiceClient
                     .updateNCBConsentFlagAndStoreFile(correlationId, crmId, request).getBody();
-            if (responseEntity.getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
@@ -214,7 +205,7 @@ public class LoanSubmissionOnlineService {
         try {
             TmbOneServiceResponse<CustomerInformationResponse> responseEntity = lendingServiceClient
                     .getCustomerInformation(correlationId, crmId, request).getBody();
-            if (responseEntity.getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
@@ -229,7 +220,7 @@ public class LoanSubmissionOnlineService {
 
         try {
             TmbOneServiceResponse<InstantLoanCalUWResponse> responseEntity = lendingServiceClient.checkApprovedStatus(request.getCaId(), request.getTriggerFlag(), request.getProduct(), request.getLoanDay1Set()).getBody();
-            if (responseEntity.getStatus().getCode().equals("0000")) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -246,7 +237,7 @@ public class LoanSubmissionOnlineService {
         try {
             TmbOneServiceResponse<EAppResponse> responseEntity = lendingServiceClient.getEApp(correlationId, crmId, caId).getBody();
 
-            if (responseEntity.getStatus().getCode().equals("0000")) {
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -261,7 +252,7 @@ public class LoanSubmissionOnlineService {
     public ResponseApplication updateApplication(String crmId, LoanSubmissionCreateApplicationReq req) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<ResponseApplication>> response = lendingServiceClient.updateApplication(crmId, req);
-            if (response.getBody().getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+            if (ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
                 return response.getBody().getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -271,6 +262,35 @@ public class LoanSubmissionOnlineService {
             logger.error("createApplication got exception:{}", e);
             throw e;
         }
+    }
+
+    private DocumentResponse parseDocumentListResponse(TmbOneServiceResponse<List<ChecklistResponse>> responseEntity, String correlationId) {
+        DocumentResponse documentResponse = new DocumentResponse();
+
+        List<ChecklistResponse> responseList = new ArrayList<>();
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonData = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
+
+        for (ChecklistResponse checklistResponse : responseEntity.getData()) {
+            ChecklistResponse response = new ChecklistResponse();
+            response.setStatus(checklistResponse.getStatus());
+            response.setChecklistType(checklistResponse.getChecklistType());
+            response.setCifRelCode(checklistResponse.getCifRelCode());
+            response.setDocId(checklistResponse.getDocId());
+            response.setDocumentCode(checklistResponse.getDocumentCode());
+            response.setDocDescription(checklistResponse.getDocDescription());
+            response.setId(checklistResponse.getId());
+            response.setIncompletedDocReasonCd(checklistResponse.getIncompletedDocReasonCd());
+            response.setIncompletedDocReasonDesc(checklistResponse.getIncompletedDocReasonDesc());
+            response.setLosCifId(checklistResponse.getLosCifId());
+            response.setIsMandatory(checklistResponse.getIsMandatory());
+            responseList.add(response);
+        }
+
+        responseEntity.setData(responseList);
+        documentResponse.setChecklistResponses(responseList);
+        documentResponse.setMaxPerDocType(commonData.getBody().getData().get(0).getMaxPerDoctype());
+        documentResponse.setUploadFileSizeMb(commonData.getBody().getData().get(0).getUploadFileSizeMb());
+        return documentResponse;
     }
 
 }

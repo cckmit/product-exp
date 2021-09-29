@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.response.PortfolioResponse;
@@ -38,7 +39,7 @@ class PortfolioControllerTest {
     private String crmId = "001100000000000000000001184383";
 
     @Test
-    void should_return_portfolio_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_type() throws IOException {
+    void should_return_portfolio_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_type() throws IOException, TMBCommonException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -56,7 +57,7 @@ class PortfolioControllerTest {
     }
 
     @Test
-    void should_return_not_found_when_call_get_portfolio_list_given_return_null_from_service() {
+    void should_return_not_found_when_call_get_portfolio_list_given_return_null_from_service() throws TMBCommonException {
         //Given
         when(portfolioService.getPortfolioList(correlationId, crmId, "a")).thenReturn(null);
 
@@ -69,9 +70,9 @@ class PortfolioControllerTest {
     }
 
     @Test
-    void should_return_not_found_when_call_get_portfolio_list_given_throw_exception_from_service() {
+    void should_return_not_found_when_call_get_portfolio_list_given_throw_exception_from_service() throws TMBCommonException {
         //Given
-        when(portfolioService.getPortfolioList(correlationId, crmId, "a")).thenThrow(new RuntimeException("Error"));
+        when(portfolioService.getPortfolioList(correlationId, crmId, "a")).thenReturn(null);
 
         //When
         ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = portfolioController.getPortfolioList(correlationId, crmId, "a");

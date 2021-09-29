@@ -21,6 +21,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
@@ -40,6 +41,7 @@ public class SetCreditLimitController {
 	private static final TMBLogger<SetCreditLimitController> logger = new TMBLogger<>(SetCreditLimitController.class);
 	private CreditCardLogService creditCardLogService;
 	private NotificationService notificationService;
+	private final CacheService cacheService;
 
 	/**
 	 * Constructor
@@ -48,10 +50,11 @@ public class SetCreditLimitController {
 	 */
 	@Autowired
 	public SetCreditLimitController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService,
-			NotificationService notificationService) {
+			NotificationService notificationService, CacheService cacheService) {
 		this.creditCardClient = creditCardClient;
 		this.creditCardLogService = creditCardLogService;
 		this.notificationService = notificationService;
+		this.cacheService = cacheService;
 	}
 
 	/**
@@ -122,6 +125,7 @@ public class SetCreditLimitController {
 
 				/* Activity log -- CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT */
 				creditCardLogService.logActivity(creditCardRequestAdjustEvent);
+				cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 			}
 

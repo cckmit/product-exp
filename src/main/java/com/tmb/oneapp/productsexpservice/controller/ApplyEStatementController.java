@@ -24,6 +24,7 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
+import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
 import io.swagger.annotations.Api;
@@ -38,12 +39,14 @@ public class ApplyEStatementController {
 	private static final TMBLogger<ApplyEStatementController> logger = new TMBLogger<>(ApplyEStatementController.class);
 	private final ApplyEStatementService applyEStatementService;
 	private final NotificationService notificationService;
+	private final CacheService cacheService;
 
 	@Autowired
 	public ApplyEStatementController(ApplyEStatementService applyEStatementService,
-			NotificationService notificationService) {
+			NotificationService notificationService, CacheService cacheService) {
 		this.applyEStatementService = applyEStatementService;
 		this.notificationService = notificationService;
+		this.cacheService = cacheService;
 	}
 
 	/**
@@ -104,6 +107,7 @@ public class ApplyEStatementController {
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 			notificationService.doNotifySuccessForApplyEStatement(correlationId, crmId, updateEstatementReq,
 					estatementResponse);
+			cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 			return ResponseEntity.ok(oneServiceResponse);
 		} catch (Exception e) {
 			logger.error("Error while getting e-statement: {}", e);

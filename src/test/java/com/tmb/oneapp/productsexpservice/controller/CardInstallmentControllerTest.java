@@ -1,19 +1,17 @@
 
 package com.tmb.oneapp.productsexpservice.controller;
 
-import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.common.model.creditcard.CardInstallment;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
-import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
-import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
-import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
-import com.tmb.oneapp.productsexpservice.service.NotificationService;
-import feign.FeignException;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,10 +25,26 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.*;
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
+import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardStatementReponse;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CreditCardModel;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
+import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
+import com.tmb.oneapp.productsexpservice.service.CacheService;
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
+import com.tmb.oneapp.productsexpservice.service.NotificationService;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import feign.FeignException;
 
 @RunWith(JUnit4.class)
 public class CardInstallmentControllerTest {
@@ -44,12 +58,15 @@ public class CardInstallmentControllerTest {
 	private CreditCardLogService creditCardLogService;
 	@Mock
 	private NotificationService notificationService;
+	
+	@Mock
+	private CacheService cacheService;
 
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		cardInstallmentController = new CardInstallmentController(creditCardClient, creditCardLogService,
-				notificationService);
+				notificationService, cacheService);
 	}
 
 	@Test

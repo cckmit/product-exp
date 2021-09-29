@@ -124,7 +124,7 @@ public class SetPinController {
                     String desc = errorStatus.get(0).getDescription();
                     creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
                             ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG, correlationId, activityDate, accountId,
-                            desc, requestHeadersParameter);
+                            code, requestHeadersParameter);
                     oneServiceResponse.setStatus(new TmbStatus(code, ResponseCode.FAILED.getMessage(),
                             ResponseCode.FAILED.getService(), desc));
                     return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);

@@ -108,9 +108,10 @@ public class LendingServiceControllerTest {
     
     @Test
     void getProductOrientationSuccess() throws TMBCommonException {
-        HttpStatus status = HttpStatus.OK;
-        ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> mockResponse = new ResponseEntity<>(status);
-        when(loanService.fetchProductOrientation(any(),any(), any())).thenReturn(mockResponse);
+        TmbOneServiceResponse<ProductDetailResponse> oneServiceResponse = new TmbOneServiceResponse<ProductDetailResponse>();
+        ProductDetailResponse data = new ProductDetailResponse();
+        oneServiceResponse.setData(data);
+        when(loanService.fetchProductOrientation(any(),any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
         LendingServiceController lendingServiceController = new LendingServiceController(lendingServiceClient, loanService);
         lendingServiceController.getProductOrientation("", "",new ProductDetailRequest());
         verify(loanService, times(1)).fetchProductOrientation(any(), any(),any());
