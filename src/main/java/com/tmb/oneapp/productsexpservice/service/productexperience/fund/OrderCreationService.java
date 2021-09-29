@@ -91,6 +91,17 @@ public class OrderCreationService {
             responseData = createSellOrSwitchTransaction(header, request);
         }
 
+        if (InvestmentServiceConstant.SUCCESS_CODE.equalsIgnoreCase(responseData.getHeader().getStatus().getCode())) {
+            status = InvestmentServiceConstant.COMPLETED_STATUS;
+            saveConfirmResponse(responseData.getBody(), requestBody.getOrderAmount());
+            processFirstTrade(requestBody, responseData.getBody(), correlationId);
+            enterPinIsCorrectActivityLogService.save(correlationId, crmId, requestBody, status, responseData.getBody(), requestBody.getOrderType());
+        } else {
+            status = InvestmentServiceConstant.FAILED_MESSAGE;
+            enterPinIsCorrectActivityLogService.save(correlationId, crmId, requestBody, status, null, requestBody.getOrderType());
+        }
+        return responseData;
+
         return tmbOneServiceResponse;
     }
 
