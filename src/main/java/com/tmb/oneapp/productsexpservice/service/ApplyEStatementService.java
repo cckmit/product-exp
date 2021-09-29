@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,19 +37,19 @@ public class ApplyEStatementService {
 	private AccountRequestClient accountReqClient;
 	public static final String CREDIT_CARD_TYPE = "1";
 	public static final String FLASH_CARD_TYPE = "2";
-	
+
 	@Value("${label.product-group.creditcard.th}")
-	private String groupCreditCardTh ;
+	private String groupCreditCardTh;
 	@Value("${label.product-group.flashcard.th}")
-	private String groupFlashCardTh ;
+	private String groupFlashCardTh;
 	@Value("${label.product-group.loan.th}")
-	private String groupLoanProductTh ;
+	private String groupLoanProductTh;
 	@Value("${label.product-group.creditcard.en}")
-	private String groupCreditCardEn ;
+	private String groupCreditCardEn;
 	@Value("${label.product-group.flashcard.en}")
-	private String groupFlashCardEn ;
+	private String groupFlashCardEn;
 	@Value("${label.product-group.loan.en}")
-	private String groupLoanProductEn ;
+	private String groupLoanProductEn;
 
 	public ApplyEStatementService(CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
 			AccountRequestClient accountReqClient) {
@@ -78,12 +79,11 @@ public class ApplyEStatementService {
 	 * @param updateEstatementReq
 	 * @param productGroupTH
 	 * @param productGroupEN
-	 * @return 
+	 * @return
 	 * @throws TMBCommonException
 	 */
 	public ApplyEStatementResponse updateEstatement(String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq)
-			throws TMBCommonException {
+			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException {
 		ApplyEStatementResponse currentEstatementResponse = getEStatement(crmId, correlationId);
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
@@ -92,8 +92,9 @@ public class ApplyEStatementService {
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
 		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
-
-		updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
+		if (StringUtils.isNoneBlank(updateEstatementReq.getAccountId())) {
+			updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
+		}
 		try {
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
 					.updateEStatement(requestHeaders, statementFlag);
@@ -102,7 +103,7 @@ public class ApplyEStatementService {
 			}
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
-			rollBackSilverlake(crmId, correlationId,updateEstatementReq);
+			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
 		}
 		return currentEstatementResponse;
@@ -122,7 +123,7 @@ public class ApplyEStatementService {
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
-		
+
 		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
 		if (CollectionUtils.isNotEmpty(loanProducts)) {
 			statementFlag.setECashToGoStatementFlag("Y");
@@ -195,14 +196,14 @@ public class ApplyEStatementService {
 	 * 
 	 * @param crmId
 	 * @param correlationId
-	 * @param updateEstatementReq 
+	 * @param updateEstatementReq
 	 */
 	private void rollBackSilverlake(String crmId, String correlationId, UpdateEStatmentRequest updateEstatementReq) {
 		logger.info("### ROLL BACK SILVERLAKE FOR {} ### ", crmId);
 		Map<String, String> headers = new HashMap<>();
 		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		creditCardClient.cancelEnableEStatement(headers,updateEstatementReq);
+		creditCardClient.cancelEnableEStatement(headers, updateEstatementReq);
 	}
 
 	/**
