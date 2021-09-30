@@ -267,7 +267,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundListException() throws TMBCommonException {
+    public void getFundListException(){
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -282,7 +282,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundListNotFound() throws TMBCommonException {
+    public void getFundListNotFound(){
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -300,7 +300,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundList() throws TMBCommonException {
+    public void getFundList(){
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();

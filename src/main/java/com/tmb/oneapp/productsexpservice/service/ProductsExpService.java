@@ -347,7 +347,7 @@ public class ProductsExpService extends TmbErrorHandle {
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) throws TMBCommonException {
+    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest){
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
