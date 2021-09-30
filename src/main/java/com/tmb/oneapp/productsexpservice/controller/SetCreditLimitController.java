@@ -111,6 +111,7 @@ public class SetCreditLimitController {
 				/* Activity log -- CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT */
 				creditCardLogService.logActivity(creditCardRequestAdjustEvent);
 				creditCardRequestAdjustEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
+				cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 				return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 			} else {
 				creditCardRequestAdjustEvent = creditCardLogService.completeUsageListEvent(creditCardRequestAdjustEvent,
@@ -125,7 +126,6 @@ public class SetCreditLimitController {
 
 				/* Activity log -- CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT */
 				creditCardLogService.logActivity(creditCardRequestAdjustEvent);
-				cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 			}
 
