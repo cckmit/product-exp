@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -78,8 +79,6 @@ public class OrderCreationPaymentRequestBody {
     @NotBlank
     private Account toAccount;
 
-    private Card card;
-
     private Fee fee;
 
     private Merchant merchant;
@@ -90,5 +89,9 @@ public class OrderCreationPaymentRequestBody {
 
     @JsonAlias({"creditCard", "isCreditCard"})
     private boolean creditCard;
+
+    // use internal
+    @JsonIgnore
+    private Card card;
 
 }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatus;
+
 /**
  * OrderCreationController request will handle to call apis for combining the data from order transaction
  */
@@ -39,38 +41,15 @@ public class OrderCreationController {
         TmbOneServiceResponse<OrderCreationPaymentResponse> oneServiceResponse =
                 orderCreationService.makeTransaction(correlationId, crmId, request);
 
-
-        if (!StringUtils.isEmpty(serviceResponse) &&
-                !StringUtils.isEmpty(serviceResponse.getHeader()) &&
-                !StringUtils.isEmpty(serviceResponse.getHeader().getStatus())) {
-
-            if (InvestmentServiceConstant.SUCCESS_CODE.equals(serviceResponse.getHeader().getStatus().getCode())) {
-
-                oneServiceResponse.setStatus(new TmbStatus(InvestmentServiceConstant.SUCCESS_CODE,
-                        InvestmentServiceConstant.SUCCESS_MESSAGE,
-                        InvestmentServiceConstant.SERVICE_NAME, InvestmentServiceConstant.SUCCESS_MESSAGE));
-                OrderCreationPaymentResponse response = new OrderCreationPaymentResponse(serviceResponse.getBody());
-                oneServiceResponse.setData(response);
-                return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-
-            } else {
-
-                oneServiceResponse.setStatus(TmbStatusUtil.mappingTmbStatusResponse(serviceResponse.getHeader()));
-                oneServiceResponse.setData(null);
-                return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-
+        if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
+            if (!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return ResponseEntity.badRequest().body(oneServiceResponse);
             }
-
+            return ResponseEntity.ok(oneServiceResponse);
         } else {
-
-            oneServiceResponse.setStatus(new TmbStatus(InvestmentServiceConstant.DATA_NOT_FOUND_CODE,
-                    InvestmentServiceConstant.DATA_NOT_FOUND_MESSAGE,
-                    InvestmentServiceConstant.SERVICE_NAME, InvestmentServiceConstant.DATA_NOT_FOUND_MESSAGE));
-            oneServiceResponse.setData(null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-
+            oneServiceResponse.setStatus(notFoundStatus());
+            return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
-
 
     }
 
