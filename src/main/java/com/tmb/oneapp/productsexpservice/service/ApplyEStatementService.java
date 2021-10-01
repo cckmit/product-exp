@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class ApplyEStatementService {
 	private CustomerServiceClient customerServiceClient;
 	private CreditCardClient creditCardClient;
 	private AccountRequestClient accountReqClient;
+	private ActivitylogService activitylogService;
 	public static final String CREDIT_CARD_TYPE = "1";
 	public static final String FLASH_CARD_TYPE = "2";
 
@@ -52,10 +54,11 @@ public class ApplyEStatementService {
 	private String groupLoanProductEn;
 
 	public ApplyEStatementService(CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
-			AccountRequestClient accountReqClient) {
+			AccountRequestClient accountReqClient, ActivitylogService activitylogService) {
 		this.customerServiceClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
 		this.accountReqClient = accountReqClient;
+		this.activitylogService = activitylogService;
 	}
 
 	/**
@@ -92,17 +95,27 @@ public class ApplyEStatementService {
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
 		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
-		if (StringUtils.isNoneBlank(updateEstatementReq.getAccountId())) {
-			updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
-		}
 		try {
+			if (StringUtils.isNoneBlank(updateEstatementReq.getAccountId())) {
+				updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
+			}
+
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
 					.updateEStatement(requestHeaders, statementFlag);
 			if (!ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 				throw new TMBCommonException("Fail on update EC system");
 			}
+			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
+				activitylogService.updatedEStatmentCard(updateEstatementReq.getAccountId(), true);
+			} else {
+				activitylogService.updatedEStatmentLoan(updateEstatementReq.getLoanId(), true);
+			}
+
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
+			if (StringUtils.isNotEmpty(updateEstatementReq.getLoanId())) {
+				activitylogService.updatedEStatmentLoan(updateEstatementReq.getLoanId(), false);
+			}
 			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
 		}
@@ -212,14 +225,38 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @throws Exception
 	 */
 	private void updateEStatementOnSilverLake(String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq) {
+			UpdateEStatmentRequest updateEstatementReq) throws Exception {
 		Map<String, String> headers = new HashMap<>();
 		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		creditCardClient.updateEmailEStatement(headers, updateEstatementReq);
-		creditCardClient.updateEnableEStatement(headers, updateEstatementReq);
+		String errorCode = null;
+		try {
+			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> responseEmail = creditCardClient
+					.updateEmailEStatement(headers, updateEstatementReq);
+
+			if (!ResponseCode.SUCESS.getCode().equals(responseEmail.getBody().getStatus().getCode())) {
+				errorCode = responseEmail.getBody().getStatus().getCode();
+				throw new TMBCommonException(responseEmail.getBody().getStatus().getCode(),
+						responseEmail.getBody().getStatus().getMessage(),
+						responseEmail.getBody().getStatus().getService(), HttpStatus.BAD_REQUEST, new Exception());
+			}
+			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> responseEstatment = creditCardClient
+					.updateEnableEStatement(headers, updateEstatementReq);
+			if (!ResponseCode.SUCESS.getCode().equals(responseEstatment.getBody().getStatus().getCode())) {
+				errorCode = responseEmail.getBody().getStatus().getCode();
+				throw new TMBCommonException(responseEstatment.getBody().getStatus().getCode(),
+						responseEstatment.getBody().getStatus().getMessage(),
+						responseEstatment.getBody().getStatus().getService(), HttpStatus.BAD_REQUEST, new Exception());
+			}
+
+		} catch (Exception e) {
+			activitylogService.updatedEStatmentCard(errorCode, false);
+			throw e;
+		}
+
 	}
 
 	public String getEmailStatementFlag(String crmId, String correlationId, String accountId,
