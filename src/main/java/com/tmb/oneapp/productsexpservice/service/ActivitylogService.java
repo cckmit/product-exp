@@ -2,6 +2,8 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import org.springframework.stereotype.Service;
 
+import com.tmb.common.model.customer.UpdateEStatmentRequest;
+
 @Service
 public class ActivitylogService {
 
@@ -11,12 +13,12 @@ public class ActivitylogService {
 		this.creditCardLogService = creditCardLogService;
 	}
 
-	public void updatedEStatmentCard(String accountId, boolean result) {
+	public void updatedEStatmentCard(UpdateEStatmentRequest updateEstatementReq, boolean result, String errorCode) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void updatedEStatmentLoan(String loanId, boolean result) {
+	public void updatedEStatmentLoan(UpdateEStatmentRequest updateEstatementReq, boolean result, String errorCode) {
 		// TODO Auto-generated method stub
 
 	}

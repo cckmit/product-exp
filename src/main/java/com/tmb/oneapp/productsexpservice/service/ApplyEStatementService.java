@@ -106,15 +106,15 @@ public class ApplyEStatementService {
 				throw new TMBCommonException("Fail on update EC system");
 			}
 			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-				activitylogService.updatedEStatmentCard(updateEstatementReq.getAccountId(), true);
+				activitylogService.updatedEStatmentCard(updateEstatementReq, true, null);
 			} else {
-				activitylogService.updatedEStatmentLoan(updateEstatementReq.getLoanId(), true);
+				activitylogService.updatedEStatmentLoan(updateEstatementReq, true, null);
 			}
 
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
 			if (StringUtils.isNotEmpty(updateEstatementReq.getLoanId())) {
-				activitylogService.updatedEStatmentLoan(updateEstatementReq.getLoanId(), false);
+				activitylogService.updatedEStatmentLoan(updateEstatementReq, false, null);
 			}
 			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
@@ -253,7 +253,7 @@ public class ApplyEStatementService {
 			}
 
 		} catch (Exception e) {
-			activitylogService.updatedEStatmentCard(errorCode, false);
+			activitylogService.updatedEStatmentCard(updateEstatementReq, false, errorCode);
 			throw e;
 		}
 
