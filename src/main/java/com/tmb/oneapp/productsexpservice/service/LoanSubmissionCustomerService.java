@@ -46,7 +46,7 @@ public class LoanSubmissionCustomerService {
 
         for (var receiveAccount : loanCustomerResponse) {
             LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
-            if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("JNT")) {
+            if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("PRIIND")) {
                 account.setAccountNo(receiveAccount.getAccountNumber());
                 account.setAccountName(receiveAccount.getAccountName());
                 receiveAccountList.add(account);
@@ -55,7 +55,7 @@ public class LoanSubmissionCustomerService {
 
         for (var paymentAccount : loanCustomerResponse) {
             LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
-            if (paymentAccount.getAllowPayLoanDirectDebit().equals("1") && paymentAccount.getAccountStatus().equals("ACTIVE") && paymentAccount.getRelationshipCode().equals("JNT")) {
+            if (paymentAccount.getAllowPayLoanDirectDebit().equals("1") && paymentAccount.getAccountStatus().equals("ACTIVE") && paymentAccount.getRelationshipCode().equals("PRIIND")) {
                 account.setAccountNo(paymentAccount.getAccountNumber());
                 account.setAccountName(paymentAccount.getAccountName());
                 paymentAccountList.add(account);
