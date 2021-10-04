@@ -31,7 +31,7 @@ public class FlexiCheckSystemOffService {
             LocalTime start = LocalTime.parse(systemHour.getStart());
             LocalTime end = LocalTime.parse(systemHour.getEnd());
 
-            Boolean isNowInRange = (!current.isBefore(start)) && current.isBefore(end);
+            Boolean isNowInRange = (!current.isBefore(end)) && current.isBefore(start);
             response.setIsSystemOff(isNowInRange);
             response.setSystemOffTime(systemHour.getStart());
             response.setSystemOnTime(systemHour.getEnd());
