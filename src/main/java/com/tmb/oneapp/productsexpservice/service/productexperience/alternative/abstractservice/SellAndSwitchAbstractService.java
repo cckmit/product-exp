@@ -17,7 +17,7 @@ public abstract class SellAndSwitchAbstractService extends ValidateGroupingAbstr
         this.customerService = customerService;
     }
 
-    protected TmbOneServiceResponse<String> validateSellAndSwitch(String crmId,
+    protected TmbOneServiceResponse<String> validateSellAndSwitch(
                                                                   String correlationId,
                                                                   CustomerSearchResponse customerInfo,
                                                                   TmbOneServiceResponse<String> tmbOneServiceResponse,
