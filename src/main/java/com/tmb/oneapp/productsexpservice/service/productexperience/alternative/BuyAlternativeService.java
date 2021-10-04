@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.activitylog.buy.service.BuyActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
@@ -65,6 +66,21 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             }
 
             tmbOneServiceResponse = validateBuyAndDca(correlationId, crmId, customerInfo, tmbOneServiceResponse, status, true, isFirstTrade(correlationId, alternativeBuyRequest));
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                String reason = tmbOneServiceResponse.getStatus().getDescription();
+                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+            }
+
+            // validate id card expired
+            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
+                String reason = tmbOneServiceResponse.getStatus().getDescription();
+                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+            }
+
+            // validate flatca flag not valid
+            tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 String reason = tmbOneServiceResponse.getStatus().getDescription();
                 return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);

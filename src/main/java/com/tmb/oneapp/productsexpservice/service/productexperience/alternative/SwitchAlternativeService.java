@@ -27,7 +27,7 @@ public class SwitchAlternativeService extends SellAndSwitchAbstractService {
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-            return validateSellAndSwitch(crmId,correlationId,customerInfo,tmbOneServiceResponse,status);
+            return validateSellAndSwitch(correlationId,customerInfo,tmbOneServiceResponse,status);
 
         } catch (Exception ex) {
             logger.error("error : {}", ex);

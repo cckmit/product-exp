@@ -29,13 +29,7 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServicesResponse.setStatus(status);
 
-            tmbOneServicesResponse = validateSellAndSwitch(crmId,correlationId, customerInfo, tmbOneServicesResponse, status);
-            if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                return tmbOneServicesResponse;
-            }
-
-            // validate suitability expired
-            tmbOneServicesResponse = validateSuitabilityExpired(correlationId, crmId, tmbOneServicesResponse, status);
+            tmbOneServicesResponse = validateSellAndSwitch(correlationId, customerInfo, tmbOneServicesResponse, status);
             if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServicesResponse;
             }
