@@ -24,9 +24,8 @@ class BuyActivityLogServiceTest {
     void should_call_create_log_when_call_click_purchase_button_at_fund_fact_sheet_screen_given_correlation_id_and_crm_id_and_alternative_buy_request_success_and_reason() {
         // Given
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder()
-                .processFlag("Y")
                 .unitHolderNumber("unit holder number")
-                .fundThaiClassName("thai")
+                .processFlag("Y")
                 .build();
 
         // When
@@ -40,7 +39,9 @@ class BuyActivityLogServiceTest {
     void should_call_create_log_when_call_click_purchase_button_at_fund_fact_sheet_screen_given_correlation_id_and_crm_id_and_alternative_buy_request_fail_and_reason() {
         // Given
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder()
+                .fundEnglishClassName("english")
                 .processFlag("N")
+                .fundName("name")
                 .fundEnglishClassName("english")
                 .build();
 
