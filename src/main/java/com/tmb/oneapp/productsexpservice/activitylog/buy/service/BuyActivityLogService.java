@@ -47,15 +47,10 @@ public class BuyActivityLogService {
         activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_APP_VERSION);
         activityData.setFailReason(reason);
 
-        if (!StringUtils.isEmpty(alternativeBuyRequest.getUnitHolderNumber())) {
-            activityData.setUnitHolderNumber(alternativeBuyRequest.getUnitHolderNumber());
-        } else {
-            activityData.setUnitHolderNumber(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_UNIT_HOLDER);
-        }
         activityData.setFundName(alternativeBuyRequest.getFundName());
         activityData.setVerifyFlag(alternativeBuyRequest.getProcessFlag());
         activityData.setReason(reason);
-        activityData.setFundClass(!StringUtils.isEmpty(alternativeBuyRequest.getFundThaiClassName()) ? alternativeBuyRequest.getFundThaiClassName() : alternativeBuyRequest.getFundEnglishClassName());
+        activityData.setFundClass(alternativeBuyRequest.getFundEnglishClassName());
 
         activityData.setActivityType(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING);
         logActivityService.createLog(activityData);
