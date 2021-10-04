@@ -9,7 +9,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 /**
  * The buy activity log service.
