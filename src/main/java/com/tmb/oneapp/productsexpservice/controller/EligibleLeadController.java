@@ -70,8 +70,11 @@ public class EligibleLeadController {
 			String disbursementDate = requestBody.getDisbursementDate();
 
 			if (!Strings.isNullOrEmpty(groupAccountId) && !Strings.isNullOrEmpty(disbursementDate)) {
+				long startTime = System.currentTimeMillis();
 				ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> loanResponse = creditCardClient
 						.getEligibleLeads(correlationId, requestBody);
+				long endTime = System.currentTimeMillis();
+				logger.info("/loan/get-eligible-lead Execution Time : " + (endTime - startTime));
 				loanDetails = loanResponse.getBody().getData();
 
 				serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
