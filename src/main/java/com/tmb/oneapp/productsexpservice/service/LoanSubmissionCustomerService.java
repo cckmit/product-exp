@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -168,19 +169,17 @@ public class LoanSubmissionCustomerService {
     }
 
     private List<String> getCodeNoFixedAccCodes(String correlationId) throws TMBCommonException {
-        try {
-            ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
-            if (Objects.isNull(nodeTextResponse.getBody())) {
-                throw new TMBCommonException(nodeTextResponse.getBody().getStatus().getCode(),
-                        ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-            }
-            if (Objects.nonNull(nodeTextResponse.getBody().getData())) {
-                return nodeTextResponse.getBody().getData().get(0).getNofixedAccount();
-            }
-            return null;
-        } catch (Exception ex) {
-            throw ex;
+
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
+        if (Objects.isNull(nodeTextResponse.getBody())) {
+            throw new TMBCommonException(nodeTextResponse.getBody().getStatus().getCode(),
+                    ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
+        if (Objects.nonNull(nodeTextResponse.getBody().getData())) {
+            return nodeTextResponse.getBody().getData().get(0).getNofixedAccount();
+        }
+        return Collections.emptyList();
+
     }
 }
 
