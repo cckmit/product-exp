@@ -253,17 +253,27 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_PIN_INVALID_CODE = "VERIFY_PIN_REF_ID_";
     public static final String INVESTMENT_VERIFY_PIN_REF_ID = "msg_al_19";
     public static final String INVESTMENT_PIN_INVALID_MSG = "Please enter PIN";
-    public static final String INVESTMENT_PURCHASE_TRANSACTION_LETTER_TYPE = "P";
-    public static final String INVESTMENT_REDEEM_TRANSACTION_LETTER_TYPE = "R";
-    public static final String INVESTMENT_SWITCH_TRANSACTION_LETTER_TYPE = "S";
+    public static final String PURCHASE_TRANSACTION_LETTER_TYPE = "P";
+    public static final String REDEEM_TRANSACTION_LETTER_TYPE = "R";
+    public static final String SWITCH_TRANSACTION_LETTER_TYPE = "S";
     public static final String FULL_REDEEM = "F";
     public static final String REVERSE_FLAG_Y = "Y";
+    public static final String REVERSE_FLAG_N = "N";
     public static final String AMOUNT_TYPE_IN_PARTIAL_SERVICE = "A";
     public static final String AMOUNT_TYPE_IN_ORDER_SERVICE = "M";
     public static final String PIN_DUPLICATE_ERROR_CODE = "msg_al_18";
     public static final String PIN_DUPLICATE_ERROR_MES = "Your internet connection is not stable. To prevent duplicate transaction, please recheck" +
             " if this transaction has already appeared as your pending transaction.";
     public static final Integer TTL_REDIS = 300;
+    public static final String ACTIVITY_LOG_AMOUNT = "Amount";
+    public static final String ACTIVITY_LOG_UNIT = "Unit";
+    public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
+    public static final String ACTIVITY_LOG_CHANNEL = "mb";
+    public static final String ACTIVITY_LOG_FULL = "Full";
+    public static final String REDEEM = "Redeem";
+    public static final String SWITCH = "Switch";
+    public static final String ACTIVITY_LOG_PURCHASE_TYPE = "Purchase";
+
 
     /* INVESTMENT CREDIT CARD FLAG */
     public static final String INVESTMENT_CREDIT_CARD_ACTIVE_STATUS = "active";

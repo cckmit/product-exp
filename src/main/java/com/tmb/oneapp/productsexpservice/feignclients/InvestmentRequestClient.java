@@ -25,6 +25,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.informatio
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
@@ -359,9 +361,22 @@ public interface InvestmentRequestClient {
      * @param headers the headers
      * @return the FundListBody response
      */
-
     @PostMapping(value = "${investment.service.fund.listinfo.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> callInvestmentListFundInfoService(@RequestHeader Map<String, String> headers);
+
+
+    /**
+     * Call investment order creation service.
+     *
+     * @param header the headers
+     * @param orderCreationPaymentRequestBody the body
+     * @return the FundListBody response
+     */
+    @PostMapping(value = "${investment.service.fund.order.creation.url}")
+    ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> createOrderPayment(
+            @RequestHeader Map<String, String> header,
+            @RequestBody OrderCreationPaymentRequestBody orderCreationPaymentRequestBody);
+
 
 }

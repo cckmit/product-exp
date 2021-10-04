@@ -20,6 +20,8 @@ public class OrderCreationPaymentRequestBody {
     @NotBlank
     private String orderType;
 
+    private String switchFundCode;
+
     @NotBlank
     private String fundHouseCode;
 
@@ -55,12 +57,9 @@ public class OrderCreationPaymentRequestBody {
 
     private String bankAccountNumber;
 
-    private String switchFundCode;
-
     @NotBlank
     private String orderDateTime;
 
-    @NotBlank
     private String appId;
 
     @NotBlank
@@ -81,8 +80,6 @@ public class OrderCreationPaymentRequestBody {
 
     private Fee fee;
 
-    private Merchant merchant;
-
     /* additional fields */
     @NotBlank
     private String refId;
@@ -90,8 +87,21 @@ public class OrderCreationPaymentRequestBody {
     @JsonAlias({"creditCard", "isCreditCard"})
     private boolean creditCard;
 
+    private String fundName;
+
+    private String fundThaiClassName;
+
+    private String fundEnglishClassName;
+
+    private String sourceFundClassName;
+
+    private String targetFundClassName;
+
     // use internal
     @JsonIgnore
     private Card card;
+
+    @JsonIgnore
+    private Merchant merchant;
 
 }

@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.activitylog.buy.request;
+package com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,24 +9,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BuyActivityLog extends BaseEvent {
+public class SellActivityLog extends BaseEvent {
 
+    /* Click Redeem Button */
     @JsonProperty("unit_holder")
-    private String unitHolderNumber;
+    private String unitHolder;
 
     @JsonProperty("fund_name")
     private String fundName;
 
-    @JsonProperty("verify_flag")
-    private String verifyFlag;
-
-    private String reason;
-
     @JsonProperty("fund_class")
     private String fundClass;
 
-    @JsonProperty("activity_type")
-    private String activityType;
+    @JsonProperty("type_of_selling")
+    private String typeOfSelling;
+
+    @JsonProperty("amount")
+    private String amount;
 
     /* Enter Pin Is Correct */
     private String status;
@@ -34,13 +33,13 @@ public class BuyActivityLog extends BaseEvent {
     @JsonProperty("order_id")
     private String orderId;
 
-    @JsonProperty("amount")
-    private String amount;
+    @JsonProperty("receiving_account")
+    private String receivingAccount;
 
-    @JsonProperty("from_bank_account")
-    private String fromBankAccount;
+    @JsonProperty("activity_type")
+    private String activityType;
 
-    public BuyActivityLog(String correlationId, String activityDate, String activityTypeId) {
+    public SellActivityLog(String correlationId, String activityDate, String activityTypeId) {
         super(correlationId, activityDate, activityTypeId);
     }
 }

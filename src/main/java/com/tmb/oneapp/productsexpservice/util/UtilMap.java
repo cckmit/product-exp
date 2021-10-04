@@ -276,6 +276,20 @@ public class UtilMap {
     }
 
     /**
+     * Generic Method to create HTTP Header
+     *
+     * @param correlationId
+     * @param crmId
+     * @return Map
+     */
+    public static Map<String, String> createHeaderWithCrmId(String correlationId,String crmId) {
+        Map<String, String> investmentHeader = new HashMap<>();
+        investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
+        investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
+        return investmentHeader;
+    }
+
+    /**
      * Method to check suitability is expire from MF service
      *
      * @param suitabilityInfo
@@ -658,5 +672,45 @@ public class UtilMap {
             accountType = ""; // "CC"
         }
         return accountType;
+    }
+
+    /**
+     * Return tpye of transaction
+     *
+     * @param redeemType
+     * @return
+     */
+    public static String getTypeOfTransaction(String redeemType) {
+        String typeOfSelling;
+        switch (redeemType) {
+            case "u":
+                typeOfSelling = ProductsExpServiceConstant.ACTIVITY_LOG_UNIT;
+                break;
+
+            case "a":
+            case "m":
+                typeOfSelling = ProductsExpServiceConstant.ACTIVITY_LOG_AMOUNT;
+                break;
+
+            case "f":
+                typeOfSelling = ProductsExpServiceConstant.ACTIVITY_LOG_FULL;
+                break;
+
+            case "2":
+                typeOfSelling = ProductsExpServiceConstant.REDEEM;
+                break;
+
+            case "1":
+                typeOfSelling = ProductsExpServiceConstant.ACTIVITY_LOG_PURCHASE_TYPE;
+                break;
+
+            case "3":
+                typeOfSelling = ProductsExpServiceConstant.SWITCH;
+                break;
+
+            default:
+                typeOfSelling = "";
+        }
+        return typeOfSelling;
     }
 }
