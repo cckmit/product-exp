@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnum
 import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
@@ -88,8 +89,8 @@ public class OrderCreationService {
             // buy flow
             if(request.isCreditCard()){
                 // creditcard
-                ResponseEntity<GetCardsBalancesResponse> getCardsBalancesResponse = creditCardClient.getCreditCardBalance(investmentRequestHeader,UtilMap.fullCrmIdFormat(crmId));
-                getCardsBalancesResponse.getBody().getCreditCard().get
+                ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId,request.getFromAccount().getAccountId());
+
             }else{
                 // casa account
                 Account toAccount = getAccount(requestBody, commonServiceHeader);
