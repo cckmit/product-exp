@@ -16,22 +16,15 @@ import javax.validation.constraints.NotNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AlternativeBuyRequest {
 
-    private String fundHouseCode;
-
     private String fundCode;
 
+    @NotNull
     @JsonProperty(value = "unitHolderNo")
-    @NotNull
     private String unitHolderNumber;
-
-    @NotNull
-    private String orderType;
 
     private String processFlag;
 
     private String fundName;
-
-    private String fundThaiClassName;
 
     private String fundEnglishClassName;
 }
