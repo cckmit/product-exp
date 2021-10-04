@@ -97,7 +97,7 @@ public class ApplyEStatementService {
 		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
 		try {
 			if (StringUtils.isNoneBlank(updateEstatementReq.getAccountId())) {
-				updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
+				updateEStatementOnSilverLake(requestHeaders, crmId, correlationId, updateEstatementReq);
 			}
 
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
@@ -106,15 +106,15 @@ public class ApplyEStatementService {
 				throw new TMBCommonException("Fail on update EC system");
 			}
 			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-				activitylogService.updatedEStatmentCard(updateEstatementReq, true, null);
+				activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, true, null);
 			} else {
-				activitylogService.updatedEStatmentLoan(updateEstatementReq, true, null);
+				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, true, null);
 			}
 
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
 			if (StringUtils.isNotEmpty(updateEstatementReq.getLoanId())) {
-				activitylogService.updatedEStatmentLoan(updateEstatementReq, false, null);
+				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, false, null);
 			}
 			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
@@ -222,12 +222,14 @@ public class ApplyEStatementService {
 	/**
 	 * Update e statment on silverlake
 	 * 
+	 * @param requestHeaders
+	 * 
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
 	 * @throws Exception
 	 */
-	private void updateEStatementOnSilverLake(String crmId, String correlationId,
+	private void updateEStatementOnSilverLake(Map<String, String> requestHeaders, String crmId, String correlationId,
 			UpdateEStatmentRequest updateEstatementReq) throws Exception {
 		Map<String, String> headers = new HashMap<>();
 		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
@@ -253,7 +255,7 @@ public class ApplyEStatementService {
 			}
 
 		} catch (Exception e) {
-			activitylogService.updatedEStatmentCard(updateEstatementReq, false, errorCode);
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, errorCode);
 			throw e;
 		}
 
