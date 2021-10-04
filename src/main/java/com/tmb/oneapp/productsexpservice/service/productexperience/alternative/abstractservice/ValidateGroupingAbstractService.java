@@ -65,20 +65,6 @@ public class ValidateGroupingAbstractService {
             return tmbOneServiceResponse;
         }
 
-        // validate id card expired
-        tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-            return tmbOneServiceResponse;
-        }
-
-        // validate flatca flag not valid
-        tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-            return tmbOneServiceResponse;
-        }
-
         return tmbOneServiceResponse;
 
     }
