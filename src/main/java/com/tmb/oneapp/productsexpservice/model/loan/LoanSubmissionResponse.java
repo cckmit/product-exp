@@ -19,5 +19,6 @@ public class LoanSubmissionResponse {
     private List<LoanCustomerDisburstAccount> paymentAccounts;
     private List<InterestRate> interestRateList;
     private List<RangeIncome> rangeIncomeList;
+    private boolean allowApplySoSmart;
 
 }
