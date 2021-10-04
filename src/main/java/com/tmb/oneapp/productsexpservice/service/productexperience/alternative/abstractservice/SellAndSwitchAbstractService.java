@@ -23,7 +23,7 @@ public abstract class SellAndSwitchAbstractService extends ValidateGroupingAbstr
                                                                   TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                                   TmbStatus status){
         BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(false).build();
-        return validateGroupingService(crmId,correlationId,customerInfo,tmbOneServiceResponse,
+        return validateGroupingService(correlationId,customerInfo,tmbOneServiceResponse,
                 status,buyFlowFirstTrade);
     }
 

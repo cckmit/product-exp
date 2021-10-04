@@ -33,7 +33,7 @@ public class ValidateGroupingAbstractService {
 
     }
 
-    protected TmbOneServiceResponse<String> validateGroupingService(String crmId,
+    protected TmbOneServiceResponse<String> validateGroupingService(
                                                                     String correlationId,
                                                                     CustomerSearchResponse customerInfo,
                                                                     TmbOneServiceResponse<String> tmbOneServiceResponse,
