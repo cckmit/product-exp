@@ -11,10 +11,16 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseBankData;
+import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Card;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Merchant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
@@ -41,15 +47,19 @@ public class OrderCreationService {
 
     private final CreditCardClient creditCardClient;
 
+    private final CommonServiceClient commonServiceClient;
+
     @Autowired
     public OrderCreationService(CacheServiceClient cacheServiceClient,
                                 InvestmentRequestClient investmentRequestClient,
                                 EnterPinIsCorrectActivityLogService enterPinIsCorrectActivityLogService,
-                                CreditCardClient creditCardClient) {
+                                CreditCardClient creditCardClient,
+                                CommonServiceClient commonServiceClient) {
         this.cacheServiceClient = cacheServiceClient;
         this.investmentRequestClient = investmentRequestClient;
         this.enterPinIsCorrectActivityLogService = enterPinIsCorrectActivityLogService;
         this.creditCardClient = creditCardClient;
+        this.commonServiceClient = commonServiceClient;
     }
 
     @LogAround
@@ -59,71 +69,88 @@ public class OrderCreationService {
         TmbOneServiceResponse<OrderCreationPaymentResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
 
-        Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId,crmId);
-        String pin = ProductsExpServiceConstant.INVESTMENT_VERIFY_PIN_REF_ID + request.getRefId();
-        ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId,pin);
-        String pinCacheData = pinVerifyData.getBody().getData();
+        try{
+            Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId,crmId);
+            Map<String, String> commonRequestHeader = UtilMap.createHeader(correlationId);
+            String pin = ProductsExpServiceConstant.INVESTMENT_VERIFY_PIN_REF_ID + request.getRefId();
+            ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId,pin);
+            String pinCacheData = pinVerifyData.getBody().getData();
 
-        logger.info("pin >>> " + pin);
-        logger.info("key >>> {} " + pinCacheData);
+            logger.info("pin >>> " + pin);
+            logger.info("key >>> {} " + pinCacheData);
 
-        if (StringUtils.isEmpty(pinCacheData)) {
-            tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_CODE);
-            tmbOneServiceResponse.getStatus().setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
-            tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_MSG);
-            tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
-            return tmbOneServiceResponse;
-        }
+            if (StringUtils.isEmpty(pinCacheData)) {
+                tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_CODE);
+                tmbOneServiceResponse.getStatus().setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
+                tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_MSG);
+                tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
+                return tmbOneServiceResponse;
+            }
 
-        if(checkDuplicateTransaction(correlationId,request.getOrderType(),request.getRefId(),pinCacheData)){
-            tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_CODE);
-            tmbOneServiceResponse.getStatus().setDescription(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MES);
-            tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MES);
-            tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
-            return tmbOneServiceResponse;
-        }
+            if(checkDuplicateTransaction(correlationId,request.getOrderType(),request.getRefId(),pinCacheData)){
+                tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_CODE);
+                tmbOneServiceResponse.getStatus().setDescription(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MES);
+                tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MES);
+                tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
+                return tmbOneServiceResponse;
+            }
 
-        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
+            ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
 
-        if(ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())){
-            // buy flow
-            if(request.isCreditCard()){
-                // creditcard
-                ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId,request.getFromAccount().getAccountId());
+            if(ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())){
+                Account toAccount = getAccount(request, commonRequestHeader);
+                request.setToAccount(toAccount);
+                // buy flow
+                if(request.isCreditCard()){
+                    // creditcard
+                    ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId,request.getFromAccount().getAccountId());
+                    CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
+                    request.setCard(Card.builder()
+                            .cardId(creditCard.getCardId())
+                            .cardExpiry(creditCard.getCardInfo().getExpiredBy())
+                            .cardEmbossingName(creditCard.getCardInfo().getCardEmbossingName1())
+                            .productId(creditCard.getProductId())
+                            .productGroupId(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_GROUP_ID)
+                            .build());
+                    String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
+                            .equals(request.getFundClassCode())? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
+                    request.setMerchant(Merchant.builder().merchantId(merchantId).build());
+                    response = investmentRequestClient.createOrderPayment(investmentRequestHeader,request);
+                }else{
+                    // casa account
+                    response = investmentRequestClient.createOrderPayment(investmentRequestHeader,request);
+                }
 
             }else{
-                // casa account
-                Account toAccount = getAccount(requestBody, commonServiceHeader);
-                request.setToAccount(toAccount);
+                // sell or switch flow
+                if (ProductsExpServiceConstant.FULL_REDEEM.equalsIgnoreCase(request.getRedeemType())) {
+                    request.setFullRedemption(ProductsExpServiceConstant.REVERSE_FLAG_Y);
+                }
+
+                if (ProductsExpServiceConstant.AMOUNT_TYPE_IN_PARTIAL_SERVICE.equalsIgnoreCase(request.getRedeemType())) {
+                    request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
+                }
+
+                pushDataToRedis(correlationId,request.getOrderType(),request.getRefId());
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader,request);
             }
 
-        }else{
-            // sell or switch flow
-            if (ProductsExpServiceConstant.FULL_REDEEM.equalsIgnoreCase(request.getRedeemType())) {
-                request.setFullRedemption(ProductsExpServiceConstant.REVERSE_FLAG_Y);
-            }
-
-            if (ProductsExpServiceConstant.AMOUNT_TYPE_IN_PARTIAL_SERVICE.equalsIgnoreCase(request.getRedeemType())) {
-                request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
-            }
-
-            pushDataToRedis(correlationId,request.getOrderType(),request.getRefId());
-            response = investmentRequestClient.createOrderPayment(investmentRequestHeader,request);
-        }
-
-        String activityLogStatus = "";
-        if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
-            activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
+            String activityLogStatus = "";
+            if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
+                activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
 //            saveConfirmResponse(response.getBody(), request.getOrderAmount());
 //            processFirstTrade(request, response.getBody(), correlationId);
-            enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
-        } else {
-            activityLogStatus = ActivityLogStatus.FAILED.getStatus();
-            enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
+                enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
+            } else {
+                activityLogStatus = ActivityLogStatus.FAILED.getStatus();
+                enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
+            }
+
+            tmbOneServiceResponse.setData(response.getBody().getData());
+        }catch (Exception ex){
+
         }
 
-        tmbOneServiceResponse.setData(response.getBody().getData());
         return tmbOneServiceResponse;
     }
 
@@ -134,23 +161,25 @@ public class OrderCreationService {
      * @return
      * @throws JsonProcessingException
      */
-//    private Account getAccount(OrderCreationPaymentRequestBody bodyRequest, Map<String, String> headerForCommonService) throws JsonProcessingException {
-//        FundHouseResponse fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(headerForCommonService,
-//                bodyRequest.getFundHouseCode());
-//
-//        logger.info("searching toAccount by fund house code " + bodyRequest.getFundHouseCode());
-//
-//        Account toAccount = new Account();
-//        Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponse.getData());
-//        if (fundHouseBankData.isPresent()) {
-//            logger.info("Response from DB {} ", TMBUtils.convertJavaObjectToString(fundHouseResponse));
-//
-//            toAccount.setAccountId(fundHouseResponse.getData().getToAccountNo());
-//            toAccount.setAccountType(fundHouseResponse.getData().getAccountType());
-//            toAccount.setFiId(fundHouseResponse.getData().getFinancialId());
-//        }
-//        return toAccount;
-//    }
+    private Account getAccount(OrderCreationPaymentRequestBody bodyRequest, Map<String, String> headerForCommonService) throws JsonProcessingException {
+        TmbOneServiceResponse<FundHouseResponse> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(headerForCommonService,
+                bodyRequest.getFundHouseCode());
+        FundHouseResponse fundHouseResponseData = fundHouseResponse.getData();
+        logger.info("searching toAccount by fund house code " + bodyRequest.getFundHouseCode());
+        logger.info("Response : {} ", TMBUtils.convertJavaObjectToString(fundHouseResponse));
+
+        Account toAccount = new Account();
+        Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData.getData());
+        if (fundHouseBankData.isPresent()) {
+            FundHouseBankData data = fundHouseBankData.get();
+            toAccount.setAccountId(data.getToAccountNo());
+            toAccount.setAccountType(data.getAccountType());
+            toAccount.setFiId(data.getFinancialId());
+            toAccount.setLtfMerchantId(data.getLtfMerchantId());
+            toAccount.setRmfMerchantId(data.getRmfMerchantId());
+        }
+        return toAccount;
+    }
 
     /**
      * Push data to radis in order to check duplicate transaction
