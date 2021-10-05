@@ -381,12 +381,8 @@ public class AlternativeService {
      */
     @LogAround
     public TmbStatus validateNationality(String correlationId, String mainNationality, String secondNationality, TmbStatus status) {
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
-                commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-
-        List<CommonData> commonDataList = commonConfig.getBody().getData();
-        List<String> blackList = commonDataList.get(0).getNationalBlackList();
-
+        CommonData commonData = getInvestmentConfig(correlationId);
+        List<String> blackList = commonData.getNationalBlackList();
         if (StringUtils.isEmpty(mainNationality) ||
                 blackList.stream().anyMatch(mainNationality::equals) ||
                 !StringUtils.isEmpty(secondNationality) && blackList.stream().anyMatch(secondNationality::equals)) {
@@ -479,7 +475,7 @@ public class AlternativeService {
     }
 
     private EkycRiskCalculateRequest mappingFieldToRequestEkycRiskCalculate(CustomerSearchResponse customerInfo) {
-        return EkycRiskCalculateRequest.builder()
+        EkycRiskCalculateRequest ekycRiskCalculateRequest = EkycRiskCalculateRequest.builder()
                 .businessCode(customerInfo.getBusinessTypeCode())
                 .cardId(customerInfo.getIdNumber())
                 .dob(customerInfo.getBirthDate())
@@ -490,51 +486,63 @@ public class AlternativeService {
                 .lastName(customerInfo.getCustomerThaiLastName())
                 .lastNameEng(customerInfo.getCustomerEnglishLastName())
                 .occupationCode(customerInfo.getOccupationCode())
-                .officeAddress(
-                        AddressModel.builder()
-                                .building(customerInfo.getOfficeAddressData().getBuildVillageName())
-                                .companyName(customerInfo.getOfficeAddressData().getWorkingPlace())
-                                .country(customerInfo.getOfficeAddressData().getCountry())
-                                .district(customerInfo.getOfficeAddressData().getDistrict())
-                                .moo(customerInfo.getOfficeAddressData().getMoo())
-                                .no(customerInfo.getOfficeAddressData().getAddressNo())
-                                .phoneExtension(customerInfo.getOfficeAddressData().getPhoneExtension())
-                                .phoneNo(customerInfo.getOfficeAddressData().getPhoneNo())
-                                .postalCode(customerInfo.getOfficeAddressData().getPostalCode())
-                                .province(customerInfo.getOfficeAddressData().getProvince())
-                                .road(customerInfo.getOfficeAddressData().getRoad())
-                                .soi(customerInfo.getOfficeAddressData().getSoi())
-                                .subDistrict(customerInfo.getOfficeAddressData().getSubDistrict())
-                                .build()
-                )
-                .primaryAddress(
-                        AddressModel.builder()
-                                .building(customerInfo.getPrimaryAddressData().getBuildVillageName())
-                                .country(customerInfo.getPrimaryAddressData().getCountry())
-                                .district(customerInfo.getPrimaryAddressData().getDistrict())
-                                .moo(customerInfo.getPrimaryAddressData().getMoo())
-                                .no(customerInfo.getPrimaryAddressData().getAddressNo())
-                                .postalCode(customerInfo.getPrimaryAddressData().getPostalCode())
-                                .province(customerInfo.getPrimaryAddressData().getProvince())
-                                .road(customerInfo.getPrimaryAddressData().getRoad())
-                                .soi(customerInfo.getPrimaryAddressData().getSoi())
-                                .subDistrict(customerInfo.getPrimaryAddressData().getSubDistrict())
-                                .build()
-                )
-                .registeredAddress(
-                        AddressModel.builder()
-                                .building(customerInfo.getRegisteredAddressData().getBuildVillageName())
-                                .country(customerInfo.getRegisteredAddressData().getCountry())
-                                .district(customerInfo.getRegisteredAddressData().getDistrict())
-                                .moo(customerInfo.getRegisteredAddressData().getMoo())
-                                .no(customerInfo.getRegisteredAddressData().getAddressNo())
-                                .postalCode(customerInfo.getRegisteredAddressData().getPostalCode())
-                                .province(customerInfo.getRegisteredAddressData().getProvince())
-                                .road(customerInfo.getRegisteredAddressData().getRoad())
-                                .soi(customerInfo.getRegisteredAddressData().getSoi())
-                                .subDistrict(customerInfo.getRegisteredAddressData().getSubDistrict())
-                                .build()
-                )
                 .build();
+
+        if(!StringUtils.isEmpty((customerInfo.getOfficeAddressData()))){
+            ekycRiskCalculateRequest.setOfficeAddress(AddressModel.builder()
+                    .building(customerInfo.getOfficeAddressData().getBuildVillageName())
+                    .companyName(customerInfo.getOfficeAddressData().getWorkingPlace())
+                    .country(customerInfo.getOfficeAddressData().getCountry())
+                    .district(customerInfo.getOfficeAddressData().getDistrict())
+                    .moo(customerInfo.getOfficeAddressData().getMoo())
+                    .no(customerInfo.getOfficeAddressData().getAddressNo())
+                    .phoneExtension(customerInfo.getOfficeAddressData().getPhoneExtension())
+                    .phoneNo(customerInfo.getOfficeAddressData().getPhoneNo())
+                    .postalCode(customerInfo.getOfficeAddressData().getPostalCode())
+                    .province(customerInfo.getOfficeAddressData().getProvince())
+                    .road(customerInfo.getOfficeAddressData().getRoad())
+                    .soi(customerInfo.getOfficeAddressData().getSoi())
+                    .subDistrict(customerInfo.getOfficeAddressData().getSubDistrict())
+                    .build());
+        }
+
+        if(!StringUtils.isEmpty((customerInfo.getPrimaryAddressData()))){
+            ekycRiskCalculateRequest.setPrimaryAddress(AddressModel.builder()
+                    .building(customerInfo.getPrimaryAddressData().getBuildVillageName())
+                    .country(customerInfo.getPrimaryAddressData().getCountry())
+                    .district(customerInfo.getPrimaryAddressData().getDistrict())
+                    .moo(customerInfo.getPrimaryAddressData().getMoo())
+                    .no(customerInfo.getPrimaryAddressData().getAddressNo())
+                    .postalCode(customerInfo.getPrimaryAddressData().getPostalCode())
+                    .province(customerInfo.getPrimaryAddressData().getProvince())
+                    .road(customerInfo.getPrimaryAddressData().getRoad())
+                    .soi(customerInfo.getPrimaryAddressData().getSoi())
+                    .subDistrict(customerInfo.getPrimaryAddressData().getSubDistrict())
+                    .build());
+        }
+
+        if(!StringUtils.isEmpty((customerInfo.getRegisteredAddressData()))){
+            ekycRiskCalculateRequest.setRegisteredAddress(AddressModel.builder()
+                    .building(customerInfo.getRegisteredAddressData().getBuildVillageName())
+                    .country(customerInfo.getRegisteredAddressData().getCountry())
+                    .district(customerInfo.getRegisteredAddressData().getDistrict())
+                    .moo(customerInfo.getRegisteredAddressData().getMoo())
+                    .no(customerInfo.getRegisteredAddressData().getAddressNo())
+                    .postalCode(customerInfo.getRegisteredAddressData().getPostalCode())
+                    .province(customerInfo.getRegisteredAddressData().getProvince())
+                    .road(customerInfo.getRegisteredAddressData().getRoad())
+                    .soi(customerInfo.getRegisteredAddressData().getSoi())
+                    .subDistrict(customerInfo.getRegisteredAddressData().getSubDistrict())
+                    .build());
+        }
+
+        return ekycRiskCalculateRequest;
+    }
+
+    private CommonData getInvestmentConfig(String correlationId){
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
+                commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
+        List<CommonData> commonDataList = commonConfig.getBody().getData();
+        return commonDataList.get(0);
     }
 }

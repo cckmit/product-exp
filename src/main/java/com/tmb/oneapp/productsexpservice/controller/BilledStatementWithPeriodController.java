@@ -59,8 +59,10 @@ public class BilledStatementWithPeriodController {
         try {
 
             if (requestBody != null && !Strings.isNullOrEmpty(requestBody.getAccountId()) && !Strings.isNullOrEmpty(correlationId)) {
-                ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient.getBilledStatementWithPeriod(correlationId, requestBody.getAccountId(), requestBody);
-
+            	long startTime = System.currentTimeMillis();
+            	ResponseEntity<BilledStatementResponse> billedStatementRes = creditCardClient.getBilledStatementWithPeriod(correlationId, requestBody.getAccountId(), requestBody);
+            	long endTime = System.currentTimeMillis();
+    			logger.info("/creditcard-billed-statement-period Execution Time : " + (endTime - startTime));
                 if (billedStatementRes != null && billedStatementRes.getStatusCode() == HttpStatus.OK
                         && billedStatementRes.getBody().getStatus().getStatusCode() == ProductsExpServiceConstant.ZERO) {
 

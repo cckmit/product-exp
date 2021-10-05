@@ -22,6 +22,8 @@ public class CreditCard {
     @JsonAlias("account_id")
     private String accountId;
 
+    private String accountType;
+
     @JsonAlias("card_image_android")
     private String cardImageAndroid;
 
