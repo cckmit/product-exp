@@ -27,9 +27,10 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.LoanAccount;
+import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 
 @RunWith(JUnit4.class)
@@ -88,9 +89,9 @@ public class ApplyEStatementServiceTest {
 
 		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
 		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
-		List<Object> loanAccounts = new ArrayList<Object>();
-		Account acc = new Account();
-		acc.setAccountNo("5213323");
+		List<LoanAccount> loanAccounts = new ArrayList();
+		LoanAccount acc = new LoanAccount();
+		acc.setAccountName("5213323");
 		loanAccounts.add(acc);
 		productHoldingsResp.setLoanAccounts(loanAccounts);
 		accountResponse.setData(productHoldingsResp);
@@ -135,7 +136,7 @@ public class ApplyEStatementServiceTest {
 
 		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
 		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
-		List<Object> loanAccounts = new ArrayList<Object>();
+		List<LoanAccount> loanAccounts = new ArrayList();
 		productHoldingsResp.setLoanAccounts(loanAccounts);
 		accountResponse.setData(productHoldingsResp);
 		accountResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
@@ -183,7 +184,7 @@ public class ApplyEStatementServiceTest {
 
 		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
 		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
-		List<Object> loanAccounts = new ArrayList<Object>();
+		List<LoanAccount> loanAccounts = new ArrayList();
 		productHoldingsResp.setLoanAccounts(loanAccounts);
 		accountResponse.setData(productHoldingsResp);
 		accountResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
@@ -228,7 +229,7 @@ public class ApplyEStatementServiceTest {
 
 		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
 		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
-		List<Object> loanAccounts = new ArrayList<Object>();
+		List<LoanAccount> loanAccounts = new ArrayList();
 		productHoldingsResp.setLoanAccounts(loanAccounts);
 		accountResponse.setData(productHoldingsResp);
 		accountResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
@@ -264,7 +265,7 @@ public class ApplyEStatementServiceTest {
 
 		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
 		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
-		List<Object> loanAccounts = new ArrayList<Object>();
+		List<LoanAccount> loanAccounts = new ArrayList();
 		productHoldingsResp.setLoanAccounts(loanAccounts);
 		accountResponse.setData(productHoldingsResp);
 		accountResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
@@ -300,9 +301,9 @@ public class ApplyEStatementServiceTest {
 
 		TmbOneServiceResponse<ProductHoldingsResp> accountResponse = new TmbOneServiceResponse<>();
 		ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
-		List<Object> loanAccounts = new ArrayList<Object>();
-		Account acc = new Account();
-		acc.setAccountNo("5213323");
+		List<LoanAccount> loanAccounts = new ArrayList();
+		LoanAccount acc = new LoanAccount();
+		acc.setAccountName("5213323");
 		loanAccounts.add(acc);
 		productHoldingsResp.setLoanAccounts(loanAccounts);
 		accountResponse.setData(productHoldingsResp);

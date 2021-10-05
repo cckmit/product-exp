@@ -25,8 +25,9 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.LoanAccount;
+import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 
 @Service
@@ -136,8 +137,7 @@ public class ApplyEStatementService {
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
-
-		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
+		List<LoanAccount> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
 		if (CollectionUtils.isNotEmpty(loanProducts) && StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
 			statementFlag.setECashToGoStatementFlag("Y");
 			currentEstatementResponse.setProductGroupTH(groupLoanProductTh);
@@ -271,7 +271,7 @@ public class ApplyEStatementService {
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
 
-		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
+		List<LoanAccount> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
 		if (CollectionUtils.isNotEmpty(loanProducts)) {
 			result = applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag();
 		}
