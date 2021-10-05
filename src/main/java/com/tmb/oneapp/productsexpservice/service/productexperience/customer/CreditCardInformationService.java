@@ -137,6 +137,7 @@ public class CreditCardInformationService {
             if(productConfigOptional.isPresent()){
 
                 ProductConfig productConfig = productConfigOptional.get();
+                creditCard.setAccountType(productConfig.getAccountType());
                 if(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND
                         .equals(productConfig.getEligibleForPurchasingMf())){
                     creditCard.setEligibleForPurchasingMutualfund(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND);
