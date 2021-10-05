@@ -16,9 +16,10 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 
 @Service
@@ -29,51 +30,89 @@ public class ActivitylogService {
 	private CreditCardLogService creditCardLogService;
 	private KafkaProducerService kafkaProducerService;
 	private CreditCardClient creditCardClient;
-	private AccountRequestClient accountReqClient;
+	private CommonServiceClient commonServiceClient;
 	private String topicName;
 
 	public ActivitylogService(@Value("activity") String topicName, CreditCardLogService creditCardLogService,
 			KafkaProducerService kafkaProducerService, CreditCardClient creditCardClient,
-			AccountRequestClient accountReqClient) {
+			CommonServiceClient commonServiceClient) {
 		this.creditCardLogService = creditCardLogService;
 		this.kafkaProducerService = kafkaProducerService;
 		this.topicName = topicName;
 		this.creditCardClient = creditCardClient;
-		this.accountReqClient = accountReqClient;
+		this.commonServiceClient = commonServiceClient;
 	}
 
 	public void updatedEStatmentCard(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
 			boolean result, String errorCode) {
-//		
-//		creditCardClient
-//		
-		String productName = "";
-		String cardNo = "";
-
+		String correlationId = requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+		String productName = constructProductNameInfomation(correlationId, updateEstatementReq);
+		ResponseEntity<FetchCardResponse> fetchCardInfoResp = creditCardClient.getCreditCardDetails(correlationId,
+				updateEstatementReq.getAccountId());
+		String cardNo = fetchCardInfoResp.getBody().getCreditCard().getAccountId().substring(21, 25);
 		CreditCardEvent updateEStatmentEvent = creditCardLogService.generateEStatementEvent(requestHeaders, productName,
 				cardNo, result, errorCode);
 		logActivity(updateEStatmentEvent);
 
 	}
 
+	/**
+	 * Construct product name
+	 * 
+	 * @param correlationId
+	 * @param updateEstatementReq
+	 * @return
+	 */
+	private String constructProductNameInfomation(String correlationId, UpdateEStatmentRequest updateEstatementReq) {
+
+		String productCodeName = "";
+		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
+				.getProductConfig(correlationId);
+
+		List<ProductConfig> productConfigs = response.getBody().getData();
+		if (CollectionUtils.isNotEmpty(productConfigs)) {
+			for (ProductConfig productInfo : productConfigs) {
+				if (CollectionUtils.isNotEmpty(updateEstatementReq.getProductType())) {
+					if (updateEstatementReq.getProductType().get(0).equals(productInfo.getProductCode())) {
+						productCodeName = "(" + productInfo.getProductCode() + ")  " + productInfo.getProductNameEN();
+					}
+				}
+			}
+		}
+		return productCodeName;
+
+	}
+
+	/**
+	 * Update EStatment
+	 * 
+	 * @param requestHeaders
+	 * @param updateEstatementReq
+	 * @param result
+	 * @param errorCode
+	 */
 	public void updatedEStatmentLoan(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
 			boolean result, String errorCode) {
 		String correlationId = requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
-		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
-		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
-				.getProductHoldingService(requestHeaders, crmId);
-		
-		
-//		List<Object> loanAccounts = accountResponse.getBody().getData().getLoanAccounts();
-//		if(CollectionUtils.isNotEmpty(loanAccounts)) {
-//			for() {
-//				
-//			}
-//		}
-//		
-		
+		String productCodeName = constructProductNameInfomation(correlationId, updateEstatementReq);
 		CreditCardEvent loanEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
 				ProductsExpServiceConstant.ESTAMENT_CONFIRM_LOAN);
+		loanEvent.setProductName(productCodeName);
+		loanEvent.setLoanNumber(updateEstatementReq.getLoanId());
+		loanEvent.setReasonForRequest(errorCode);
+		loanEvent.setResult(result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
+		loanEvent.setIpAddress(requestHeaders.get(ProductsExpServiceConstant.X_FORWARD_FOR));
+		loanEvent.setOsVersion(requestHeaders.get(ProductsExpServiceConstant.OS_VERSION));
+		loanEvent.setChannel(requestHeaders.get(ProductsExpServiceConstant.CHANNEL));
+		loanEvent.setAppVersion(requestHeaders.get(ProductsExpServiceConstant.APP_VERSION));
+		loanEvent.setCrmId(requestHeaders.get(ProductsExpServiceConstant.X_CRMID));
+		loanEvent.setDeviceId(requestHeaders.get(ProductsExpServiceConstant.DEVICE_ID));
+		loanEvent.setDeviceModel(requestHeaders.get(ProductsExpServiceConstant.DEVICE_MODEL));
+		loanEvent
+				.setCorrelationId(requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()));
+		loanEvent.setActivityStatus(
+				result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILURE_ACT_LOG);
+		logActivity(loanEvent);
 
 	}
 
