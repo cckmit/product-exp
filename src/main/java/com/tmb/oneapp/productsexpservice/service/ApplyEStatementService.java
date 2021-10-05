@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,9 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.model.LoanAccount;
+import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 
 @Service
@@ -35,6 +37,7 @@ public class ApplyEStatementService {
 	private CustomerServiceClient customerServiceClient;
 	private CreditCardClient creditCardClient;
 	private AccountRequestClient accountReqClient;
+	private CreditCardLogService activitylogService;
 	public static final String CREDIT_CARD_TYPE = "1";
 	public static final String FLASH_CARD_TYPE = "2";
 
@@ -52,10 +55,11 @@ public class ApplyEStatementService {
 	private String groupLoanProductEn;
 
 	public ApplyEStatementService(CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
-			AccountRequestClient accountReqClient) {
+			AccountRequestClient accountReqClient, CreditCardLogService activitylogService) {
 		this.customerServiceClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
 		this.accountReqClient = accountReqClient;
+		this.activitylogService = activitylogService;
 	}
 
 	/**
@@ -92,17 +96,27 @@ public class ApplyEStatementService {
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
 		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
-		if (StringUtils.isNoneBlank(updateEstatementReq.getAccountId())) {
-			updateEStatementOnSilverLake(crmId, correlationId, updateEstatementReq);
-		}
 		try {
+			if (StringUtils.isNoneBlank(updateEstatementReq.getAccountId())) {
+				updateEStatementOnSilverLake(requestHeaders, crmId, correlationId, updateEstatementReq);
+			}
+
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
 					.updateEStatement(requestHeaders, statementFlag);
 			if (!ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 				throw new TMBCommonException("Fail on update EC system");
 			}
+			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
+				activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, true, null);
+			} else {
+				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, true, null);
+			}
+
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
+			if (StringUtils.isNotEmpty(updateEstatementReq.getLoanId())) {
+				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, false, null);
+			}
 			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
 		}
@@ -123,8 +137,7 @@ public class ApplyEStatementService {
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
-
-		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
+		List<LoanAccount> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
 		if (CollectionUtils.isNotEmpty(loanProducts) && StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
 			statementFlag.setECashToGoStatementFlag("Y");
 			currentEstatementResponse.setProductGroupTH(groupLoanProductTh);
@@ -209,17 +222,48 @@ public class ApplyEStatementService {
 	/**
 	 * Update e statment on silverlake
 	 * 
+	 * @param requestHeaders
+	 * 
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @throws TMBCommonException 
+	 * @throws Exception
 	 */
-	private void updateEStatementOnSilverLake(String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq) {
+	private void updateEStatementOnSilverLake(Map<String, String> requestHeaders, String crmId, String correlationId,
+			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException{
 		Map<String, String> headers = new HashMap<>();
 		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		creditCardClient.updateEmailEStatement(headers, updateEstatementReq);
-		creditCardClient.updateEnableEStatement(headers, updateEstatementReq);
+		String errorCode = null;
+		try {
+			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> responseEmail = creditCardClient
+					.updateEmailEStatement(headers, updateEstatementReq);
+
+			if (!ResponseCode.SUCESS.getCode().equals(responseEmail.getBody().getStatus().getCode())) {
+				errorCode = responseEmail.getBody().getStatus().getCode();
+				throw new TMBCommonException(responseEmail.getBody().getStatus().getCode(),
+						responseEmail.getBody().getStatus().getMessage(),
+						responseEmail.getBody().getStatus().getService(), HttpStatus.BAD_REQUEST, new Exception());
+			}
+			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> responseEstatment = creditCardClient
+					.updateEnableEStatement(headers, updateEstatementReq);
+			if (!ResponseCode.SUCESS.getCode().equals(responseEstatment.getBody().getStatus().getCode())) {
+				errorCode = responseEstatment.getBody().getStatus().getCode();
+				throw new TMBCommonException(responseEstatment.getBody().getStatus().getCode(),
+						responseEstatment.getBody().getStatus().getMessage(),
+						responseEstatment.getBody().getStatus().getService(), HttpStatus.BAD_REQUEST, new Exception());
+			}
+
+		}catch (TMBCommonException e) {
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, e.getErrorCode());
+			throw e;
+		} 
+		catch (Exception e) {
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, errorCode);
+			throw e;
+		}
+
 	}
 
 	public String getEmailStatementFlag(String crmId, String correlationId, String accountId,
@@ -232,7 +276,7 @@ public class ApplyEStatementService {
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
 
-		List<Object> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
+		List<LoanAccount> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
 		if (CollectionUtils.isNotEmpty(loanProducts)) {
 			result = applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag();
 		}
