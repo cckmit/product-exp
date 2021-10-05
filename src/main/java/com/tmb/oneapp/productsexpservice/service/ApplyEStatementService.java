@@ -248,13 +248,17 @@ public class ApplyEStatementService {
 			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> responseEstatment = creditCardClient
 					.updateEnableEStatement(headers, updateEstatementReq);
 			if (!ResponseCode.SUCESS.getCode().equals(responseEstatment.getBody().getStatus().getCode())) {
-				errorCode = responseEmail.getBody().getStatus().getCode();
+				errorCode = responseEstatment.getBody().getStatus().getCode();
 				throw new TMBCommonException(responseEstatment.getBody().getStatus().getCode(),
 						responseEstatment.getBody().getStatus().getMessage(),
 						responseEstatment.getBody().getStatus().getService(), HttpStatus.BAD_REQUEST, new Exception());
 			}
 
-		} catch (Exception e) {
+		}catch (TMBCommonException e) {
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, e.getErrorCode());
+			throw e;
+		} 
+		catch (Exception e) {
 			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, errorCode);
 			throw e;
 		}

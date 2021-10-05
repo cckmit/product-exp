@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.BaseEvent;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.common.util.TMBUtils;
@@ -49,9 +50,12 @@ public class ActivitylogService {
 		String productName = constructProductNameInfomation(correlationId, updateEstatementReq);
 		ResponseEntity<FetchCardResponse> fetchCardInfoResp = creditCardClient.getCreditCardDetails(correlationId,
 				updateEstatementReq.getAccountId());
-		String cardNo = fetchCardInfoResp.getBody().getCreditCard().getAccountId().substring(21, 25);
+		String cardNo = "xx"+fetchCardInfoResp.getBody().getCreditCard().getAccountId().substring(21, 25);
 		CreditCardEvent updateEStatmentEvent = creditCardLogService.generateEStatementEvent(requestHeaders, productName,
 				cardNo, result, errorCode);
+		constructCommonDetail(requestHeaders, updateEStatmentEvent);
+		updateEStatmentEvent.setReasonForRequest(errorCode);
+		updateEStatmentEvent.setResult(result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
 		logActivity(updateEStatmentEvent);
 
 	}
@@ -97,22 +101,33 @@ public class ActivitylogService {
 		String productCodeName = constructProductNameInfomation(correlationId, updateEstatementReq);
 		CreditCardEvent loanEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
 				ProductsExpServiceConstant.ESTAMENT_CONFIRM_LOAN);
+		constructCommonDetail(requestHeaders, loanEvent);
 		loanEvent.setProductName(productCodeName);
 		loanEvent.setLoanNumber(updateEstatementReq.getLoanId());
 		loanEvent.setReasonForRequest(errorCode);
 		loanEvent.setResult(result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
-		loanEvent.setIpAddress(requestHeaders.get(ProductsExpServiceConstant.X_FORWARD_FOR));
-		loanEvent.setOsVersion(requestHeaders.get(ProductsExpServiceConstant.OS_VERSION));
-		loanEvent.setChannel(requestHeaders.get(ProductsExpServiceConstant.CHANNEL));
-		loanEvent.setAppVersion(requestHeaders.get(ProductsExpServiceConstant.APP_VERSION));
-		loanEvent.setCrmId(requestHeaders.get(ProductsExpServiceConstant.X_CRMID));
-		loanEvent.setDeviceId(requestHeaders.get(ProductsExpServiceConstant.DEVICE_ID));
-		loanEvent.setDeviceModel(requestHeaders.get(ProductsExpServiceConstant.DEVICE_MODEL));
-		loanEvent
-				.setCorrelationId(requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()));
+
 		loanEvent.setActivityStatus(
 				result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILURE_ACT_LOG);
 		logActivity(loanEvent);
+
+	}
+
+	/**
+	 * Construct common detail supported
+	 * 
+	 * @param requestHeaders
+	 */
+	private void constructCommonDetail(Map<String, String> requestHeaders, BaseEvent baseEvent) {
+		baseEvent.setIpAddress(requestHeaders.get(ProductsExpServiceConstant.X_FORWARD_FOR));
+		baseEvent.setOsVersion(requestHeaders.get(ProductsExpServiceConstant.OS_VERSION));
+		baseEvent.setChannel(requestHeaders.get(ProductsExpServiceConstant.CHANNEL));
+		baseEvent.setAppVersion(requestHeaders.get(ProductsExpServiceConstant.APP_VERSION));
+		baseEvent.setCrmId(requestHeaders.get(ProductsExpServiceConstant.X_CRMID));
+		baseEvent.setDeviceId(requestHeaders.get(ProductsExpServiceConstant.DEVICE_ID));
+		baseEvent.setDeviceModel(requestHeaders.get(ProductsExpServiceConstant.DEVICE_MODEL));
+		baseEvent
+				.setCorrelationId(requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()));
 
 	}
 
