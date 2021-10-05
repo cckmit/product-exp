@@ -80,12 +80,6 @@ public class OrderCreationPaymentRequestBody {
 
     private Fee fee;
 
-    /* additional fields */
-    @NotBlank
-    private String refId;
-
-    @JsonAlias({"creditCard", "isCreditCard"})
-    private boolean creditCard;
 
     private String fundName;
 
@@ -96,6 +90,15 @@ public class OrderCreationPaymentRequestBody {
     private String sourceFundClassName;
 
     private String targetFundClassName;
+
+    @NotBlank
+    private String refId;
+
+    /* additional fields */
+    @JsonAlias({"creditCard", "isCreditCard"})
+    private boolean creditCard;
+
+    private String fundClassCode;
 
     // use internal
     @JsonIgnore

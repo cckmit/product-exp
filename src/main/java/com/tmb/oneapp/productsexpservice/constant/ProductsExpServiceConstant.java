@@ -273,6 +273,8 @@ public class ProductsExpServiceConstant {
     public static final String REDEEM = "Redeem";
     public static final String SWITCH = "Switch";
     public static final String ACTIVITY_LOG_PURCHASE_TYPE = "Purchase";
+    public static final String INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT = "800";
+    public static final String INVESTMENT_FUND_CLASS_CODE_RMF_MERCHANT = "900";
 
 
     /* INVESTMENT CREDIT CARD FLAG */
@@ -280,6 +282,7 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_CREDIT_CARD_SUP_TYPE = "sup";
     public static final String INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND = "Y";
     public static final String INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND = "N";
+    public static final String INVESTMENT_CREDIT_CARD_GROUP_ID = "1";
 
     public static final String C2G = "c2g";
     public static final String RC = "rc";
