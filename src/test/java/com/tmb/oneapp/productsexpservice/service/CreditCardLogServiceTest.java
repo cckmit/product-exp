@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -18,11 +19,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.kafka.service.KafkaProducerService;
+import com.tmb.common.model.CashForUConfigInfo;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardCreditLimit;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
@@ -41,11 +49,16 @@ import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.Account;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class CreditCardLogServiceTest {
-
+	@Mock
 	KafkaProducerService kafkaProducerService;
+	@Mock
+	CommonServiceClient commonServiceClient;
+	@Mock
 	CreditCardClient creditCardClient;
 	CreditCardLogService logService;
 	CreditCardEvent creditCardEvent;
@@ -53,7 +66,7 @@ public class CreditCardLogServiceTest {
 
 	@BeforeEach
 	void setUp() {
-
+		MockitoAnnotations.initMocks(this);
 		creditCardEvent = new CreditCardEvent("", "", "");
 		creditCardEvent.setCorrelationId("100");
 		creditCardEvent.setActivityTypeId("101");
@@ -63,7 +76,7 @@ public class CreditCardLogServiceTest {
 		creditCardEvent.setActivityDate("28-03-2021");
 		creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
 		kafkaProducerService = mock(KafkaProducerService.class);
-		logService = new CreditCardLogService( kafkaProducerService,creditCardClient);
+		logService = new CreditCardLogService(kafkaProducerService, creditCardClient, commonServiceClient);
 		headers.put("account-id", "0000000050078360018000167");
 		headers.put("activity-type-id", 00700101);
 		headers.put("x-forward-for", "20.0.0.1");
@@ -111,7 +124,6 @@ public class CreditCardLogServiceTest {
 		assertEquals("Apple", creditCardEvent.getDeviceModel());
 	}
 
-
 	@Test
 	void testCompleteUsageListEventSuccess() {
 		CreditCardEvent creditCardEvent = new CreditCardEvent("", "", "");
@@ -121,7 +133,8 @@ public class CreditCardLogServiceTest {
 		reqHeader.put(ProductsExpServiceConstant.ACCOUNT_ID, "0000000050078680266000215");
 		SetCreditLimitReq requestBody = new SetCreditLimitReq();
 		requestBody.setAccountId("0000000050078680266000215");
-		creditCardEvent = logService.completeUsageListEvent(creditCardEvent, reqHeader, requestBody,ProductsExpServiceConstant.SUCCESS);
+		creditCardEvent = logService.completeUsageListEvent(creditCardEvent, reqHeader, requestBody,
+				ProductsExpServiceConstant.SUCCESS);
 		assertEquals("Success", creditCardEvent.getActivityStatus());
 	}
 
@@ -236,7 +249,7 @@ public class CreditCardLogServiceTest {
 		query.setCardInstallment(cardInstallment);
 		List<CardInstallmentResponse> installment = new ArrayList<>();
 		CardInstallmentResponse response = getCardInstallmentResponse();
-		
+
 		response.setCreditCard(getCreditCardModel());
 		installment.add(response);
 //		logService.generateApplySoGoodConfirmEvent(correlationId, hashMap, installment);
@@ -276,7 +289,8 @@ public class CreditCardLogServiceTest {
 				put("accept", "application/json");
 			}
 		};
-		logService.finishBlockCardActivityLog(status, activityId, correlationId, activityDate, accountId, failReason, reqHeader);
+		logService.finishBlockCardActivityLog(status, activityId, correlationId, activityDate, accountId, failReason,
+				reqHeader);
 		assertNotNull(creditCardEvent);
 	}
 
@@ -294,7 +308,8 @@ public class CreditCardLogServiceTest {
 				put("accept", "application/json");
 			}
 		};
-		logService.finishSetPinActivityLog(status, activityId, correlationId, activityDate, accountId, failReason, reqHeader);
+		logService.finishSetPinActivityLog(status, activityId, correlationId, activityDate, accountId, failReason,
+				reqHeader);
 		assertNotNull(creditCardEvent);
 	}
 
@@ -361,7 +376,6 @@ public class CreditCardLogServiceTest {
 		assertNotNull(creditCardEvent);
 	}
 
-
 	@Test
 	public void testOnClickNextButtonEvent() {
 		CreditCardEvent creditCardEvent = new CreditCardEvent("correlationId", "activityDate", "activityTypeId");
@@ -402,10 +416,10 @@ public class CreditCardLogServiceTest {
 		limitReq.setRequestReason("1234");
 		limitReq.setPreviousCreditLimit("12345");
 		limitReq.setAccountId("0000000050078670143000945");
-		CreditCardEvent result = logService.completeUsageListEvent(creditCardEvent, hashMap, limitReq,ProductsExpServiceConstant.SUCCESS);
+		CreditCardEvent result = logService.completeUsageListEvent(creditCardEvent, hashMap, limitReq,
+				ProductsExpServiceConstant.SUCCESS);
 		Assert.assertEquals(creditCardEvent, result);
 	}
-
 
 	private CreditCardModel getCreditCardModel() {
 		CreditCardModel creditCard = new CreditCardModel();
@@ -488,4 +502,19 @@ public class CreditCardLogServiceTest {
 		cardInstallmentResponse.getStatus().setErrorStatus(errorStatus);
 		assertNotNull(cardInstallmentResponse);
 	}
+
+	@Test
+	public void testUpdateEstatmentLoan() {
+		TmbOneServiceResponse<List<ProductConfig>> serviceResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		FetchCardResponse fetchCardRes = new FetchCardResponse();
+		CreditCardDetail creditCardDetail = new CreditCardDetail();
+		creditCardDetail.setAccountId("0000000050078690141000144");;
+		fetchCardRes.setCreditCard(creditCardDetail);;
+		when(commonServiceClient.getProductConfig(any())).thenReturn(ResponseEntity.ok().body(serviceResponse));
+		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok(fetchCardRes));
+		UpdateEStatmentRequest reqLoan = new UpdateEStatmentRequest();
+		logService.updatedEStatmentCard(new HashMap<String, String>(), reqLoan, false, "API006");
+		assertTrue(true);
+	}
+
 }

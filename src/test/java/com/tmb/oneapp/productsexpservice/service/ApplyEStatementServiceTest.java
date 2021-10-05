@@ -45,7 +45,7 @@ public class ApplyEStatementServiceTest {
 	@Mock
 	AccountRequestClient accountReqClient;
 	@Mock
-	ActivitylogService activitylogService;
+	CreditCardLogService activitylogService;
 
 	@BeforeEach
 	void setUp() {

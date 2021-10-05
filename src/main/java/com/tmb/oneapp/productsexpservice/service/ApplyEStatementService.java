@@ -37,7 +37,7 @@ public class ApplyEStatementService {
 	private CustomerServiceClient customerServiceClient;
 	private CreditCardClient creditCardClient;
 	private AccountRequestClient accountReqClient;
-	private ActivitylogService activitylogService;
+	private CreditCardLogService activitylogService;
 	public static final String CREDIT_CARD_TYPE = "1";
 	public static final String FLASH_CARD_TYPE = "2";
 
@@ -55,7 +55,7 @@ public class ApplyEStatementService {
 	private String groupLoanProductEn;
 
 	public ApplyEStatementService(CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
-			AccountRequestClient accountReqClient, ActivitylogService activitylogService) {
+			AccountRequestClient accountReqClient, CreditCardLogService activitylogService) {
 		this.customerServiceClient = customerServiceClient;
 		this.creditCardClient = creditCardClient;
 		this.accountReqClient = accountReqClient;
@@ -227,10 +227,11 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @throws TMBCommonException 
 	 * @throws Exception
 	 */
 	private void updateEStatementOnSilverLake(Map<String, String> requestHeaders, String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq) throws Exception {
+			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException{
 		Map<String, String> headers = new HashMap<>();
 		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
