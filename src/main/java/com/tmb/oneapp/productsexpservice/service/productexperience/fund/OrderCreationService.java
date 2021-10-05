@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -24,6 +25,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.r
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class OrderCreationService {
+public class OrderCreationService extends TmbErrorHandle {
 
     private static final TMBLogger<OrderCreationService> logger = new TMBLogger<>(OrderCreationService.class);
 
@@ -65,7 +67,7 @@ public class OrderCreationService {
     @LogAround
     public TmbOneServiceResponse<OrderCreationPaymentResponse> makeTransaction(String correlationId,
                                                                                String crmId,
-                                                                               OrderCreationPaymentRequestBody request){
+                                                                               OrderCreationPaymentRequestBody request) throws TMBCommonException {
         TmbOneServiceResponse<OrderCreationPaymentResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
 
@@ -144,11 +146,17 @@ public class OrderCreationService {
             } else {
                 activityLogStatus = ActivityLogStatus.FAILED.getStatus();
                 enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
+                tmbResponseErrorHandle(response.getBody().getStatus());
             }
 
             tmbOneServiceResponse.setData(response.getBody().getData());
-        }catch (Exception ex){
-
+        }catch (TMBCommonException ex){
+            throw ex;
+        }
+        catch (Exception ex){
+            tmbOneServiceResponse.setStatus(null);
+            tmbOneServiceResponse.setData(null);
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
         }
 
         return tmbOneServiceResponse;

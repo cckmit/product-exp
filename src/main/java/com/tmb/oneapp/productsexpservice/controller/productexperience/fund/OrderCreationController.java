@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
@@ -36,7 +37,7 @@ public class OrderCreationController {
     public ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> orderCreationPayment(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody OrderCreationPaymentRequestBody request) {
+            @Valid @RequestBody OrderCreationPaymentRequestBody request) throws TMBCommonException {
 
         TmbOneServiceResponse<OrderCreationPaymentResponse> oneServiceResponse =
                 orderCreationService.makeTransaction(correlationId, crmId, request);
