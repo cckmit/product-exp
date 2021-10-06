@@ -18,7 +18,9 @@ import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.Ek
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.BuyFlowFirstTrade;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
@@ -391,6 +393,60 @@ public class AlternativeService {
             status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
+        }
+        return status;
+    }
+
+    /**
+     * Method validateAccountRedeemtion method validate customer have an account
+     *
+     * @param correlationId
+     * @param crmId
+     * @param status
+     * @return TmbStatus
+     */
+    @LogAround
+    public TmbStatus validateAccountRedeemtion(String correlationId, String crmId, TmbStatus status) {
+        try{
+            Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
+            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedeemtionResponse =
+                    investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest,crmId);
+
+            if(StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
+                    StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())){
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            }
+
+        }catch (Exception ex){
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        }
+        return status;
+    }
+
+    /**
+     * Method validateAccountRedeemtion method validate customer have an account
+     *
+     * @param correlationId
+     * @param crmId
+     * @param status
+     * @return TmbStatus
+     */
+    @LogAround
+    public TmbStatus validateFundOffShelf(String correlationId, String crmId,FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
+        try{
+            Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
+            investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest,fundRuleRequestBody);
+        }catch (Exception ex){
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
     }
