@@ -15,4 +15,6 @@ public class Fee {
 
     private String feeType;
 
+    private String paymentFee;
+
 }

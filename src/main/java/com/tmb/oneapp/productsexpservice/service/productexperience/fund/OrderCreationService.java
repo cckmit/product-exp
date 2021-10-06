@@ -5,7 +5,6 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPinIsCorrectActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -19,12 +18,14 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDeta
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseBankData;
 import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.processfirsttrade.ProcessFirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Card;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Merchant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
+import com.tmb.oneapp.productsexpservice.model.productexperience.saveordercreation.SaveOrderCreationRequestBody;
 import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -140,8 +141,8 @@ public class OrderCreationService extends TmbErrorHandle {
             String activityLogStatus = "";
             if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
                 activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
-//            saveConfirmResponse(response.getBody(), request.getOrderAmount());
-//            processFirstTrade(request, response.getBody(), correlationId);
+                saveOrderPayment(investmentRequestHeader,response.getBody(), request.getOrderAmount());
+                processFirstTrade(investmentRequestHeader,request, response.getBody().getData(), correlationId);
                 enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
             } else {
                 activityLogStatus = ActivityLogStatus.FAILED.getStatus();
@@ -160,6 +161,52 @@ public class OrderCreationService extends TmbErrorHandle {
         }
 
         return tmbOneServiceResponse;
+    }
+
+    private void processFirstTrade(Map<String, String> investmentRequestHeader,
+                                   OrderCreationPaymentRequestBody request,
+                                   OrderCreationPaymentResponse response,
+                                   String correlationId) {
+        try {
+
+            ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader,
+                    ProcessFirstTradeRequestBody.builder()
+                            .portfolioNumber(request.getPortfolioNumber())
+                            .fundHouseCode(request.getFundHouseCode())
+                            .fundCode(request.getFundCode())
+                            .orderId(response.getOrderId())
+                            .effectiveDate(response.getEffectiveDate())
+                            .build());
+
+            if (processFirstTradeResponse.getStatusCode() != null && processFirstTradeResponse.getBody().getStatus() != null) {
+                logger.info("finish sending request to processFirstTrade with {} status  ", processFirstTradeResponse.getBody().getStatus().getCode());
+            }
+
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        }
+    }
+
+    private void saveOrderPayment(Map<String, String> investmentRequestHeader, TmbOneServiceResponse<OrderCreationPaymentResponse> body, String orderAmount) {
+        try {
+            OrderCreationPaymentResponse response = body.getData();
+
+            ResponseEntity<TmbOneServiceResponse<String>> saveOrderResponse = investmentRequestClient.saveOrderPayment(investmentRequestHeader,SaveOrderCreationRequestBody.builder()
+                    .orderId(response.getOrderId())
+                    .effectiveDate(response.getEffectiveDate())
+                    .orderDateTime(response.getOrderDateTime())
+                    .workingHour(response.getWorkingHour())
+                    .orderAmount(orderAmount)
+                    .paymentObject(response.getPaymentObject())
+                    .build());
+
+            if (saveOrderResponse.getStatusCode() != null && saveOrderResponse.getBody().getStatus() != null) {
+                logger.info("finish sending request to save orderpayment with {} status  ", saveOrderResponse.getBody().getStatus().getCode());
+            }
+
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        }
     }
 
     /***

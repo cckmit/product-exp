@@ -14,11 +14,20 @@ public class OrderCreationPaymentResponse {
 
     @JsonProperty(value = "orderID")
     private String orderId;
+
     private String orderDateTime;
+
     private String effectiveDate;
+
     private String workingHour;
+
     private String accountRedeem;
+
     private String frontEndFee;
+
     private String paymentDate;
+
+    @JsonProperty(value = "paymentobj",access = JsonProperty.Access.WRITE_ONLY)
+    private OrderConfirmPayment paymentObject;
 
 }
