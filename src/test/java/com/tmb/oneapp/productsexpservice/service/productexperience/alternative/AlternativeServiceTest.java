@@ -16,8 +16,10 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.res
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.account.redeem.response.AccountRedeemResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.AddressWithPhone;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
+import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -383,6 +385,37 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+    }
+
+    @Test
+    void should_return_status_code_0000_when_call_validateFundOffShelf() throws Exception {
+        // Given
+        mockCommonConfig();
+        TmbOneServiceResponse<FundRuleResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
+        tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.callInvestmentFundRuleService(any(),any())).thenReturn(ResponseEntity.ok(tmbOneServiceResponse));
+
+        // When
+        TmbStatus actual = alternativeService.validateFundOffShelf(correlationId, "crmid", FundRuleRequestBody.builder().build(), TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+    }
+
+    @Test
+    void should_return_status_code_2000005_when_call_validateFundOffShelf() throws Exception {
+        // Given
+        mockCommonConfig();
+        when(investmentRequestClient.callInvestmentFundRuleService(any(),any())).thenThrow(MockitoException.class);
+
+        // When
+        TmbStatus actual = alternativeService.validateFundOffShelf(correlationId, "crmid", FundRuleRequestBody.builder().build(), TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc(), actual.getDescription());
+
     }
 
     @Test
