@@ -22,7 +22,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.accoun
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
-import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
