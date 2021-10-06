@@ -142,7 +142,7 @@ public class OrderCreationService extends TmbErrorHandle {
             if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
                 activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
                 saveOrderPayment(investmentRequestHeader, response.getBody(), request.getOrderAmount());
-                processFirstTrade(investmentRequestHeader, request, response.getBody().getData(), correlationId);
+                processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
                 enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
             } else {
                 activityLogStatus = ActivityLogStatus.FAILED.getStatus();
@@ -164,8 +164,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
     private void processFirstTrade(Map<String, String> investmentRequestHeader,
                                    OrderCreationPaymentRequestBody request,
-                                   OrderCreationPaymentResponse response,
-                                   String correlationId) {
+                                   OrderCreationPaymentResponse response) {
         try {
             ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader,
                     ProcessFirstTradeRequestBody.builder()
@@ -176,9 +175,7 @@ public class OrderCreationService extends TmbErrorHandle {
                             .effectiveDate(response.getEffectiveDate())
                             .build());
 
-            if (processFirstTradeResponse.getStatusCode() != null && processFirstTradeResponse.getBody().getStatus() != null) {
-                logger.info("finish sending request to processFirstTrade with {} status  ", processFirstTradeResponse.getBody().getStatus().getCode());
-            }
+            logger.info("finish sending request to processFirstTrade with {} status  ", processFirstTradeResponse.getBody().getStatus().getCode());
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -197,9 +194,7 @@ public class OrderCreationService extends TmbErrorHandle {
                     .paymentObject(response.getPaymentObject())
                     .build());
 
-            if (saveOrderResponse.getStatusCode() != null && saveOrderResponse.getBody().getStatus() != null) {
-                logger.info("finish sending request to save orderpayment with {} status  ", saveOrderResponse.getBody().getStatus().getCode());
-            }
+            logger.info("finish sending request to save orderpayment with {} status  ", saveOrderResponse.getBody().getStatus().getCode());
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
