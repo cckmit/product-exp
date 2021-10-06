@@ -15,7 +15,9 @@ public enum AlternativeBuySellSwitchDcaErrorEnums {
     CUSTOMER_SUIT_EXPIRED("2000004", "Customer Suitability Expired", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     CASA_DORMANT("2000003", "Can not do the transaction because you account is not found or account status is not ready for any transaction.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     CAN_NOT_BUY_FUND("2000006", "Cannot buy the fund", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
-    ID_CARD_EXPIRED("2000009", "Your ID card has expired. Can not do the transaction.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC);
+    ID_CARD_EXPIRED("2000009", "Your ID card has expired. Can not do the transaction.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
+    NO_ACCOUNT_REDEEMTION("2000013","Cannot proceed because your receiving account is not found. Please contact ttb branch.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
+    FUND_OFF_SHELF("2000005","This fund is not allow to purchase.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC);;
 
     private static final String ERROR_DESC = "error";
     private static final String ERROR_CODE_200018 = "2000018";

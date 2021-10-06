@@ -415,16 +415,16 @@ public class AlternativeService {
 
             if(StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
                     StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())){
-                status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-                status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-                status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
 
         }catch (Exception ex){
-            status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
@@ -444,9 +444,9 @@ public class AlternativeService {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
             investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest,fundRuleRequestBody);
         }catch (Exception ex){
-            status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
