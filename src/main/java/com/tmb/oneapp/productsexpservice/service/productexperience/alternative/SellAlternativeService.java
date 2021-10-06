@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.abstractservice.SellAndSwitchAbstractService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -30,6 +31,11 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
             tmbOneServicesResponse.setStatus(status);
 
             tmbOneServicesResponse = validateSellAndSwitch(correlationId, customerInfo, tmbOneServicesResponse, status);
+            if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServicesResponse;
+            }
+
+            tmbOneServicesResponse.setStatus(alternativeService.validateAccountRedeemtion(correlationId,crmId, status));
             if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServicesResponse;
             }
