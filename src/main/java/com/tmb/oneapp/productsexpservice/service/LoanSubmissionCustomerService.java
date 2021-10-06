@@ -30,7 +30,7 @@ public class LoanSubmissionCustomerService {
     private final CustomerExpServiceClient customerExpServiceClient;
     private static final String RC01 = "RC01";
 
-    public LoanSubmissionResponse getCustomerInfo(String correlationId, String crmId) throws TMBCommonException {
+    public LoanSubmissionResponse getCustomerInfo(String correlationId, String crmId) throws Exception {
         List<DepositAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
         TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
@@ -132,40 +132,28 @@ public class LoanSubmissionCustomerService {
             }
             return oneTmbOneServiceResponse.getData().getDepositAccountLists();
 
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             logger.error("get account saving fail: ", e);
             throw e;
-        } catch (Exception ex) {
-            logger.error("get account saving fail: ", ex);
-            throw ex;
         }
     }
 
     public TmbOneServiceResponse<List<LoanOnlineInterestRate>> getInterestRateAll() {
         TmbOneServiceResponse<List<LoanOnlineInterestRate>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
-        try {
-            ResponseEntity<TmbOneServiceResponse<List<LoanOnlineInterestRate>>> nodeTextResponse = commonServiceClient.getInterestRateAll();
-            oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
-            return oneTmbOneServiceResponse;
-
-        } catch (Exception ex) {
-            throw ex;
-        }
+        ResponseEntity<TmbOneServiceResponse<List<LoanOnlineInterestRate>>> nodeTextResponse = commonServiceClient.getInterestRateAll();
+        oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
+        return oneTmbOneServiceResponse;
 
     }
 
     public TmbOneServiceResponse<List<LoanOnlineRangeIncome>> getRangeIncomeAll() {
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
-        try {
-            ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> nodeTextResponse = commonServiceClient.getRangeIncomeAll();
-            oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
-            return oneTmbOneServiceResponse;
+        ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> nodeTextResponse = commonServiceClient.getRangeIncomeAll();
+        oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
+        return oneTmbOneServiceResponse;
 
-        } catch (Exception e) {
-            throw e;
-        }
     }
 
     private List<String> getCodeNoFixedAccCodes(String correlationId) throws TMBCommonException {
