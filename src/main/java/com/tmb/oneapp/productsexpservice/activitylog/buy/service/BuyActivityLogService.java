@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.r
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * The buy activity log service.
@@ -81,7 +82,6 @@ public class BuyActivityLogService {
 
         activityData.setStatus(status);
         activityData.setOrderId(paymentResponseBody != null ? paymentResponseBody.getOrderId() : null);
-        activityData.setUnitHolderNumber(paymentRequestBody.getPortfolioNumber());
         activityData.setFundName(paymentRequestBody.getFundName());
         activityData.setFundClass(!StringUtils.isEmpty(paymentRequestBody.getFundThaiClassName()) ? paymentRequestBody.getFundThaiClassName() : paymentRequestBody.getFundEnglishClassName());
         activityData.setAmount(paymentRequestBody.getOrderAmount());
