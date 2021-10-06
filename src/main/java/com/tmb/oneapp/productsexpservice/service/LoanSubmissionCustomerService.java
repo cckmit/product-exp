@@ -30,7 +30,7 @@ public class LoanSubmissionCustomerService {
     private final CustomerExpServiceClient customerExpServiceClient;
     private static final String RC01 = "RC01";
 
-    public LoanSubmissionResponse getCustomerInfo(String correlationId, String crmId) throws Exception {
+    public LoanSubmissionResponse getCustomerInfo(String correlationId, String crmId) throws TMBCommonException {
         List<DepositAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
         TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
