@@ -98,68 +98,80 @@ public class OrderCreationService extends TmbErrorHandle {
                 return tmbOneServiceResponse;
             }
 
-            ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
-
-            if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
-                Account toAccount = getAccount(request, commonRequestHeader);
-                request.setToAccount(toAccount);
-                // buy flow
-                if (request.isCreditCard()) {
-                    // creditcard
-                    ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, request.getFromAccount().getAccountId());
-                    CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
-                    request.setCard(Card.builder()
-                            .cardId(creditCard.getCardId())
-                            .cardExpiry(creditCard.getCardInfo().getExpiredBy())
-                            .cardEmbossingName(creditCard.getCardInfo().getCardEmbossingName1())
-                            .productId(creditCard.getProductId())
-                            .productGroupId(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_GROUP_ID)
-                            .build());
-                    String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
-                            .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
-                    request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                    response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-                } else {
-                    // casa account
-                    response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-                }
-
-            } else {
-                // sell or switch flow
-                if (ProductsExpServiceConstant.FULL_REDEEM.equalsIgnoreCase(request.getRedeemType())) {
-                    request.setFullRedemption(ProductsExpServiceConstant.REVERSE_FLAG_Y);
-                }
-
-                if (ProductsExpServiceConstant.AMOUNT_TYPE_IN_PARTIAL_SERVICE.equalsIgnoreCase(request.getRedeemType())) {
-                    request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
-                }
-
-                pushDataToRedis(correlationId, request.getOrderType(), request.getRefId());
-                response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-            }
-
-            String activityLogStatus = "";
-            if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
-                activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
-                saveOrderPayment(investmentRequestHeader, response.getBody(), request.getOrderAmount());
-                processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
-                enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
-            } else {
-                activityLogStatus = ActivityLogStatus.FAILED.getStatus();
-                enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
-                tmbResponseErrorHandle(response.getBody().getStatus());
-            }
-
+            pushDataToRedis(correlationId, request.getOrderType(), request.getRefId());
+            ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response =
+                    processOrderPayment(correlationId, investmentRequestHeader,commonRequestHeader, request);
+            postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request , response);
             tmbOneServiceResponse.setData(response.getBody().getData());
+
         } catch (TMBCommonException ex) {
+
             throw ex;
+
         } catch (Exception ex) {
+
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
+            
         }
 
         return tmbOneServiceResponse;
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader,Map<String, String> commonRequestHeader,OrderCreationPaymentRequestBody request) throws JsonProcessingException {
+        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
+        if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
+            Account toAccount = getAccount(request, commonRequestHeader);
+            request.setToAccount(toAccount);
+            // buy flow
+            if (request.isCreditCard()) {
+                // creditcard
+                ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, request.getFromAccount().getAccountId());
+                CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
+                request.setCard(Card.builder()
+                        .cardId(creditCard.getCardId())
+                        .cardExpiry(creditCard.getCardInfo().getExpiredBy())
+                        .cardEmbossingName(creditCard.getCardInfo().getCardEmbossingName1())
+                        .productId(creditCard.getProductId())
+                        .productGroupId(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_GROUP_ID)
+                        .build());
+                String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
+                        .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
+                request.setMerchant(Merchant.builder().merchantId(merchantId).build());
+                response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+            } else {
+                // casa account
+                response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+            }
+
+        } else {
+            // sell or switch flow
+            if (ProductsExpServiceConstant.FULL_REDEEM.equalsIgnoreCase(request.getRedeemType())) {
+                request.setFullRedemption(ProductsExpServiceConstant.REVERSE_FLAG_Y);
+            }
+
+            if (ProductsExpServiceConstant.AMOUNT_TYPE_IN_PARTIAL_SERVICE.equalsIgnoreCase(request.getRedeemType())) {
+                request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
+            }
+
+            response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+        }
+        return response;
+    }
+
+    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request,  ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) throws TMBCommonException {
+        String activityLogStatus = "";
+        if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
+            activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
+            saveOrderPayment(investmentRequestHeader, response.getBody(), request.getOrderAmount());
+            processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
+            enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
+        } else {
+            activityLogStatus = ActivityLogStatus.FAILED.getStatus();
+            enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
+            tmbResponseErrorHandle(response.getBody().getStatus());
+        }
     }
 
     private void processFirstTrade(Map<String, String> investmentRequestHeader,

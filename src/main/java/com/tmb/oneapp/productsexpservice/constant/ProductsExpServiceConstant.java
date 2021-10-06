@@ -279,6 +279,9 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT = "800";
     public static final String INVESTMENT_FUND_CLASS_CODE_RMF_MERCHANT = "900";
 
+	/* INVESTMENT ACTIVITY LOG */
+	public static final String INVESTMENT_SWITCH_FUND_TYPE = "Switch fund";
+	public static final String INVESTMENT_SELL_FUND_TYPE = "Sell fund";
 
     /* INVESTMENT CREDIT CARD FLAG */
     public static final String INVESTMENT_CREDIT_CARD_ACTIVE_STATUS = "active";
