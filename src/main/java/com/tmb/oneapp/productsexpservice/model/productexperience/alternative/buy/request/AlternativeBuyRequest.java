@@ -27,4 +27,9 @@ public class AlternativeBuyRequest {
     private String fundName;
 
     private String fundEnglishClassName;
+
+    private String fundHouseCode;
+
+    private String tranType;
+
 }
