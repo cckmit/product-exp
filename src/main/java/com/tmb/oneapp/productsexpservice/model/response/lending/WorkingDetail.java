@@ -17,7 +17,7 @@ public class WorkingDetail {
     private String employmentMonth;
     private String rmOccupation;
     private String employmentOccupation;
-    private String proffesional;
+    private String professional;
     private String contractEmployedFlag;
     private String businessType;
     private String businessSubType;
