@@ -508,12 +508,9 @@ public class AlternativeService {
             CommonData commonData = getInvestmentConfig(correlationId);
             if(ProductsExpServiceConstant.INVESTMENT_ENABLE_CALRISK.equals(commonData.getEnableCalRisk())){
                 EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId, customerInfo);
-                if(StringUtils.isEmpty(customerRiskLevel)){
-                    maxRiskRm = "";
-                }else{
+                if(customerRiskLevel != null){
                     maxRiskRm = customerRiskLevel.getMaxRiskRM();
                 }
-
             }else{
                 maxRiskRm = customerInfo.getCustomerRiskLevel();
             }
