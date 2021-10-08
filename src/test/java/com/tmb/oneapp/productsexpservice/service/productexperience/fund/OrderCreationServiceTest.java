@@ -207,6 +207,49 @@ public class OrderCreationServiceTest {
 
     }
 
+    @Test
+    void sell_or_switch_flow_creditcard_should_return_success_when_call_make_transaction_with_correlationId_and_crm_id_and_ordercreation_request_body() throws TMBCommonException {
 
+        // given
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+        response.setStatus(TmbStatusUtil.successStatus());
+        response.setData("true");
+        when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+        TmbOneServiceResponse<String> pinVerifyResponse = new TmbOneServiceResponse<>();
+        pinVerifyResponse.setData("not true");
+        when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
+
+        TmbOneServiceResponse<OrderCreationPaymentResponse> orderCreationResponse = new TmbOneServiceResponse<>();
+        orderCreationResponse.setStatus(TmbStatusUtil.successStatus());
+        orderCreationResponse.setData(OrderCreationPaymentResponse.builder().build());
+        when(investmentRequestClient.createOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(orderCreationResponse));
+
+        TmbOneServiceResponse<String> saveOrderResponse = new TmbOneServiceResponse<>();
+        saveOrderResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.saveOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(saveOrderResponse));
+
+        TmbOneServiceResponse<String> processFirstTradeResponse = new TmbOneServiceResponse<>();
+        processFirstTradeResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.processFirstTrade(any(),any())).thenReturn(ResponseEntity.ok(processFirstTradeResponse));
+
+        // when
+        OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
+                .orderType("S")
+                .creditCard(false)
+                .fromAccount(Account.builder().accountId("accid").build())
+                .build();
+        TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
+                orderCreationService.makeTransaction(correlationId,crmId, request);
+
+        // then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getStatus().getCode());
+        verify(cacheServiceClient,times(1)).putCacheByKey(any(),any());
+        // after payment
+        verify(investmentRequestClient,times(1)).saveOrderPayment(any(),any());
+        verify(investmentRequestClient,times(1)).processFirstTrade(any(),any());
+        verify(enterPinIsCorrectActivityLogService,times(1)).save(any(),any(),any(),any(),any(),any());
+
+    }
 
 }
