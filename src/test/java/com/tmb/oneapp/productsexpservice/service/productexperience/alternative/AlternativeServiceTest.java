@@ -33,7 +33,6 @@ import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -116,8 +115,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDescription(), actual.getDescription());
         assertEquals("00:00", actual.getStartTime());
         assertEquals("00:00", actual.getEndTime());
     }
@@ -130,8 +129,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -230,8 +229,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -262,8 +261,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -379,8 +378,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -393,18 +392,16 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDescription(), actual.getDescription());
     }
-
-
 
 
     @Test
     void should_return_status_code_2000013_when_call_validateAccountRedeemtion() throws Exception {
         // Given
         mockCommonConfig();
-        when(investmentRequestClient.getCustomerAccountRedeem(any(),any())).thenThrow(MockitoException.class);
+        when(investmentRequestClient.getCustomerAccountRedeem(any(), any())).thenThrow(MockitoException.class);
 
         // When
         TmbStatus actual = alternativeService.validateAccountRedeemtion(correlationId, "crmid", TmbStatusUtil.successStatus());
@@ -423,7 +420,7 @@ public class AlternativeServiceTest {
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         AccountRedeemResponseBody response = AccountRedeemResponseBody.builder().accountRedeem("1212312121").build();
         tmbOneServiceResponse.setData(response);
-        when(investmentRequestClient.getCustomerAccountRedeem(any(),any())).thenReturn(ResponseEntity.ok(tmbOneServiceResponse));
+        when(investmentRequestClient.getCustomerAccountRedeem(any(), any())).thenReturn(ResponseEntity.ok(tmbOneServiceResponse));
 
         // When
         TmbStatus actual = alternativeService.validateAccountRedeemtion(correlationId, "crmid", TmbStatusUtil.successStatus());
@@ -438,7 +435,7 @@ public class AlternativeServiceTest {
         mockCommonConfig();
         TmbOneServiceResponse<FundRuleResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-        when(investmentRequestClient.callInvestmentFundRuleService(any(),any())).thenReturn(ResponseEntity.ok(tmbOneServiceResponse));
+        when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenReturn(ResponseEntity.ok(tmbOneServiceResponse));
 
         // When
         TmbStatus actual = alternativeService.validateFundOffShelf(correlationId, "crmid", FundRuleRequestBody.builder().build(), TmbStatusUtil.successStatus());
@@ -451,7 +448,7 @@ public class AlternativeServiceTest {
     void should_return_status_code_2000005_when_call_validateFundOffShelf() throws Exception {
         // Given
         mockCommonConfig();
-        when(investmentRequestClient.callInvestmentFundRuleService(any(),any())).thenThrow(MockitoException.class);
+        when(investmentRequestClient.callInvestmentFundRuleService(any(), any())).thenThrow(MockitoException.class);
 
         // When
         TmbStatus actual = alternativeService.validateFundOffShelf(correlationId, "crmid", FundRuleRequestBody.builder().build(), TmbStatusUtil.successStatus());
@@ -464,26 +461,50 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000034_when_call_validateOpenPortfolioService_validate_customer_not_fill_fatca_form() throws Exception {
+    void should_return_status_code_2000032_when_call_validateOpenPortfolioService_validate_customer_not_fill_fatca_form() {
         // Given
         // When
         TmbStatus actual = alternativeService.validateFatcaFlagNotValid("0", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDescription(), actual.getDescription());
     }
 
     @Test
-    void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired() throws Exception {
+    void should_return_status_code_2000034_when_call_validate_fatca_flag_not_valid_given_fatca_flag_8() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("8", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000034_when_call_validate_fatca_flag_not_valid_given_fatca_flag_9() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("9", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired() {
         // Given
         // When
         TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0", "2021-07-08", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription(), actual.getDescription());
     }
 }

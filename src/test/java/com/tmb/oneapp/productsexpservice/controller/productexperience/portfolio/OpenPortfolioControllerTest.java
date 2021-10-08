@@ -101,9 +101,9 @@ class OpenPortfolioControllerTest {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> responseService = new TmbOneServiceResponse<ValidateOpenPortfolioResponse>();
         responseService.setStatus(new TmbStatus(
                 AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
-                AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
+                AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMessage(),
                 ProductsExpServiceConstant.SERVICE_NAME,
-                AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc()));
+                AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription()));
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
@@ -116,8 +116,8 @@ class OpenPortfolioControllerTest {
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getBody().getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(), actual.getBody().getStatus().getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc(), actual.getBody().getStatus().getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMessage(), actual.getBody().getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription(), actual.getBody().getStatus().getDescription());
         assertNull(actual.getBody().getData());
     }
 
