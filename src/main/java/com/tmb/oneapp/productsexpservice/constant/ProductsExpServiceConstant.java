@@ -249,14 +249,46 @@ public class ProductsExpServiceConstant {
 	public static final String INVESTMENT_PORTFOLIO_NORMAL_TYPE = "n";
 	public static final String INVESTMENT_PORTFOLIO_JOINT_TYPE = "j";
 
-	/* INVESTMENT FIRST TRADE FLAG */
-	public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
+    /* INVESTMENT FIRST TRADE FLAG */
+    public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
 
-	/* INVESTMENT CREDIT CARD FLAG */
-	public static final String INVESTMENT_CREDIT_CARD_ACTIVE_STATUS = "active";
-	public static final String INVESTMENT_CREDIT_CARD_SUP_TYPE = "sup";
-	public static final String INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND = "Y";
-	public static final String INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND = "N";
+    /* INVESTMENT ORDER CREATION */
+    public static final String INVESTMENT_PIN_INVALID_CODE = "VERIFY_PIN_REF_ID_";
+    public static final String INVESTMENT_VERIFY_PIN_REF_ID = "msg_al_19";
+    public static final String INVESTMENT_PIN_INVALID_MSG = "Please enter PIN";
+    public static final String PURCHASE_TRANSACTION_LETTER_TYPE = "P";
+    public static final String REDEEM_TRANSACTION_LETTER_TYPE = "R";
+    public static final String SWITCH_TRANSACTION_LETTER_TYPE = "S";
+    public static final String FULL_REDEEM = "F";
+    public static final String REVERSE_FLAG_Y = "Y";
+    public static final String REVERSE_FLAG_N = "N";
+    public static final String AMOUNT_TYPE_IN_PARTIAL_SERVICE = "A";
+    public static final String AMOUNT_TYPE_IN_ORDER_SERVICE = "M";
+    public static final String PIN_DUPLICATE_ERROR_CODE = "msg_al_18";
+    public static final String PIN_DUPLICATE_ERROR_MESSAGE = "Your internet connection is not stable. To prevent duplicate transaction, please recheck" +
+            " if this transaction has already appeared as your pending transaction.";
+    public static final Integer TTL_REDIS = 300;
+    public static final String ACTIVITY_LOG_AMOUNT = "Amount";
+    public static final String ACTIVITY_LOG_UNIT = "Unit";
+    public static final String ACTIVITY_LOG_APP_VERSION = "1.0.0";
+    public static final String ACTIVITY_LOG_CHANNEL = "mb";
+    public static final String ACTIVITY_LOG_FULL = "Full";
+    public static final String REDEEM = "Redeem";
+    public static final String SWITCH = "Switch";
+    public static final String ACTIVITY_LOG_PURCHASE_TYPE = "Purchase";
+    public static final String INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT = "800";
+    public static final String INVESTMENT_FUND_CLASS_CODE_RMF_MERCHANT = "900";
+
+	/* INVESTMENT ACTIVITY LOG */
+	public static final String INVESTMENT_SWITCH_FUND_TYPE = "Switch fund";
+	public static final String INVESTMENT_SELL_FUND_TYPE = "Sell fund";
+
+    /* INVESTMENT CREDIT CARD FLAG */
+    public static final String INVESTMENT_CREDIT_CARD_ACTIVE_STATUS = "active";
+    public static final String INVESTMENT_CREDIT_CARD_SUP_TYPE = "sup";
+    public static final String INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND = "Y";
+    public static final String INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND = "N";
+    public static final String INVESTMENT_CREDIT_CARD_GROUP_ID = "1";
 
 	public static final String C2G = "c2g";
 	public static final String RC = "rc";
@@ -272,4 +304,5 @@ public class ProductsExpServiceConstant {
 	public static final String FINAL_APPROVAL = "final-approval";
 	public static final String CONFIRM_APPLICATION = "confirm-application";
 	public static final String LOAN_CAL = "loan-cal";
+
 }

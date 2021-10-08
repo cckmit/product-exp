@@ -25,7 +25,21 @@ public class BuyActivityLog extends BaseEvent {
     @JsonProperty("activity_type")
     private String activityType;
 
+    /* Enter Pin Is Correct */
+    private String status;
+
+    @JsonProperty("order_id")
+    private String orderId;
+
+    @JsonProperty("amount")
+    private String amount;
+
+    @JsonProperty("from_bank_account")
+    private String fromBankAccount;
+
     public BuyActivityLog(String correlationId, String activityDate, String activityTypeId) {
         super(correlationId, activityDate, activityTypeId);
     }
+
+
 }

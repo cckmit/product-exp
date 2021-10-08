@@ -145,4 +145,5 @@ public interface CreditCardClient {
 	
 	@GetMapping(value = "/apis/creditcard/internal/lending/config/servicehour")
 	ResponseEntity<TmbOneServiceResponse<CreditCardServiceHour>> getCreditCardServiceHour();
+
 }

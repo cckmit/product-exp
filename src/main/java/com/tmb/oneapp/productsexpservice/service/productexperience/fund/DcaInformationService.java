@@ -80,7 +80,9 @@ public class DcaInformationService extends TmbErrorHandle {
         }
     }
 
-    private TmbOneServiceResponse<DcaInformationDto> mappingDcaInformationDto(ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse, ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody, TmbOneServiceResponse<DcaInformationDto> dcaInformationDto) {
+    private TmbOneServiceResponse<DcaInformationDto> mappingDcaInformationDto(ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse,
+                                                                              ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody,
+                                                                              TmbOneServiceResponse<DcaInformationDto> dcaInformationDto) {
         FundSummaryBody fundSummaryBody = fundSummaryResponse.getBody().getData();
         List<FundClass> fundClass = fundSummaryBody.getFundClassList().getFundClass();
         List<FundHouse> fundHouseList = fundClass.stream()

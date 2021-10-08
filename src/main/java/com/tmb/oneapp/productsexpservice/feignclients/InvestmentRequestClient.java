@@ -23,12 +23,16 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.fund.processfirsttrade.ProcessFirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.request.FundAllocationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fundallocation.response.FundAllocationResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.request.PortfolioNicknameRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.saveordercreation.SaveOrderCreationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -82,7 +86,7 @@ public interface InvestmentRequestClient {
     /**
      * Call investment fund summary service fund summary response.
      *
-     * @param headers    the headers
+     * @param headers    the headersOrderRequestClient
      * @param unitHolder the unit holder
      * @return the fund summary response
      */
@@ -297,6 +301,32 @@ public interface InvestmentRequestClient {
             @RequestBody FirstTradeRequestBody firstTradeRequestBody);
 
     /**
+     * Call investment for process first trade inquiry service to get process first trade response.
+     *
+     * @param header the headers
+     * @param processFirstTradeRequestBody  the body request
+     * @return the first trade inquiry response
+     */
+    @PostMapping(value = "${investment.service.fund.process.first.trade.inquiry.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<String>> processFirstTrade(
+            @RequestHeader Map<String, String> header,
+            @RequestBody ProcessFirstTradeRequestBody processFirstTradeRequestBody);
+
+    /**
+     * Call investment for save order payment service.
+     *
+     * @param header the headers
+     * @param saveOrderCreationRequestBody  the body request
+     * @return the first trade inquiry response
+     */
+    @PostMapping(value = "${investment.service.fund.save.order.payment.inquiry.url}")
+    @ResponseBody
+    ResponseEntity<TmbOneServiceResponse<String>> saveOrderPayment(
+            @RequestHeader Map<String, String> header,
+            @RequestBody SaveOrderCreationRequestBody saveOrderCreationRequestBody);
+
+    /**
      * Call investment client relationship service to update client relationship.
      *
      * @param header              the headers
@@ -359,9 +389,22 @@ public interface InvestmentRequestClient {
      * @param headers the headers
      * @return the FundListBody response
      */
-
     @PostMapping(value = "${investment.service.fund.listinfo.url}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> callInvestmentListFundInfoService(@RequestHeader Map<String, String> headers);
+
+
+    /**
+     * Call investment order creation service.
+     *
+     * @param header the headers
+     * @param orderCreationPaymentRequestBody the body
+     * @return the FundListBody response
+     */
+    @PostMapping(value = "${investment.service.fund.order.creation.url}")
+    ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> createOrderPayment(
+            @RequestHeader Map<String, String> header,
+            @RequestBody OrderCreationPaymentRequestBody orderCreationPaymentRequestBody);
+
 
 }
