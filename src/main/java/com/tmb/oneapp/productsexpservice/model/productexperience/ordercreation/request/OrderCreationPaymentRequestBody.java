@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -100,11 +101,8 @@ public class OrderCreationPaymentRequestBody {
 
     private String fundClassCode;
 
-    // use internal
-    @JsonIgnore
     private Card card;
 
-    @JsonIgnore
     private Merchant merchant;
 
 }
