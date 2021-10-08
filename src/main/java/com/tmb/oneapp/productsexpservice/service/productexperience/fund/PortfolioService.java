@@ -60,6 +60,9 @@ public class PortfolioService extends TmbErrorHandle {
             UnitHolder unitHolder = new UnitHolder();
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
+            if (ports.isEmpty()) {
+                return PortfolioResponse.builder().portfolioResponseBody(List.of()).build();
+            }
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(headerParameter, unitHolder);
             tmbResponseErrorHandle(summaryByPortResponse.getBody().getStatus());
 
