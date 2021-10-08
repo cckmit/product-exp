@@ -2,6 +2,8 @@ package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.OrderCreationService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -42,9 +44,30 @@ public class OrderCreationControllerTest {
         when(orderCreationService.makeTransaction(any(),any(),any())).thenReturn(response);
 
         // when
-        orderCreationController.orderCreationPayment("corr")
+        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> actual =
+                orderCreationController.orderCreationPayment(correlationId,crmId, OrderCreationPaymentRequestBody.builder().build());
 
         // then
+        assertEquals(HttpStatus.OK,actual.getStatusCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getBody().getStatus().getCode());
+
+    }
+
+    @Test
+    void should_return_notfound_status_when_call_order_creation_payment_with_correlationId_and_crm_id_and_ordercreation_request_body() throws TMBCommonException {
+
+        // given
+        TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse<>();
+        response.setStatus(null);
+        when(orderCreationService.makeTransaction(any(),any(),any())).thenReturn(response);
+
+        // when
+        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> actual =
+                orderCreationController.orderCreationPayment(correlationId,crmId, OrderCreationPaymentRequestBody.builder().build());
+
+        // then
+        assertEquals(HttpStatus.NOT_FOUND,actual.getStatusCode());
+        assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,actual.getBody().getStatus().getCode());
 
     }
 
