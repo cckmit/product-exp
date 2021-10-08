@@ -18,7 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
 import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.loan.LoanSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +73,7 @@ public class LoanSubmissionCustomerServiceTest {
         header1.setResponseCode("MSG_000");
         responseFacility.setHeader(header1);
 
-        TmbOneServiceResponse<List<LoanOnlineInterestRate>> loanOnlineTmbOneServiceResponse = new TmbOneServiceResponse<List<LoanOnlineInterestRate>>();
+        TmbOneServiceResponse<List<LoanOnlineInterestRate>> loanOnlineTmbOneServiceResponse = new TmbOneServiceResponse<>();
         List<LoanOnlineInterestRate> interestRateResponse = new ArrayList<>();
         LoanOnlineInterestRate interestRate = new LoanOnlineInterestRate();
         interestRate.setInterestRate(17);
@@ -88,7 +88,7 @@ public class LoanSubmissionCustomerServiceTest {
         loanOnlineTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                 ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 
-        TmbOneServiceResponse<List<LoanOnlineRangeIncome>> oneServiceResponse = new TmbOneServiceResponse<List<LoanOnlineRangeIncome>>();
+        TmbOneServiceResponse<List<LoanOnlineRangeIncome>> oneServiceResponse = new TmbOneServiceResponse<>();
         List<LoanOnlineRangeIncome> rangeIncomeList = new ArrayList<>();
         LoanOnlineRangeIncome rangeIncome = new LoanOnlineRangeIncome();
         rangeIncome.setRevenueMultiple(5);
@@ -108,7 +108,7 @@ public class LoanSubmissionCustomerServiceTest {
         when(commonServiceClient.getRangeIncomeAll()).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         LoanSubmissionResponse loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","001100000000000000000018593707");
-        Assert.assertNotNull(loanSubmissionResponse);
+        Assertions.assertNotNull(loanSubmissionResponse);
 
     }
 
