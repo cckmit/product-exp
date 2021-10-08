@@ -251,7 +251,7 @@ public class LendingServiceController {
         try {
             ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> response = lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileType, fileName);
             logger.info(
-                    "Success while calling POST /apis/lending-service/document/submit/more. response code:{} body :{}",
+                    "Success while calling DELETE /apis/lending-service/document. response code:{} body :{}",
                     response.getStatusCode(), response.getBody().getData().toString());
             setHeader();
             return ResponseEntity.ok().headers(responseHeaders).body(response.getBody());
