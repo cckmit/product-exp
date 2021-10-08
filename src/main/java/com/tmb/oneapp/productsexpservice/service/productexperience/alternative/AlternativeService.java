@@ -560,6 +560,8 @@ public class AlternativeService {
                     .soi(customerInfo.getOfficeAddressData().getSoi())
                     .subDistrict(customerInfo.getOfficeAddressData().getSubDistrict())
                     .build());
+        }else{
+            ekycRiskCalculateRequest.setOfficeAddress(AddressModel.builder().build());
         }
 
         if(!StringUtils.isEmpty((customerInfo.getPrimaryAddressData()))){
@@ -575,6 +577,8 @@ public class AlternativeService {
                     .soi(customerInfo.getPrimaryAddressData().getSoi())
                     .subDistrict(customerInfo.getPrimaryAddressData().getSubDistrict())
                     .build());
+        }else{
+            ekycRiskCalculateRequest.setPrimaryAddress(AddressModel.builder().build());
         }
 
         if(!StringUtils.isEmpty((customerInfo.getRegisteredAddressData()))){
@@ -590,6 +594,8 @@ public class AlternativeService {
                     .soi(customerInfo.getRegisteredAddressData().getSoi())
                     .subDistrict(customerInfo.getRegisteredAddressData().getSubDistrict())
                     .build());
+        }else{
+            ekycRiskCalculateRequest.setRegisteredAddress(AddressModel.builder().build());
         }
 
         return ekycRiskCalculateRequest;
