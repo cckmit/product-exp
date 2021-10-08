@@ -81,8 +81,8 @@ public class OrderCreationService extends TmbErrorHandle {
             ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, pin);
             String pinCacheData = pinVerifyData.getBody().getData();
 
-            logger.info("pin >>> {}" + pin);
-            logger.info("key >>> {}" + pinCacheData);
+            logger.info("pin >>> " + pin);
+            logger.info("key >>> " + pinCacheData);
 
             if (StringUtils.isEmpty(pinCacheData)) {
                 tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_CODE);
