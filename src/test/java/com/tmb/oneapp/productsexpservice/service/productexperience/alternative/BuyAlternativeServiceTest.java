@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -281,4 +282,34 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
+
+    @Test
+    public void should_return_failed_Fund_Off_shelf_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
+        // given
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);
+        byPassAllAlternative();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        when(alternativeService.validateFundOffShelf(any(), any(),any(), any())).thenReturn(status);
+
+        // when
+        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest
+                .builder()
+                .fundHouseCode("house code")
+                .fundCode("fund code")
+                .tranType("tran type")
+                .processFlag("Y").build();
+        TmbOneServiceResponse<String> actual = buyAlternativeService.validationBuy(correlationId, crmId, alternativeBuyRequest);
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg(),
+                actual.getStatus().getMessage());
+        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
+    }
+
 }

@@ -53,7 +53,7 @@ public class LoanSubmissionCustomerServiceTest {
     }
 
     @Test
-    public void testGetCustomerInfoSuccess() throws  TMBCommonException {
+    public void testGetCustomerInfoSuccess() throws Exception {
         ResponseFacility respFacility = mockFacility1();
         Body body = new Body();
         body.setFacilities(respFacility.getBody().getFacilities());

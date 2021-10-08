@@ -145,4 +145,26 @@ public class SellAlternativeServiceTest {
                 actual.getStatus().getMessage());
     }
 
+    @Test
+    public void should_return_failed_account_redeemtion_when_call_validation_validate_account_redeeemtion_with_correlation_crm_id_and_status() {
+        // given
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
+        byPassAllAlternative();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        when(alternativeService.validateAccountRedeemtion(any(), any(), any())).thenReturn(status);
+
+        // when
+        TmbOneServiceResponse<String> actual = sellAlternativeService.validationSell(correlationId, crmId);
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg(),
+                actual.getStatus().getMessage());
+    }
+
 }

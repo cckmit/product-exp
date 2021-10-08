@@ -34,6 +34,11 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
                 return tmbOneServicesResponse;
             }
 
+            tmbOneServicesResponse.setStatus(alternativeService.validateAccountRedeemtion(correlationId,crmId, status));
+            if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServicesResponse;
+            }
+
             return tmbOneServicesResponse;
         } catch (Exception e) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
