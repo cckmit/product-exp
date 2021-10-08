@@ -265,7 +265,7 @@ public class ProductsExpServiceConstant {
     public static final String AMOUNT_TYPE_IN_PARTIAL_SERVICE = "A";
     public static final String AMOUNT_TYPE_IN_ORDER_SERVICE = "M";
     public static final String PIN_DUPLICATE_ERROR_CODE = "msg_al_18";
-    public static final String PIN_DUPLICATE_ERROR_MES = "Your internet connection is not stable. To prevent duplicate transaction, please recheck" +
+    public static final String PIN_DUPLICATE_ERROR_MESSAGE = "Your internet connection is not stable. To prevent duplicate transaction, please recheck" +
             " if this transaction has already appeared as your pending transaction.";
     public static final Integer TTL_REDIS = 300;
     public static final String ACTIVITY_LOG_AMOUNT = "Amount";

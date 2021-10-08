@@ -92,8 +92,8 @@ public class OrderCreationService extends TmbErrorHandle {
 
             if (checkDuplicateTransaction(correlationId, request.getOrderType(), request.getRefId(), pinCacheData)) {
                 tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_CODE);
-                tmbOneServiceResponse.getStatus().setDescription(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MES);
-                tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MES);
+                tmbOneServiceResponse.getStatus().setDescription(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MESSAGE);
+                tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MESSAGE);
                 tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return tmbOneServiceResponse;
             }
