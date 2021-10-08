@@ -154,7 +154,13 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody UploadDocumentRequest request) throws TMBCommonException {
         try {
-            return lendingServiceClient.uploadDocument(xCorrelationId, crmId, request);
+            ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> response = lendingServiceClient.uploadDocument(xCorrelationId, crmId, request);
+            logger.info(
+                    "Success while calling POST /apis/lending-service/document/upload. response code:{} body :{}",
+                    response.getStatusCode(), response.getBody().getData().toString());
+            setHeader();
+            return ResponseEntity.ok().headers(responseHeaders).body(response.getBody());
+
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -178,7 +184,12 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody SubmitDocumentRequest request) throws TMBCommonException {
         try {
-            return lendingServiceClient.submitDocument(xCorrelationId, crmId, request);
+            ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> response = lendingServiceClient.submitDocument(xCorrelationId, crmId, request);
+            logger.info(
+                    "Success while calling POST /apis/lending-service/document/submit. response code:{} body :{}",
+                    response.getStatusCode(), response.getBody().getData().toString());
+            setHeader();
+            return ResponseEntity.ok().headers(responseHeaders).body(response.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -202,7 +213,12 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody SubmitDocumentRequest request) throws TMBCommonException {
         try {
-            return lendingServiceClient.submitMoreDocument(xCorrelationId, crmId, request);
+            ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> response = lendingServiceClient.submitMoreDocument(xCorrelationId, crmId, request);
+            logger.info(
+                    "Success while calling POST /apis/lending-service/document/submit/more. response code:{} body :{}",
+                    response.getStatusCode(), response.getBody().getData().toString());
+            setHeader();
+            return ResponseEntity.ok().headers(responseHeaders).body(response.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -233,7 +249,12 @@ public class LendingServiceController {
             @ApiParam(value = "fileName", required = true)
             @Valid @PathVariable("fileName") String fileName) throws TMBCommonException {
         try {
-            return lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileType, fileName);
+            ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> response = lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileType, fileName);
+            logger.info(
+                    "Success while calling POST /apis/lending-service/document/submit/more. response code:{} body :{}",
+                    response.getStatusCode(), response.getBody().getData().toString());
+            setHeader();
+            return ResponseEntity.ok().headers(responseHeaders).body(response.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
