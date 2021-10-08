@@ -8,6 +8,12 @@ import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardInfo;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseBankData;
+import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -20,7 +26,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderCreationServiceTest {
@@ -88,24 +94,119 @@ public class OrderCreationServiceTest {
 
     }
 
-//    @Test
-//    void should_return_success_when_call_make_transaction_with_correlationId_and_crm_id_and_ordercreation_request_body() throws TMBCommonException {
-//
-//        // given
-//        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
-//        response.setStatus(TmbStatusUtil.successStatus());
-//        response.setData("pin");
-//        when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(response));
-//
-//        // when
-//        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> actual =
-//                orderCreationController.orderCreationPayment(correlationId,crmId, OrderCreationPaymentRequestBody.builder().build());
-//
-//        // then
-//        assertEquals(HttpStatus.OK,actual.getStatusCode());
-//        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getBody().getStatus().getCode());
-//
-//    }
+    @Test
+    void buy_flow_saving_account_should_return_success_when_call_make_transaction_with_correlationId_and_crm_id_and_ordercreation_request_body() throws TMBCommonException {
+
+        // given
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+        response.setStatus(TmbStatusUtil.successStatus());
+        response.setData("true");
+        when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+        TmbOneServiceResponse<String> pinVerifyResponse = new TmbOneServiceResponse<>();
+        pinVerifyResponse.setData("not true");
+        when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
+
+        TmbOneServiceResponse<FundHouseResponse> tmbFundHouseResponse = new TmbOneServiceResponse<>();
+        FundHouseResponse fundHouseResponse = new FundHouseResponse();
+        fundHouseResponse.setData(FundHouseBankData.builder()
+                .toAccountNo("a").accountType("884").financialId("441").ltfMerchantId("ltf").rmfMerchantId("rmf")
+                .build());
+        tmbFundHouseResponse.setData(fundHouseResponse);
+        when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(tmbFundHouseResponse);
+
+        TmbOneServiceResponse<OrderCreationPaymentResponse> orderCreationResponse = new TmbOneServiceResponse<>();
+        orderCreationResponse.setStatus(TmbStatusUtil.successStatus());
+        orderCreationResponse.setData(OrderCreationPaymentResponse.builder().build());
+        when(investmentRequestClient.createOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(orderCreationResponse));
+
+        TmbOneServiceResponse<String> saveOrderResponse = new TmbOneServiceResponse<>();
+        saveOrderResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.saveOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(saveOrderResponse));
+
+        TmbOneServiceResponse<String> processFirstTradeResponse = new TmbOneServiceResponse<>();
+        processFirstTradeResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.processFirstTrade(any(),any())).thenReturn(ResponseEntity.ok(processFirstTradeResponse));
+
+        // when
+        OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
+                .orderType("P").creditCard(false).build();
+        TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
+                orderCreationService.makeTransaction(correlationId,crmId, request);
+
+        // then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getStatus().getCode());
+        verify(cacheServiceClient,times(1)).putCacheByKey(any(),any());
+        // after payment
+        verify(investmentRequestClient,times(1)).saveOrderPayment(any(),any());
+        verify(investmentRequestClient,times(1)).processFirstTrade(any(),any());
+        verify(enterPinIsCorrectActivityLogService,times(1)).save(any(),any(),any(),any(),any(),any());
+
+    }
+
+    @Test
+    void buy_flow_creditcard_should_return_success_when_call_make_transaction_with_correlationId_and_crm_id_and_ordercreation_request_body() throws TMBCommonException {
+
+        // given
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+        response.setStatus(TmbStatusUtil.successStatus());
+        response.setData("true");
+        when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+        TmbOneServiceResponse<String> pinVerifyResponse = new TmbOneServiceResponse<>();
+        pinVerifyResponse.setData("not true");
+        when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
+
+        TmbOneServiceResponse<FundHouseResponse> tmbFundHouseResponse = new TmbOneServiceResponse<>();
+        FundHouseResponse fundHouseResponse = new FundHouseResponse();
+        fundHouseResponse.setData(FundHouseBankData.builder()
+                .toAccountNo("a").accountType("884").financialId("441").ltfMerchantId("ltf").rmfMerchantId("rmf")
+                .build());
+        tmbFundHouseResponse.setData(fundHouseResponse);
+        when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(tmbFundHouseResponse);
+
+
+        CreditCardDetail creditCardDetail = new CreditCardDetail();
+        CardInfo cardInfo = new CardInfo();
+
+        creditCardDetail.setCardInfo(cardInfo);
+        FetchCardResponse fetchCardResponse = new FetchCardResponse();
+        fetchCardResponse.setCreditCard(creditCardDetail);
+        when(creditCardClient.getCreditCardDetails(any(),any())).thenReturn(ResponseEntity.ok(fetchCardResponse));
+
+        TmbOneServiceResponse<OrderCreationPaymentResponse> orderCreationResponse = new TmbOneServiceResponse<>();
+        orderCreationResponse.setStatus(TmbStatusUtil.successStatus());
+        orderCreationResponse.setData(OrderCreationPaymentResponse.builder().build());
+        when(investmentRequestClient.createOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(orderCreationResponse));
+
+        TmbOneServiceResponse<String> saveOrderResponse = new TmbOneServiceResponse<>();
+        saveOrderResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.saveOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(saveOrderResponse));
+
+        TmbOneServiceResponse<String> processFirstTradeResponse = new TmbOneServiceResponse<>();
+        processFirstTradeResponse.setStatus(TmbStatusUtil.successStatus());
+        when(investmentRequestClient.processFirstTrade(any(),any())).thenReturn(ResponseEntity.ok(processFirstTradeResponse));
+
+        // when
+        OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
+                .orderType("P")
+                .creditCard(true)
+                .fromAccount(Account.builder().accountId("accid").build())
+                .build();
+        TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
+                orderCreationService.makeTransaction(correlationId,crmId, request);
+
+        // then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getStatus().getCode());
+        verify(cacheServiceClient,times(1)).putCacheByKey(any(),any());
+        verify(creditCardClient,times(1)).getCreditCardDetails(any(),any());
+        // after payment
+        verify(investmentRequestClient,times(1)).saveOrderPayment(any(),any());
+        verify(investmentRequestClient,times(1)).processFirstTrade(any(),any());
+        verify(enterPinIsCorrectActivityLogService,times(1)).save(any(),any(),any(),any(),any(),any());
+
+    }
+
 
 
 }

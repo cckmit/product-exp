@@ -2,15 +2,14 @@ package com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 
-@Setter
-@Getter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ToString
 public class FundHouseBankData {
 
     @JsonIgnoreProperties(value = "fund_house_code")

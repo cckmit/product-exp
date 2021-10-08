@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Data
 public class FundHouseResponse {
+
     private Status status;
+
     private FundHouseBankData data;
+
 }
