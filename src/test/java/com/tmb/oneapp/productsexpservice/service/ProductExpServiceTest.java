@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -222,7 +223,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testGetFundAccountDetailNull() {
+    public void testGetFundAccountDetailNull() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
@@ -285,7 +286,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testGetFundAccountDetailServiceNull() {
+    public void testGetFundAccountDetailServiceNull() throws TMBCommonException {
         initAccountDetailResponse();
         initFundRuleResponse();
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
@@ -506,7 +507,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void testGetFundPrePaymentDetailNotFoundException() {
+    public void testGetFundPrePaymentDetailNotFoundException() throws TMBCommonException {
         FundPaymentDetailRequest fundPaymentDetailRequest = new FundPaymentDetailRequest();
         fundPaymentDetailRequest.setFundCode("SCBTMF");
         fundPaymentDetailRequest.setFundHouseCode("SCBAM");
@@ -521,11 +522,11 @@ public class ProductExpServiceTest {
         }
 
         TmbOneServiceResponse<FundPaymentDetailResponse> serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
-        Assert.assertNull(serviceRes);
+        Assert.assertNull(serviceRes.getStatus());
     }
 
     @Test
-    public void testGetFundAccountDetailException() {
+    public void testGetFundAccountDetailException() throws TMBCommonException {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("EEEEEE");
         fundAccountRequest.setServiceType("1");
@@ -543,7 +544,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void getFundSummaryException() {
+    public void getFundSummaryException() throws TMBCommonException {
         try {
             when(customerService.getAccountSaving(any(), any())).thenThrow(MockitoException.class);
         } catch (Exception ex) {
@@ -629,7 +630,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void getFundListWithException() {
+    public void getFundListWithException(){
         try {
             when(productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
             when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(null);
@@ -659,6 +660,7 @@ public class ProductExpServiceTest {
         FundAllocationResponse fundAllocationResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation.json").toFile(), FundAllocationResponse.class);
         TmbOneServiceResponse<FundAllocationResponse> response = new TmbOneServiceResponse<>();
         response.setData(fundAllocationResponse);
+        response.setStatus(TmbStatusUtil.successStatus());
         when(investmentRequestClient.callInvestmentFundAllocation(any(), any())).thenReturn(ResponseEntity.ok(response));
         SuggestAllocationDTO suggestAllocationDTOMock = mapper.readValue(Paths.get("src/test/resources/investment/fund/suggest_allocation_dto.json").toFile(), SuggestAllocationDTO.class);
         SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(correlationId, crmId);
@@ -667,7 +669,7 @@ public class ProductExpServiceTest {
     }
 
     @Test
-    public void should_return_null_when_get_suggest_allocation_given_correlationId_and_crmId() {
+    public void should_return_null_when_get_suggest_allocation_given_correlationId_and_crmId() throws TMBCommonException {
         String crmId = "00000018592884";
         when(accountRequestClient.getPortList(any(), anyString())).thenThrow(RuntimeException.class);
         SuggestAllocationDTO suggestAllocationDTO = productsExpService.getSuggestAllocation(correlationId, crmId);

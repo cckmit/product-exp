@@ -8,11 +8,13 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.activitylog.buy.service.BuyActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.request.FirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.firsttrade.response.FirstTradeResponseBody;
+import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.abstractservice.BuyAndDcaAbstractService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -70,6 +73,25 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
                 return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
             }
 
+            // validate fund off shelf
+            TmbOneServiceResponse<String> fundOffShelf = handleFundOffShelf(correlationId, crmId, alternativeBuyRequest, tmbOneServiceResponse, status);
+            if (fundOffShelf != null) return fundOffShelf;
+
+            // validate id card expired
+            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
+                String reason = tmbOneServiceResponse.getStatus().getDescription();
+                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+            }
+
+            // validate flatca flag not valid
+            tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                String reason = tmbOneServiceResponse.getStatus().getDescription();
+                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+            }
+
             // validate suitability expired
             tmbOneServiceResponse = validateSuitabilityExpired(correlationId, crmId, tmbOneServiceResponse, status);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
@@ -85,6 +107,28 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             tmbOneServiceResponse.setData(null);
             return tmbOneServiceResponse;
         }
+    }
+
+    private TmbOneServiceResponse<String> handleFundOffShelf(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest, TmbOneServiceResponse<String> tmbOneServiceResponse, TmbStatus status) {
+
+        if(StringUtils.isEmpty(alternativeBuyRequest.getFundHouseCode()) ||
+                StringUtils.isEmpty(alternativeBuyRequest.getFundCode()) ||
+                StringUtils.isEmpty(alternativeBuyRequest.getTranType())){
+            return null;
+        }
+
+        tmbOneServiceResponse.setStatus(alternativeService.validateFundOffShelf(
+                correlationId, crmId,FundRuleRequestBody.builder()
+                        .fundHouseCode(alternativeBuyRequest.getFundHouseCode())
+                        .fundCode(alternativeBuyRequest.getFundCode())
+                        .tranType(alternativeBuyRequest.getTranType())
+                        .build(), status));
+        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+            String reason = tmbOneServiceResponse.getStatus().getDescription();
+            return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+        }
+
+        return null;
     }
 
     /**

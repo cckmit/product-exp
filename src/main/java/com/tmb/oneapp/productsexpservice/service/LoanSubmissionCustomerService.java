@@ -2,9 +2,11 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.LoanOnlineInterestRate;
 import com.tmb.common.model.LoanOnlineRangeIncome;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
@@ -16,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -31,13 +35,13 @@ public class LoanSubmissionCustomerService {
         TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
 
-        return parseResponse(disburstAccounts, interestRateAll.getData(), rangeIncomeAll.getData());
+        return parseResponse(disburstAccounts, interestRateAll.getData(), rangeIncomeAll.getData(), correlationId);
 
     }
 
     private LoanSubmissionResponse parseResponse(List<DepositAccount> loanCustomerResponse,
                                                  List<LoanOnlineInterestRate> interestRateAll,
-                                                 List<LoanOnlineRangeIncome> rangeIncomeAll) {
+                                                 List<LoanOnlineRangeIncome> rangeIncomeAll, String correlationId) throws TMBCommonException {
         LoanSubmissionResponse response = new LoanSubmissionResponse();
         List<LoanCustomerDisburstAccount> receiveAccountList = new ArrayList<>();
         List<LoanCustomerDisburstAccount> paymentAccountList = new ArrayList<>();
@@ -49,6 +53,7 @@ public class LoanSubmissionCustomerService {
             if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("PRIIND")) {
                 account.setAccountNo(receiveAccount.getAccountNumber());
                 account.setAccountName(receiveAccount.getAccountName());
+                account.setProductCode(receiveAccount.getProductCode());
                 receiveAccountList.add(account);
             }
         }
@@ -94,7 +99,23 @@ public class LoanSubmissionCustomerService {
         response.setInterestRateList(interestRateList);
         response.setReceiveAccounts(receiveAccountList);
         response.setPaymentAccounts(paymentAccountList);
+        response.setAllowApplySoSmart(checkIsHasNoFixedAcc(correlationId, receiveAccountList));
         return response;
+    }
+
+    private boolean checkIsHasNoFixedAcc(String correlationId, List<LoanCustomerDisburstAccount> accList) throws TMBCommonException {
+        List<String> noFixedCodes = getCodeNoFixedAccCodes(correlationId);
+        if (Objects.isNull(noFixedCodes)) {
+            return false;
+        }
+        for (var acc : accList) {
+            for (var noFixedCode : noFixedCodes) {
+                if (acc.getProductCode().contains(noFixedCode)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -132,6 +153,20 @@ public class LoanSubmissionCustomerService {
         ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> nodeTextResponse = commonServiceClient.getRangeIncomeAll();
         oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
         return oneTmbOneServiceResponse;
+
+    }
+
+    private List<String> getCodeNoFixedAccCodes(String correlationId) throws TMBCommonException {
+
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
+        if (Objects.isNull(nodeTextResponse.getBody())) {
+            throw new TMBCommonException(nodeTextResponse.getBody().getStatus().getCode(),
+                    ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+        if (Objects.nonNull(nodeTextResponse.getBody().getData())) {
+            return nodeTextResponse.getBody().getData().get(0).getNofixedAccount();
+        }
+        return Collections.emptyList();
 
     }
 }

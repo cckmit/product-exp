@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.dto.fund.dca.information.DcaInformationDto;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.DcaInformationService;
@@ -30,7 +31,7 @@ public class DcaInformationControllerTest {
     public DcaInformationService dcaInformationService;
 
     @Test
-    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException {
+    void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException, TMBCommonException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
@@ -53,7 +54,7 @@ public class DcaInformationControllerTest {
     }
 
     @Test
-    void should_return_not_found_when_call_get_dca_information_given_correlation_id_and_crm_id() {
+    void should_return_not_found_when_call_get_dca_information_given_correlation_id_and_crm_id() throws TMBCommonException {
         //Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";

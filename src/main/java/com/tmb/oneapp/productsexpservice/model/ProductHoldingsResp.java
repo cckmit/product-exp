@@ -1,4 +1,4 @@
-package com.tmb.oneapp.productsexpservice.model.applyestatement;
+package com.tmb.oneapp.productsexpservice.model;
 
 import java.util.List;
 
@@ -6,42 +6,40 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductHoldingsResp {
 	@JsonProperty("saving_accounts")
-	private List<SavingAccountETEResp> savingAccounts;
+	public List<SavingAccount> savingAccounts = null;
 	@JsonProperty("current_accounts")
-	private List<SavingAccountETEResp> currentAccounts;
+	public List<CurrentAccount> currentAccounts = null;
 	@JsonProperty("loan_accounts")
-	private List<Object> loanAccounts;
+	public List<LoanAccount> loanAccounts = null;
 	@JsonProperty("trade_finance_accounts")
-	private List<Object> tradeFinanceAccounts;
+	public List<Object> tradeFinanceAccounts = null;
 	@JsonProperty("treasury_accounts")
-	private List<Object> treasuryAccounts;
+	public List<Object> treasuryAccounts = null;
 	@JsonProperty("credit_card_accounts")
-	private List<Object> creditCardAccounts;
+	public List<CreditCardAccount> creditCardAccounts = null;
 	@JsonProperty("debit_card_accounts")
-	private List<Object> debitCardAccounts;
+	public List<Object> debitCardAccounts = null;
 	@JsonProperty("safety_box_accounts")
-	private List<Object> safetyBoxAccounts;
+	public List<Object> safetyBoxAccounts = null;
 	@JsonProperty("hire_purchase_accounts")
-	private List<SavingAccountETEResp> hirePurchaseAccounts;
+	public List<Object> hirePurchaseAccounts = null;
 	@JsonProperty("leasing_accounts")
-	private List<Object> leasingAccounts;
+	public List<Object> leasingAccounts = null;
 	@JsonProperty("merchant_accounts")
-	private List<Object> merchantAccounts;
+	public List<Object> merchantAccounts = null;
 	@JsonProperty("foreign_exchange_accounts")
-	private List<Object> foreignExchangeAccounts;
+	public List<Object> foreignExchangeAccounts = null;
 	@JsonProperty("mutual_fund_accounts")
-	private List<Object> mutualFundAccounts;
+	public List<MutualFundAccount> mutualFundAccounts = null;
 	@JsonProperty("bancassurance_accounts")
-	private List<Object> bancassuranceAccounts;
+	public List<BancassuranceAccount> bancassuranceAccounts = null;
 	@JsonProperty("other_accounts")
-	private List<Object> otherAccounts;
+	public List<Object> otherAccounts = null;
 }

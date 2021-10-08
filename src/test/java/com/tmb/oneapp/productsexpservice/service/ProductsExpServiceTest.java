@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -47,7 +48,7 @@ public class ProductsExpServiceTest {
     private ProductsExpService productsExpService;
 
     @Test
-    public void testGetFundSummary() {
+    public void testGetFundSummary() throws TMBCommonException {
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
         FundSummaryBody expectedResponse = new FundSummaryBody();
@@ -112,7 +113,7 @@ public class ProductsExpServiceTest {
     }
 
     @Test
-    public void testGetFundSummaryWithSmartPort() {
+    public void testGetFundSummaryWithSmartPort() throws TMBCommonException {
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
         ObjectMapper mapperPort = new ObjectMapper();
@@ -178,7 +179,7 @@ public class ProductsExpServiceTest {
     }
 
     @Test
-    public void testGetFundSummaryWithNoSummaryByPort() {
+    public void testGetFundSummaryWithNoSummaryByPort() throws TMBCommonException {
         String corrId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000012025950";
         FundSummaryBody expectedResponse = new FundSummaryBody();

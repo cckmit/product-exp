@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -13,6 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
  * DcaInformationService class will get data from api services
  */
 @Service
-public class DcaInformationService {
+public class DcaInformationService extends TmbErrorHandle {
 
     private static final TMBLogger<DcaInformationService> logger = new TMBLogger<>(DcaInformationService.class);
 
@@ -54,7 +56,7 @@ public class DcaInformationService {
      * @return TmbOneServiceResponse<DcaInformationDto>
      */
     @LogAround
-    public TmbOneServiceResponse<DcaInformationDto> getDcaInformation(String correlationId, String crmId) {
+    public TmbOneServiceResponse<DcaInformationDto> getDcaInformation(String correlationId, String crmId) throws TMBCommonException {
 
         TmbOneServiceResponse<DcaInformationDto> dcaInformationDto = new TmbOneServiceResponse<>();
         try {
@@ -64,8 +66,12 @@ public class DcaInformationService {
             unitHolder.setUnitHolderNumber(portList.stream().collect(Collectors.joining(",")));
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(headerParameter,
                     unitHolder);
+            tmbResponseErrorHandle(fundSummaryResponse.getBody().getStatus());
             ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody = investmentRequestClient.callInvestmentFundListInfoService(headerParameter);
+            tmbResponseErrorHandle(fundListBody.getBody().getStatus());
             return mappingDcaInformationDto(fundSummaryResponse, fundListBody, dcaInformationDto);
+        } catch (TMBCommonException ex) {
+          throw ex;
         } catch (Exception ex) {
             logger.error("error : {}", ex);
             dcaInformationDto.setStatus(null);

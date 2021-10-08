@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CommonData;
@@ -43,6 +44,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleRespons
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -58,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.INVESTMENT_JOINT_FLAG_INDIVIDUAL;
@@ -67,7 +70,7 @@ import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConst
  * ProductsExpService class will get fund Details from MF Service
  */
 @Service
-public class ProductsExpService {
+public class ProductsExpService extends TmbErrorHandle {
 
     @Value("${com.tmb.oneapp.service.activity.topic.name}")
     private String topicName;
@@ -103,8 +106,8 @@ public class ProductsExpService {
      * @return
      */
     @LogAround
-    public FundAccountResponse getFundAccountDetail(String correlationId, FundAccountRequest fundAccountRequest) {
-        FundAccountResponse fundAccountResponse;
+    public FundAccountResponse getFundAccountDetail(String correlationId, FundAccountRequest fundAccountRequest) throws TMBCommonException {
+        FundAccountResponse fundAccountResponse = null;
         FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAcc(fundAccountRequest);
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRequest);
         OrderStmtByPortRequest orderStmtByPortRequest = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
@@ -121,12 +124,17 @@ public class ProductsExpService {
             FundRuleResponse fundRuleResponse = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof TMBCommonException) {
+                throw (TMBCommonException) e.getCause();
+            }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
         }
         return fundAccountResponse;
     }
+
 
     /**
      * Get fund summary fund summary response.
@@ -136,23 +144,26 @@ public class ProductsExpService {
      * @return the fund summary response
      */
     @LogAround
-    public FundSummaryBody getFundSummary(String correlationId, String crmId) {
+    public FundSummaryBody getFundSummary(String correlationId, String crmId) throws TMBCommonException {
         FundSummaryBody result = new FundSummaryBody();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary;
-        UnitHolder unitHolder = new UnitHolder();
-        ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse;
-        Map<String, String> header = UtilMap.createHeader(correlationId);
-        ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse;
 
         try {
+            UnitHolder unitHolder = new UnitHolder();
+            Map<String, String> header = UtilMap.createHeader(correlationId);
             List<String> ports = getPortList(header, crmId, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
             logger.info(unitHolder.toString());
-            fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
-            summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
-            countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
+
+            ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
+            tmbResponseErrorHandle(fundSummary.getBody().getStatus());
+
+            ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
+            tmbResponseErrorHandle(summaryByPortResponse.getBody().getStatus());
+
+            ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
                     CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
+            tmbResponseErrorHandle(countOrderProcessingResponse.getBody().getStatus());
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummary);
 
@@ -165,6 +176,8 @@ public class ProductsExpService {
                 result.setCountProcessedOrder(countOrderProcessingResponse.getBody().getData().getCountProcessOrder());
             }
             return result;
+        } catch (TMBCommonException ex) {
+            throw ex;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             return null;
@@ -281,7 +294,7 @@ public class ProductsExpService {
      * @return FundPaymentDetailResponse
      */
     @LogAround
-    public TmbOneServiceResponse<FundPaymentDetailResponse> getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) {
+    public TmbOneServiceResponse<FundPaymentDetailResponse> getFundPrePaymentDetail(String correlationId, String crmId, FundPaymentDetailRequest fundPaymentDetailRequest) throws TMBCommonException {
         TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundPaymentDetailRequest);
@@ -301,7 +314,7 @@ public class ProductsExpService {
             UtilMap map = new UtilMap();
             fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp);
 
-            if(fundPaymentDetailResponse.getDepositAccountList().isEmpty()){
+            if (fundPaymentDetailResponse.getDepositAccountList().isEmpty()) {
                 TmbStatus status = tmbOneServiceResponse.getStatus();
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
@@ -312,12 +325,16 @@ public class ProductsExpService {
 
             tmbOneServiceResponse.setData(fundPaymentDetailResponse);
 
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof TMBCommonException) {
+                throw (TMBCommonException) e.getCause();
+            }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
-            return null;
         }
+
         return tmbOneServiceResponse;
     }
 
@@ -330,7 +347,7 @@ public class ProductsExpService {
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
+    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest){
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
@@ -352,8 +369,8 @@ public class ProductsExpService {
             return listFund;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            return listFund;
         }
+        return listFund;
     }
 
     /**
@@ -364,7 +381,7 @@ public class ProductsExpService {
      * @return SuggestAllocationDTO
      */
     @LogAround
-    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmId) {
+    public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmId) throws TMBCommonException {
         UnitHolder unitHolder = new UnitHolder();
         Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
         try {
@@ -379,11 +396,18 @@ public class ProductsExpService {
                     FundAllocationRequestBody.builder()
                             .suitabilityScore(suitabilityScore)
                             .build());
+            tmbResponseErrorHandle(fundAllocationResponse.getBody().getStatus());
             return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof TMBCommonException) {
+                throw (TMBCommonException) e.getCause();
+            }
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            return null;
         }
+        return null;
     }
 
     private List<String> getPortListForFundSummary(Map<String, String> investmentHeaderRequest, String crmId) throws JsonProcessingException {
@@ -497,7 +521,7 @@ public class ProductsExpService {
 
     private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
         return fundSummaryByPort == null || fundSummaryByPort.getData() == null
-                 || fundSummaryByPort.getData().getPortfolioList().isEmpty();
+                || fundSummaryByPort.getData().getPortfolioList().isEmpty();
     }
 
     private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {

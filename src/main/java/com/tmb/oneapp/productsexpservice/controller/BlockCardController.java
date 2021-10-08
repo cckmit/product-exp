@@ -12,6 +12,7 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
 import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
+import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import io.swagger.annotations.*;
@@ -42,6 +43,7 @@ public class BlockCardController {
     private final CreditCardClient creditCardClient;
     private final CreditCardLogService creditCardLogService;
     private final NotificationService notificationService;
+    private final CacheService cacheService;
 
     /**
      * Constructor
@@ -52,10 +54,11 @@ public class BlockCardController {
 
     @Autowired
     public BlockCardController(CreditCardClient creditCardClient, CreditCardLogService creditCardLogService,
-                               NotificationService notificationService) {
+                               NotificationService notificationService, CacheService cacheService) {
         this.creditCardClient = creditCardClient;
         this.creditCardLogService = creditCardLogService;
         this.notificationService = notificationService;
+        this.cacheService = cacheService;
     }
 
     /**
@@ -108,6 +111,7 @@ public class BlockCardController {
                     creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.SUCCESS, activityId,
                             correlationId, activityDate, accountId, "", requestHeadersParameter);
                     notificationService.doNotifySuccessForBlockCard(correlationId, accountId, crmId);
+                    cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
                     return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
                 } else {

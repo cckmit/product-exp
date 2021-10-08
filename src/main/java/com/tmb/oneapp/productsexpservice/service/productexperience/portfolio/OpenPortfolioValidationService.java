@@ -19,6 +19,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.reque
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.ValidateOpenPortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.service.productexperience.account.EligibleDepositAccountService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.AlternativeService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -35,7 +36,7 @@ import static com.tmb.oneapp.productsexpservice.util.ExceptionUtil.throwTmbExcep
 import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.successStatus;
 
 @Service
-public class OpenPortfolioValidationService {
+public class OpenPortfolioValidationService extends TmbErrorHandle {
 
     private static final TMBLogger<OpenPortfolioValidationService> logger = new TMBLogger<>(OpenPortfolioValidationService.class);
 
@@ -78,10 +79,10 @@ public class OpenPortfolioValidationService {
     public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, String crmId, OpenPortfolioValidationRequest openPortfolioValidateRequest) {
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
-            ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoFuture =
+            ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoResponse =
                     customerServiceClient.customerSearch(correlationId, crmId, CrmSearchBody.builder().searchType(ProductsExpServiceConstant.SEARCH_TYPE).searchValue(crmId).build());
-            validateCustomerService(customerInfoFuture);
-            CustomerSearchResponse customerInfo = customerInfoFuture.getBody().getData().get(0);
+            validateCustomerService(customerInfoResponse);
+            CustomerSearchResponse customerInfo = customerInfoResponse.getBody().getData().get(0);
 
             List<DepositAccount> depositAccountList = null;
             if (!openPortfolioValidateRequest.isExistingCustomer()) {

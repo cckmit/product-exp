@@ -1,10 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.LoanOnlineInterestRate;
-import com.tmb.common.model.LoanOnlineRangeIncome;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.*;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.feature.Feature;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
@@ -33,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 
@@ -55,7 +53,7 @@ public class LoanSubmissionCustomerServiceTest {
     }
 
     @Test
-    public void testGetCustomerInfoSuccess() throws  TMBCommonException {
+    public void testGetCustomerInfoSuccess() throws Exception {
         ResponseFacility respFacility = mockFacility1();
         Body body = new Body();
         body.setFacilities(respFacility.getBody().getFacilities());
@@ -107,6 +105,16 @@ public class LoanSubmissionCustomerServiceTest {
         when(commonServiceClient.getInterestRateAll()).thenReturn(ResponseEntity.ok(loanOnlineTmbOneServiceResponse));
         when(commonServiceClient.getRangeIncomeAll()).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
+        List<CommonData> nofixedList = new ArrayList<>();
+        CommonData commonData = new CommonData();
+        List<String> codes = new ArrayList<>();
+        codes.add("001");
+        commonData.setNofixedAccount(codes);
+        nofixedList.add(commonData);
+        TmbOneServiceResponse<List<CommonData>> noFixedAccList = new TmbOneServiceResponse<List<CommonData>>();
+        noFixedAccList.setData(nofixedList);
+        when(commonServiceClient.getCommonConfigByModule(anyString(),anyString())).thenReturn(ResponseEntity.ok(noFixedAccList));
+
         LoanSubmissionResponse loanSubmissionResponse = loanSubmissionCustomerService.getCustomerInfo("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","001100000000000000000018593707");
         Assertions.assertNotNull(loanSubmissionResponse);
 
@@ -126,6 +134,7 @@ public class LoanSubmissionCustomerServiceTest {
         f.setAmountFinance(BigDecimal.TEN);
         f.setDisburstBankName("ttb");
         f.setDisburstAccountName("ttb");
+        f.setProductCode("000");
         f.setDisburstAccountNo("111");
         f.setOutStandingBalance(BigDecimal.TEN);
         f.setConsiderLoanWithOtherBank("bkk");
@@ -177,6 +186,7 @@ public class LoanSubmissionCustomerServiceTest {
         DepositAccount depositAccount = new DepositAccount();
         depositAccount.setAccountNumber("accountNo");
         depositAccount.setProductNameTh("accountName");
+        depositAccount.setProductCode("001");
         depositAccount.setAccountStatus("ACTIVE");
         depositAccount.setAllowReceiveLoanFund("1");
         depositAccount.setAllowPayLoanDirectDebit("1");

@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.portfolio;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -29,6 +30,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.respo
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioValidationResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.PortfolioResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +42,13 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * OpenPortfolioService class will get data from api services, and handle business criteria
  */
 @Service
-public class OpenPortfolioService {
+public class OpenPortfolioService extends TmbErrorHandle {
 
     private static final TMBLogger<OpenPortfolioService> logger = new TMBLogger<>(OpenPortfolioService.class);
 
@@ -86,7 +89,7 @@ public class OpenPortfolioService {
      * @param customerRequest
      */
     @LogAround
-    public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) {
+    public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, CustomerRequest customerRequest) throws TMBCommonException {
         try {
             openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
 
@@ -108,14 +111,21 @@ public class OpenPortfolioService {
                         .occupationInquiryResponse(occupationInquiry.get())
                         .build();
             }
+        } catch (TMBCommonException e) {
+            throw e;
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof TMBCommonException) {
+                throw (TMBCommonException) e.getCause();
+            }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId, Map<String, String> investmentRequestHeader, String crmId) {
+    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId, Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
+        tmbResponseErrorHandle(fetchAccountRedeem.getBody().getStatus());
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
         String accountNumber = accountRedeem.getAccountRedeem();
         String accountType = UtilMap.getAccountTypeFromAccountNumber(accountNumber);
@@ -164,7 +174,7 @@ public class OpenPortfolioService {
      * @param openPortfolioRequestBody
      */
     @LogAround
-    public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) {
+    public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
         OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
 
@@ -204,11 +214,15 @@ public class OpenPortfolioService {
                     .portfolioNicknameResponse(portfolioNickname.getBody().getData())
                     .occupationResponse(occupationResponseBody != null ? occupationResponseBody : null)
                     .build();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof TMBCommonException) {
+                throw (TMBCommonException) e.getCause();
+            }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
-            return null;
         }
+        return null;
     }
 
     private void removeCacheAfterSuccessOpenPortfolio(String correlationId, String fullCrmId) {

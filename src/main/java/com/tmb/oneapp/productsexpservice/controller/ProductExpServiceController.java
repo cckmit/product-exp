@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -68,7 +69,7 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestBody FundAccountRequest fundAccountRequest) {
+            @Valid @RequestBody FundAccountRequest fundAccountRequest) throws TMBCommonException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         TmbOneServiceResponse<FundAccountResponse> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -105,7 +106,7 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) throws TMBCommonException {
         TmbOneServiceResponse<FundSummaryBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -142,13 +143,13 @@ public class ProductExpServiceController {
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody FundPaymentDetailRequest fundPaymentDetailRequest) {
+            @Valid @RequestBody FundPaymentDetailRequest fundPaymentDetailRequest) throws TMBCommonException {
 
         TmbOneServiceResponse<FundPaymentDetailResponse> oneServiceResponse = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
         if (oneServiceResponse.getStatus() != null) {
-            if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
+            if (ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())) {
                 return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
             }
         } else {
@@ -189,27 +190,19 @@ public class ProductExpServiceController {
         TmbOneServiceResponse<List<FundClassListInfo>> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        try {
-            List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, crmId, fundListRequest);
-            if (!StringUtils.isEmpty(fundAccountRs)) {
-                oneServiceResponse.setData(fundAccountRs);
-                oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                        ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                        ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-                return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-            } else {
-                oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
-                        ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
-                        ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
-                oneServiceResponse.setData(null);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-            }
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
-            oneServiceResponse.setData(null);
+
+        List<FundClassListInfo> fundAccountRs = productsExpService.getFundList(correlationId, crmId, fundListRequest);
+        if (!StringUtils.isEmpty(fundAccountRs)) {
+            oneServiceResponse.setData(fundAccountRs);
+            oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+        } else {
             oneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
                     ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE));
+            oneServiceResponse.setData(null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
         }
     }
@@ -227,23 +220,22 @@ public class ProductExpServiceController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) throws TMBCommonException {
 
         TmbOneServiceResponse<SuggestAllocationDTO> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        try {
-            SuggestAllocationDTO suggestAllocationDto = productsExpService.getSuggestAllocation(correlationId, crmId);
-            if (!StringUtils.isEmpty(suggestAllocationDto)) {
-                oneServiceResponse.setData(suggestAllocationDto);
-                oneServiceResponse.setStatus(getStatusSuccess());
-                return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
-            }
-        } catch (Exception e) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
+
+        SuggestAllocationDTO suggestAllocationDto = productsExpService.getSuggestAllocation(correlationId, crmId);
+        if (!StringUtils.isEmpty(suggestAllocationDto)) {
+            oneServiceResponse.setData(suggestAllocationDto);
+            oneServiceResponse.setStatus(getStatusSuccess());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+        } else {
+            oneServiceResponse.setStatus(getStatusNotFund());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
         }
-        oneServiceResponse.setStatus(getStatusNotFund());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
+
     }
 
     private TmbStatus getStatusNotFund() {

@@ -17,13 +17,13 @@ public abstract class SellAndSwitchAbstractService extends ValidateGroupingAbstr
         this.customerService = customerService;
     }
 
-    protected TmbOneServiceResponse<String> validateSellAndSwitch(String crmId,
+    protected TmbOneServiceResponse<String> validateSellAndSwitch(
                                                                   String correlationId,
                                                                   CustomerSearchResponse customerInfo,
                                                                   TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                                   TmbStatus status){
         BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(false).build();
-        return validateGroupingService(crmId,correlationId,customerInfo,tmbOneServiceResponse,
+        return validateGroupingService(correlationId,customerInfo,tmbOneServiceResponse,
                 status,buyFlowFirstTrade);
     }
 

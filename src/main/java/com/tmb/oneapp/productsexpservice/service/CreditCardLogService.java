@@ -16,12 +16,16 @@ import org.springframework.stereotype.Service;
 import com.tmb.common.kafka.service.KafkaProducerService;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.BaseEvent;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
+import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
@@ -37,6 +41,7 @@ public class CreditCardLogService {
 	private String topicName = "activity";
 	private KafkaProducerService kafkaProducerService;
 	private CreditCardClient creditCardClient;
+	private CommonServiceClient commonServiceClient;
 
 	/**
 	 * constructor
@@ -44,11 +49,12 @@ public class CreditCardLogService {
 	 * @param topicName
 	 * @param kafkaProducerService
 	 */
-	public CreditCardLogService(KafkaProducerService kafkaProducerService, CreditCardClient creditCardClient) {
+	public CreditCardLogService(KafkaProducerService kafkaProducerService, CreditCardClient creditCardClient,
+			CommonServiceClient commonServiceClient) {
 		this.kafkaProducerService = kafkaProducerService;
 		this.creditCardClient = creditCardClient;
+		this.commonServiceClient = commonServiceClient;
 	}
-
 
 	/**
 	 * @param creditCardEvent
@@ -96,13 +102,13 @@ public class CreditCardLogService {
 			SetCreditLimitReq requestBody, String mode) {
 
 		if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_PERMANENT)) {
-			creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
+			creditCardEvent.setCardNumber("xx" + requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setNewLimit(formateForCurrency(requestBody.getCurrentCreditLimit()));
 			creditCardEvent.setCurrentLimit(formateForCurrency(requestBody.getPreviousCreditLimit()));
 			creditCardEvent.setType("Adjust Permanent Limit");
 
 		} else if (mode.equalsIgnoreCase(ProductsExpServiceConstant.MODE_TEMPORARY)) {
-			creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
+			creditCardEvent.setCardNumber("xx" + requestBody.getAccountId().substring(21, 25));
 			creditCardEvent.setExpiryDateForTempRequest(requestBody.getExpiryDate());
 			creditCardEvent.setReasonForRequest(requestBody.getReasonDescEn());
 			creditCardEvent.setType("Request Temporary Limit");
@@ -136,10 +142,10 @@ public class CreditCardLogService {
 	 * @return
 	 */
 	public CreditCardEvent completeUsageListEvent(CreditCardEvent creditCardEvent, Map<String, String> reqHeader,
-			SetCreditLimitReq requestBody,String result) {
+			SetCreditLimitReq requestBody, String result) {
 
 		populateBaseEvents(creditCardEvent, reqHeader);
-		creditCardEvent.setCardNumber("xx"+requestBody.getAccountId().substring(21, 25));
+		creditCardEvent.setCardNumber("xx" + requestBody.getAccountId().substring(21, 25));
 		creditCardEvent.setResult(result);
 		return creditCardEvent;
 	}
@@ -183,15 +189,17 @@ public class CreditCardLogService {
 			List<CardInstallmentResponse> data) {
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			List<CardInstallmentResponse> sucessResponse = data.stream().filter( e->"0".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
-			List<CardInstallmentResponse> failResponse = data.stream().filter( e->"1".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
-			if(CollectionUtils.isNotEmpty(sucessResponse) && CollectionUtils.isNotEmpty(failResponse)) {
-				constructCardEvent(correlationId,reqHeader,sucessResponse.get(0));
-			}else {
-				if(CollectionUtils.isNotEmpty(sucessResponse)) {
-					constructCardEvent(correlationId,reqHeader,sucessResponse.get(0));
-				}else {
-					constructCardEvent(correlationId,reqHeader,failResponse.get(0));
+			List<CardInstallmentResponse> sucessResponse = data.stream()
+					.filter(e -> "0".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
+			List<CardInstallmentResponse> failResponse = data.stream()
+					.filter(e -> "1".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(sucessResponse) && CollectionUtils.isNotEmpty(failResponse)) {
+				constructCardEvent(correlationId, reqHeader, sucessResponse.get(0));
+			} else {
+				if (CollectionUtils.isNotEmpty(sucessResponse)) {
+					constructCardEvent(correlationId, reqHeader, sucessResponse.get(0));
+				} else {
+					constructCardEvent(correlationId, reqHeader, failResponse.get(0));
 				}
 			}
 		}
@@ -319,13 +327,13 @@ public class CreditCardLogService {
 	@Async
 	@LogAround
 	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason,  Map<String, String> reqHeader) {
+			String accountId, String failReason, Map<String, String> reqHeader) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
 		populateBaseEvents(creditCardEvent, reqHeader);
-		creditCardEvent.setCardNumber("xx"+accountId.substring(21, 25));
+		creditCardEvent.setCardNumber("xx" + accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
 		creditCardEvent.setResult(status);
 		logActivity(creditCardEvent);
@@ -342,14 +350,14 @@ public class CreditCardLogService {
 	@Async
 	@LogAround
 	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason,  Map<String, String> reqHeader) {
+			String accountId, String failReason, Map<String, String> reqHeader) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
 		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setResult(status);
-		creditCardEvent.setCardNumber("xx"+accountId.substring(21, 25));
+		creditCardEvent.setCardNumber("xx" + accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
 		logActivity(creditCardEvent);
 	}
@@ -384,6 +392,124 @@ public class CreditCardLogService {
 		creditCardEvent.setCardNumber(fetchCardResponse.getCreditCard().getAccountId().substring(21, 25));
 		creditCardEvent.setProductName(fetchCardResponse.getProductCodeData().getProductNameEN());
 		return creditCardEvent;
+	}
+
+	/**
+	 * Create event for update estatment
+	 * 
+	 * @param requestHeaders
+	 * @param productName
+	 * @param cardNo
+	 * @param object
+	 * @param errorCode
+	 * @return
+	 */
+	public CreditCardEvent generateEStatementEvent(Map<String, String> requestHeaders, String productName,
+			String cardNo, boolean success, String errorCode) {
+		String correlationId = requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+		String result = success ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILURE_ACT_LOG;
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
+				ProductsExpServiceConstant.ESTAMENT_CONFIRM_CARD);
+		creditCardEvent.setActivityStatus(result);
+		creditCardEvent.setProductName(productName);
+		creditCardEvent.setCardNumber(cardNo);
+		creditCardEvent.setReasonForRequest(errorCode);
+		return creditCardEvent;
+	}
+
+	/**
+	 * Update Estatement for card type
+	 * 
+	 * @param requestHeaders
+	 * @param updateEstatementReq
+	 * @param result
+	 * @param errorCode
+	 */
+	public void updatedEStatmentCard(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
+			boolean result, String errorCode) {
+		String correlationId = requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+		String productName = constructProductNameInfomation(correlationId, updateEstatementReq);
+		ResponseEntity<FetchCardResponse> fetchCardInfoResp = creditCardClient.getCreditCardDetails(correlationId,
+				updateEstatementReq.getAccountId());
+		String cardNo = "xx" + fetchCardInfoResp.getBody().getCreditCard().getAccountId().substring(21, 25);
+		CreditCardEvent updateEStatmentEvent = generateEStatementEvent(requestHeaders, productName, cardNo, result,
+				errorCode);
+		constructCommonDetail(requestHeaders, updateEStatmentEvent);
+		updateEStatmentEvent.setReasonForRequest(errorCode);
+		updateEStatmentEvent.setResult(result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
+		logActivity(updateEStatmentEvent);
+
+	}
+
+	/**
+	 * Construct product name
+	 * 
+	 * @param correlationId
+	 * @param updateEstatementReq
+	 * @return
+	 */
+	private String constructProductNameInfomation(String correlationId, UpdateEStatmentRequest updateEstatementReq) {
+
+		String productCodeName = "";
+		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
+				.getProductConfig(correlationId);
+
+		List<ProductConfig> productConfigs = response.getBody().getData();
+		if (CollectionUtils.isNotEmpty(productConfigs)) {
+			for (ProductConfig productInfo : productConfigs) {
+				if (CollectionUtils.isNotEmpty(updateEstatementReq.getProductType())
+						&& updateEstatementReq.getProductType().get(0).equals(productInfo.getProductCode())) {
+
+					productCodeName = "(" + productInfo.getProductCode() + ")  " + productInfo.getProductNameEN();
+				}
+			}
+		}
+		return productCodeName;
+
+	}
+
+	/**
+	 * Update EStatment
+	 * 
+	 * @param requestHeaders
+	 * @param updateEstatementReq
+	 * @param result
+	 * @param errorCode
+	 */
+	public void updatedEStatmentLoan(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
+			boolean result, String errorCode) {
+		String correlationId = requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+		String productCodeName = constructProductNameInfomation(correlationId, updateEstatementReq);
+		CreditCardEvent loanEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
+				ProductsExpServiceConstant.ESTAMENT_CONFIRM_LOAN);
+		constructCommonDetail(requestHeaders, loanEvent);
+		loanEvent.setProductName(productCodeName);
+		loanEvent.setLoanNumber(updateEstatementReq.getLoanId());
+		loanEvent.setReasonForRequest(errorCode);
+		loanEvent.setResult(result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
+
+		loanEvent.setActivityStatus(
+				result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILURE_ACT_LOG);
+		logActivity(loanEvent);
+
+	}
+
+	/**
+	 * Construct common detail supported
+	 * 
+	 * @param requestHeaders
+	 */
+	private void constructCommonDetail(Map<String, String> requestHeaders, BaseEvent baseEvent) {
+		baseEvent.setIpAddress(requestHeaders.get(ProductsExpServiceConstant.X_FORWARD_FOR));
+		baseEvent.setOsVersion(requestHeaders.get(ProductsExpServiceConstant.OS_VERSION));
+		baseEvent.setChannel(requestHeaders.get(ProductsExpServiceConstant.CHANNEL));
+		baseEvent.setAppVersion(requestHeaders.get(ProductsExpServiceConstant.APP_VERSION));
+		baseEvent.setCrmId(requestHeaders.get(ProductsExpServiceConstant.X_CRMID));
+		baseEvent.setDeviceId(requestHeaders.get(ProductsExpServiceConstant.DEVICE_ID));
+		baseEvent.setDeviceModel(requestHeaders.get(ProductsExpServiceConstant.DEVICE_MODEL));
+		baseEvent
+				.setCorrelationId(requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()));
+
 	}
 
 }

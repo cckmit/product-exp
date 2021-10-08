@@ -23,12 +23,20 @@ public class CacheService {
 
 	public void removeCacheAfterSuccessCreditCard(String correlationId, String fullCrmId) {
 		String creditcardWithCrmIdKey = String.format("%s_creditcard", fullCrmId);
+		String creditcardGroupWithCrmIdKey = String.format("%s_creditcard_group", fullCrmId);
 		try {
 			ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient
 					.getCacheByKey(correlationId, creditcardWithCrmIdKey);
 			if (responseCache.getBody().getData() != null) {
 				cacheServiceClient.deleteCacheByKey(correlationId, creditcardWithCrmIdKey);
-				logger.info("========== remove cache success ==========");
+				logger.info("========== remove cache creditcard success ==========");
+			}
+			
+			ResponseEntity<TmbOneServiceResponse<String>> responseCacheGroup = cacheServiceClient
+					.getCacheByKey(correlationId, creditcardGroupWithCrmIdKey);
+			if (responseCacheGroup.getBody().getData() != null) {
+				cacheServiceClient.deleteCacheByKey(correlationId, creditcardGroupWithCrmIdKey);
+				logger.info("========== remove cache creditcard group success ==========");
 			}
 
 		} catch (Exception ex) {

@@ -41,7 +41,7 @@ public class LoanSubmissionCustomerControllerTest {
     }
 
     @Test
-    public void testGetFacilitySuccess() throws TMBCommonException {
+    public void testGetFacilitySuccess() throws Exception {
         LoanSubmissionRequest request = new LoanSubmissionRequest();
         request.setCaId(2021053104186868L);
         LoanSubmissionResponse response = new LoanSubmissionResponse();
@@ -52,7 +52,7 @@ public class LoanSubmissionCustomerControllerTest {
     }
 
     @Test
-    public void testGetFacility_Fail() throws TMBCommonException {
+    public void testGetFacility_Fail() throws Exception {
         when(loanSubmissionCustomerService.getCustomerInfo(any(),anyString())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<LoanSubmissionResponse>> responseEntity = loanSubmissionCustomerController.getIncomeInfo("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da","001100000000000000000018593707");
         assertTrue(responseEntity.getStatusCode().isError());
