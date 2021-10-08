@@ -141,9 +141,11 @@ public class OrderCreationService extends TmbErrorHandle {
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
                         .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
+                logger.info("createOrderPayment buy request creditcard obj : {}",request);
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
             } else {
                 // casa account
+                logger.info("createOrderPayment buy request casa obj : {}",request);
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
             }
 
@@ -157,6 +159,7 @@ public class OrderCreationService extends TmbErrorHandle {
                 request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
             }
 
+            logger.info("createOrderPayment sell or switch request casa obj : {}",request);
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
         }
         tmbResponseErrorHandle(response.getBody().getStatus());
@@ -181,14 +184,17 @@ public class OrderCreationService extends TmbErrorHandle {
                                    OrderCreationPaymentRequestBody request,
                                    OrderCreationPaymentResponse response) {
         try {
-            ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader,
-                    ProcessFirstTradeRequestBody.builder()
-                            .portfolioNumber(request.getPortfolioNumber())
-                            .fundHouseCode(request.getFundHouseCode())
-                            .fundCode(request.getFundCode())
-                            .orderId(response.getOrderId())
-                            .effectiveDate(response.getEffectiveDate())
-                            .build());
+
+
+            ProcessFirstTradeRequestBody processFirstTradeRequestBody = ProcessFirstTradeRequestBody.builder()
+                    .portfolioNumber(request.getPortfolioNumber())
+                    .fundHouseCode(request.getFundHouseCode())
+                    .fundCode(request.getFundCode())
+                    .orderId(response.getOrderId())
+                    .effectiveDate(response.getEffectiveDate())
+                    .build();
+            logger.info("processFirstTrade request casa obj : {}",processFirstTradeRequestBody);
+            ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader,processFirstTradeRequestBody);
 
             logger.info("finish sending request to processFirstTrade with {} status  ", processFirstTradeResponse.getBody().getStatus().getCode());
 
@@ -200,14 +206,17 @@ public class OrderCreationService extends TmbErrorHandle {
     private void saveOrderPayment(Map<String, String> investmentRequestHeader, TmbOneServiceResponse<OrderCreationPaymentResponse> body, String orderAmount) {
         try {
             OrderCreationPaymentResponse response = body.getData();
-            ResponseEntity<TmbOneServiceResponse<String>> saveOrderResponse = investmentRequestClient.saveOrderPayment(investmentRequestHeader, SaveOrderCreationRequestBody.builder()
+
+            SaveOrderCreationRequestBody saveOrderCreationRequestBody = SaveOrderCreationRequestBody.builder()
                     .orderId(response.getOrderId())
                     .effectiveDate(response.getEffectiveDate())
                     .orderDateTime(response.getOrderDateTime())
                     .workingHour(response.getWorkingHour())
                     .orderAmount(orderAmount)
                     .paymentObject(response.getPaymentObject())
-                    .build());
+                    .build();
+            logger.info("saveOrderPayment request casa obj : {}",saveOrderCreationRequestBody);
+            ResponseEntity<TmbOneServiceResponse<String>> saveOrderResponse = investmentRequestClient.saveOrderPayment(investmentRequestHeader,saveOrderCreationRequestBody );
 
             logger.info("finish sending request to save orderpayment with {} status  ", saveOrderResponse.getBody().getStatus().getCode());
 
