@@ -103,8 +103,8 @@ public class AlternativeService {
 
                 if (UtilMap.isBusinessClose(startTime, endTime)) {
                     statusWithTime.setCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-                    statusWithTime.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-                    statusWithTime.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+                    statusWithTime.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDescription());
+                    statusWithTime.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMessage());
                     statusWithTime.setService(ProductsExpServiceConstant.SERVICE_NAME);
                     statusWithTime.setStartTime(startTime);
                     statusWithTime.setEndTime(endTime);
@@ -143,8 +143,8 @@ public class AlternativeService {
             Period diff = Period.between(birthDateLocalDate, now);
             if (diff.getYears() < 20) {
                 status.setCode(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
-                status.setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
-                status.setMessage(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg());
+                status.setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription());
+                status.setMessage(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return status;
             }
@@ -261,8 +261,8 @@ public class AlternativeService {
             }
             if (!isAccountActiveOnce || depositAccountList.isEmpty()) {
                 status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
-                status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc());
-                status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg());
+                status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDescription());
+                status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return status;
             }
@@ -279,17 +279,24 @@ public class AlternativeService {
      */
     @LogAround
     public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status) {
-        boolean isFatcaFlagValid = false;
-        if (!StringUtils.isEmpty(fatcaFlag) && !fatcaFlag.equals("0")) {
-            isFatcaFlagValid = true;
-        }
-
-        if (!isFatcaFlagValid) {
-            status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
-            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-            return status;
+        if (!StringUtils.isEmpty(fatcaFlag)) {
+            switch (fatcaFlag) {
+                case "0":
+                    status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
+                    status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDescription());
+                    status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage());
+                    status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                    break;
+                case "8":
+                case "9":
+                    status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getCode());
+                    status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getDescription());
+                    status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getMessage());
+                    status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+                    break;
+                default:
+                    return status;
+            }
         }
         return status;
     }
@@ -313,8 +320,8 @@ public class AlternativeService {
 
         if (!isKycAndIdCardExpiredValid) {
             status.setCode(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -353,8 +360,8 @@ public class AlternativeService {
 
         if (!isAssuranceLevelValid) {
             status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -389,8 +396,8 @@ public class AlternativeService {
                 blackList.stream().anyMatch(mainNationality::equals) ||
                 !StringUtils.isEmpty(secondNationality) && blackList.stream().anyMatch(secondNationality::equals)) {
             status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDescription());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -407,20 +414,20 @@ public class AlternativeService {
      */
     @LogAround
     public TmbStatus validateAccountRedeemtion(String correlationId, String crmId, TmbStatus status) {
-        try{
+        try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedeemtionResponse =
-                    investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest,crmId);
+                    investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest, crmId);
 
-            if(StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
-                    StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())){
+            if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
+                    StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
                 status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
             status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
             status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
@@ -438,11 +445,11 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateFundOffShelf(String correlationId, String crmId,FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
-        try{
+    public TmbStatus validateFundOffShelf(String correlationId, String crmId, FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
+        try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest,fundRuleRequestBody);
-        }catch (Exception ex){
+            investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest, fundRuleRequestBody);
+        } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
             status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
             status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
@@ -484,8 +491,8 @@ public class AlternativeService {
 
         if (isCustomerRiskLevelNotValid) {
             status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
-            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDescription());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
@@ -544,7 +551,7 @@ public class AlternativeService {
                 .occupationCode(customerInfo.getOccupationCode())
                 .build();
 
-        if(!StringUtils.isEmpty((customerInfo.getOfficeAddressData()))){
+        if (!StringUtils.isEmpty((customerInfo.getOfficeAddressData()))) {
             ekycRiskCalculateRequest.setOfficeAddress(AddressModel.builder()
                     .building(customerInfo.getOfficeAddressData().getBuildVillageName())
                     .companyName(customerInfo.getOfficeAddressData().getWorkingPlace())
@@ -560,11 +567,11 @@ public class AlternativeService {
                     .soi(customerInfo.getOfficeAddressData().getSoi())
                     .subDistrict(customerInfo.getOfficeAddressData().getSubDistrict())
                     .build());
-        }else{
+        } else {
             ekycRiskCalculateRequest.setOfficeAddress(AddressModel.builder().build());
         }
 
-        if(!StringUtils.isEmpty((customerInfo.getPrimaryAddressData()))){
+        if (!StringUtils.isEmpty((customerInfo.getPrimaryAddressData()))) {
             ekycRiskCalculateRequest.setPrimaryAddress(AddressModel.builder()
                     .building(customerInfo.getPrimaryAddressData().getBuildVillageName())
                     .country(customerInfo.getPrimaryAddressData().getCountry())
@@ -577,11 +584,11 @@ public class AlternativeService {
                     .soi(customerInfo.getPrimaryAddressData().getSoi())
                     .subDistrict(customerInfo.getPrimaryAddressData().getSubDistrict())
                     .build());
-        }else{
+        } else {
             ekycRiskCalculateRequest.setPrimaryAddress(AddressModel.builder().build());
         }
 
-        if(!StringUtils.isEmpty((customerInfo.getRegisteredAddressData()))){
+        if (!StringUtils.isEmpty((customerInfo.getRegisteredAddressData()))) {
             ekycRiskCalculateRequest.setRegisteredAddress(AddressModel.builder()
                     .building(customerInfo.getRegisteredAddressData().getBuildVillageName())
                     .country(customerInfo.getRegisteredAddressData().getCountry())
@@ -594,14 +601,14 @@ public class AlternativeService {
                     .soi(customerInfo.getRegisteredAddressData().getSoi())
                     .subDistrict(customerInfo.getRegisteredAddressData().getSubDistrict())
                     .build());
-        }else{
+        } else {
             ekycRiskCalculateRequest.setRegisteredAddress(AddressModel.builder().build());
         }
 
         return ekycRiskCalculateRequest;
     }
 
-    private CommonData getInvestmentConfig(String correlationId){
+    private CommonData getInvestmentConfig(String correlationId) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
                 commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
         List<CommonData> commonDataList = commonConfig.getBody().getData();
