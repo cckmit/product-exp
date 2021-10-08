@@ -57,7 +57,7 @@ public abstract class AbstactAsyncHandleBadRequest {
                 ResponseCode.FAILED.getCode(),
                 ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
+                HttpStatus.BAD_REQUEST,
                 null);
     }
 }

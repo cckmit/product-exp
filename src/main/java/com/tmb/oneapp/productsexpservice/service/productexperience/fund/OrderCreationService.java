@@ -8,6 +8,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPinIsCorrectActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
@@ -30,6 +31,7 @@ import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandl
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -119,7 +121,7 @@ public class OrderCreationService extends TmbErrorHandle {
         return tmbOneServiceResponse;
     }
 
-    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader,Map<String, String> commonRequestHeader,OrderCreationPaymentRequestBody request) throws JsonProcessingException {
+    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader,Map<String, String> commonRequestHeader,OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
             Account toAccount = getAccount(request, commonRequestHeader);
@@ -157,6 +159,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
         }
+        tmbResponseErrorHandle(response.getBody().getStatus());
         return response;
     }
 
@@ -220,24 +223,37 @@ public class OrderCreationService extends TmbErrorHandle {
      * @return
      * @throws JsonProcessingException
      */
-    private Account getAccount(OrderCreationPaymentRequestBody bodyRequest, Map<String, String> headerForCommonService) throws JsonProcessingException {
-        TmbOneServiceResponse<FundHouseResponse> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(headerForCommonService,
-                bodyRequest.getFundHouseCode());
-        FundHouseResponse fundHouseResponseData = fundHouseResponse.getData();
-        logger.info("searching toAccount by fund house code " + bodyRequest.getFundHouseCode());
-        logger.info("Response : {} ", TMBUtils.convertJavaObjectToString(fundHouseResponse));
+    private Account getAccount(OrderCreationPaymentRequestBody bodyRequest, Map<String, String> headerForCommonService) throws JsonProcessingException, TMBCommonException {
+        try {
 
-        Account toAccount = new Account();
-        Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData.getData());
-        if (fundHouseBankData.isPresent()) {
-            FundHouseBankData data = fundHouseBankData.get();
-            toAccount.setAccountId(data.getToAccountNo());
-            toAccount.setAccountType(data.getAccountType());
-            toAccount.setFiId(data.getFinancialId());
-            toAccount.setLtfMerchantId(data.getLtfMerchantId());
-            toAccount.setRmfMerchantId(data.getRmfMerchantId());
+            TmbOneServiceResponse<FundHouseResponse> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(headerForCommonService,
+                    bodyRequest.getFundHouseCode());
+            FundHouseResponse fundHouseResponseData = fundHouseResponse.getData();
+            logger.info("searching toAccount by fund house code " + bodyRequest.getFundHouseCode());
+            logger.info("Response : {} ", TMBUtils.convertJavaObjectToString(fundHouseResponse));
+
+            Account toAccount = new Account();
+            Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData.getData());
+            if (fundHouseBankData.isPresent()) {
+                FundHouseBankData data = fundHouseBankData.get();
+                toAccount.setAccountId(data.getToAccountNo());
+                toAccount.setAccountType(data.getAccountType());
+                toAccount.setFiId(data.getFinancialId());
+                toAccount.setLtfMerchantId(data.getLtfMerchantId());
+                toAccount.setRmfMerchantId(data.getRmfMerchantId());
+            }
+            return toAccount;
+
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage()+"fet account error",
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.OK,
+                    null);
         }
-        return toAccount;
+
     }
 
     /**
