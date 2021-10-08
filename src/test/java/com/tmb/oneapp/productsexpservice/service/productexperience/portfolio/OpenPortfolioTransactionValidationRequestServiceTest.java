@@ -102,11 +102,11 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
                     break;
                 case "2000018":
 
-                    if (alternativeOpenPortfolioErrorEnums.getMsg().equals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg())) {
+                    if (alternativeOpenPortfolioErrorEnums.getMessage().equals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage())) {
                         response.getBody().getData().get(0).setCustomerRiskLevel("B3");
-                    } else if (alternativeOpenPortfolioErrorEnums.getMsg().equals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg())) {
+                    } else if (alternativeOpenPortfolioErrorEnums.getMessage().equals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage())) {
                         response.getBody().getData().get(0).setEkycIdentifyAssuranceLevel("100");
-                    } else if (alternativeOpenPortfolioErrorEnums.getMsg().equals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg())) {
+                    } else if (alternativeOpenPortfolioErrorEnums.getMessage().equals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMessage())) {
                         response.getBody().getData().get(0).setNationality("TH");
                         response.getBody().getData().get(0).setNationalitySecond("US");
                     }
@@ -157,7 +157,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountTypeShort("SDA");
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         when(commonServiceClient.getTermAndConditionByServiceCodeAndChannel(any(), any(), any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse));
 
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
@@ -215,8 +215,8 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         mockCustomerResponse(null);
         ValidateServiceHourResponse tmbStatus = new ValidateServiceHourResponse();
         tmbStatus.setCode(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        tmbStatus.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-        tmbStatus.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        tmbStatus.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getDescription());
+        tmbStatus.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getMessage());
         tmbStatus.setStartTime("19:00");
         tmbStatus.setEndTime("20:00");
 
@@ -227,7 +227,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getStatus().getCode());
-        assertEquals("19:00-20:00",actual.getData().getServiceHour());
+        assertEquals("19:00-20:00", actual.getData().getServiceHour());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -240,8 +240,8 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         mockSuccessAllAlternative();
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription()));
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, openPortfolioValidationRequest);
@@ -259,7 +259,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         return validateServiceHourResponse;
     }
 
-    private TmbStatus mockTmbStatusError(String code,String message,String desc) {
+    private TmbStatus mockTmbStatusError(String code, String message, String desc) {
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(code);
         tmbStatus.setDescription(desc);
@@ -284,12 +284,12 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.DORMANT_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDescription()));
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
@@ -316,19 +316,19 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDescription()));
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -350,18 +350,18 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription()));
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMsg(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -383,19 +383,19 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(
+        when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getDescription()));
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMsg(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -417,19 +417,19 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDescription()));
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -451,17 +451,17 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
         mockSuccessAllAlternative();
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription()));
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -482,30 +482,30 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAccountStatusCode(ProductsExpServiceConstant.ACTIVE_STATUS_CODE);
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
-        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(),anyBoolean())).thenReturn(newArrayList(depositAccount));
+        when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(),
-                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDesc()));
+                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription()));
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMsg(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
-    private void mockSuccessAllAlternative(){
+    private void mockSuccessAllAlternative() {
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateCustomerRiskLevel(any(),any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
 
 }

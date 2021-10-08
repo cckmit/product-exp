@@ -86,7 +86,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
             if (StringUtils.isEmpty(pinCacheData)) {
                 tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_CODE);
-                tmbOneServiceResponse.getStatus().setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
+                tmbOneServiceResponse.getStatus().setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription());
                 tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_MSG);
                 tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return tmbOneServiceResponse;
@@ -102,26 +102,22 @@ public class OrderCreationService extends TmbErrorHandle {
 
             pushDataToRedis(correlationId, request.getOrderType(), request.getRefId());
             ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response =
-                    processOrderPayment(correlationId, investmentRequestHeader,commonRequestHeader, request);
-            postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request , response);
+                    processOrderPayment(correlationId, investmentRequestHeader, commonRequestHeader, request);
+            postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request, response);
             tmbOneServiceResponse.setData(response.getBody().getData());
 
         } catch (TMBCommonException ex) {
-
             throw ex;
-
         } catch (Exception ex) {
 
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-
         }
-
         return tmbOneServiceResponse;
     }
 
-    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader,Map<String, String> commonRequestHeader,OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
+    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, Map<String, String> commonRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
             Account toAccount = getAccount(request, commonRequestHeader);
@@ -141,11 +137,11 @@ public class OrderCreationService extends TmbErrorHandle {
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
                         .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                logger.info("createOrderPayment buy request creditcard obj : {}",request);
+                logger.info("createOrderPayment buy request creditcard obj : {}", request);
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
             } else {
                 // casa account
-                logger.info("createOrderPayment buy request casa obj : {}",request);
+                logger.info("createOrderPayment buy request casa obj : {}", request);
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
             }
 
@@ -159,14 +155,14 @@ public class OrderCreationService extends TmbErrorHandle {
                 request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
             }
 
-            logger.info("createOrderPayment sell or switch request casa obj : {}",request);
+            logger.info("createOrderPayment sell or switch request casa obj : {}", request);
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
         }
         tmbResponseErrorHandle(response.getBody().getStatus());
         return response;
     }
 
-    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request,  ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) throws TMBCommonException {
+    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) throws TMBCommonException {
         String activityLogStatus = "";
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
             activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
@@ -184,8 +180,6 @@ public class OrderCreationService extends TmbErrorHandle {
                                    OrderCreationPaymentRequestBody request,
                                    OrderCreationPaymentResponse response) {
         try {
-
-
             ProcessFirstTradeRequestBody processFirstTradeRequestBody = ProcessFirstTradeRequestBody.builder()
                     .portfolioNumber(request.getPortfolioNumber())
                     .fundHouseCode(request.getFundHouseCode())
@@ -193,8 +187,8 @@ public class OrderCreationService extends TmbErrorHandle {
                     .orderId(response.getOrderId())
                     .effectiveDate(response.getEffectiveDate())
                     .build();
-            logger.info("processFirstTrade request casa obj : {}",processFirstTradeRequestBody);
-            ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader,processFirstTradeRequestBody);
+            logger.info("processFirstTrade request casa obj : {}", processFirstTradeRequestBody);
+            ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader, processFirstTradeRequestBody);
 
             logger.info("finish sending request to processFirstTrade with {} status  ", processFirstTradeResponse.getBody().getStatus().getCode());
 
@@ -215,8 +209,8 @@ public class OrderCreationService extends TmbErrorHandle {
                     .orderAmount(orderAmount)
                     .paymentObject(response.getPaymentObject())
                     .build();
-            logger.info("saveOrderPayment request casa obj : {}",saveOrderCreationRequestBody);
-            ResponseEntity<TmbOneServiceResponse<String>> saveOrderResponse = investmentRequestClient.saveOrderPayment(investmentRequestHeader,saveOrderCreationRequestBody );
+            logger.info("saveOrderPayment request casa obj : {}", saveOrderCreationRequestBody);
+            ResponseEntity<TmbOneServiceResponse<String>> saveOrderResponse = investmentRequestClient.saveOrderPayment(investmentRequestHeader, saveOrderCreationRequestBody);
 
             logger.info("finish sending request to save orderpayment with {} status  ", saveOrderResponse.getBody().getStatus().getCode());
 
@@ -252,17 +246,15 @@ public class OrderCreationService extends TmbErrorHandle {
                 toAccount.setRmfMerchantId(data.getRmfMerchantId());
             }
             return toAccount;
-
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             throw new TMBCommonException(
                     ResponseCode.FAILED.getCode(),
-                    ResponseCode.FAILED.getMessage()+"fet account error",
+                    ResponseCode.FAILED.getMessage() + "fet account error",
                     ResponseCode.FAILED.getService(),
                     HttpStatus.OK,
                     null);
         }
-
     }
 
     /**
@@ -305,9 +297,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
             isDuplicateTransaction = true;
             return isDuplicateTransaction;
-
         }
         return isDuplicateTransaction;
     }
-
 }
