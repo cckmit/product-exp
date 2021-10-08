@@ -237,6 +237,14 @@ public class AlternativeServiceTest {
     @Test
     void should_return_status_code_2000018_when_call_validate_risk_level_not_valid_at_buy_flow() {
         // Given
+        List<CommonData> list = new ArrayList<>();
+        TmbOneServiceResponse<List<CommonData>> commonResponse = new TmbOneServiceResponse<List<CommonData>>();
+        CommonData commonData = new CommonData();
+        commonData.setEnableCalRisk("Y");
+        list.add(commonData);
+        commonResponse.setData(list);
+        when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(commonResponse));
+
         TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(), any())).thenReturn(ResponseEntity.ok(response));
@@ -259,8 +267,16 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_0000_when_call_validate_risk_level_not_valid_at_sell_flow() {
+    void for_enable_calrisk_flag_should_return_status_code_0000_when_call_validate_risk_level_not_valid_at_sell_flow() {
         // Given
+        List<CommonData> list = new ArrayList<>();
+        TmbOneServiceResponse<List<CommonData>> commonResponse = new TmbOneServiceResponse<List<CommonData>>();
+        CommonData commonData = new CommonData();
+        commonData.setEnableCalRisk("Y");
+        list.add(commonData);
+        commonResponse.setData(list);
+        when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(commonResponse));
+
         TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
         response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(), any())).thenReturn(ResponseEntity.ok(response));
@@ -268,6 +284,35 @@ public class AlternativeServiceTest {
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
                 .builder()
+                .businessTypeCode("22")
+                .officeAddressData(AddressWithPhone.builder().build())
+                .registeredAddressData(AddressWithPhone.builder().build())
+                .primaryAddressData(AddressWithPhone.builder().build())
+                .build();
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(true).build();
+        TmbStatus actual = alternativeService.validateCustomerRiskLevel(correlationId, customerSearchResponse, TmbStatusUtil.successStatus(), buyFlowFirstTrade);
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
+    }
+
+    @Test
+    void for_disable_calrisk_flag_should_return_status_code_0000_when_call_validate_risk_level_not_valid_at_sell_flow() {
+        // Given
+        List<CommonData> list = new ArrayList<>();
+        TmbOneServiceResponse<List<CommonData>> commonResponse = new TmbOneServiceResponse<List<CommonData>>();
+        CommonData commonData = new CommonData();
+        commonData.setEnableCalRisk("N");
+        list.add(commonData);
+        commonResponse.setData(list);
+        when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(commonResponse));
+
+        // When
+        CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
+                .builder()
+                .customerRiskLevel("B3")
                 .businessTypeCode("22")
                 .officeAddressData(AddressWithPhone.builder().build())
                 .registeredAddressData(AddressWithPhone.builder().build())

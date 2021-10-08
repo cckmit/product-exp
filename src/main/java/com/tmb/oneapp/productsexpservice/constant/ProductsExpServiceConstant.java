@@ -252,6 +252,9 @@ public class ProductsExpServiceConstant {
     /* INVESTMENT FIRST TRADE FLAG */
     public static final String INVESTMENT_FIRST_TRADE_FLAG = "Y";
 
+	/* INVESTMENT COMMON DATACONFIG FLAG */
+	public static final String INVESTMENT_ENABLE_CALRISK = "Y";
+
     /* INVESTMENT ORDER CREATION */
     public static final String INVESTMENT_PIN_INVALID_CODE = "VERIFY_PIN_REF_ID_";
     public static final String INVESTMENT_VERIFY_PIN_REF_ID = "msg_al_19";
