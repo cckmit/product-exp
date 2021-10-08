@@ -102,6 +102,19 @@ class PortfolioServiceTest {
     }
 
     @Test
+    void should_return_empty_portfolio_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_port_list_empty() throws IOException, TMBCommonException {
+        // Given
+        when(productsExpService.getPortList(any(), anyString(), anyBoolean())).thenReturn(List.of());
+
+        // When
+        PortfolioResponse actual = portfolioService.getPortfolioList(correlationId, crmId, "type");
+
+        // Then
+        PortfolioResponse expected = PortfolioResponse.builder().portfolioResponseBody(List.of()).build();
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void should_return_null_when_call_get_get_portfolio_list_given_throw_runtime_exception_from_product_exp_service() throws JsonProcessingException, TMBCommonException {
         //Given
         when(productsExpService.getPortList(any(), anyString(), anyBoolean()))
@@ -114,9 +127,8 @@ class PortfolioServiceTest {
     }
 
     @Test
-    void should_throw_tmb_common_exception_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException, TMBCommonException {
+    void should_throw_tmb_common_exception_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException {
         // Given
-        ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
@@ -125,22 +137,21 @@ class PortfolioServiceTest {
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
         TmbOneServiceResponse<FundSummaryByPortBody> portResponse = new TmbOneServiceResponse<>();
-        portResponse.setStatus(getMockBadRequest(errorCode,errorMessage));
+        portResponse.setStatus(getMockBadRequest(errorCode, errorMessage));
         when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                 .thenReturn(ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
         // When
         try {
             portfolioService.getPortfolioList(correlationId, crmId, "j");
-        }catch (TMBCommonException ex){
-
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
     }
 
-    private TmbStatus getMockBadRequest(String errorCode,String errorMessage){
-        return new TmbStatus(errorCode,errorMessage,"investment-service",errorMessage);
+    private TmbStatus getMockBadRequest(String errorCode, String errorMessage) {
+        return new TmbStatus(errorCode, errorMessage, "investment-service", errorMessage);
     }
 }
