@@ -401,7 +401,7 @@ public interface InvestmentRequestClient {
      * @param orderCreationPaymentRequestBody the body
      * @return the FundListBody response
      */
-    @PostMapping(value = "${investment.service.fund.order.creation.url}")
+    @PostMapping(value = "${investment.service.fund.transaction.order.creation.payment}")
     ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> createOrderPayment(
             @RequestHeader Map<String, String> header,
             @RequestBody OrderCreationPaymentRequestBody orderCreationPaymentRequestBody);

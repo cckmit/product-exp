@@ -10,7 +10,6 @@ import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPi
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
-import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
@@ -18,15 +17,14 @@ import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseBankData;
-import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.processfirsttrade.ProcessFirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Card;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Merchant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
-import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.model.productexperience.saveordercreation.SaveOrderCreationRequestBody;
+import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -76,7 +74,6 @@ public class OrderCreationService extends TmbErrorHandle {
 
         try {
             Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId, crmId);
-            Map<String, String> commonRequestHeader = UtilMap.createHeader(correlationId);
             String pin = ProductsExpServiceConstant.INVESTMENT_VERIFY_PIN_REF_ID + request.getRefId();
             ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, pin);
             String pinCacheData = pinVerifyData.getBody().getData();
@@ -86,7 +83,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
             if (StringUtils.isEmpty(pinCacheData)) {
                 tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_CODE);
-                tmbOneServiceResponse.getStatus().setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription());
+                tmbOneServiceResponse.getStatus().setDescription(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_MSG);
                 tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_MSG);
                 tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return tmbOneServiceResponse;
@@ -102,7 +99,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
             pushDataToRedis(correlationId, request.getOrderType(), request.getRefId());
             ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response =
-                    processOrderPayment(correlationId, investmentRequestHeader, commonRequestHeader, request);
+                    processOrderPayment(correlationId, investmentRequestHeader, request);
             postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request, response);
             tmbOneServiceResponse.setData(response.getBody().getData());
 
@@ -117,10 +114,10 @@ public class OrderCreationService extends TmbErrorHandle {
         return tmbOneServiceResponse;
     }
 
-    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, Map<String, String> commonRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
+    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
-            Account toAccount = getAccount(request, commonRequestHeader);
+            Account toAccount = getAccount(correlationId,request);
             request.setToAccount(toAccount);
             // buy flow
             if (request.isCreditCard()) {
@@ -221,22 +218,22 @@ public class OrderCreationService extends TmbErrorHandle {
 
     /***
      * Set Account in request. Getting account value from common service
+     * @param correlationId
      * @param bodyRequest
-     * @param headerForCommonService
      * @return
      * @throws JsonProcessingException
      */
-    private Account getAccount(OrderCreationPaymentRequestBody bodyRequest, Map<String, String> headerForCommonService) throws JsonProcessingException, TMBCommonException {
+    private Account getAccount(String correlationId,OrderCreationPaymentRequestBody bodyRequest) throws JsonProcessingException, TMBCommonException {
         try {
 
-            TmbOneServiceResponse<FundHouseResponse> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(headerForCommonService,
+            ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
                     bodyRequest.getFundHouseCode());
-            FundHouseResponse fundHouseResponseData = fundHouseResponse.getData();
+            FundHouseBankData fundHouseResponseData = fundHouseResponse.getBody().getData();
             logger.info("searching toAccount by fund house code " + bodyRequest.getFundHouseCode());
             logger.info("Response : {} ", TMBUtils.convertJavaObjectToString(fundHouseResponse));
 
             Account toAccount = new Account();
-            Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData.getData());
+            Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData);
             if (fundHouseBankData.isPresent()) {
                 FundHouseBankData data = fundHouseBankData.get();
                 toAccount.setAccountId(data.getToAccountNo());

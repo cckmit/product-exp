@@ -256,9 +256,9 @@ public class ProductsExpServiceConstant {
 	public static final String INVESTMENT_ENABLE_CALRISK = "Y";
 
     /* INVESTMENT ORDER CREATION */
-    public static final String INVESTMENT_PIN_INVALID_CODE = "VERIFY_PIN_REF_ID_";
-    public static final String INVESTMENT_VERIFY_PIN_REF_ID = "msg_al_19";
+    public static final String INVESTMENT_PIN_INVALID_CODE = "msg_al_19";
     public static final String INVESTMENT_PIN_INVALID_MSG = "Please enter PIN";
+	public static final String INVESTMENT_VERIFY_PIN_REF_ID = "VERIFY_PIN_REF_ID_";
     public static final String PURCHASE_TRANSACTION_LETTER_TYPE = "P";
     public static final String REDEEM_TRANSACTION_LETTER_TYPE = "R";
     public static final String SWITCH_TRANSACTION_LETTER_TYPE = "S";
