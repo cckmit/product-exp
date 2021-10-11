@@ -51,7 +51,6 @@ public class OrderCreationPaymentRequestBody {
     @NotBlank
     private String transferBranch;
 
-    @NotBlank
     private String bankAccountType;
 
     private String bankAccountNumber;
@@ -69,10 +68,8 @@ public class OrderCreationPaymentRequestBody {
 
     private String epayCode;
 
-    @Valid
     private Account fromAccount;
 
-    @Valid
     private Account toAccount;
 
     private Fee fee;
