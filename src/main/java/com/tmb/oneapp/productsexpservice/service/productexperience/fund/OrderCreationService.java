@@ -74,7 +74,6 @@ public class OrderCreationService extends TmbErrorHandle {
 
         try {
             Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId, crmId);
-            Map<String, String> commonRequestHeader = UtilMap.createHeader(correlationId);
             String pin = ProductsExpServiceConstant.INVESTMENT_VERIFY_PIN_REF_ID + request.getRefId();
             ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, pin);
             String pinCacheData = pinVerifyData.getBody().getData();
@@ -100,7 +99,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
             pushDataToRedis(correlationId, request.getOrderType(), request.getRefId());
             ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response =
-                    processOrderPayment(correlationId, investmentRequestHeader, commonRequestHeader, request);
+                    processOrderPayment(correlationId, investmentRequestHeader, request);
             postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request, response);
             tmbOneServiceResponse.setData(response.getBody().getData());
 
@@ -115,7 +114,7 @@ public class OrderCreationService extends TmbErrorHandle {
         return tmbOneServiceResponse;
     }
 
-    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, Map<String, String> commonRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
+    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
             Account toAccount = getAccount(correlationId,request);
