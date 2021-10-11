@@ -468,16 +468,18 @@ public class AlternativeService {
      */
     @LogAround
     public TmbStatus validateCustomerRiskLevel(String correlationId, CustomerSearchResponse customerInfo, TmbStatus status, BuyFlowFirstTrade buyFlowFirstTrade) {
-        EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId, customerInfo);
+
+        String maxRiskRm = getMaxRiskRM(correlationId, customerInfo);
+
         boolean isCustomerRiskLevelNotValid = false;
-        if (!StringUtils.isEmpty(customerRiskLevel)) {
+        if (!StringUtils.isEmpty(maxRiskRm)) {
             String[] values = new String[2];
             values[0] = "C3";
             if (buyFlowFirstTrade.isBuyFlow() && buyFlowFirstTrade.isFirstTrade()) {
                 values[1] = "B3";
             }
 
-            if (Arrays.stream(values).anyMatch(customerRiskLevel.getMaxRiskRM()::equals)) {
+            if (Arrays.stream(values).anyMatch(maxRiskRm::equals)) {
                 isCustomerRiskLevelNotValid = true;
             }
 
@@ -497,6 +499,27 @@ public class AlternativeService {
             return status;
         }
         return status;
+    }
+
+    private String getMaxRiskRM(String correlationId, CustomerSearchResponse customerInfo) {
+        String maxRiskRm = "";
+        try {
+
+            CommonData commonData = getInvestmentConfig(correlationId);
+            if(ProductsExpServiceConstant.INVESTMENT_ENABLE_CALRISK.equals(commonData.getEnableCalRisk())){
+                EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId, customerInfo);
+                if(customerRiskLevel != null){
+                    maxRiskRm = customerRiskLevel.getMaxRiskRM();
+                }
+            }else{
+                maxRiskRm = customerInfo.getCustomerRiskLevel();
+            }
+
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        }
+
+        return maxRiskRm;
     }
 
     @LogAround

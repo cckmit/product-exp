@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.fund;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
@@ -31,6 +32,7 @@ public class OrderCreationController {
     }
 
     @PostMapping(value = "/orderCreationPayment")
+    @LogAround
     public ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> orderCreationPayment(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
