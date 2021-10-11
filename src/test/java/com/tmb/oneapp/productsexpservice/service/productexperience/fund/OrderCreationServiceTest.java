@@ -107,13 +107,11 @@ public class OrderCreationServiceTest {
         pinVerifyResponse.setData("not true");
         when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
 
-        TmbOneServiceResponse<FundHouseResponse> tmbFundHouseResponse = new TmbOneServiceResponse<>();
-        FundHouseResponse fundHouseResponse = new FundHouseResponse();
-        fundHouseResponse.setData(FundHouseBankData.builder()
+        TmbOneServiceResponse<FundHouseBankData> tmbFundHouseResponse = new TmbOneServiceResponse<>();
+        tmbFundHouseResponse.setData(FundHouseBankData.builder()
                 .toAccountNo("a").accountType("884").financialId("441").ltfMerchantId("ltf").rmfMerchantId("rmf")
                 .build());
-        tmbFundHouseResponse.setData(fundHouseResponse);
-        when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(tmbFundHouseResponse);
+        when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(ResponseEntity.ok(tmbFundHouseResponse));
 
         TmbOneServiceResponse<OrderCreationPaymentResponse> orderCreationResponse = new TmbOneServiceResponse<>();
         orderCreationResponse.setStatus(TmbStatusUtil.successStatus());
@@ -157,13 +155,11 @@ public class OrderCreationServiceTest {
         pinVerifyResponse.setData("not true");
         when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
 
-        TmbOneServiceResponse<FundHouseResponse> tmbFundHouseResponse = new TmbOneServiceResponse<>();
-        FundHouseResponse fundHouseResponse = new FundHouseResponse();
-        fundHouseResponse.setData(FundHouseBankData.builder()
+        TmbOneServiceResponse<FundHouseBankData> tmbFundHouseResponse = new TmbOneServiceResponse<>();
+        tmbFundHouseResponse.setData(FundHouseBankData.builder()
                 .toAccountNo("a").accountType("884").financialId("441").ltfMerchantId("ltf").rmfMerchantId("rmf")
                 .build());
-        tmbFundHouseResponse.setData(fundHouseResponse);
-        when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(tmbFundHouseResponse);
+        when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(ResponseEntity.ok(tmbFundHouseResponse));
 
 
         CreditCardDetail creditCardDetail = new CreditCardDetail();

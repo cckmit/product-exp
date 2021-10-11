@@ -1,6 +1,8 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -86,7 +88,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
             if (StringUtils.isEmpty(pinCacheData)) {
                 tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_CODE);
-                tmbOneServiceResponse.getStatus().setDescription(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getDescription());
+                tmbOneServiceResponse.getStatus().setDescription(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_MSG);
                 tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_MSG);
                 tmbOneServiceResponse.getStatus().setService(ProductsExpServiceConstant.SERVICE_NAME);
                 return tmbOneServiceResponse;
@@ -120,7 +122,7 @@ public class OrderCreationService extends TmbErrorHandle {
     private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, Map<String, String> commonRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
-            Account toAccount = getAccount(request, commonRequestHeader);
+            Account toAccount = getAccount(correlationId,request);
             request.setToAccount(toAccount);
             // buy flow
             if (request.isCreditCard()) {
@@ -221,22 +223,22 @@ public class OrderCreationService extends TmbErrorHandle {
 
     /***
      * Set Account in request. Getting account value from common service
+     * @param correlationId
      * @param bodyRequest
-     * @param headerForCommonService
      * @return
      * @throws JsonProcessingException
      */
-    private Account getAccount(OrderCreationPaymentRequestBody bodyRequest, Map<String, String> headerForCommonService) throws JsonProcessingException, TMBCommonException {
+    private Account getAccount(String correlationId,OrderCreationPaymentRequestBody bodyRequest) throws JsonProcessingException, TMBCommonException {
         try {
 
-            TmbOneServiceResponse<FundHouseResponse> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(headerForCommonService,
+            ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
                     bodyRequest.getFundHouseCode());
-            FundHouseResponse fundHouseResponseData = fundHouseResponse.getData();
+            FundHouseBankData fundHouseResponseData = fundHouseResponse.getBody().getData();
             logger.info("searching toAccount by fund house code " + bodyRequest.getFundHouseCode());
             logger.info("Response : {} ", TMBUtils.convertJavaObjectToString(fundHouseResponse));
 
             Account toAccount = new Account();
-            Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData.getData());
+            Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData);
             if (fundHouseBankData.isPresent()) {
                 FundHouseBankData data = fundHouseBankData.get();
                 toAccount.setAccountId(data.getToAccountNo());
