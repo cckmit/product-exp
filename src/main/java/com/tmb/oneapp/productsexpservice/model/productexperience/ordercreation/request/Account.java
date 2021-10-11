@@ -12,7 +12,6 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 public class Account {
 
     @NotBlank

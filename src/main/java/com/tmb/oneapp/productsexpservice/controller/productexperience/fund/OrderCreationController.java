@@ -7,13 +7,11 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.fund.OrderCreationService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -22,7 +20,8 @@ import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatu
 /**
  * OrderCreationController request will handle to call apis for combining the data from order transaction
  */
-@RestController("/funds")
+@RequestMapping("/funds")
+@RestController
 public class OrderCreationController {
 
     private final OrderCreationService orderCreationService;
@@ -31,8 +30,16 @@ public class OrderCreationController {
         this.orderCreationService = orderCreationService;
     }
 
-    @PostMapping(value = "/orderCreationPayment")
+    /**
+     * Description:- make order creation to MF Service
+     *
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @return return payment result
+     */
+    @ApiOperation(value = "Make order payment to MF Service")
     @LogAround
+    @PostMapping(value = "/orderCreationPayment")
     public ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> orderCreationPayment(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,

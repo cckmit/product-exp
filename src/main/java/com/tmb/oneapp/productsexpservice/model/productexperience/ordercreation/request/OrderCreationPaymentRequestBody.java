@@ -70,11 +70,9 @@ public class OrderCreationPaymentRequestBody {
     private String epayCode;
 
     @Valid
-    @NotBlank
     private Account fromAccount;
 
     @Valid
-    @NotBlank
     private Account toAccount;
 
     private Fee fee;

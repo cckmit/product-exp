@@ -5,6 +5,7 @@ import com.tmb.common.model.address.Province;
 import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
+import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseBankData;
 import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseResponse;
 import com.tmb.oneapp.productsexpservice.model.common.teramandcondition.response.TermAndConditionResponseBody;
 import com.tmb.oneapp.productsexpservice.model.lending.loan.LoanStagingbarRequest;
@@ -67,10 +68,9 @@ public interface CommonServiceClient {
 	TmbOneServiceResponse<LoanStagingbar> fetchLoanStagingBar(
 			@RequestBody(required = true) LoanStagingbarRequest request);
 
-	@GetMapping(value = "${common.service.fund.house.url}")
-	TmbOneServiceResponse<FundHouseResponse> fetchBankInfoByFundHouse(@RequestHeader Map<String, String> headers,
-																	  @RequestParam("code") String fundHouseCode);
-
-
+	@GetMapping(value = "/apis/common/internal/bank/findbyfundhousecode")
+	ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fetchBankInfoByFundHouse(
+			@RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+			@RequestParam("code") String fundHouseCode);
 
 }
