@@ -16,6 +16,7 @@ public class EAppResponse {
     String productType;
     String appNo;
     String employmentStatus;
+    String employmentStatusCode;
     BigDecimal salary;
     BigDecimal otherIncome;
     BigDecimal limitApplied;
