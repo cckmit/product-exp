@@ -218,28 +218,31 @@ public class CreditCardLogService {
 				ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
 
 		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
+		
 		populateBaseEvents(creditCardEvent, reqHeader);
+		
+		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
+		creditCardEvent.setPlan(converPlan(cardInstallment, correlationId));
+		creditCardEvent.setTransactionDescription(cardInstallment.getTransactionDescription());
+		
+		Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
+		Double installmentInDouble = ConversionUtil.stringToDouble(cardInstallment.getMonthlyInstallments());
+
+		Double interestInDouble = ConversionUtil.stringToDouble(cardInstallment.getInterest());
+		Double amountPlusTotalInterest = amountInDouble + interestInDouble;
+
+		creditCardEvent.setAmountMonthlyInstallment(formateForCurrency(amountInDouble.toString()) + "+"
+				+ formateForCurrency(installmentInDouble.toString()));
+
+		creditCardEvent.setTotalAmountTotalIntrest(formateForCurrency(interestInDouble.toString()) + "+"
+				+ formateForCurrency(amountPlusTotalInterest.toString()));
+		
 		if (Objects.nonNull(e.getStatus()) && "0".equals(e.getStatus().getStatusCode())) {
-			CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
-			creditCardEvent.setPlan(converPlan(cardInstallment, correlationId));
-			creditCardEvent.setTransactionDescription(cardInstallment.getTransactionDescription());
-
-			Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
-			Double installmentInDouble = ConversionUtil.stringToDouble(cardInstallment.getMonthlyInstallments());
-
-			Double interestInDouble = ConversionUtil.stringToDouble(cardInstallment.getInterest());
-			Double amountPlusTotalInterest = amountInDouble + interestInDouble;
-
 			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
-
-			creditCardEvent.setAmountMonthlyInstallment(formateForCurrency(amountInDouble.toString()) + "+"
-					+ formateForCurrency(installmentInDouble.toString()));
-
-			creditCardEvent.setTotalAmountTotalIntrest(formateForCurrency(interestInDouble.toString()) + "+"
-					+ formateForCurrency(amountPlusTotalInterest.toString()));
+			
 		} else {
-			creditCardEvent.setResult(ProductsExpServiceConstant.FAILURE_ACT_LOG);
+			creditCardEvent.setResult(ProductsExpServiceConstant.FAILED);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
 			ErrorStatus errorStatus = e.getStatus().getErrorStatus().get(0);
 			creditCardEvent.setReasonForRequest(errorStatus.getErrorCode());
