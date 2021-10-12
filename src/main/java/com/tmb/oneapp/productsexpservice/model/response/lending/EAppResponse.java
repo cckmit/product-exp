@@ -27,6 +27,7 @@ public class EAppResponse {
     String disburstAccountNo;
     String paymentPlan;
     String paymentMethod;
+    String paymentMethodCode;
     String paymentAccountName;
     String paymentAccountNo;
     String paymentCriteria;
