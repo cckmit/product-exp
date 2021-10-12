@@ -3,24 +3,22 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerSubmissionResponse;
 import com.tmb.oneapp.productsexpservice.service.LoanCustomerService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,24 +36,18 @@ public class LoanCustomerController {
                                                                                               @Valid @RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
                                                                                               @Valid LoanCustomerRequest request) {
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request,crmId);
+            LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request, crmId);
             oneTmbOneServiceResponse.setData(loanCustomerResponse);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
 
-            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while getConfig: {}", e);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
 
     }
@@ -65,25 +57,18 @@ public class LoanCustomerController {
     @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
                                                                                                      @Valid @RequestBody LoanCustomerSubmissionRequest request) {
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanCustomerSubmissionResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
             LoanCustomerSubmissionResponse loanCustomerSubmissionResponse = loanCustomerService.saveCustomerSubmission(request);
             oneTmbOneServiceResponse.setData(loanCustomerSubmissionResponse);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
 
-            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while submission customer profile : {}", e);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
 
     }
