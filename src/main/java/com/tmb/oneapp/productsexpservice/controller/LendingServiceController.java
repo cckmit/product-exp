@@ -141,11 +141,11 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody UploadDocumentRequest request) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> responseUploadDocument = lendingServiceClient.uploadDocument(xCorrelationId, crmId, request);
+            ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocumentResp = lendingServiceClient.uploadDocument(xCorrelationId, crmId, request);
             logger.info(
                     "Success while calling POST /apis/lending-service/document/upload. response code:{} body :{}",
-                    responseUploadDocument.getStatusCode(), responseUploadDocument.getBody().getData().toString());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseUploadDocument.getBody());
+                    uploadDocumentResp.getStatusCode(), uploadDocumentResp.getBody().getData().toString());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(uploadDocumentResp.getBody());
 
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
@@ -170,11 +170,11 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody SubmitDocumentRequest request) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> responseSubmitDocument = lendingServiceClient.submitDocument(xCorrelationId, crmId, request);
+            ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitDocumentResp = lendingServiceClient.submitDocument(xCorrelationId, crmId, request);
             logger.info(
                     "Success while calling POST /apis/lending-service/document/submit. response code:{} body :{}",
-                    responseSubmitDocument.getStatusCode(), responseSubmitDocument.getBody().getData().toString());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseSubmitDocument.getBody());
+                    submitDocumentResp.getStatusCode(), submitDocumentResp.getBody().getData().toString());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(submitDocumentResp.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -198,11 +198,11 @@ public class LendingServiceController {
             @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody SubmitDocumentRequest request) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> responseSubmitMoreDocument = lendingServiceClient.submitMoreDocument(xCorrelationId, crmId, request);
+            ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitMoreDocumentResp = lendingServiceClient.submitMoreDocument(xCorrelationId, crmId, request);
             logger.info(
                     "Success while calling POST /apis/lending-service/document/submit/more. response code:{} body :{}",
-                    responseSubmitMoreDocument.getStatusCode(), responseSubmitMoreDocument.getBody().getData().toString());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseSubmitMoreDocument.getBody());
+                    submitMoreDocumentResp.getStatusCode(), submitMoreDocumentResp.getBody().getData().toString());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(submitMoreDocumentResp.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -233,11 +233,11 @@ public class LendingServiceController {
             @ApiParam(value = "fileName", required = true)
             @Valid @PathVariable("fileName") String fileName) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> responseDeleteDocument = lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileType, fileName);
+            ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> deleteDocumentResp = lendingServiceClient.deleteDocument(xCorrelationId, crmId, caId, docCode, fileType, fileName);
             logger.info(
                     "Success while calling DELETE /apis/lending-service/document. response code:{} body :{}",
-                    responseDeleteDocument.getStatusCode(), responseDeleteDocument.getBody().getData().toString());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseDeleteDocument.getBody());
+                    deleteDocumentResp.getStatusCode(), deleteDocumentResp.getBody().getData().toString());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(deleteDocumentResp.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {

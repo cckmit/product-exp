@@ -49,18 +49,18 @@ public class FlexiLoanController {
     public ResponseEntity<TmbOneServiceResponse<FlexiLoanConfirmResponse>> submit(@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeaders,
                                                                                   @Valid @RequestBody FlexiLoanConfirmRequest request) {
 
-        TmbOneServiceResponse<FlexiLoanConfirmResponse> response = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<FlexiLoanConfirmResponse> confirmResp = new TmbOneServiceResponse<>();
 
         try {
             FlexiLoanConfirmResponse confirmResponse = flexiLoanConfirmService.confirm(requestHeaders, request);
-            response.setData(confirmResponse);
-            response.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+            confirmResp.setData(confirmResponse);
+            confirmResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(confirmResp);
 
         } catch (Exception e) {
             logger.error("Error product-exp-service confirmFlexiLoan : {}", e);
-            response.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
+            confirmResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(confirmResp);
         }
 
     }
@@ -75,18 +75,18 @@ public class FlexiLoanController {
                                                                                            @Valid SubmissionInfoRequest request) {
         logger.info("Get flexi loan submission info for correlation id: {}", correlationId);
 
-        TmbOneServiceResponse<SubmissionInfoResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<SubmissionInfoResponse> submissionResp = new TmbOneServiceResponse<>();
 
         try {
             SubmissionInfoResponse response = flexiLoanService.getSubmissionInfo(correlationId, request);
-            oneTmbOneServiceResponse.setData(response);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            submissionResp.setData(response);
+            submissionResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(submissionResp);
 
         } catch (Exception e) {
             logger.error("Error while submission info : {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            submissionResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(submissionResp);
         }
 
     }
@@ -101,18 +101,18 @@ public class FlexiLoanController {
 
         logger.info("check system off  for correlation id: {}", correlationId);
 
-        TmbOneServiceResponse<CheckSystemOffResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<CheckSystemOffResponse> checkSystemOffResp = new TmbOneServiceResponse<>();
 
         try {
             CheckSystemOffResponse response = flexiCheckSystemOffService.checkSystemOff(correlationId);
-            oneTmbOneServiceResponse.setData(response);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            checkSystemOffResp.setData(response);
+            checkSystemOffResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(checkSystemOffResp);
 
         } catch (Exception e) {
             logger.error("Error while check system off  : {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            checkSystemOffResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(checkSystemOffResp);
         }
 
     }
