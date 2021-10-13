@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.util;
 
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 
 public class TmbStatusUtil {
 
@@ -14,6 +15,15 @@ public class TmbStatusUtil {
         status.setDescription(ProductsExpServiceConstant.SUCCESS_MESSAGE);
         status.setMessage(ProductsExpServiceConstant.SUCCESS_MESSAGE);
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        return status;
+    }
+
+    public static TmbStatus failedStatus() {
+        TmbStatus status = new TmbStatus();
+        status.setCode(ResponseCode.FAILED.getCode());
+        status.setDescription(ResponseCode.FAILED.getDesc());
+        status.setMessage(ResponseCode.FAILED.getMessage());
+        status.setService(ResponseCode.FAILED.getService());
         return status;
     }
 

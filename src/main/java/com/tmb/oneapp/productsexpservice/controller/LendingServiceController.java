@@ -1,31 +1,10 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
-import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
-
-import java.math.BigDecimal;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body;
 import com.tmb.common.util.TMBUtils;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.LendingServiceClient;
 import com.tmb.oneapp.productsexpservice.model.lending.document.*;
@@ -38,21 +17,28 @@ import com.tmb.oneapp.productsexpservice.service.LoanService;
 import feign.FeignException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CRM_ID;
+
 @RestController
+@RequiredArgsConstructor
 @Api(tags = "Lending Service")
 public class LendingServiceController {
-    private static final TMBLogger<LendingServiceController> logger =
-            new TMBLogger<>(LendingServiceController.class);
+    private static final TMBLogger<LendingServiceController> logger = new TMBLogger<>(LendingServiceController.class);
     private final LendingServiceClient lendingServiceClient;
     private final LoanService loanService;
-    private static final HttpHeaders responseHeaders = new HttpHeaders();
-
-    public LendingServiceController(LendingServiceClient lendingServiceClient, LoanService loanService) {
-        this.lendingServiceClient = lendingServiceClient;
-        this.loanService = loanService;
-    }
 
     /**
      * Maps tmb one app error response
@@ -77,7 +63,8 @@ public class LendingServiceController {
     @PostMapping(value = "/lending/get-preload-data", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<Object>> getProducts(@RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestBody ProductRequest request) throws TMBCommonException {
         try {
-            return lendingServiceClient.getLoanProducts(xCorrelationId, request);
+            ResponseEntity<TmbOneServiceResponse<Object>> getLoanProductsResp = lendingServiceClient.getLoanProducts(xCorrelationId, request);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(getLoanProductsResp.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody()); // NO SONAR
             if (response != null && response.getStatus() != null) {
@@ -97,16 +84,15 @@ public class LendingServiceController {
     public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> getProductOrientation(
             @RequestHeader(HEADER_X_CORRELATION_ID) String xCorrelationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestBody ProductDetailRequest request) throws TMBCommonException {
-		try {
-			ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> response = loanService
-					.fetchProductOrientation(xCorrelationId, crmId, request);
-			logger.info(
-					"Success while calling POST /apis/lending-service/loan/product-orientation. response code:{} body :{}",
-					response.getStatusCode(), response.getBody().getData().toString());
-			setHeader();
-			return ResponseEntity.ok().headers(responseHeaders).body(response.getBody());
-			
-		} catch (FeignException e) {
+        try {
+            ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> getProductOrientationResp = loanService
+                    .fetchProductOrientation(xCorrelationId, crmId, request);
+            logger.info(
+                    "Success while calling POST /apis/lending-service/loan/product-orientation. response code:{} body :{}",
+                    getProductOrientationResp.getStatusCode(), getProductOrientationResp.getBody().getData().toString());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(getProductOrientationResp.getBody());
+
+        } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
                 logger.info(
@@ -115,11 +101,11 @@ public class LendingServiceController {
                 throw new TMBCommonException(response.getStatus().getCode(), response.getStatus().getMessage(),
                         response.getStatus().getService(), HttpStatus.BAD_REQUEST, null);
             }
-		} catch (Exception e) {
-			logger.error(e.toString(), e);
-			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-		}
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+        }
         throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
     }
@@ -131,7 +117,8 @@ public class LendingServiceController {
         try {
             com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body body = new Body();
             body.setCaId(new BigDecimal(request.getCaId()));
-            return lendingServiceClient.transferApplication(xCorrelationId, crmId, body);
+            ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> transferApplicationResp = lendingServiceClient.transferApplication(xCorrelationId, crmId, body);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(transferApplicationResp.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -158,8 +145,7 @@ public class LendingServiceController {
             logger.info(
                     "Success while calling POST /apis/lending-service/document/upload. response code:{} body :{}",
                     responseUploadDocument.getStatusCode(), responseUploadDocument.getBody().getData().toString());
-            setHeader();
-            return ResponseEntity.ok().headers(responseHeaders).body(responseUploadDocument.getBody());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseUploadDocument.getBody());
 
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
@@ -188,8 +174,7 @@ public class LendingServiceController {
             logger.info(
                     "Success while calling POST /apis/lending-service/document/submit. response code:{} body :{}",
                     responseSubmitDocument.getStatusCode(), responseSubmitDocument.getBody().getData().toString());
-            setHeader();
-            return ResponseEntity.ok().headers(responseHeaders).body(responseSubmitDocument.getBody());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseSubmitDocument.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -217,8 +202,7 @@ public class LendingServiceController {
             logger.info(
                     "Success while calling POST /apis/lending-service/document/submit/more. response code:{} body :{}",
                     responseSubmitMoreDocument.getStatusCode(), responseSubmitMoreDocument.getBody().getData().toString());
-            setHeader();
-            return ResponseEntity.ok().headers(responseHeaders).body(responseSubmitMoreDocument.getBody());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseSubmitMoreDocument.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -253,8 +237,7 @@ public class LendingServiceController {
             logger.info(
                     "Success while calling DELETE /apis/lending-service/document. response code:{} body :{}",
                     responseDeleteDocument.getStatusCode(), responseDeleteDocument.getBody().getData().toString());
-            setHeader();
-            return ResponseEntity.ok().headers(responseHeaders).body(responseDeleteDocument.getBody());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(responseDeleteDocument.getBody());
         } catch (FeignException e) {
             TmbOneServiceErrorResponse response = mapTmbOneServiceErrorResponse(e.responseBody());
             if (response != null && response.getStatus() != null) {
@@ -268,10 +251,6 @@ public class LendingServiceController {
         throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                 ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-    }
-    
-    private void setHeader() {
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
     }
 
 }

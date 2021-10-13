@@ -4,11 +4,9 @@ package com.tmb.oneapp.productsexpservice.controller;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.model.personaldetail.*;
 import com.tmb.oneapp.productsexpservice.model.request.lending.EAppRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreateApplicationReq;
@@ -17,17 +15,16 @@ import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,22 +40,15 @@ public class LoanSubmissionOnlineController {
 
     public ResponseEntity<TmbOneServiceResponse<IncomeInfo>> getIncomeInfo(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
         TmbOneServiceResponse<IncomeInfo> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         try {
-
             oneTmbOneServiceResponse.setData(loanSubmissionOnlineService.getIncomeInfoByRmId(crmId));
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
 
-            responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while get income info: {}", e);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
 
@@ -72,16 +62,12 @@ public class LoanSubmissionOnlineController {
         try {
             ResponseApplication res = loanSubmissionOnlineService.createApplication(crmId, request);
             oneTmbOneServiceResponse.setData(res);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
-        } catch (Exception e) {
 
+        } catch (Exception e) {
             logger.error("Error while submission create application : {}", e);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
@@ -97,16 +83,12 @@ public class LoanSubmissionOnlineController {
         try {
             PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.getPersonalDetailInfo(crmId, request);
             response.setData(personalDetailResponse);
-            response.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-            return ResponseEntity.ok()
-                    .headers(TMBUtils.getResponseHeaders())
-                    .body(response);
+            response.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
         } catch (Exception e) {
             logger.error("error while get personal detail: {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -122,16 +104,11 @@ public class LoanSubmissionOnlineController {
         try {
             PersonalDetailResponse personalDetailResponse = loanSubmissionOnlineService.updatePersonalDetailInfo(crmId, request);
             response.setData(personalDetailResponse);
-            response.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-            return ResponseEntity.ok()
-                    .headers(TMBUtils.getResponseHeaders())
-                    .body(response);
+            response.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
         } catch (Exception e) {
             logger.error("error while update personal customer detail: {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -150,16 +127,12 @@ public class LoanSubmissionOnlineController {
         try {
             DropdownsLoanSubmissionWorkingDetail dropdownsLoanSubmissionWorkingDetail = loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(correlationId, crmId);
             response.setData(dropdownsLoanSubmissionWorkingDetail);
-            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(), ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-
-            return ResponseEntity.ok()
-                    .headers(TMBUtils.getResponseHeaders())
-                    .body(response);
+            response.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
 
         } catch (Exception e) {
             logger.error("Error while get dropdown loan submission online working detail : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -180,16 +153,13 @@ public class LoanSubmissionOnlineController {
         try {
             WorkingDetail workingDetail = loanSubmissionOnlineService.getWorkingDetail(correlationId, crmId, caId);
             response.setData(workingDetail);
-            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(), ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            response.setStatus(TmbStatusUtil.successStatus());
 
-            return ResponseEntity.ok()
-                    .headers(TMBUtils.getResponseHeaders())
-                    .body(response);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
 
         } catch (Exception e) {
             logger.error("Error while get loan submission online working detail : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -198,23 +168,16 @@ public class LoanSubmissionOnlineController {
     @ApiOperation("Update working detail")
     @PutMapping(value = "/workingDetail", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateWorkingDetail(@Valid @RequestBody UpdateWorkingDetailReq request) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<ResponseApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
             ResponseApplication res = loanSubmissionOnlineService.updateWorkingDetail(request);
             oneTmbOneServiceResponse.setData(res);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
-            responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("Error while update working detail : {}", e);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
 
@@ -231,15 +194,12 @@ public class LoanSubmissionOnlineController {
             CustomerInformationResponse customerInfoRes = loanSubmissionOnlineService
                     .getCustomerInformation(correlationId, crmId, request);
             response.setData(customerInfoRes);
-            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-
+            response.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
 
         } catch (Exception e) {
             logger.error("Error while get loan submission Customer Information : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -256,13 +216,12 @@ public class LoanSubmissionOnlineController {
             CustomerInformationResponse customerInfoRes = loanSubmissionOnlineService
                     .updateNCBConsentFlagAndStoreFile(correlationId, crmId, request);
             response.setData(customerInfoRes);
-            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            response.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
         } catch (Exception e) {
             logger.error("Error while get loan submission Customer Information : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -276,15 +235,12 @@ public class LoanSubmissionOnlineController {
         try {
 
             oneTmbOneServiceResponse.setData(loanSubmissionOnlineService.getCustomerAge(crmId));
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
-
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+
         } catch (Exception e) {
             logger.error("Error while get customer age: {}", e);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
@@ -299,15 +255,14 @@ public class LoanSubmissionOnlineController {
             @Valid ChecklistRequest request) {
         TmbOneServiceResponse<DocumentResponse> response = new TmbOneServiceResponse<>();
         try {
-            DocumentResponse documentResponse = loanSubmissionOnlineService.getDocuments(correlationId,crmId, request.getCaId());
+            DocumentResponse documentResponse = loanSubmissionOnlineService.getDocuments(correlationId, crmId, request.getCaId());
             response.setData(documentResponse);
-            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            response.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
         } catch (Exception e) {
             logger.error("error while get checklist : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -322,15 +277,14 @@ public class LoanSubmissionOnlineController {
             @Valid ChecklistRequest request) {
         TmbOneServiceResponse<DocumentResponse> response = new TmbOneServiceResponse<>();
         try {
-            DocumentResponse documentResponse = loanSubmissionOnlineService.getMoreDocuments(correlationId,crmId, request.getCaId());
+            DocumentResponse documentResponse = loanSubmissionOnlineService.getMoreDocuments(correlationId, crmId, request.getCaId());
             response.setData(documentResponse);
-            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            response.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
         } catch (Exception e) {
             logger.error("error while get checklist : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -347,13 +301,12 @@ public class LoanSubmissionOnlineController {
         try {
             EAppResponse eAppResponses = loanSubmissionOnlineService.getEAppData(correlationId, crmId, request.getCaId());
             response.setData(eAppResponses);
-            response.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+            response.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
         } catch (Exception e) {
             logger.error("error while get e-app : {}", e);
-            response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            response.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(response);
         }
     }
@@ -362,21 +315,18 @@ public class LoanSubmissionOnlineController {
     @ApiOperation("Update Application")
     @PutMapping(value = "updateApplication", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateApplication(@RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-                                                                   @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
+                                                                                        @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
 
         TmbOneServiceResponse<ResponseApplication> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
             loanSubmissionOnlineService.updateApplication(crmId, request);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
-                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
-                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
 
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
 
             logger.error("Error while update application : {}", e);
-            oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService()));
+            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         }
     }
