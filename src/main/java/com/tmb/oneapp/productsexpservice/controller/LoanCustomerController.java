@@ -36,18 +36,18 @@ public class LoanCustomerController {
                                                                                               @Valid @RequestHeader(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
                                                                                               @Valid LoanCustomerRequest request) {
 
-        TmbOneServiceResponse<LoanCustomerResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<LoanCustomerResponse> customerProfileResp = new TmbOneServiceResponse<>();
 
         try {
             LoanCustomerResponse loanCustomerResponse = loanCustomerService.getCustomerProfile(correlationId, request, crmId);
-            oneTmbOneServiceResponse.setData(loanCustomerResponse);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            customerProfileResp.setData(loanCustomerResponse);
+            customerProfileResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(customerProfileResp);
 
         } catch (Exception e) {
             logger.error("Error while getConfig: {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            customerProfileResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(customerProfileResp);
         }
 
     }
@@ -57,18 +57,18 @@ public class LoanCustomerController {
     @PostMapping(value = "/submission-customer-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TmbOneServiceResponse<LoanCustomerSubmissionResponse>> saveCustomerProfile(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
                                                                                                      @Valid @RequestBody LoanCustomerSubmissionRequest request) {
-        TmbOneServiceResponse<LoanCustomerSubmissionResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<LoanCustomerSubmissionResponse> saveCustomerProfileResp = new TmbOneServiceResponse<>();
 
         try {
             LoanCustomerSubmissionResponse loanCustomerSubmissionResponse = loanCustomerService.saveCustomerSubmission(request);
-            oneTmbOneServiceResponse.setData(loanCustomerSubmissionResponse);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            saveCustomerProfileResp.setData(loanCustomerSubmissionResponse);
+            saveCustomerProfileResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(saveCustomerProfileResp);
 
         } catch (Exception e) {
             logger.error("Error while submission customer profile : {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            saveCustomerProfileResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(saveCustomerProfileResp);
         }
 
     }

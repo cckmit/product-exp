@@ -47,16 +47,16 @@ public class PersonalLoanController {
     })
     public ResponseEntity<TmbOneServiceResponse<LoanPreloadResponse>> checkPreload(@Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
                                                                                    @Valid LoanPreloadRequest loanPreloadRequest) {
-        TmbOneServiceResponse<LoanPreloadResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<LoanPreloadResponse> checkPreloadResp = new TmbOneServiceResponse<>();
 
         try {
-            oneTmbOneServiceResponse.setData(personalLoanService.checkPreload(correlationId, loanPreloadRequest));
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            checkPreloadResp.setData(personalLoanService.checkPreload(correlationId, loanPreloadRequest));
+            checkPreloadResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(checkPreloadResp);
         } catch (Exception e) {
             logger.error("error while getConfig: {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            checkPreloadResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(checkPreloadResp);
         }
     }
 
@@ -64,16 +64,16 @@ public class PersonalLoanController {
     @LogAround
     @ApiOperation("Get preload brms")
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> checkCalUW(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
-        TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<InstantLoanCalUWResponse> checkCalUWResp = new TmbOneServiceResponse<>();
         try {
             InstantLoanCalUWResponse instantLoanCalUWResponse = loanSubmissionOnlineService.checkCalculateUnderwriting(instantLoanCalUWRequest);
-            oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            checkCalUWResp.setData(instantLoanCalUWResponse);
+            checkCalUWResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(checkCalUWResp);
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            checkCalUWResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(checkCalUWResp);
         }
     }
 
@@ -82,17 +82,17 @@ public class PersonalLoanController {
     @LogAround
     @ApiOperation("Get product loan list")
     public ResponseEntity<TmbOneServiceResponse<ApplyPersonalLoan>> getProductList() {
-        TmbOneServiceResponse<ApplyPersonalLoan> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<ApplyPersonalLoan> productListResp = new TmbOneServiceResponse<>();
 
         try {
             ApplyPersonalLoan productDataLoanList = personalLoanService.getProductsLoan();
-            oneTmbOneServiceResponse.setData(productDataLoanList);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            productListResp.setData(productDataLoanList);
+            productListResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(productListResp);
         } catch (Exception e) {
             logger.error("error while get product list: {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            productListResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(productListResp);
         }
     }
 
@@ -101,16 +101,16 @@ public class PersonalLoanController {
     @LogAround
     @ApiOperation("Get product credit list")
     public ResponseEntity<TmbOneServiceResponse<List<ProductData>>> getProductCreditList() {
-        TmbOneServiceResponse<List<ProductData>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<List<ProductData>> productCreditListResp = new TmbOneServiceResponse<>();
         try {
             List<ProductData> productDataCreditList = personalLoanService.getProductsCredit();
-            oneTmbOneServiceResponse.setData(productDataCreditList);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            productCreditListResp.setData(productDataCreditList);
+            productCreditListResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().body(productCreditListResp);
         } catch (Exception e) {
             logger.error("error while get product credit list: {}", e);
-            oneTmbOneServiceResponse.setStatus(TmbStatusUtil.failedStatus());
-            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+            productCreditListResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(productCreditListResp);
         }
     }
 
