@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class LoanSubmissionCreateApplicationReq {
+    private boolean waiveDoc;
     private Long caId;
     private String productCode;
     private String employmentStatus;

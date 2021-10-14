@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class WorkingDetail {
+    private boolean waiveDoc;
     private String employmentStatus;
     private String employmentYear;
     private String employmentMonth;
