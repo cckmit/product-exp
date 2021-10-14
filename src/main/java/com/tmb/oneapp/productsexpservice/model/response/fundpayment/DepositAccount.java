@@ -34,4 +34,6 @@ public class DepositAccount {
 
     private BigDecimal availableBalance;
 
+    private String FiID;
+
 }
