@@ -244,8 +244,6 @@ public class CreditCardLogService {
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILED);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
-			ErrorStatus errorStatus = e.getStatus().getErrorStatus().get(0);
-			creditCardEvent.setReasonForRequest(errorStatus.getErrorCode());
 		}
 		logActivity(creditCardEvent);
 
