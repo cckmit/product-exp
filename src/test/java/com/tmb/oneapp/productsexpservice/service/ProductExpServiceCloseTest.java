@@ -17,7 +17,7 @@ public class ProductExpServiceCloseTest {
     @Test
     public void mappingPaymentResponse() {
         UtilMap utilMap = new UtilMap();
-        FundPaymentDetailResponse fundAccountRs = utilMap.mappingPaymentResponse(null, null, null, null);
+        FundPaymentDetailResponse fundAccountRs = utilMap.mappingPaymentResponse(null, null, null, null, null);
         Assert.assertNull(fundAccountRs);
     }
 
