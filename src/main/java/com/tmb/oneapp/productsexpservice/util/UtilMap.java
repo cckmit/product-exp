@@ -164,8 +164,7 @@ public class UtilMap {
 
                 boolean notFoundThatInSavingAccount = true;
                 for (SavingAccount savingAccount: savingAccountList) {
-                    String savingAccountNumber = savingAccount.getAcctNbr().length() > 10 ? savingAccount.getAcctNbr().substring(savingAccount.getAcctNbr().length() - 10) :
-                            savingAccount.getAcctNbr();
+                    String savingAccountNumber = getAccountNumberTenDigit(savingAccount.getAcctNbr());
                     if(savingAccountNumber.equals(depositAccount.getAccountNumber())){
                         String fidConcat = savingAccount.getAcctCtrl1() + savingAccount.getAcctCtrl2()
                                 + savingAccount.getAcctCtrl3() + savingAccount.getAcctCtrl4();
@@ -176,8 +175,7 @@ public class UtilMap {
 
                 if(notFoundThatInSavingAccount) {
                     for (CurrentAccount currentAccount : currentAccountLst) {
-                        String currentAccountNumber = currentAccount.getAcctNbr().length() > 10 ? currentAccount.getAcctNbr().substring(currentAccount.getAcctNbr().length() - 10) :
-                                currentAccount.getAcctNbr();
+                        String currentAccountNumber = getAccountNumberTenDigit(currentAccount.getAcctNbr());
                         if (currentAccountNumber.equals(depositAccount.getAccountNumber())) {
                             String fidConcat = currentAccount.getAcctCtrl1() + currentAccount.getAcctCtrl2()
                                     + currentAccount.getAcctCtrl3() + currentAccount.getAcctCtrl4();
@@ -191,6 +189,11 @@ public class UtilMap {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
         }
 
+    }
+
+    private String getAccountNumberTenDigit(String accountNo){
+        return accountNo.length() > 10 ? accountNo.substring(accountNo.length() - 10) :
+                accountNo;
     }
 
     /**
