@@ -12,7 +12,9 @@ import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocati
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.CurrentAccount;
 import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
+import com.tmb.oneapp.productsexpservice.model.SavingAccount;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
@@ -364,7 +366,22 @@ public class ProductExpServiceTest {
             fundHolidayBody = mapper.readValue(Paths.get("src/test/resources/investment/fund_holiday.json").toFile(), FundHolidayBody.class);
 
             responseCustomerExp = new String(Files.readAllBytes(Paths.get("src/test/resources/investment/cc_exp_service.json")), StandardCharsets.UTF_8);
+            CurrentAccount currentAccount = new CurrentAccount();
+            currentAccount.setAcctNbr("00000242383719");
+            currentAccount.setAcctCtrl1("1");
+            currentAccount.setAcctCtrl2("2");
+            currentAccount.setAcctCtrl3("3");
+            currentAccount.setAcctCtrl4("4");
+            productHoldingsResp.setCurrentAccounts(List.of(currentAccount));
 
+            SavingAccount savingAccount = new SavingAccount();
+            savingAccount.setAcctNbr("00000019265651");
+            savingAccount.setAcctCtrl1("1");
+            savingAccount.setAcctCtrl2("2");
+            savingAccount.setAcctCtrl3("3");
+            savingAccount.setAcctCtrl4("4");
+
+            productHoldingsResp.setSavingAccounts(List.of(savingAccount));
             commonData.setEligibleAccountCodeBuy(eligibleAcc);
             commonDataList.add(commonData);
 
