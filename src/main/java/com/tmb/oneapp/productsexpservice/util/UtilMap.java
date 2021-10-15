@@ -159,36 +159,37 @@ public class UtilMap {
         try {
             List<SavingAccount> savingAccountList = productHoldingResponse.getSavingAccounts();
             List<CurrentAccount> currentAccountLst = productHoldingResponse.getCurrentAccounts();
-
             for (DepositAccount depositAccount: depositAccountList) {
-
-                boolean notFoundThatInSavingAccount = true;
-                for (SavingAccount savingAccount: savingAccountList) {
-                    String savingAccountNumber = getAccountNumberTenDigit(savingAccount.getAcctNbr());
-                    if(savingAccountNumber.equals(depositAccount.getAccountNumber())){
-                        String fidConcat = savingAccount.getAcctCtrl1() + savingAccount.getAcctCtrl2()
-                                + savingAccount.getAcctCtrl3() + savingAccount.getAcctCtrl4();
-                        depositAccount.setFiId(fidConcat);
-                        notFoundThatInSavingAccount = false;
-                    }
-                }
-
-                if(notFoundThatInSavingAccount) {
-                    for (CurrentAccount currentAccount : currentAccountLst) {
-                        String currentAccountNumber = getAccountNumberTenDigit(currentAccount.getAcctNbr());
-                        if (currentAccountNumber.equals(depositAccount.getAccountNumber())) {
-                            String fidConcat = currentAccount.getAcctCtrl1() + currentAccount.getAcctCtrl2()
-                                    + currentAccount.getAcctCtrl3() + currentAccount.getAcctCtrl4();
-                            depositAccount.setFiId(fidConcat);
-                        }
-                    }
-                }
+                mappingFieldFinancialIdToResponse(savingAccountList, currentAccountLst, depositAccount);
             }
-
         }catch (Exception ex){
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
         }
 
+    }
+
+    private void mappingFieldFinancialIdToResponse(List<SavingAccount> savingAccountList, List<CurrentAccount> currentAccountLst, DepositAccount depositAccount) {
+        boolean notFoundThatInSavingAccount = true;
+        for (SavingAccount savingAccount: savingAccountList) {
+            String savingAccountNumber = getAccountNumberTenDigit(savingAccount.getAcctNbr());
+            if(savingAccountNumber.equals(depositAccount.getAccountNumber())){
+                String fidConcat = savingAccount.getAcctCtrl1() + savingAccount.getAcctCtrl2()
+                        + savingAccount.getAcctCtrl3() + savingAccount.getAcctCtrl4();
+                depositAccount.setFiId(fidConcat);
+                notFoundThatInSavingAccount = false;
+            }
+        }
+
+        if(notFoundThatInSavingAccount) {
+            for (CurrentAccount currentAccount : currentAccountLst) {
+                String currentAccountNumber = getAccountNumberTenDigit(currentAccount.getAcctNbr());
+                if (currentAccountNumber.equals(depositAccount.getAccountNumber())) {
+                    String fidConcat = currentAccount.getAcctCtrl1() + currentAccount.getAcctCtrl2()
+                            + currentAccount.getAcctCtrl3() + currentAccount.getAcctCtrl4();
+                    depositAccount.setFiId(fidConcat);
+                }
+            }
+        }
     }
 
     private String getAccountNumberTenDigit(String accountNo){
