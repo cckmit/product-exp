@@ -12,6 +12,9 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.model.CurrentAccount;
+import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
+import com.tmb.oneapp.productsexpservice.model.SavingAccount;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.*;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
@@ -111,13 +114,15 @@ public class UtilMap {
      * @param fundHolidayBody
      * @param responseCommon
      * @param responseCustomerExp
+     * @param productHoldingResponse
      * @return FundPaymentDetailResponse
      */
     @LogAround
     public FundPaymentDetailResponse mappingPaymentResponse(FundRuleResponse fundRuleResponse,
                                                             FundHolidayBody fundHolidayBody,
                                                             List<CommonData> responseCommon,
-                                                            String responseCustomerExp) {
+                                                            String responseCustomerExp,
+                                                            ProductHoldingsResp productHoldingResponse) {
         if (StringUtils.isEmpty(fundRuleResponse)
                 || StringUtils.isEmpty(responseCustomerExp)) {
             return null;
@@ -143,9 +148,49 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
-            fundPaymentDetailResponse.setDepositAccountList(mappingAccount(responseCommon, responseCustomerExp, true));
+            List<DepositAccount> depositAccountList = mappingAccount(responseCommon, responseCustomerExp, true);
+            filterResponseGetFinancialId(productHoldingResponse, depositAccountList);
+            fundPaymentDetailResponse.setDepositAccountList(depositAccountList);
             return fundPaymentDetailResponse;
         }
+    }
+
+    private void filterResponseGetFinancialId(ProductHoldingsResp productHoldingResponse, List<DepositAccount> depositAccountList) {
+        try {
+            List<SavingAccount> savingAccountList = productHoldingResponse.getSavingAccounts();
+            List<CurrentAccount> currentAccountLst = productHoldingResponse.getCurrentAccounts();
+
+            for (DepositAccount depositAccount: depositAccountList) {
+
+                boolean notFoundThatInSavingAccount = true;
+                for (SavingAccount savingAccount: savingAccountList) {
+                    String savingAccountNumber = savingAccount.getAcctNbr().length() > 10 ? savingAccount.getAcctNbr().substring(savingAccount.getAcctNbr().length() - 10) :
+                            savingAccount.getAcctNbr();
+                    if(savingAccountNumber.equals(depositAccount.getAccountNumber())){
+                        String fidConcat = savingAccount.getAcctCtrl1() + savingAccount.getAcctCtrl2()
+                                + savingAccount.getAcctCtrl3() + savingAccount.getAcctCtrl4();
+                        depositAccount.setFiId(fidConcat);
+                        notFoundThatInSavingAccount = false;
+                    }
+                }
+
+                if(notFoundThatInSavingAccount) {
+                    for (CurrentAccount currentAccount : currentAccountLst) {
+                        String currentAccountNumber = currentAccount.getAcctNbr().length() > 10 ? currentAccount.getAcctNbr().substring(currentAccount.getAcctNbr().length() - 10) :
+                                currentAccount.getAcctNbr();
+                        if (currentAccountNumber.equals(depositAccount.getAccountNumber())) {
+                            String fidConcat = currentAccount.getAcctCtrl1() + currentAccount.getAcctCtrl2()
+                                    + currentAccount.getAcctCtrl3() + currentAccount.getAcctCtrl4();
+                            depositAccount.setFiId(fidConcat);
+                        }
+                    }
+                }
+            }
+
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        }
+
     }
 
     /**

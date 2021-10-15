@@ -175,7 +175,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
      */
     @LogAround
     @Async
-    public CompletableFuture<String> fetchCustomerExp(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
+    public CompletableFuture<String> getAccountList(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
             String responseFundHoliday = accountRequestClient.getAccountList(headerParameter, crmId);
             return CompletableFuture.completedFuture(responseFundHoliday);

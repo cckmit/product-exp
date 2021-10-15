@@ -304,18 +304,18 @@ public class ProductsExpService extends TmbErrorHandle {
         try {
             CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(headerParameter, fundRuleRequestBody);
             CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(headerParameter, fundRuleRequestBody.getFundCode());
-            CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(headerParameter, UtilMap.halfCrmIdFormat(crmId));
+            CompletableFuture<String> fetchAccountList = productExpAsyncService.getAccountList(headerParameter, UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
-            CompletableFuture<ProductHoldingsResp> fetchProductHoldingResponse= productExpAsyncService.fetchProductHoldingService(headerParameter, UtilMap.halfCrmIdFormat(crmId));
-            CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule,fetchProductHoldingResponse);
+            CompletableFuture<ProductHoldingsResp> fetchProductHoldingResponse = productExpAsyncService.fetchProductHoldingService(headerParameter, UtilMap.halfCrmIdFormat(crmId));
+            CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchAccountList, fetchCommonConfigByModule, fetchProductHoldingResponse);
             FundRuleResponse fundRuleResponse = fetchFundRule.get();
             FundHolidayBody fundHolidayBody = fetchFundHoliday.get();
-            String customerExp = fetchCustomerExp.get();
+            String customerExp = fetchAccountList.get();
             List<CommonData> commonDataList = fetchCommonConfigByModule.get();
-            ProductHoldingsResp  productHoldingResponse=fetchProductHoldingResponse.get();
-          //  System.out.println("Response:"+productHoldingResponse);
+            ProductHoldingsResp productHoldingResponse = fetchProductHoldingResponse.get();
+
             UtilMap map = new UtilMap();
-            fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp,productHoldingResponse);
+            fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp, productHoldingResponse);
 
             if (fundPaymentDetailResponse.getDepositAccountList().isEmpty()) {
                 TmbStatus status = tmbOneServiceResponse.getStatus();
@@ -350,7 +350,7 @@ public class ProductsExpService extends TmbErrorHandle {
      * @return List<FundClassListInfo>
      */
     @LogAround
-    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest){
+    public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
         Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {

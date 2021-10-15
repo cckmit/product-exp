@@ -12,8 +12,8 @@ import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocati
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
@@ -355,6 +355,7 @@ public class ProductExpServiceTest {
         FundHolidayBody fundHolidayBody;
         FundRuleResponse fundRuleResponse;
         CommonData commonData = new CommonData();
+        ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
         List<CommonData> commonDataList = new ArrayList<>();
 
         try {
@@ -369,8 +370,10 @@ public class ProductExpServiceTest {
 
             when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleResponse));
             when(productExpAsyncService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
-            when(productExpAsyncService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
+            when(productExpAsyncService.getAccountList(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
             when(productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(commonDataList));
+            when(productExpAsyncService.fetchProductHoldingService(any(), any())).thenReturn(CompletableFuture.completedFuture(productHoldingsResp));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -378,18 +381,20 @@ public class ProductExpServiceTest {
         UtilMap utilMap = new UtilMap();
         CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.getAccountList(any(), anyString());
         CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString());
+        CompletableFuture<ProductHoldingsResp> fetchProductHoldingResponse = productExpAsyncService.fetchProductHoldingService(any(), anyString());
 
-        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
+        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule,fetchProductHoldingResponse);
         FundRuleResponse fundRuleResponseCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
+        ProductHoldingsResp productHoldingResponse = fetchProductHoldingResponse.get();
         String customerExp = fetchCustomerExp.get();
 
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
         Assert.assertNotNull(customerExp);
 
-        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp);
+        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp, productHoldingResponse);
         Assert.assertNotNull(response);
 
         TmbOneServiceResponse<FundPaymentDetailResponse> serviceRes = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
@@ -433,6 +438,7 @@ public class ProductExpServiceTest {
         FundHolidayBody fundHolidayBody;
         FundRuleResponse fundRuleResponse;
         CommonData commonData = new CommonData();
+        ProductHoldingsResp productHoldingsResp = new ProductHoldingsResp();
         List<CommonData> commonDataList = new ArrayList<>();
 
         try {
@@ -447,8 +453,10 @@ public class ProductExpServiceTest {
 
             when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(fundRuleResponse));
             when(productExpAsyncService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
-            when(productExpAsyncService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
+            when(productExpAsyncService.getAccountList(any(), any())).thenReturn(CompletableFuture.completedFuture(responseCustomerExp));
             when(productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(commonDataList));
+            when(productExpAsyncService.fetchProductHoldingService(any(), any())).thenReturn(CompletableFuture.completedFuture(productHoldingsResp));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -456,18 +464,20 @@ public class ProductExpServiceTest {
         UtilMap utilMap = new UtilMap();
         CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.getAccountList(any(), anyString());
         CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString());
+        CompletableFuture<ProductHoldingsResp> fetchProductHoldingResponse = productExpAsyncService.fetchProductHoldingService(any(), anyString());
 
-        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
+        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule,fetchProductHoldingResponse);
         FundRuleResponse fundRuleResponseCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
+        ProductHoldingsResp productHoldingResponse = fetchProductHoldingResponse.get();
         String customerExp = fetchCustomerExp.get();
 
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
         Assert.assertNotNull(customerExp);
 
-        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp);
+        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp, productHoldingResponse);
         Assert.assertNotNull(response);
 
         TmbOneServiceResponse<FundPaymentDetailResponse> actual = productsExpService.getFundPrePaymentDetail(correlationId, crmId, fundPaymentDetailRequest);
@@ -484,25 +494,29 @@ public class ProductExpServiceTest {
         try {
             when(productExpAsyncService.fetchFundRule(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
             when(productExpAsyncService.fetchFundHoliday(any(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
-            when(productExpAsyncService.fetchCustomerExp(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsyncService.getAccountList(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
             when(productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(null));
+            when(productExpAsyncService.fetchProductHoldingService(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(any(), any());
         CompletableFuture<FundHolidayBody> fetchFundHoliday = productExpAsyncService.fetchFundHoliday(any(), anyString());
-        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.fetchCustomerExp(any(), anyString());
+        CompletableFuture<String> fetchCustomerExp = productExpAsyncService.getAccountList(any(), anyString());
         CompletableFuture<List<CommonData>> fetchCommonConfigByModule = productExpAsyncService.fetchCommonConfigByModule(anyString(), anyString());
+        CompletableFuture<ProductHoldingsResp> fetchProductHoldingResponse = productExpAsyncService.fetchProductHoldingService(any(), anyString());
 
-        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule);
+        CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchCustomerExp, fetchCommonConfigByModule,fetchProductHoldingResponse);
         FundRuleResponse fundRuleResponseCom = fetchFundRule.get();
         FundHolidayBody fundHolidayBodyCom = fetchFundHoliday.get();
+        ProductHoldingsResp productHoldingResponse = fetchProductHoldingResponse.get();
         String customerExp = fetchCustomerExp.get();
         List<CommonData> commonDataListCom = fetchCommonConfigByModule.get();
 
         UtilMap utilMap = new UtilMap();
-        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp);
+        FundPaymentDetailResponse response = utilMap.mappingPaymentResponse(fundRuleResponseCom, fundHolidayBodyCom, commonDataListCom, customerExp, productHoldingResponse);
         Assert.assertNull(response);
     }
 
