@@ -11,7 +11,6 @@ import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
-import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundfavorite.CustomerFavoriteFundData;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
@@ -221,7 +220,7 @@ public class ProductExpAsyncServiceTest {
             ex.printStackTrace();
         }
 
-        CompletableFuture<String> response = productExpAsyncService.fetchCustomerExp(any(), any());
+        CompletableFuture<String> response = productExpAsyncService.getAccountList(any(), any());
         Assert.assertNotNull(response);
     }
 
@@ -229,7 +228,7 @@ public class ProductExpAsyncServiceTest {
     public void fetchCustomerExpWithException() {
         try {
             when(accountRequestClient.getAccountList(any(), any())).thenThrow(MockitoException.class);
-            CompletableFuture<String> response = productExpAsyncService.fetchCustomerExp(any(), any());
+            CompletableFuture<String> response = productExpAsyncService.getAccountList(any(), any());
             Assert.assertNotNull(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -554,7 +553,7 @@ public class ProductExpAsyncServiceTest {
 
         //When
         try {
-            productExpAsyncService.fetchCustomerExp(any(), any());
+            productExpAsyncService.getAccountList(any(), any());
         } catch (TMBCommonException ex) {
             // Then
             assertEquals(errorCode, ex.getErrorCode());

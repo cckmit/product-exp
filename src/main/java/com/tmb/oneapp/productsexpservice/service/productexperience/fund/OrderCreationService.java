@@ -134,11 +134,11 @@ public class OrderCreationService extends TmbErrorHandle {
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
                         .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                logger.info("createOrderPayment buy request creditcard obj : {}", request);
+                logger.info("createOrderPayment buy flow creditcard request casa obj : {}", UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
             } else {
                 // casa account
-                logger.info("createOrderPayment buy request casa obj : {}", request);
+                logger.info("createOrderPayment buy flow casa request casa obj : {}", UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
             }
 
@@ -152,7 +152,7 @@ public class OrderCreationService extends TmbErrorHandle {
                 request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
             }
 
-            logger.info("createOrderPayment sell or switch request casa obj : {}", request);
+            logger.info("createOrderPayment sell or switch request casa obj : {}", UtilMap.convertObjectToStringJson(request));
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
         }
         tmbResponseErrorHandle(response.getBody().getStatus());

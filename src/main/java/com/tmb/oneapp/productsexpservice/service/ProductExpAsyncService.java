@@ -12,6 +12,7 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
+import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
@@ -174,7 +175,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
      */
     @LogAround
     @Async
-    public CompletableFuture<String> fetchCustomerExp(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
+    public CompletableFuture<String> getAccountList(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
             String responseFundHoliday = accountRequestClient.getAccountList(headerParameter, crmId);
             return CompletableFuture.completedFuture(responseFundHoliday);
@@ -347,5 +348,27 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
         fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
         return fundClassLists;
     }
+    /**
+     * Method fetchProductHoldingService to get holding account details.
+     *
+     * @param headerParameter
+     * @param crmId
+     * @return CompletableFuture<ProductHoldingsResp>
+     */
+    @LogAround
+    @Async
+    public CompletableFuture<ProductHoldingsResp> fetchProductHoldingService(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> result = accountRequestClient.getProductHoldingService(headerParameter, crmId);
+            return CompletableFuture.completedFuture(result.getBody().getData());
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
+            throw getTmbCommonException();
+        } catch (Exception e) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, e);
+            throw getTmbCommonException();
+        }
+    }
 
- }
+
+}
