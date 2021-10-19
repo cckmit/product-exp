@@ -28,6 +28,7 @@ import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,10 +104,11 @@ public class OrderCreationService extends TmbErrorHandle {
             postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request, response);
             tmbOneServiceResponse.setData(response.getBody().getData());
 
+        } catch (FeignException feignException) {
+
         } catch (TMBCommonException ex) {
             throw ex;
         } catch (Exception ex) {
-
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -115,6 +117,7 @@ public class OrderCreationService extends TmbErrorHandle {
     }
 
     private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
+
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
             Account toAccount = getAccount(correlationId,request);
