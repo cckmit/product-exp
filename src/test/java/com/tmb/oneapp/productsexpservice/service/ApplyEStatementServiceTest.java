@@ -15,11 +15,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import com.tmb.common.model.Customer;
+import com.tmb.common.model.StatementFlag;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.creditcard.CardStatus;
 import com.tmb.common.model.creditcard.CreditCardDetail;
 import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.common.model.legacy.rsl.common.ob.account.Account;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -29,9 +32,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.LoanAccount;
 import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 
 @RunWith(JUnit4.class)
 public class ApplyEStatementServiceTest {
@@ -58,8 +58,8 @@ public class ApplyEStatementServiceTest {
 	void testGetEStatement() throws Exception {
 		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
-		TmbOneServiceResponse<ApplyEStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		oneServiceResponse.setData(data);
 		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
@@ -75,8 +75,8 @@ public class ApplyEStatementServiceTest {
 		String crmId = ProductsExpServiceConstant.X_CRMID;
 		UpdateEStatmentRequest updateEstatementReq = new UpdateEStatmentRequest();
 
-		TmbOneServiceResponse<ApplyEStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		Customer customer = new Customer();
 		StatementFlag statementFlag = new StatementFlag();
 		customer.setStatementFlag(statementFlag);
@@ -107,7 +107,7 @@ public class ApplyEStatementServiceTest {
 		cardsBalancesResponse.setCreditCard(creditCard);
 		when(creditCardClient.getCreditCardBalance(any(), any())).thenReturn(ResponseEntity.ok(cardsBalancesResponse));
 
-		TmbOneServiceResponse<ApplyEStatementResponse> updateServiceResponse = new TmbOneServiceResponse<>();
+		TmbOneServiceResponse<UpdateEStatmentResp> updateServiceResponse = new TmbOneServiceResponse<>();
 		updateServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
@@ -122,8 +122,8 @@ public class ApplyEStatementServiceTest {
 		String crmId = ProductsExpServiceConstant.X_CRMID;
 		UpdateEStatmentRequest updateEstatementReq = new UpdateEStatmentRequest();
 		updateEstatementReq.setAccountId("5213323");
-		TmbOneServiceResponse<ApplyEStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		Customer customer = new Customer();
 		StatementFlag statementFlag = new StatementFlag();
 		customer.setStatementFlag(statementFlag);
@@ -155,7 +155,7 @@ public class ApplyEStatementServiceTest {
 		when(creditCardClient.getCreditCardBalance(any(), any())).thenReturn(ResponseEntity.ok(cardsBalancesResponse));
 		when(creditCardClient.updateEmailEStatement(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 		when(creditCardClient.updateEnableEStatement(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
-		TmbOneServiceResponse<ApplyEStatementResponse> updateServiceResponse = new TmbOneServiceResponse<>();
+		TmbOneServiceResponse<UpdateEStatmentResp> updateServiceResponse = new TmbOneServiceResponse<>();
 		updateServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
@@ -170,8 +170,8 @@ public class ApplyEStatementServiceTest {
 		String crmId = ProductsExpServiceConstant.X_CRMID;
 		UpdateEStatmentRequest updateEstatementReq = new UpdateEStatmentRequest();
 		updateEstatementReq.setAccountId("5213323");
-		TmbOneServiceResponse<ApplyEStatementResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		Customer customer = new Customer();
 		StatementFlag statementFlag = new StatementFlag();
 		customer.setStatementFlag(statementFlag);
@@ -205,7 +205,7 @@ public class ApplyEStatementServiceTest {
 		when(creditCardClient.updateEmailEStatement(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 		when(creditCardClient.updateEnableEStatement(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 		
-		TmbOneServiceResponse<ApplyEStatementResponse> updateServiceResponse = new TmbOneServiceResponse<>();
+		TmbOneServiceResponse<UpdateEStatmentResp> updateServiceResponse = new TmbOneServiceResponse<>();
 		updateServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
@@ -220,7 +220,7 @@ public class ApplyEStatementServiceTest {
 		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
 		String accountId = "5213323";
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		Customer customer = new Customer();
 		StatementFlag statementFlag = new StatementFlag();
 		statementFlag.setEReadyCashStatementFlag("Y");
@@ -256,7 +256,7 @@ public class ApplyEStatementServiceTest {
 		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
 		String accountId = "5213323";
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		Customer customer = new Customer();
 		StatementFlag statementFlag = new StatementFlag();
 		statementFlag.setECreditcardStatementFlag("Y");
@@ -292,7 +292,7 @@ public class ApplyEStatementServiceTest {
 		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
 		String accountId = "5213323";
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		Customer customer = new Customer();
 		StatementFlag statementFlag = new StatementFlag();
 		statementFlag.setECashToGoStatementFlag("Y");

@@ -289,7 +289,7 @@ public class CreditCardLogServiceTest {
 			}
 		};
 		logService.finishBlockCardActivityLog(status, activityId, correlationId, activityDate, accountId, failReason,
-				reqHeader);
+				reqHeader,null);
 		assertNotNull(creditCardEvent);
 	}
 

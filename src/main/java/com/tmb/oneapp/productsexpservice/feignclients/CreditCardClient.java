@@ -26,7 +26,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionResponse;
@@ -126,15 +125,15 @@ public interface CreditCardClient {
 			@RequestBody DepositRequest requestBodyParameter);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/update-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEmailEStatement(
+	ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> updateEmailEStatement(
 			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/enable-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEnableEStatement(
+	ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> updateEnableEStatement(
 			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/cancel-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> cancelEnableEStatement(
+	ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> cancelEnableEStatement(
 			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@GetMapping(value = "/apis/creditcard/creditcard-balances/{CRM_ID}")

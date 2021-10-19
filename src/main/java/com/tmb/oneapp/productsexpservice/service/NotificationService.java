@@ -5,6 +5,7 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.CardInstallment;
 import com.tmb.common.model.creditcard.CardInstallmentResponse;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.NotificationConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -19,7 +20,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductCodeData;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.common.model.request.notification.*;
@@ -877,7 +877,7 @@ public class NotificationService {
 
 	@Async
 	public void doNotifySuccessForApplyEStatement(String correlationId, String crmId,
-			UpdateEStatmentRequest updateEstatementReq, ApplyEStatementResponse estatementResponse) {
+			UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp estatementResponse) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", correlationId);
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = customerClient
 				.getCustomerProfile(crmId);

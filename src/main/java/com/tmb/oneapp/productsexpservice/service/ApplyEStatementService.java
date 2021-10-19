@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.StatementFlag;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.CreditCardDetail;
 import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -27,8 +29,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.LoanAccount;
 import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 
 @Service
 public class ApplyEStatementService {
@@ -69,8 +69,8 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @return
 	 */
-	public ApplyEStatementResponse getEStatement(String crmId, String correlationId) {
-		ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> result = customerServiceClient
+	public UpdateEStatmentResp getEStatement(String crmId, String correlationId) {
+		ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> result = customerServiceClient
 				.getCustomerEStatement(crmId, correlationId);
 		return result.getBody().getData();
 	}
@@ -86,13 +86,14 @@ public class ApplyEStatementService {
 	 * @return
 	 * @throws TMBCommonException
 	 */
-	public ApplyEStatementResponse updateEstatement(String crmId, String correlationId,
+	public UpdateEStatmentResp updateEstatement(String crmId, String correlationId,
 			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException {
-		ApplyEStatementResponse currentEstatementResponse = getEStatement(crmId, correlationId);
+		UpdateEStatmentResp currentEstatementResponse = getEStatement(crmId, correlationId);
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
-
+		
+		
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
 		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
@@ -101,7 +102,7 @@ public class ApplyEStatementService {
 				updateEStatementOnSilverLake(requestHeaders, crmId, correlationId, updateEstatementReq);
 			}
 
-			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> response = customerServiceClient
+			ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> response = customerServiceClient
 					.updateEStatement(requestHeaders, statementFlag);
 			if (!ResponseCode.SUCESS.getCode().equals(response.getBody().getStatus().getCode())) {
 				throw new TMBCommonException("Fail on update EC system");
@@ -132,7 +133,7 @@ public class ApplyEStatementService {
 	 * @param updateEstatementReq
 	 */
 	private void constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
-			UpdateEStatmentRequest updateEstatementReq, ApplyEStatementResponse currentEstatementResponse) {
+			UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp currentEstatementResponse) {
 
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
@@ -237,7 +238,7 @@ public class ApplyEStatementService {
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
 		String errorCode = null;
 		try {
-			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> responseEmail = creditCardClient
+			ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> responseEmail = creditCardClient
 					.updateEmailEStatement(headers, updateEstatementReq);
 
 			if (!ResponseCode.SUCESS.getCode().equals(responseEmail.getBody().getStatus().getCode())) {
@@ -246,7 +247,7 @@ public class ApplyEStatementService {
 						responseEmail.getBody().getStatus().getMessage(),
 						responseEmail.getBody().getStatus().getService(), HttpStatus.BAD_REQUEST, new Exception());
 			}
-			ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> responseEstatment = creditCardClient
+			ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> responseEstatment = creditCardClient
 					.updateEnableEStatement(headers, updateEstatementReq);
 			if (!ResponseCode.SUCESS.getCode().equals(responseEstatment.getBody().getStatus().getCode())) {
 				errorCode = responseEstatment.getBody().getStatus().getCode();
@@ -267,7 +268,7 @@ public class ApplyEStatementService {
 	}
 
 	public String getEmailStatementFlag(String crmId, String correlationId, String accountId,
-			ApplyEStatementResponse applyEStatementResponse) {
+			UpdateEStatmentResp applyEStatementResponse) {
 		String result = "";
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
