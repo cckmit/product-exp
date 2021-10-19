@@ -26,6 +26,8 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.creditcard.SetPinResponse;
+import com.tmb.common.model.creditcard.SilverlakeErrorStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -33,8 +35,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.feignclients.OneappAuthClient;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinReqParameter;
-import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
-import com.tmb.oneapp.productsexpservice.model.setpin.SilverlakeErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.setpin.TranslatePinRes;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
@@ -112,7 +112,7 @@ public class SetPinController {
                 if (setPinResponse.getStatus().getStatusCode() == 0) {
                     creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.SUCCESS,
                             ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG, correlationId, activityDate, accountId,
-                            "", requestHeadersParameter);
+                            "", requestHeadersParameter,setPinResponse.getInitialVector());
                     oneServiceResponse
                             .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
                                     ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
@@ -124,7 +124,7 @@ public class SetPinController {
                     String desc = errorStatus.get(0).getDescription();
                     creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
                             ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG, correlationId, activityDate, accountId,
-                            code, requestHeadersParameter);
+                            code, requestHeadersParameter, setPinResponse.getInitialVector());
                     oneServiceResponse.setStatus(new TmbStatus(code, ResponseCode.FAILED.getMessage(),
                             ResponseCode.FAILED.getService(), desc));
                     return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);

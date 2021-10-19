@@ -18,6 +18,7 @@ import com.tmb.common.model.creditcard.BlockCardResponse;
 import com.tmb.common.model.creditcard.CardInstallmentResponse;
 import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
 import com.tmb.common.model.creditcard.SetCreditLimitResp;
+import com.tmb.common.model.creditcard.SetPinResponse;
 import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -42,7 +43,6 @@ import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledS
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
-import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
 
 @FeignClient(name = "${feign.creditcard.service.name}", url = "${feign.creditcard.service.url}")
 public interface CreditCardClient {

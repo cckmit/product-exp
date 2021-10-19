@@ -108,7 +108,7 @@ public class ApplyEStatementService {
 				throw new TMBCommonException("Fail on update EC system");
 			}
 			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-				activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, true, null);
+				activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, true, null,currentEstatementResponse.getInitialVector());
 			} else {
 				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, true, null);
 			}
@@ -257,11 +257,13 @@ public class ApplyEStatementService {
 			}
 
 		}catch (TMBCommonException e) {
-			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, e.getErrorCode());
+			logger.error(e.toString(),e);
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, e.getErrorCode(),null);
 			throw e;
 		} 
 		catch (Exception e) {
-			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, errorCode);
+			logger.error(e.toString(),e);
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, errorCode,null);
 			throw e;
 		}
 

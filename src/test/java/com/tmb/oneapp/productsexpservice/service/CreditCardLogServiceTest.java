@@ -308,7 +308,7 @@ public class CreditCardLogServiceTest {
 			}
 		};
 		logService.finishSetPinActivityLog(status, activityId, correlationId, activityDate, accountId, failReason,
-				reqHeader);
+				reqHeader,null);
 		assertNotNull(creditCardEvent);
 	}
 
@@ -512,7 +512,7 @@ public class CreditCardLogServiceTest {
 		when(commonServiceClient.getProductConfig(any())).thenReturn(ResponseEntity.ok().body(serviceResponse));
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok(fetchCardRes));
 		UpdateEStatmentRequest reqLoan = new UpdateEStatmentRequest();
-		logService.updatedEStatmentCard(new HashMap<String, String>(), reqLoan, false, "API006");
+		logService.updatedEStatmentCard(new HashMap<String, String>(), reqLoan, false, "API006",null);
 		assertTrue(true);
 	}
 

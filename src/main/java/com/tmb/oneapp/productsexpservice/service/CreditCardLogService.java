@@ -349,11 +349,12 @@ public class CreditCardLogService {
 	 * @param activityDate
 	 * @param accountId
 	 * @param failReason
+	 * @param iv 
 	 */
 	@Async
 	@LogAround
 	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason, Map<String, String> reqHeader) {
+			String accountId, String failReason, Map<String, String> reqHeader, String iv) {
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
@@ -362,6 +363,7 @@ public class CreditCardLogService {
 		creditCardEvent.setResult(status);
 		creditCardEvent.setCardNumber("xx" + accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
+		creditCardEvent.setInitailVector(iv);
 		logActivity(creditCardEvent);
 	}
 
@@ -427,9 +429,10 @@ public class CreditCardLogService {
 	 * @param updateEstatementReq
 	 * @param result
 	 * @param errorCode
+	 * @param iv 
 	 */
 	public void updatedEStatmentCard(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
-			boolean result, String errorCode) {
+			boolean result, String errorCode, String iv) {
 		String correlationId = requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String productName = constructProductNameInfomation(correlationId, updateEstatementReq);
 		ResponseEntity<FetchCardResponse> fetchCardInfoResp = creditCardClient.getCreditCardDetails(correlationId,
@@ -439,6 +442,7 @@ public class CreditCardLogService {
 				errorCode);
 		constructCommonDetail(requestHeaders, updateEStatmentEvent);
 		updateEStatmentEvent.setReasonForRequest(errorCode);
+		updateEStatmentEvent.setInitailVector(iv);
 		updateEStatmentEvent.setResult(result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
 		logActivity(updateEStatmentEvent);
 
@@ -478,6 +482,7 @@ public class CreditCardLogService {
 	 * @param updateEstatementReq
 	 * @param result
 	 * @param errorCode
+	 * @param iv 
 	 */
 	public void updatedEStatmentLoan(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
 			boolean result, String errorCode) {
