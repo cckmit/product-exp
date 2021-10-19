@@ -193,6 +193,7 @@ public class ProductsExpServiceConstant {
 	public static final String PWA_LEAVE_NOTE_SCREEN_NAME = "Send Note Success";
 
 	/* ACTIVITY IDs */
+	public static final String ACTIVATED_CARD = "100700102";
 	public static final String FINISH_BLOCK_CARD_ACTIVITY_ID = "100700401";
 	public static final String CASE_TRACKING_TUTORIAL_ACTIVITY_ID = "101500201";
 	public static final String ACTIVITY_ID_INVESTMENT_STATUS_TRACKING = "101000101";

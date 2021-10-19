@@ -2,11 +2,12 @@ package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.creditcard.ActivateCardResponse;
+import com.tmb.common.model.creditcard.ActivateCardStatusResp;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardStatusResponse;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
+import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,11 +36,13 @@ public class ProductsActivateCardControllerTest {
     NotificationService notificationService;
     @Mock
     CacheService cacheService;
+    @Mock
+    CreditCardLogService crditCardLogService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        productsActivateCardController = new ProductsActivateCardController(creditCardClient, notificationService,cacheService);
+        productsActivateCardController = new ProductsActivateCardController(creditCardClient, notificationService,cacheService,crditCardLogService);
     }
 
     @Test
@@ -48,7 +51,7 @@ public class ProductsActivateCardControllerTest {
                 "0000000050078360018000167");
         ActivateCardResponse activateCardResponse = new ActivateCardResponse();
         activateCardResponse.setAccountId("0000000050078360018000167");
-        ActivateCardStatusResponse activateCardStatusResponse = new ActivateCardStatusResponse();
+        ActivateCardStatusResp activateCardStatusResponse = new ActivateCardStatusResp();
         activateCardStatusResponse.setStatusCode(0);
         activateCardResponse.setStatus(activateCardStatusResponse);
         handleGetCardBlockCodeResponse(activateCardResponse, HttpStatus.OK);

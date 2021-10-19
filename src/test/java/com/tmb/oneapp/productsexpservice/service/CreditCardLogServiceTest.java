@@ -25,9 +25,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.kafka.service.KafkaProducerService;
-import com.tmb.common.model.CashForUConfigInfo;
+import com.tmb.common.model.ErrorStatusInfo;
+import com.tmb.common.model.StatusResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.common.model.creditcard.CardInstallmentResponse;
+import com.tmb.common.model.creditcard.CreditCardModel;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -42,10 +45,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SilverlakeStat
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.TemporaryCreditLimit;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CreditCardModel;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.Account;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
@@ -494,8 +493,8 @@ public class CreditCardLogServiceTest {
 	void testSetFailEvent() {
 		CardInstallmentResponse cardInstallmentResponse = getCardInstallmentResponse();
 		creditCardEvent.setFailReason("fail");
-		List<ErrorStatus> errorStatus = new ArrayList<>();
-		ErrorStatus status = new ErrorStatus();
+		List<ErrorStatusInfo> errorStatus = new ArrayList<>();
+		ErrorStatusInfo status = new ErrorStatusInfo();
 		status.setErrorCode("0001");
 		status.setDescription("fail");
 		errorStatus.add(status);
