@@ -33,6 +33,7 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccou
 import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.service.productexperience.async.InvestmentAsyncService;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,15 +118,16 @@ public class OpenPortfolioService extends TmbErrorHandle {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId, Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
+    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId, Map<String, String> investmentRequestHeader, String crmId) {
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
-        tmbResponseErrorHandle(fetchAccountRedeem.getBody().getStatus());
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
         String accountNumber = accountRedeem.getAccountRedeem();
         String accountType = UtilMap.getAccountTypeFromAccountNumber(accountNumber);

@@ -28,6 +28,7 @@ import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
 import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,10 +104,9 @@ public class OrderCreationService extends TmbErrorHandle {
             postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request, response);
             tmbOneServiceResponse.setData(response.getBody().getData());
 
-        } catch (TMBCommonException ex) {
-            throw ex;
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
         } catch (Exception ex) {
-
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -115,6 +115,7 @@ public class OrderCreationService extends TmbErrorHandle {
     }
 
     private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
+
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
             Account toAccount = getAccount(correlationId,request);
@@ -155,11 +156,12 @@ public class OrderCreationService extends TmbErrorHandle {
             logger.info("createOrderPayment sell or switch request casa obj : {}", UtilMap.convertObjectToStringJson(request));
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
         }
-        tmbResponseErrorHandle(response.getBody().getStatus());
+
         return response;
+
     }
 
-    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) throws TMBCommonException {
+    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
         String activityLogStatus = "";
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
             activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
@@ -169,7 +171,6 @@ public class OrderCreationService extends TmbErrorHandle {
         } else {
             activityLogStatus = ActivityLogStatus.FAILED.getStatus();
             enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
-            tmbResponseErrorHandle(response.getBody().getStatus());
         }
     }
 
