@@ -20,18 +20,6 @@ public class TmbErrorHandle {
 
     private static final TMBLogger<TmbErrorHandle> logger = new TMBLogger<>(TmbErrorHandle.class);
 
-
-    protected void tmbResponseErrorHandle(TmbStatus tmbStatus) throws TMBCommonException {
-        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
-            throw new TMBCommonException(
-                    tmbStatus.getCode(),
-                    tmbStatus.getMessage(),
-                    tmbStatus.getService(),
-                    HttpStatus.BAD_REQUEST,
-                    null);
-        }
-    }
-
     protected void handleFeignException(FeignException feignException) throws TMBCommonException {
         if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
             try {

@@ -49,6 +49,7 @@ import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandl
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -157,14 +158,9 @@ public class ProductsExpService extends TmbErrorHandle {
             logger.info(unitHolder.toString());
 
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
-            tmbResponseErrorHandle(fundSummary.getBody().getStatus());
-
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
-            tmbResponseErrorHandle(summaryByPortResponse.getBody().getStatus());
-
             ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
                     CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
-            tmbResponseErrorHandle(countOrderProcessingResponse.getBody().getStatus());
 
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummary);
 
@@ -177,12 +173,12 @@ public class ProductsExpService extends TmbErrorHandle {
                 result.setCountProcessedOrder(countOrderProcessingResponse.getBody().getData().getCountProcessOrder());
             }
             return result;
-        } catch (TMBCommonException ex) {
-            throw ex;
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            return null;
         }
+        return null;
     }
 
     /**
@@ -399,12 +395,13 @@ public class ProductsExpService extends TmbErrorHandle {
                     FundAllocationRequestBody.builder()
                             .suitabilityScore(suitabilityScore)
                             .build());
-            tmbResponseErrorHandle(fundAllocationResponse.getBody().getStatus());
             return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
         } catch (TMBCommonException e) {
             throw e;
         } catch (Exception ex) {

@@ -14,6 +14,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.portfolio.
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,18 +65,18 @@ public class PortfolioService extends TmbErrorHandle {
                 return PortfolioResponse.builder().portfolioResponseBody(List.of()).build();
             }
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(headerParameter, unitHolder);
-            tmbResponseErrorHandle(summaryByPortResponse.getBody().getStatus());
 
             List<PortfolioByPort> portfolioList = summaryByPortResponse.getBody().getData().getPortfolioList();
             portfolioByPortList = filterTypeOfPortfolioByPorts(type, portfolioList);
             List<PortfolioResponseBody> portfolioResponseBodyList = buildPortfolioResponseBodyList(portfolioByPortList);
             return PortfolioResponse.builder().portfolioResponseBody(portfolioResponseBodyList).build();
-        } catch (TMBCommonException ex) {
-            throw ex;
+
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            return null;
         }
+        return null;
     }
 
     private List<PortfolioByPort> filterTypeOfPortfolioByPorts(String type, List<PortfolioByPort> portfolioList) {

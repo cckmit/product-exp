@@ -158,8 +158,9 @@ public class OrderCreationService extends TmbErrorHandle {
             logger.info("createOrderPayment sell or switch request casa obj : {}", UtilMap.convertObjectToStringJson(request));
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
         }
-        tmbResponseErrorHandle(response.getBody().getStatus());
+
         return response;
+
     }
 
     private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) throws TMBCommonException {
@@ -172,7 +173,6 @@ public class OrderCreationService extends TmbErrorHandle {
         } else {
             activityLogStatus = ActivityLogStatus.FAILED.getStatus();
             enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
-            tmbResponseErrorHandle(response.getBody().getStatus());
         }
     }
 
