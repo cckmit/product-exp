@@ -105,7 +105,7 @@ public class OrderCreationService extends TmbErrorHandle {
             tmbOneServiceResponse.setData(response.getBody().getData());
 
         } catch (FeignException feignException) {
-
+            handleFeignException(feignException);
         } catch (TMBCommonException ex) {
             throw ex;
         } catch (Exception ex) {

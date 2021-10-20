@@ -7,6 +7,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 
@@ -19,8 +21,8 @@ public class TmbErrorHandle {
     private static final TMBLogger<TmbErrorHandle> logger = new TMBLogger<>(TmbErrorHandle.class);
 
 
-    protected void tmbResponseErrorHandle(TmbStatus tmbStatus) throws TMBCommonException{
-        if(!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())){
+    protected void tmbResponseErrorHandle(TmbStatus tmbStatus) throws TMBCommonException {
+        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(tmbStatus.getCode())) {
             throw new TMBCommonException(
                     tmbStatus.getCode(),
                     tmbStatus.getMessage(),
@@ -42,8 +44,23 @@ public class TmbErrorHandle {
                         HttpStatus.BAD_REQUEST,
                         null);
             } catch (JsonProcessingException e) {
-
+                logger.info("cant parse json : {}", e);
             }
+        } else if (feignException.status() == HttpStatus.NOT_FOUND.value()) {
+            TmbStatus tmbStatus = TmbStatusUtil.notFoundStatus();
+            throw new TMBCommonException(
+                    tmbStatus.getCode(),
+                    tmbStatus.getMessage(),
+                    tmbStatus.getService(),
+                    HttpStatus.NOT_FOUND,
+                    null);
+        } else {
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.BAD_REQUEST,
+                    null);
         }
     }
 
