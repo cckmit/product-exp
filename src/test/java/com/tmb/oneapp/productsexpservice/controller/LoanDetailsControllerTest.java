@@ -25,8 +25,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.Customer;
+import com.tmb.common.model.StatementFlag;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -34,9 +37,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCreditCardDetailsReq;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 import com.tmb.oneapp.productsexpservice.model.loan.Account;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
 import com.tmb.oneapp.productsexpservice.model.loan.AdditionalStatus;
@@ -497,7 +497,7 @@ public class LoanDetailsControllerTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.getCustomerProfile(any())).thenReturn(ResponseEntity.ok(customerModuleResponse));
 		
-        ApplyEStatementResponse applyEStatementResponse = new ApplyEStatementResponse();
+		UpdateEStatmentResp applyEStatementResponse = new UpdateEStatmentResp();
         Customer customer = new Customer();
         StatementFlag statementFlag = new StatementFlag();
         statementFlag.setECashToGoStatementFlag("Y");

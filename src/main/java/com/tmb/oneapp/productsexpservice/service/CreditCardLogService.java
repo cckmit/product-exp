@@ -19,6 +19,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.BaseEvent;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.common.model.creditcard.CardInstallmentResponse;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -28,7 +29,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
@@ -218,13 +218,14 @@ public class CreditCardLogService {
 				ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
 
 		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
-		
+
 		populateBaseEvents(creditCardEvent, reqHeader);
-		
+
 		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
 		creditCardEvent.setPlan(converPlan(cardInstallment, correlationId));
 		creditCardEvent.setTransactionDescription(cardInstallment.getTransactionDescription());
-		
+		creditCardEvent.setInitailVector(e.getInitialVector());
+
 		Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
 		Double installmentInDouble = ConversionUtil.stringToDouble(cardInstallment.getMonthlyInstallments());
 
@@ -236,11 +237,11 @@ public class CreditCardLogService {
 
 		creditCardEvent.setTotalAmountTotalIntrest(formateForCurrency(interestInDouble.toString()) + "+"
 				+ formateForCurrency(amountPlusTotalInterest.toString()));
-		
+
 		if (Objects.nonNull(e.getStatus()) && "0".equals(e.getStatus().getStatusCode())) {
 			creditCardEvent.setResult(ProductsExpServiceConstant.SUCCESS);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
-			
+
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILED);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
@@ -327,8 +328,10 @@ public class CreditCardLogService {
 	 */
 	@Async
 	@LogAround
-	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason, Map<String, String> reqHeader) {
+	public void finishBlockCardActivityLog(String status, String correlationId, String accountId, String failReason,
+			Map<String, String> reqHeader, String iv) {
+		String activityId = ProductsExpServiceConstant.FINISH_BLOCK_CARD_ACTIVITY_ID;
+		String activityDate = Long.toString(System.currentTimeMillis());
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
@@ -336,6 +339,7 @@ public class CreditCardLogService {
 		populateBaseEvents(creditCardEvent, reqHeader);
 		creditCardEvent.setCardNumber("xx" + accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
+		creditCardEvent.setInitailVector(iv);
 		creditCardEvent.setResult(status);
 		logActivity(creditCardEvent);
 	}
@@ -347,12 +351,14 @@ public class CreditCardLogService {
 	 * @param activityDate
 	 * @param accountId
 	 * @param failReason
+	 * @param iv
 	 */
 	@Async
 	@LogAround
-	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason, Map<String, String> reqHeader) {
-		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+	public void finishSetPinActivityLog(String status, String correlationId, String accountId, String failReason,
+			Map<String, String> reqHeader, String iv) {
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
+				ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
@@ -360,6 +366,7 @@ public class CreditCardLogService {
 		creditCardEvent.setResult(status);
 		creditCardEvent.setCardNumber("xx" + accountId.substring(21, 25));
 		creditCardEvent.setActivityStatus(status);
+		creditCardEvent.setInitailVector(iv);
 		logActivity(creditCardEvent);
 	}
 
@@ -425,9 +432,10 @@ public class CreditCardLogService {
 	 * @param updateEstatementReq
 	 * @param result
 	 * @param errorCode
+	 * @param iv
 	 */
 	public void updatedEStatmentCard(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
-			boolean result, String errorCode) {
+			boolean result, String errorCode, String iv) {
 		String correlationId = requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String productName = constructProductNameInfomation(correlationId, updateEstatementReq);
 		ResponseEntity<FetchCardResponse> fetchCardInfoResp = creditCardClient.getCreditCardDetails(correlationId,
@@ -437,6 +445,7 @@ public class CreditCardLogService {
 				errorCode);
 		constructCommonDetail(requestHeaders, updateEStatmentEvent);
 		updateEStatmentEvent.setReasonForRequest(errorCode);
+		updateEStatmentEvent.setInitailVector(iv);
 		updateEStatmentEvent.setResult(result ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
 		logActivity(updateEStatmentEvent);
 
@@ -476,6 +485,7 @@ public class CreditCardLogService {
 	 * @param updateEstatementReq
 	 * @param result
 	 * @param errorCode
+	 * @param iv
 	 */
 	public void updatedEStatmentLoan(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
 			boolean result, String errorCode) {
@@ -511,6 +521,31 @@ public class CreditCardLogService {
 		baseEvent
 				.setCorrelationId(requestHeaders.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase()));
 
+	}
+
+	/**
+	 * Create activate card event
+	 * 
+	 * @param headers
+	 * @param accountId
+	 * @param accountId2
+	 * @param processStatus
+	 */
+	public void processActivateCard(Map<String, String> headers, String iv, String accountId, boolean processStatus) {
+		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
+				ProductsExpServiceConstant.ACTIVATED_CARD);
+		populateBaseEvents(creditCardEvent, headers);
+		String result = processStatus ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILURE_ACT_LOG;
+		ResponseEntity<FetchCardResponse> fetchCardInfoResp = creditCardClient.getCreditCardDetails(correlationId,
+				accountId);
+		String cardNo = "xx" + fetchCardInfoResp.getBody().getCreditCard().getAccountId().substring(21, 25);
+		creditCardEvent.setActivityStatus(result);
+		creditCardEvent.setCardNumber(cardNo);
+		creditCardEvent.setInitailVector(iv);
+		creditCardEvent
+				.setResult(processStatus ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
+		logActivity(creditCardEvent);
 	}
 
 }

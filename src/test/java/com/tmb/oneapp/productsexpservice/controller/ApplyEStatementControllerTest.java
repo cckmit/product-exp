@@ -17,12 +17,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.Customer;
+import com.tmb.common.model.Description;
+import com.tmb.common.model.Profile;
+import com.tmb.common.model.StatementFlag;
+import com.tmb.common.model.Status;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.Customer;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.Profile;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.Status;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
@@ -49,10 +50,12 @@ public class ApplyEStatementControllerTest {
 
 	@Test
 	public void testGetApplyEStatement() {
-		ApplyEStatementResponse data = new ApplyEStatementResponse();
+		UpdateEStatmentResp data = new UpdateEStatmentResp();
 		Status status = new Status();
 		status.setCode("0000");
-		status.setDescription("desc");
+		Description desc = new Description();
+		desc.setEn("desc");
+		status.setDescription(desc);
 		Customer customer = new Customer();
 		Profile profile = new Profile();
 		profile.setCcId("ccid");
@@ -64,7 +67,7 @@ public class ApplyEStatementControllerTest {
 		when(applyEStatementService.getEStatement(any(), any())).thenReturn(data);
 
 		Map<String, String> headers = new HashMap<String, String>();
-		ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> result = applyEStatementController
+		ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> result = applyEStatementController
 				.getEStatement(headers);
 		Assert.assertNotEquals(400, result.getStatusCodeValue());
 	}

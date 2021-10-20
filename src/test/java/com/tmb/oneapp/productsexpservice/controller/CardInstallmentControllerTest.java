@@ -26,18 +26,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.ErrorStatusInfo;
+import com.tmb.common.model.StatusResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.common.model.creditcard.CardInstallmentResponse;
+import com.tmb.common.model.creditcard.CreditCardModel;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardStatementReponse;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CreditCardModel;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.StatusResponse;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.CardStatement;
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.StatementTransaction;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
@@ -58,7 +58,7 @@ public class CardInstallmentControllerTest {
 	private CreditCardLogService creditCardLogService;
 	@Mock
 	private NotificationService notificationService;
-	
+
 	@Mock
 	private CacheService cacheService;
 
@@ -94,9 +94,9 @@ public class CardInstallmentControllerTest {
 		CardInstallmentResponse data = new CardInstallmentResponse();
 		CardStatementReponse statement = new CardStatementReponse();
 		statement.setStatementTransactions(list);
-		ErrorStatus errorStatus = new ErrorStatus();
+		ErrorStatusInfo errorStatus = new ErrorStatusInfo();
 		errorStatus.setErrorCode("1234");
-		List<ErrorStatus> errorStatusList = new ArrayList<>();
+		List<ErrorStatusInfo> errorStatusList = new ArrayList<>();
 		errorStatusList.add(errorStatus);
 		StatusResponse status = new StatusResponse();
 		status.setStatusCode("0");
@@ -294,8 +294,7 @@ public class CardInstallmentControllerTest {
 		}
 		cardInstallmentResp.setStatus(status);
 		cardInstallmentResp.setData(res);
-		assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId,
-				responseHeaders, data, data, res));
+		assertNotNull(cardInstallmentController.ifSuccessCaseMatch(correlationId, responseHeaders, data, data, res));
 
 	}
 
@@ -331,16 +330,16 @@ public class CardInstallmentControllerTest {
 		CardInstallmentResponse data = new CardInstallmentResponse();
 		CardStatementReponse statement = new CardStatementReponse();
 		statement.setStatementTransactions(list);
-		ErrorStatus errorStatus = new ErrorStatus();
+		ErrorStatusInfo errorStatus = new ErrorStatusInfo();
 		errorStatus.setErrorCode("1234");
-		List<ErrorStatus> errorStatusList = new ArrayList<>();
+		List<ErrorStatusInfo> errorStatusList = new ArrayList<>();
 		errorStatusList.add(errorStatus);
 		StatusResponse status = new StatusResponse();
 		status.setStatusCode("0");
 		status.setErrorStatus(errorStatusList);
 		data.setStatus(status);
-		boolean result = cardInstallmentController.ifSuccessCaseMatch("correlationId",
-				requestHeadersParameter, oneServiceResponse, oneServiceResponse, Arrays.asList(data));
+		boolean result = cardInstallmentController.ifSuccessCaseMatch("correlationId", requestHeadersParameter,
+				oneServiceResponse, oneServiceResponse, Arrays.asList(data));
 		Assert.assertEquals(false, result);
 	}
 }

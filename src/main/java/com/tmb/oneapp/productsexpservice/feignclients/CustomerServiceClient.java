@@ -1,12 +1,12 @@
 package com.tmb.oneapp.productsexpservice.feignclients;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.StatementFlag;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbServiceResponse;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.StatementFlag;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
@@ -126,7 +126,7 @@ public interface CustomerServiceClient {
      * @return
      */
     @GetMapping(value = "/apis/customers/profile/get-e-statement")
-    ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> getCustomerEStatement(
+    ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> getCustomerEStatement(
             @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
             @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId);
 
@@ -138,7 +138,7 @@ public interface CustomerServiceClient {
      * @return
      */
     @PostMapping(value = "/apis/customers/profile/update-e-statement")
-    ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEStatement(
+    ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> updateEStatement(
             @RequestHeader Map<String, String> requestHeaders, @RequestBody StatementFlag statementFlag);
 
     /**

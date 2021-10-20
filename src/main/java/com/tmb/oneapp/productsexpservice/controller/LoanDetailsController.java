@@ -25,6 +25,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -35,7 +36,6 @@ import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardEmail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.EStatementDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.Payment;
@@ -193,7 +193,7 @@ public class LoanDetailsController {
 			result.setEmailVerifyFlag(profileResponse.getEmailVerifyFlag());
 			cardEmail.setEmailAddress(profileResponse.getEmailAddress());
 		}
-		ApplyEStatementResponse applyEStatementResponse = applyEStatementService.getEStatement(crmId, correlationId);
+		UpdateEStatmentResp applyEStatementResponse = applyEStatementService.getEStatement(crmId, correlationId);
 		if (applyEStatementResponse != null) {
 			cardEmail.setEmaileStatementFlag(
 					applyEStatementResponse.getCustomer().getStatementFlag().getECashToGoStatementFlag());
