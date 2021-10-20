@@ -35,7 +35,7 @@ public class TmbErrorHandle {
     protected void handleFeignException(FeignException feignException) throws TMBCommonException {
         if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
             try {
-                TmbOneServiceResponse<String> response = getResponseFromBadRequest(feignException);
+                TmbOneServiceResponse<String> response = getResponsesFromBadRequest(feignException);
                 TmbStatus tmbStatus = response.getStatus();
                 throw new TMBCommonException(
                         tmbStatus.getCode(),
@@ -65,16 +65,20 @@ public class TmbErrorHandle {
     }
 
     @SuppressWarnings("unchecked")
-    <T> TmbOneServiceResponse<T> getResponseFromBadRequest(final FeignException ex)
-            throws JsonProcessingException {
+    <T> TmbOneServiceResponse<T> getResponsesFromBadRequest(final FeignException ex) throws JsonProcessingException {
+
         TmbOneServiceResponse<T> response = new TmbOneServiceResponse<>();
         Optional<ByteBuffer> responseBody = ex.responseBody();
+
         if (responseBody.isPresent()) {
+
             ByteBuffer responseBuffer = responseBody.get();
             String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
             logger.info("response msg fail {}", responseObj);
+
             response = ((TmbOneServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
                     TmbOneServiceResponse.class));
+
         }
         return response;
     }
