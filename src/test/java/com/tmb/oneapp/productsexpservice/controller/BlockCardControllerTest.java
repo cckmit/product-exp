@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.StatusResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
@@ -55,11 +56,9 @@ public class BlockCardControllerTest {
         BlockCardRequest requestBodyParameter = new BlockCardRequest();
         requestBodyParameter.setAccountId("0000000050078360018000167");
         requestBodyParameter.setBlockReason("L");
-        BlockCardResponse blockCardResponse = new BlockCardResponse();
-        Status status = new Status();
+        com.tmb.common.model.creditcard.BlockCardResponse blockCardResponse = new com.tmb.common.model.creditcard.BlockCardResponse();
+        StatusResponse status = new StatusResponse();
         status.setStatusCode("0");
-        status.setDate("dd/mm/yyyy");
-        status.setTxnId("42342311");
         blockCardResponse.setStatus(status);
         handleBlockCardResponse(blockCardResponse, HttpStatus.OK);
         ResponseEntity<TmbOneServiceResponse<BlockCardResponse>> res = blockCardController
@@ -79,11 +78,11 @@ public class BlockCardControllerTest {
 
     }
 
-    public void handleBlockCardResponse(BlockCardResponse blockCardResponse, HttpStatus status) {
+    public void handleBlockCardResponse(com.tmb.common.model.creditcard.BlockCardResponse response, HttpStatus status) {
 
-        TmbOneServiceResponse<BlockCardResponse> oneServiceResponse = new TmbOneServiceResponse<BlockCardResponse>();
-        oneServiceResponse.setData(blockCardResponse);
-        ResponseEntity<BlockCardResponse> res = new ResponseEntity<BlockCardResponse>(blockCardResponse, status);
+        TmbOneServiceResponse<com.tmb.common.model.creditcard.BlockCardResponse> oneServiceResponse = new TmbOneServiceResponse<com.tmb.common.model.creditcard.BlockCardResponse>();
+//        oneServiceResponse.setData(blockCardResponse);
+        ResponseEntity<com.tmb.common.model.creditcard.BlockCardResponse> res = new ResponseEntity<com.tmb.common.model.creditcard.BlockCardResponse>(response, status);
         when(creditCardClient.getBlockCardDetails(any())).thenReturn(res);
 
     }
@@ -95,11 +94,9 @@ public class BlockCardControllerTest {
         BlockCardRequest requestBodyParameter = new BlockCardRequest();
         requestBodyParameter.setAccountId("0000000050078360018000167");
         requestBodyParameter.setBlockReason("L");
-        BlockCardResponse blockCardResponse = new BlockCardResponse();
-        Status status = new Status();
+        com.tmb.common.model.creditcard.BlockCardResponse blockCardResponse = new com.tmb.common.model.creditcard.BlockCardResponse();
+        StatusResponse status = new StatusResponse();
         status.setStatusCode("1");
-        status.setDate("dd/mm/yyyy");
-        status.setTxnId("42342311");
         blockCardResponse.setStatus(status);
         handleBlockCardResponse(blockCardResponse, HttpStatus.OK);
         ResponseEntity<TmbOneServiceResponse<BlockCardResponse>> res = blockCardController

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tmb.common.model.BaseEvent;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreditCardEvent extends BaseEvent {
     @JsonProperty("card_number")
@@ -40,6 +42,9 @@ public class CreditCardEvent extends BaseEvent {
     private String loanNumber;
     @JsonProperty("product_name")
     private String productName;
+    @JsonProperty("inita_vector")
+    private String initailVector;
+    
 
     public CreditCardEvent(String correlationId, String activityDate, String activityTypeId) {
         super(correlationId, activityDate, activityTypeId);

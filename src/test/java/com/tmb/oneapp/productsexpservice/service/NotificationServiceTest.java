@@ -1,9 +1,13 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.ErrorStatusInfo;
+import com.tmb.common.model.StatusResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.creditcard.CardInstallment;
+import com.tmb.common.model.creditcard.CardInstallmentResponse;
+import com.tmb.common.model.creditcard.CreditCardModel;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
@@ -13,7 +17,8 @@ import com.tmb.oneapp.productsexpservice.feignclients.NotificationServiceClient;
 import com.tmb.oneapp.productsexpservice.model.SoGoodItemInfo;
 import com.tmb.oneapp.productsexpservice.model.SoGoodWrapper;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.*;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.*;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
+import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.common.model.request.notification.NotifyCommon;
 import com.tmb.common.model.response.notification.NotificationResponse;
 import org.junit.Assert;
@@ -70,7 +75,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -116,7 +121,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -155,7 +160,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -195,7 +200,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -238,7 +243,7 @@ public class NotificationServiceTest {
 		req.setExpiryDate("1478-04-01T17:17:56.000Z");
 		req.setMode("temporary");
 		req.setPreviousCreditLimit("50000");
-		req.setReasonDescEn("กรณีฉุกเฉินเมื่ออยู่ต่างประเทศ");
+		req.setReasonDescEn("à¸�à¸£à¸“à¸µà¸‰à¸¸à¸�à¹€à¸‰à¸´à¸™à¹€à¸¡à¸·à¹ˆà¸­à¸­à¸¢à¸¹à¹ˆà¸•à¹ˆà¸²à¸‡à¸›à¸£à¸°à¹€à¸—à¸¨");
 		req.setRequestReason("200");
 
 		TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<>();
@@ -250,7 +255,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -300,7 +305,7 @@ public class NotificationServiceTest {
 		req.setExpiryDate("1478-04-01T17:17:56.000Z");
 		req.setMode("temporary");
 		req.setPreviousCreditLimit("50000");
-		req.setReasonDescEn("กรณีฉุกเฉินเมื่ออยู่ต่างประเทศ");
+		req.setReasonDescEn("à¸�à¸£à¸“à¸µà¸‰à¸¸à¸�à¹€à¸‰à¸´à¸™à¹€à¸¡à¸·à¹ˆà¸­à¸­à¸¢à¸¹à¹ˆà¸•à¹ˆà¸²à¸‡à¸›à¸£à¸°à¹€à¸—à¸¨");
 		req.setRequestReason("200");
 
 		TmbOneServiceResponse<CustGeneralProfileResponse> profileResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
@@ -312,7 +317,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -387,7 +392,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -529,7 +534,7 @@ public class NotificationServiceTest {
 		FetchCardResponse cardResponse = new FetchCardResponse();
 		ProductCodeData productData = new ProductCodeData();
 		productData.setProductNameEN("So Fast Credit Card");
-		productData.setProductNameTH("โซฟาสต์");
+		productData.setProductNameTH("à¹‚à¸‹à¸Ÿà¸²à¸ªà¸•à¹Œ");
 		cardResponse.setProductCodeData(productData);
 		SilverlakeStatus silverlake = new SilverlakeStatus();
 		silverlake.setStatusCode(0);
@@ -557,12 +562,12 @@ public class NotificationServiceTest {
 		CardInstallmentResponse response = new CardInstallmentResponse();
 		StatusResponse status = new StatusResponse();
 		status.setStatusCode("0");
-		ErrorStatus errorStatus = new ErrorStatus();
+		ErrorStatusInfo errorStatus = new ErrorStatusInfo();
 		errorStatus.setErrorCode("error code");
 		errorStatus.setDescription("1234");
 
-		List<ErrorStatus> error = new ArrayList();
-		for (ErrorStatus stat : error) {
+		List<ErrorStatusInfo> error = new ArrayList();
+		for (ErrorStatusInfo stat : error) {
 			stat.setDescription("error code");
 			stat.setErrorCode("0");
 			error.add(stat);

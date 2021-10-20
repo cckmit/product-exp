@@ -13,23 +13,24 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.creditcard.ActivateCardResponse;
+import com.tmb.common.model.creditcard.BlockCardResponse;
+import com.tmb.common.model.creditcard.CardInstallmentResponse;
 import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
+import com.tmb.common.model.creditcard.SetCreditLimitResp;
+import com.tmb.common.model.creditcard.SetPinResponse;
+import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ActivateCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.GetCardBlockCodeResponse;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.Reason;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.VerifyCvvResponse;
-import com.tmb.oneapp.productsexpservice.model.applyestatement.ApplyEStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardRequest;
-import com.tmb.oneapp.productsexpservice.model.blockcard.BlockCardResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionQuery;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CampaignTransactionResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentResponse;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.oneapp.productsexpservice.model.customer.creditcard.CreditCardServiceHour;
 import com.tmb.oneapp.productsexpservice.model.loan.DepositRequest;
@@ -42,7 +43,6 @@ import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetBilledS
 import com.tmb.oneapp.productsexpservice.model.request.buildstatement.GetUnbilledStatementQuery;
 import com.tmb.oneapp.productsexpservice.model.response.buildstatement.BilledStatementResponse;
 import com.tmb.oneapp.productsexpservice.model.setpin.SetPinQuery;
-import com.tmb.oneapp.productsexpservice.model.setpin.SetPinResponse;
 
 @FeignClient(name = "${feign.creditcard.service.name}", url = "${feign.creditcard.service.url}")
 public interface CreditCardClient {
@@ -125,15 +125,15 @@ public interface CreditCardClient {
 			@RequestBody DepositRequest requestBodyParameter);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/update-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEmailEStatement(
+	ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> updateEmailEStatement(
 			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/enable-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> updateEnableEStatement(
+	ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> updateEnableEStatement(
 			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@PostMapping(value = "/apis/creditcard/creditcard-details/cancel-e-statement")
-	ResponseEntity<TmbOneServiceResponse<ApplyEStatementResponse>> cancelEnableEStatement(
+	ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> cancelEnableEStatement(
 			@RequestHeader Map<String, String> headers, @RequestBody UpdateEStatmentRequest updateEstatementReq);
 
 	@GetMapping(value = "/apis/creditcard/creditcard-balances/{CRM_ID}")

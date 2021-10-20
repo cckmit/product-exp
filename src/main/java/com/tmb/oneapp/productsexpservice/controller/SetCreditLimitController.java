@@ -15,11 +15,11 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.creditcard.SetCreditLimitResp;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
-import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitResp;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
@@ -108,6 +108,7 @@ public class SetCreditLimitController {
 					notificationService.doNotifySuccessForTemporaryLimit(correlationId, accountId, crmId,
 							requestBodyParameter);
 				}
+				creditCardRequestAdjustEvent.setInitailVector(response.getBody().getData().getInitialVector());
 				/* Activity log -- CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT */
 				creditCardLogService.logActivity(creditCardRequestAdjustEvent);
 				creditCardRequestAdjustEvent.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
@@ -125,6 +126,7 @@ public class SetCreditLimitController {
 				oneServiceResponse.setData(response.getBody().getData());
 
 				/* Activity log -- CHANGE_TEMP_COMPLETE_ADJUST_USAGE_LIMIT */
+				creditCardRequestAdjustEvent.setInitailVector(response.getBody().getData().getInitialVector());
 				creditCardLogService.logActivity(creditCardRequestAdjustEvent);
 				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 			}
