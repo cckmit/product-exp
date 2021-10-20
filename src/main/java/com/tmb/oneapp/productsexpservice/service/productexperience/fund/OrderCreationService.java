@@ -106,8 +106,6 @@ public class OrderCreationService extends TmbErrorHandle {
 
         } catch (FeignException feignException) {
             handleFeignException(feignException);
-        } catch (TMBCommonException ex) {
-            throw ex;
         } catch (Exception ex) {
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
@@ -163,7 +161,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
     }
 
-    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) throws TMBCommonException {
+    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
         String activityLogStatus = "";
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
             activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
