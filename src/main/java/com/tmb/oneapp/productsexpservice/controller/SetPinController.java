@@ -50,124 +50,121 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(tags = "Set Pin Api")
 public class SetPinController {
-    private final OneappAuthClient oneappAuthClient;
-    private final CreditCardClient creditCardClient;
-    private final CreditCardLogService creditCardLogService;
-    private final NotificationService notificationService;
-    private static final TMBLogger<SetPinController> logger = new TMBLogger<>(SetPinController.class);
+	private final OneappAuthClient oneappAuthClient;
+	private final CreditCardClient creditCardClient;
+	private final CreditCardLogService creditCardLogService;
+	private final NotificationService notificationService;
+	private static final TMBLogger<SetPinController> logger = new TMBLogger<>(SetPinController.class);
 
-    /**
-     * Constructor
-     *
-     * @param oneappAuthClient
-     * @param creditCardClient
-     * @param creditCardLogService
-     */
+	/**
+	 * Constructor
+	 *
+	 * @param oneappAuthClient
+	 * @param creditCardClient
+	 * @param creditCardLogService
+	 */
 
-    @Autowired
-    public SetPinController(OneappAuthClient oneappAuthClient, CreditCardClient creditCardClient,
-                            CreditCardLogService creditCardLogService, NotificationService notificationService) {
-        this.oneappAuthClient = oneappAuthClient;
-        this.creditCardClient = creditCardClient;
-        this.creditCardLogService = creditCardLogService;
-        this.notificationService = notificationService;
-    }
+	@Autowired
+	public SetPinController(OneappAuthClient oneappAuthClient, CreditCardClient creditCardClient,
+			CreditCardLogService creditCardLogService, NotificationService notificationService) {
+		this.oneappAuthClient = oneappAuthClient;
+		this.creditCardClient = creditCardClient;
+		this.creditCardLogService = creditCardLogService;
+		this.notificationService = notificationService;
+	}
 
-    /**
-     * set pin api
-     *
-     * @param requestBodyParameter
-     * @param requestHeadersParameter
-     * @return set pin api response
-     */
-    @LogAround
-    @ApiOperation(value = "Set Pin Api")
-    @PostMapping(value = "/credit-card/set-pin", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<SetPinResponse>> getSetPin(
-            @RequestHeader Map<String, String> requestHeadersParameter,
-            @RequestBody SetPinReqParameter requestBodyParameter) throws
-            JsonProcessingException, TMBCommonException, TMBCommonExceptionWithResponse, UnsupportedEncodingException {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        try {
-            String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
-            String accountId = requestBodyParameter.getAccountId();
-            String activityDate = Long.toString(System.currentTimeMillis());
-            String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
+	/**
+	 * set pin api
+	 *
+	 * @param requestBodyParameter
+	 * @param requestHeadersParameter
+	 * @return set pin api response
+	 */
+	@LogAround
+	@ApiOperation(value = "Set Pin Api")
+	@PostMapping(value = "/credit-card/set-pin", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TmbOneServiceResponse<SetPinResponse>> getSetPin(
+			@RequestHeader Map<String, String> requestHeadersParameter,
+			@RequestBody SetPinReqParameter requestBodyParameter) throws JsonProcessingException, TMBCommonException,
+			TMBCommonExceptionWithResponse, UnsupportedEncodingException {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		try {
+			String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
+			String accountId = requestBodyParameter.getAccountId();
+			String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 			requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
 					ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
-			
-            TmbOneServiceResponse<SetPinResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-            TranslatePinRes translatePinRes = oneappAuthClient.fetchEcasTranslatePinData(correlationId,
-                    requestBodyParameter);
-            if (translatePinRes != null && translatePinRes.getResult() != null) {
-                String buffer = translatePinRes.getResult().getBuffer();
-                byte[] decoded = Base64.decodeBase64(buffer);
-                String pin = Hex.encodeHexString(decoded);
-                SetPinQuery setPinQuery = new SetPinQuery();
-                setPinQuery.setAccountId(accountId);
-                setPinQuery.setPin(pin.toUpperCase());
-                ResponseEntity<TmbOneServiceResponse<SetPinResponse>> res = creditCardClient.setPin(correlationId,
-                        setPinQuery);
-                SetPinResponse setPinResponse = res.getBody().getData();
-                if (setPinResponse.getStatus().getStatusCode() == 0) {
-                    creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.SUCCESS,
-                            ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG, correlationId, activityDate, accountId,
-                            "", requestHeadersParameter,setPinResponse.getInitialVector());
-                    oneServiceResponse
-                            .setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-                                    ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-                    notificationService.doNotifySuccessForSetPin(correlationId, accountId, crmId);
-                    return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
-                } else {
-                    List<SilverlakeErrorStatus> errorStatus = setPinResponse.getStatus().getErrorStatus();
-                    String code = errorStatus.get(0).getErrorCode();
-                    String desc = errorStatus.get(0).getDescription();
-                    creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
-                            ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG, correlationId, activityDate, accountId,
-                            code, requestHeadersParameter, setPinResponse.getInitialVector());
-                    oneServiceResponse.setStatus(new TmbStatus(code, ResponseCode.FAILED.getMessage(),
-                            ResponseCode.FAILED.getService(), desc));
-                    return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-                }
 
-            } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-            }
+			TmbOneServiceResponse<SetPinResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+			TranslatePinRes translatePinRes = oneappAuthClient.fetchEcasTranslatePinData(correlationId,
+					requestBodyParameter);
+			if (translatePinRes != null && translatePinRes.getResult() != null) {
+				String buffer = translatePinRes.getResult().getBuffer();
+				byte[] decoded = Base64.decodeBase64(buffer);
+				String pin = Hex.encodeHexString(decoded);
+				SetPinQuery setPinQuery = new SetPinQuery();
+				setPinQuery.setAccountId(accountId);
+				setPinQuery.setPin(pin.toUpperCase());
+				ResponseEntity<TmbOneServiceResponse<SetPinResponse>> res = creditCardClient.setPin(correlationId,
+						setPinQuery);
+				SetPinResponse setPinResponse = res.getBody().getData();
+				if (setPinResponse.getStatus().getStatusCode() == 0) {
+					creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.SUCCESS, correlationId,
+							accountId, "", requestHeadersParameter, setPinResponse.getInitialVector());
+					oneServiceResponse
+							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+					notificationService.doNotifySuccessForSetPin(correlationId, accountId, crmId);
+					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+				} else {
+					List<SilverlakeErrorStatus> errorStatus = setPinResponse.getStatus().getErrorStatus();
+					String code = errorStatus.get(0).getErrorCode();
+					String desc = errorStatus.get(0).getDescription();
+					creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
+							correlationId, accountId, code, requestHeadersParameter, setPinResponse.getInitialVector());
+					oneServiceResponse.setStatus(new TmbStatus(code, ResponseCode.FAILED.getMessage(),
+							ResponseCode.FAILED.getService(), desc));
+					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+				}
 
-        } catch (FeignException ex) {
-            logger.error("Received error in call to fetchAllAccount service {} ", ex);
-            TmbServiceResponse<List<Object>> err = convertExceptionResposeToExceptionRespose(ex);
-            if (err == null) {
-                logger.error("Response is empty : {} ");
-                throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(),
-                        ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService(),
-                        HttpStatus.BAD_REQUEST, null);
-            }
-            throw new TMBCommonExceptionWithResponse(err.getStatus().getCode(), err.getStatus().getMessage(),
-                    ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null, null);
-        } catch (Exception ex) {
-            throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
-                    ResponseCode.GENERAL_ERROR.getService(), HttpStatus.BAD_REQUEST, null);
-        }
+			} else {
+				throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+						ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+			}
 
-    }
+		} catch (FeignException ex) {
+			logger.error("Received error in call to fetchAllAccount service {} ", ex);
+			TmbServiceResponse<List<Object>> err = convertExceptionResposeToExceptionRespose(ex);
+			if (err == null) {
+				logger.error("Response is empty : {} ");
+				throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(),
+						ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService(),
+						HttpStatus.BAD_REQUEST, null);
+			}
+			throw new TMBCommonExceptionWithResponse(err.getStatus().getCode(), err.getStatus().getMessage(),
+					ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null, null);
+		} catch (Exception ex) {
+			throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
+					ResponseCode.GENERAL_ERROR.getService(), HttpStatus.BAD_REQUEST, null);
+		}
 
-    /**
-     * @param ex
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     */
-    private TmbServiceResponse<List<Object>> convertExceptionResposeToExceptionRespose(FeignException ex)
-            throws UnsupportedEncodingException, JsonProcessingException {
-        Optional<ByteBuffer> response = ex.responseBody();
-        if (response.isPresent()) {
-            ByteBuffer responseBuffer = response.get();
-            String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
-            logger.info("responseObj : {}", responseObj);
-            return (TmbServiceResponse) TMBUtils.convertStringToJavaObj(responseObj, TmbServiceResponse.class);
-        }
-        return null;
-    }
+	}
+
+	/**
+	 * @param ex
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws JsonProcessingException
+	 */
+	private TmbServiceResponse<List<Object>> convertExceptionResposeToExceptionRespose(FeignException ex)
+			throws UnsupportedEncodingException, JsonProcessingException {
+		Optional<ByteBuffer> response = ex.responseBody();
+		if (response.isPresent()) {
+			ByteBuffer responseBuffer = response.get();
+			String responseObj = new String(responseBuffer.array(), ProductsExpServiceConstant.UTF_8);
+			logger.info("responseObj : {}", responseObj);
+			return (TmbServiceResponse) TMBUtils.convertStringToJavaObj(responseObj, TmbServiceResponse.class);
+		}
+		return null;
+	}
 }

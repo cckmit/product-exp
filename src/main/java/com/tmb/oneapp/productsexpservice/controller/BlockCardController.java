@@ -16,6 +16,8 @@ import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
 import io.swagger.annotations.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
@@ -83,8 +86,7 @@ public class BlockCardController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<BlockCardResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-		String activityId = ProductsExpServiceConstant.FINISH_BLOCK_CARD_ACTIVITY_ID;
-		String activityDate = Long.toString(System.currentTimeMillis());
+
 		String correlationId = requestHeadersParameter
 				.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase());
 		String accountId = requestBodyParameter.getAccountId();
@@ -97,11 +99,16 @@ public class BlockCardController {
 					&& accountId.length() == 25) {
 				ResponseEntity<com.tmb.common.model.creditcard.BlockCardResponse> blockCardRes = creditCardClient
 						.getBlockCardDetails(requestBodyParameter);
-				if (blockCardRes != null && blockCardRes.getBody().getStatus().getStatusCode().equalsIgnoreCase("0")) {
+				com.tmb.common.model.creditcard.BlockCardResponse blockCardResp = blockCardRes.getBody();
+				String iv = null;
+				if (Objects.nonNull(blockCardResp) && StringUtils.isNotEmpty(blockCardResp.getInitialVector())) {
+					iv = blockCardResp.getInitialVector();
+				}
+				if (blockCardRes.getBody().getStatus().getStatusCode().equalsIgnoreCase("0")) {
 					String txnId = UUID.randomUUID().toString();
 					Status status = new Status();
 					status.setStatusCode(blockCardRes.getBody().getStatus().getStatusCode());
-					status.setDate(activityDate);
+					status.setDate(Long.toString(System.currentTimeMillis()));
 					status.setTxnId(txnId);
 					BlockCardResponse res = new BlockCardResponse();
 					res.setStatus(status);
@@ -109,9 +116,8 @@ public class BlockCardController {
 					oneServiceResponse
 							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-					creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.SUCCESS, activityId,
-							correlationId, activityDate, accountId, "", requestHeadersParameter,
-							blockCardRes.getBody().getInitialVector());
+					creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.SUCCESS, correlationId,
+							accountId, "", requestHeadersParameter, iv);
 					notificationService.doNotifySuccessForBlockCard(correlationId, accountId, crmId);
 					cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
@@ -121,9 +127,8 @@ public class BlockCardController {
 							new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
 									ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
 					creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
-							activityId, correlationId, activityDate, accountId,
-							ProductsExpServiceConstant.INTERNAL_SERVER, requestHeadersParameter,
-							blockCardRes.getBody().getInitialVector());
+							correlationId, accountId, ProductsExpServiceConstant.INTERNAL_SERVER,
+							requestHeadersParameter, iv);
 					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 				}
 			} else {
@@ -133,9 +138,8 @@ public class BlockCardController {
 				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 			}
 		} catch (Exception e) {
-			creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG, activityId,
-					correlationId, activityDate, accountId, ProductsExpServiceConstant.INTERNAL_SERVER,
-					requestHeadersParameter,null);
+			creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG, correlationId,
+					accountId, ProductsExpServiceConstant.INTERNAL_SERVER, requestHeadersParameter, null);
 			throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
 					ResponseCode.GENERAL_ERROR.getService(), HttpStatus.BAD_REQUEST, null);
 		}

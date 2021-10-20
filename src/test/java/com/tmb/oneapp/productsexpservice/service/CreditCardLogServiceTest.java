@@ -288,7 +288,7 @@ public class CreditCardLogServiceTest {
 				put("accept", "application/json");
 			}
 		};
-		logService.finishBlockCardActivityLog(status, activityId, correlationId, activityDate, accountId, failReason,
+		logService.finishBlockCardActivityLog(status, correlationId, accountId, failReason,
 				reqHeader,null);
 		assertNotNull(creditCardEvent);
 	}
@@ -307,7 +307,7 @@ public class CreditCardLogServiceTest {
 				put("accept", "application/json");
 			}
 		};
-		logService.finishSetPinActivityLog(status, activityId, correlationId, activityDate, accountId, failReason,
+		logService.finishSetPinActivityLog(status, correlationId, accountId, failReason,
 				reqHeader,null);
 		assertNotNull(creditCardEvent);
 	}

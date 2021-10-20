@@ -328,8 +328,10 @@ public class CreditCardLogService {
 	 */
 	@Async
 	@LogAround
-	public void finishBlockCardActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason, Map<String, String> reqHeader,String iv) {
+	public void finishBlockCardActivityLog(String status, String correlationId, String accountId, String failReason,
+			Map<String, String> reqHeader, String iv) {
+		String activityId = ProductsExpServiceConstant.FINISH_BLOCK_CARD_ACTIVITY_ID;
+		String activityDate = Long.toString(System.currentTimeMillis());
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
@@ -349,13 +351,14 @@ public class CreditCardLogService {
 	 * @param activityDate
 	 * @param accountId
 	 * @param failReason
-	 * @param iv 
+	 * @param iv
 	 */
 	@Async
 	@LogAround
-	public void finishSetPinActivityLog(String status, String activityId, String correlationId, String activityDate,
-			String accountId, String failReason, Map<String, String> reqHeader, String iv) {
-		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
+	public void finishSetPinActivityLog(String status, String correlationId, String accountId, String failReason,
+			Map<String, String> reqHeader, String iv) {
+		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
+				ProductsExpServiceConstant.SET_PIN_ACTIVITY_LOG);
 		if (status.equalsIgnoreCase(ProductsExpServiceConstant.FAILURE_ACT_LOG)) {
 			creditCardEvent.setFailReason(failReason);
 		}
@@ -429,7 +432,7 @@ public class CreditCardLogService {
 	 * @param updateEstatementReq
 	 * @param result
 	 * @param errorCode
-	 * @param iv 
+	 * @param iv
 	 */
 	public void updatedEStatmentCard(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
 			boolean result, String errorCode, String iv) {
@@ -482,7 +485,7 @@ public class CreditCardLogService {
 	 * @param updateEstatementReq
 	 * @param result
 	 * @param errorCode
-	 * @param iv 
+	 * @param iv
 	 */
 	public void updatedEStatmentLoan(Map<String, String> requestHeaders, UpdateEStatmentRequest updateEstatementReq,
 			boolean result, String errorCode) {
@@ -525,7 +528,7 @@ public class CreditCardLogService {
 	 * 
 	 * @param headers
 	 * @param accountId
-	 * @param accountId2 
+	 * @param accountId2
 	 * @param processStatus
 	 */
 	public void processActivateCard(Map<String, String> headers, String iv, String accountId, boolean processStatus) {
