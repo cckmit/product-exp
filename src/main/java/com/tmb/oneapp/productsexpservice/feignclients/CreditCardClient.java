@@ -76,7 +76,7 @@ public interface CreditCardClient {
 			@RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
 			@PathVariable(value = "ACCOUNT_ID") String accountId);
 
-	@GetMapping(value = "/apis/creditcard/creditcard-unbilled-statement")
+	@PostMapping(value = "/apis/creditcard/creditcard-unbilled-statement")
 	ResponseEntity<BilledStatementResponse> getUnBilledStatement(
 			@RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
 			@RequestBody GetUnbilledStatementQuery getUnBilledStatement);
