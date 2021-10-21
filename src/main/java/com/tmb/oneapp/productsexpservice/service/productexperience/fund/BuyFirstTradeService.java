@@ -51,6 +51,7 @@ public class BuyFirstTradeService extends TmbErrorHandle {
             tmbOneServiceResponse.setData(TradeOccupationResponse.builder()
                     .firstTradeFlag(firstTradeResponseBody.getFirstTradeFlag())
                     .requirePosition(occupationInquiryResponseBody.getRequirePosition())
+                    .requireUpdate(occupationInquiryResponseBody.getRequireUpdate())
                     .occupationCode(occupationInquiryResponseBody.getOccupationCode())
                     .occupationDescription(occupationInquiryResponseBody.getOccupationDescription())
                     .build());

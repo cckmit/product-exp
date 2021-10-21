@@ -15,6 +15,8 @@ public class TradeOccupationResponse {
 
     private String requirePosition;
 
+    private String requireUpdate;
+
     private String occupationCode;
 
     private String occupationDescription;
