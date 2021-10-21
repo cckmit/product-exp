@@ -23,6 +23,7 @@ import com.tmb.common.model.Profile;
 import com.tmb.common.model.StatementFlag;
 import com.tmb.common.model.Status;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
@@ -51,11 +52,9 @@ public class ApplyEStatementControllerTest {
 	@Test
 	public void testGetApplyEStatement() {
 		UpdateEStatmentResp data = new UpdateEStatmentResp();
-		Status status = new Status();
+		TmbStatus status = new TmbStatus();
 		status.setCode("0000");
-		Description desc = new Description();
-		desc.setEn("desc");
-		status.setDescription(desc);
+		status.setDescription("desc");
 		Customer customer = new Customer();
 		Profile profile = new Profile();
 		profile.setCcId("ccid");
