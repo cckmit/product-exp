@@ -17,6 +17,7 @@ import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,18 +67,16 @@ public class DcaInformationService extends TmbErrorHandle {
             unitHolder.setUnitHolderNumber(portList.stream().collect(Collectors.joining(",")));
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(headerParameter,
                     unitHolder);
-            tmbResponseErrorHandle(fundSummaryResponse.getBody().getStatus());
             ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody = investmentRequestClient.callInvestmentFundListInfoService(headerParameter);
-            tmbResponseErrorHandle(fundListBody.getBody().getStatus());
             return mappingDcaInformationDto(fundSummaryResponse, fundListBody, dcaInformationDto);
-        } catch (TMBCommonException ex) {
-          throw ex;
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
         } catch (Exception ex) {
             logger.error("error : {}", ex);
             dcaInformationDto.setStatus(null);
             dcaInformationDto.setData(null);
-            return dcaInformationDto;
         }
+        return dcaInformationDto;
     }
 
     private TmbOneServiceResponse<DcaInformationDto> mappingDcaInformationDto(ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse,

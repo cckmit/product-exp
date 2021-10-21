@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service.productexperience.fund;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPinIsCorrectActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
@@ -17,6 +18,9 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.r
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +28,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -246,6 +256,116 @@ public class OrderCreationServiceTest {
         verify(investmentRequestClient,times(1)).processFirstTrade(any(),any());
         verify(enterPinIsCorrectActivityLogService,times(1)).save(any(),any(),any(),any(),any(),any());
 
+    }
+
+    @Test
+    void should_return_tmb_common_exception_bad_request_when_call_make_transaction_with_correlationId_and_crm_id_and_ordercreation_request_body() throws TMBCommonException {
+
+        String errorCode = "2000009";
+        String errorMessage = "Bad Request";
+
+        // given
+        try {
+            TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+            response.setStatus(TmbStatusUtil.successStatus());
+            response.setData("true");
+            when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+            TmbOneServiceResponse<String> pinVerifyResponse = new TmbOneServiceResponse<>();
+            pinVerifyResponse.setData("not true");
+            when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
+
+            TmbOneServiceResponse<FundHouseBankData> tmbFundHouseResponse = new TmbOneServiceResponse<>();
+            tmbFundHouseResponse.setData(FundHouseBankData.builder()
+                    .toAccountNo("a").accountType("884").financialId("441").ltfMerchantId("ltf").rmfMerchantId("rmf")
+                    .build());
+            when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(ResponseEntity.ok(tmbFundHouseResponse));
+
+            when(investmentRequestClient.createOrderPayment(any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+
+            // when
+            OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
+                    .orderType("P").creditCard(false).build();
+            TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
+                    orderCreationService.makeTransaction(correlationId,crmId, request);
+
+        }catch (TMBCommonException ex){
+            assertEquals(errorCode,ex.getErrorCode());
+            assertEquals(errorMessage,ex.getErrorMessage());
+        }
+    }
+
+    @Test
+    void should_return_tmb_common_exception_data_notfound_when_call_make_transaction_with_correlationId_and_crm_id_and_ordercreation_request_body() throws TMBCommonException {
+
+        String errorCode = "2000009";
+        String errorMessage = "Data not found";
+
+        // given
+        try {
+            TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+            response.setStatus(TmbStatusUtil.successStatus());
+            response.setData("true");
+            when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(response));
+
+            TmbOneServiceResponse<String> pinVerifyResponse = new TmbOneServiceResponse<>();
+            pinVerifyResponse.setData("not true");
+            when(cacheServiceClient.getCacheByKey(any(),any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
+
+            TmbOneServiceResponse<FundHouseBankData> tmbFundHouseResponse = new TmbOneServiceResponse<>();
+            tmbFundHouseResponse.setData(FundHouseBankData.builder()
+                    .toAccountNo("a").accountType("884").financialId("441").ltfMerchantId("ltf").rmfMerchantId("rmf")
+                    .build());
+            when(commonServiceClient.fetchBankInfoByFundHouse(any(),any())).thenReturn(ResponseEntity.ok(tmbFundHouseResponse));
+
+            when(investmentRequestClient.createOrderPayment(any(),any())).thenThrow(mockFeignExceptionDataNotFound(errorCode,errorMessage));
+
+            // when
+            OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
+                    .orderType("P").creditCard(false).build();
+            TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
+                    orderCreationService.makeTransaction(correlationId,crmId, request);
+
+        }catch (TMBCommonException ex){
+            assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,ex.getErrorCode());
+            assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE,ex.getErrorMessage());
+        }
+    }
+
+    private FeignException mockFeignExceptionBadRequest(String errorCode, String errorMessage){
+        Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
+        RequestTemplate template = new RequestTemplate();
+        Map<String, Collection<String>> headers = new HashMap<>();
+        String errorBody = "{\n" +
+                "    \"status\": {\n" +
+                "        \"code\": \""+errorCode+"\",\n" +
+                "        \"message\": \""+errorMessage+"\",\n" +
+                "        \"service\": null,\n" +
+                "        \"description\": \"Please enter PIN\"\n" +
+                "    },\n" +
+                "    \"data\": null\n" +
+                "}";
+        Request request = Request.create(Request.HttpMethod.POST, "http://localhost", headers, body, template);
+        FeignException.BadRequest e = new FeignException.BadRequest("", request, errorBody.getBytes(StandardCharsets.UTF_8));
+        return e;
+    }
+
+    private FeignException mockFeignExceptionDataNotFound(String errorCode, String errorMessage){
+        Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
+        RequestTemplate template = new RequestTemplate();
+        Map<String, Collection<String>> headers = new HashMap<>();
+        String errorBody = "{\n" +
+                "    \"status\": {\n" +
+                "        \"code\": \""+errorCode+"\",\n" +
+                "        \"message\": \""+errorMessage+"\",\n" +
+                "        \"service\": null,\n" +
+                "        \"description\": \"Please enter PIN\"\n" +
+                "    },\n" +
+                "    \"data\": null\n" +
+                "}";
+        Request request = Request.create(Request.HttpMethod.POST, "http://localhost", headers, body, template);
+        FeignException.NotFound e = new FeignException.NotFound("", request, errorBody.getBytes(StandardCharsets.UTF_8));
+        return e;
     }
 
 }
