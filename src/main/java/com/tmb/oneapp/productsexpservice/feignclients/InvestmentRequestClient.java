@@ -320,7 +320,7 @@ public interface InvestmentRequestClient {
      * @param saveOrderCreationRequestBody  the body request
      * @return the first trade inquiry response
      */
-    @PostMapping(value = "${investment.service.fund.save.order.payment.inquiry.url}")
+    @PostMapping(value = "${investment.service.fund.transaction.save.order.creation.payment}")
     @ResponseBody
     ResponseEntity<TmbOneServiceResponse<String>> saveOrderPayment(
             @RequestHeader Map<String, String> header,
