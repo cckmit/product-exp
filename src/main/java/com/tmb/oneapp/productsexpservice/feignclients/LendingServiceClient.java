@@ -164,7 +164,8 @@ public interface LendingServiceClient {
 
     @GetMapping(value = "/apis/lending-service/dropdown/loanSubmission/workingDetail")
     ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> getDropdownLoanSubmissionWorkingDetail(
-            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId);
+            @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
+            @RequestParam(value = "caId") String caId);
 
     @PutMapping(value = "/apis/lending-service/loanOnlineSubmission/updateWorkingDetail")
     ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateWorkingDetail(
