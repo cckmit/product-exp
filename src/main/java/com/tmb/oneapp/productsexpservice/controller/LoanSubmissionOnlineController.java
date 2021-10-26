@@ -120,12 +120,13 @@ public class LoanSubmissionOnlineController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @ApiParam(value = ProductsExpServiceConstant.HEADER_X_CRM_ID, defaultValue = "001100000000000000000018593707", required = true)
-            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestParam(value = "caId") String caId
     ) {
         TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail> dropdownWorkingDetailResp = new TmbOneServiceResponse<>();
 
         try {
-            DropdownsLoanSubmissionWorkingDetail dropdownsLoanSubmissionWorkingDetail = loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(correlationId, crmId);
+            DropdownsLoanSubmissionWorkingDetail dropdownsLoanSubmissionWorkingDetail = loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(correlationId, crmId, caId);
             dropdownWorkingDetailResp.setData(dropdownsLoanSubmissionWorkingDetail);
             dropdownWorkingDetailResp.setStatus(TmbStatusUtil.successStatus());
             return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(dropdownWorkingDetailResp);

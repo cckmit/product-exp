@@ -109,9 +109,9 @@ public class LoanSubmissionOnlineService {
         }
     }
 
-    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException {
+    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId, String caId) throws TMBCommonException {
         try {
-            TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail> responseEntity = lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(correlationId, crmId).getBody();
+            TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail> responseEntity = lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(correlationId, crmId, caId).getBody();
             if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
                 return responseEntity.getData();
             }
