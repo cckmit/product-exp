@@ -81,9 +81,10 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<AccountDetailResponse> fetchFundAccountDetail(Map<String, String> header, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
         try {
+            logger.info("account detail request obj : {}", UtilMap.convertObjectToStringJson(fundAccountRequestBody));
             ResponseEntity<TmbOneServiceResponse<AccountDetailResponse>> response = investmentRequestClient
                     .callInvestmentFundAccountDetailService(header, fundAccountRequestBody);
-            logger.info("fetchFundAccountDetail : {}", response);
+            logger.info("account detail response obj : {}", UtilMap.convertObjectToStringJson(response.getBody().getData()));
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
             handleFeignException(feignException);

@@ -137,10 +137,14 @@ public class OrderCreationService extends TmbErrorHandle {
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
                 logger.info("createOrderPayment buy flow creditcard request casa obj : {}", UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+                logger.info("createOrderPayment buy flow creditcard response casa obj : {}", UtilMap.convertObjectToStringJson(response));
+
             } else {
                 // casa account
                 logger.info("createOrderPayment buy flow casa request casa obj : {}", UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+                logger.info("createOrderPayment buy flow casa response casa obj : {}", UtilMap.convertObjectToStringJson(response));
+
             }
 
         } else {
@@ -155,6 +159,8 @@ public class OrderCreationService extends TmbErrorHandle {
 
             logger.info("createOrderPayment sell or switch request casa obj : {}", UtilMap.convertObjectToStringJson(request));
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+            logger.info("createOrderPayment sell or switch response casa obj : {}", UtilMap.convertObjectToStringJson(response));
+
         }
 
         return response;

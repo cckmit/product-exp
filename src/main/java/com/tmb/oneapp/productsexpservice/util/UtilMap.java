@@ -768,7 +768,10 @@ public class UtilMap {
     public static String convertObjectToStringJson(Object obj) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        return mapper.writeValueAsString(obj);
+        return (mapper.writeValueAsString(obj)) != null ?
+                (mapper.writeValueAsString(obj)).replaceAll("\\s+"," ")
+                : null;
     }
+
 
 }
