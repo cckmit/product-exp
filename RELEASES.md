@@ -1,4 +1,17 @@
 
+* [ONEAPP-15666](https://jira.tau2904.com/browse/ONEAPP-15666) [BE] Service /products/credit-card/statement/get-unbilled-statement working to not correct
+* [ONEAPP-16586](https://jira.tau2904.com/browse/ONEAPP-16586) [BE] Create initial vector param field
+* [ONEAPP-21818](https://jira.tau2904.com/browse/ONEAPP-21818) [Set PIN] Activity Log display incorrect
+* [ONEAPP-21897](https://jira.tau2904.com/browse/ONEAPP-21897) (BE) Apply eStatement - require clearing radish after success applying
+* [ONEAPP-22137](https://jira.tau2904.com/browse/ONEAPP-22137) Create property for cal risk
+* [ONEAPP-22147](https://jira.tau2904.com/browse/ONEAPP-22147) [BE] - Block Card add process remove redis
+* [ONEAPP-22220](https://jira.tau2904.com/browse/ONEAPP-22220) Year of work fields are missing
+* [ONEAPP-22390](https://jira.tau2904.com/browse/ONEAPP-22390) [BE] activitylog for apply estatment loan id 100701003
+* [ONEAPP-22539](https://jira.tau2904.com/browse/ONEAPP-22539) [BE] Change logic supported e-statment to seperate for loan action
+* [ONEAPP-22914](https://jira.tau2904.com/browse/ONEAPP-22914) [BE] - Modify creditcard-group service
+* [ONEAPP-23184](https://jira.tau2904.com/browse/ONEAPP-23184) FiID
+* [ONEAPP-23187](https://jira.tau2904.com/browse/ONEAPP-23187) Edit transaction fee for selling from frontEndFee to BackEndFee
+* [ONEAPP-23546](https://jira.tau2904.com/browse/ONEAPP-23546) [Apply so good] Act log apply so good fail case display incorrect
 * [ONEAPP-13008](https://jira.tau2904.com/browse/ONEAPP-13008) (BE) Submit uploading
 * [ONEAPP-14375](https://jira.tau2904.com/browse/ONEAPP-14375) Add credit card for buy flow .
 * [ONEAPP-14532](https://jira.tau2904.com/browse/ONEAPP-14532) [Personal information]Incase of life time citizen id ,Expiry date of citizen card display incorrect
@@ -21,7 +34,6 @@
 * [ONEAPP-21149](https://jira.tau2904.com/browse/ONEAPP-21149) (BE-UI) Check expiry date ID card
 * [ONEAPP-21288](https://jira.tau2904.com/browse/ONEAPP-21288) (BE) Check service off hour 
 * [ONEAPP-21355](https://jira.tau2904.com/browse/ONEAPP-21355) [BE] Modify API service hour
-* [ONEAPP-21818](https://jira.tau2904.com/browse/ONEAPP-21818) [Set PIN] Activity Log display incorrect
 * [ONEAPP-21892](https://jira.tau2904.com/browse/ONEAPP-21892) Activate Card - require clearing cache redis after success activation
 
 ## [ Version 2.3.0 ] ##
