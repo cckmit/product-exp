@@ -151,6 +151,7 @@ public class ApplyEStatementService {
 		boolean hasCreditcard = lookUpCardbyType(cardBalanceResponse.getBody(), CREDIT_CARD_TYPE,
 				updateEstatementReq.getAccountId());
 		if (hasCreditcard) {
+			updateEstatementReq.setProductType(new ArrayList<>());
 			statementFlag.setECreditcardStatementFlag("Y");
 			generatedFillUpProductype(updateEstatementReq, "CC");
 			currentEstatementResponse.setProductGroupTH(groupCreditCardTh);
@@ -160,6 +161,9 @@ public class ApplyEStatementService {
 		boolean hasFlashCard = lookUpCardbyType(cardBalanceResponse.getBody(), FLASH_CARD_TYPE,
 				updateEstatementReq.getAccountId());
 		if (hasFlashCard) {
+			if (!hasCreditcard) {
+				updateEstatementReq.setProductType(new ArrayList<>());
+			}
 			generatedFillUpProductype(updateEstatementReq, "FL");
 			statementFlag.setEReadyCashStatementFlag("Y");
 			currentEstatementResponse.setProductGroupTH(groupFlashCardTh);
