@@ -131,25 +131,24 @@ public class FlexiLoanConfirmService {
     }
 
     private FlexiLoanConfirmResponse parseFlexiLoanConfirmResponse(Long caId, String productCode) throws ServiceException, RemoteException {
-        Individual individualInfo = getCustomer(caId);
         ResponseInstantLoanCalUW loanCalUWResponse = getInstantLoanCalUW(BigDecimal.valueOf(caId), "N");
-
-        SubmissionPaymentInfo paymentInfo = new SubmissionPaymentInfo();
-        SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
-        SubmissionReceivingInfo receivingInfo = new SubmissionReceivingInfo();
+        Individual individualInfo = getCustomer(caId);
+        SubmissionCustomerInfo customerInfo = parseSubmissionCustomerInfo(individualInfo);
         if (!isTypeCC(productCode)) {
             Facility facilityInfo = getFacility(caId);
-            paymentInfo = parseSubmissionPaymentInfo(facilityInfo, individualInfo, null, loanCalUWResponse, productCode);
-            pricingInfo = parseSubmissionPricingInfo(facilityInfo.getPricings());
-            receivingInfo = parseSubmissionReceivingInfo(facilityInfo);
-        } else {
-            CreditCard creditCardInfo = getCreditCard(caId, productCode);
-            paymentInfo = parseSubmissionPaymentInfo(null, individualInfo, creditCardInfo, loanCalUWResponse, productCode);
-            pricingInfo = parseSubmissionPricingInfo(creditCardInfo.getPricings());
-
+            SubmissionPaymentInfo paymentInfo = parseSubmissionPaymentInfo(facilityInfo, individualInfo, null, loanCalUWResponse, productCode);
+            SubmissionPricingInfo pricingInfo = parseSubmissionPricingInfo(facilityInfo.getPricings());
+            SubmissionReceivingInfo receivingInfo = parseSubmissionReceivingInfo(facilityInfo);
+            return setResponse(paymentInfo, receivingInfo, customerInfo, pricingInfo);
         }
-        SubmissionCustomerInfo customerInfo = parseSubmissionCustomerInfo(individualInfo);
+        CreditCard creditCardInfo = getCreditCard(caId, productCode);
+        SubmissionPaymentInfo paymentInfo = parseSubmissionPaymentInfo(null, individualInfo, creditCardInfo, loanCalUWResponse, productCode);
+        SubmissionPricingInfo pricingInfo = parseSubmissionPricingInfo(creditCardInfo.getPricings());
+        return setResponse(paymentInfo, null, customerInfo, pricingInfo);
+    }
 
+    private FlexiLoanConfirmResponse setResponse(SubmissionPaymentInfo paymentInfo, SubmissionReceivingInfo receivingInfo,
+                                                 SubmissionCustomerInfo customerInfo, SubmissionPricingInfo pricingInfo) {
         FlexiLoanConfirmResponse response = new FlexiLoanConfirmResponse();
         response.setPaymentInfo(paymentInfo);
         response.setCustomerInfo(customerInfo);
@@ -187,8 +186,10 @@ public class FlexiLoanConfirmService {
         }
         wrapper.setNcbConsentFlag("Y");
         wrapper.setCashDisbursement(parseNumberFormat(response.getPaymentInfo().getOutStandingBalance()));
-        wrapper.setCurrentLoan(parseNumberFormat(response.getReceivingInfo().getOsLimit()));
-        wrapper.setCurrentAccount(response.getReceivingInfo().getHostAcfNo());
+        if (request.getProductCode().contains("RC") || request.getProductCode().contains("C2G")) {
+            wrapper.setCurrentLoan(parseNumberFormat(response.getReceivingInfo().getOsLimit()));
+            wrapper.setCurrentAccount(response.getReceivingInfo().getHostAcfNo());
+        }
         wrapper.setRateTypeValue(response.getPaymentInfo().getRateType());
         wrapper.setUnderwriting(response.getPaymentInfo().getUnderwriting());
 
@@ -196,7 +197,7 @@ public class FlexiLoanConfirmService {
     }
 
     private boolean isTypeCC(String productCode) {
-       return productCode.equals("VM") || productCode.equals("VC")
+        return productCode.equals("VM") || productCode.equals("VC")
                 || productCode.equals("VG") || productCode.equals("VP")
                 || productCode.equals("VT") || productCode.equals("VJ")
                 || productCode.equals("VH") || productCode.equals("VI")
@@ -207,64 +208,78 @@ public class FlexiLoanConfirmService {
     private SubmissionPaymentInfo parseSubmissionPaymentInfo(Facility facilityInfo, Individual customerInfo, CreditCard creditCardInfo, ResponseInstantLoanCalUW loanCalUWResponse, String productCode) {
         SubmissionPaymentInfo paymentInfo = new SubmissionPaymentInfo();
 
-
-
         if (Objects.nonNull(loanCalUWResponse.getBody().getApprovalMemoFacilities()) && !isTypeCC(productCode)) {
-            ApprovalMemoFacility approvalMemoFacility = loanCalUWResponse.getBody().getApprovalMemoFacilities()[0];
 
-            paymentInfo.setInterestRate(approvalMemoFacility.getInterestRate());
-            paymentInfo.setRateTypePercent(approvalMemoFacility.getRateTypePercent());
-            paymentInfo.setUnderwriting(approvalMemoFacility.getUnderwritingResult());
-            paymentInfo.setCreditLimit(approvalMemoFacility.getCreditLimit());
-            paymentInfo.setInstallmentAmount(approvalMemoFacility.getInstallmentAmount());
-            paymentInfo.setTenure(approvalMemoFacility.getTenor());
-            paymentInfo.setDisburstAccountNo(approvalMemoFacility.getDisburstAccountNo());
-            paymentInfo.setRateType(approvalMemoFacility.getRateType());
-            paymentInfo.setLoanContractDate(approvalMemoFacility.getLoanContractDate());
-            paymentInfo.setFirstPaymentDueDate(approvalMemoFacility.getFirstPaymentDueDate());
-            paymentInfo.setPayDate(approvalMemoFacility.getPayDate());
+            mapPaymentFromFacility(paymentInfo, facilityInfo, loanCalUWResponse, productCode);
 
-            if (productCode.equals(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode())) {
-                paymentInfo.setRequestAmount(facilityInfo.getFeature().getRequestAmount());
-                if (Objects.nonNull(facilityInfo)) {
-                    if (facilityInfo.getFeatureType().equals("S")) {
-                        paymentInfo.setDisburstAccountNo(facilityInfo.getFeature().getDisbAcctNo());
-                    }
-                }
-            } else if (productCode.equals(RSLProductCodeEnum.CASH_2_GO.getProductCode())) {
-                paymentInfo.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
-            } else if (productCode.equals(RSLProductCodeEnum.CASH_2_GO_TOPUP.getProductCode())) {
-                paymentInfo.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
-                paymentInfo.setOutStandingBalance(approvalMemoFacility.getOutstandingBalance());
-            }
-
-            if (Objects.nonNull(facilityInfo)) {
-                paymentInfo.setFeatureType(facilityInfo.getFeatureType());
-                paymentInfo.setOtherBank(facilityInfo.getLoanWithOtherBank());
-                paymentInfo.setOtherBankInProgress(facilityInfo.getConsiderLoanWithOtherBank());
-                paymentInfo.setPaymentMethod(facilityInfo.getPaymentMethod());
-            }
         } else if (Objects.nonNull(loanCalUWResponse.getBody().getApprovalMemoCreditCards()) && isTypeCC(productCode)) {
-            ApprovalMemoCreditCard approvalMemoCreditCard= loanCalUWResponse.getBody().getApprovalMemoCreditCards()[0];
 
-            paymentInfo.setLoanContractDate(approvalMemoCreditCard.getLoanContractDate());
-            paymentInfo.setCreditLimit(approvalMemoCreditCard.getCreditLimit());
-            if (Objects.nonNull(creditCardInfo)) {
-                paymentInfo.setFeatureType(creditCardInfo.getFeatureType());
-                paymentInfo.setPaymentMethod(creditCardInfo.getPaymentMethod());
-            }
+            mapPaymentFromCredit(paymentInfo, creditCardInfo, loanCalUWResponse);
         }
-        if (customerInfo != null) {
+        if (Objects.nonNull(customerInfo)) {
             paymentInfo.setEStatement(customerInfo.getEmail());
         }
 
         return paymentInfo;
     }
 
+
+    private SubmissionPaymentInfo mapPaymentFromFacility(SubmissionPaymentInfo paymentInfo, Facility facilityInfo, ResponseInstantLoanCalUW loanCalUWResponse, String productCode) {
+        ApprovalMemoFacility approvalMemoFacility = loanCalUWResponse.getBody().getApprovalMemoFacilities()[0];
+        paymentInfo.setInterestRate(approvalMemoFacility.getInterestRate());
+        paymentInfo.setRateTypePercent(approvalMemoFacility.getRateTypePercent());
+        paymentInfo.setUnderwriting(approvalMemoFacility.getUnderwritingResult());
+        paymentInfo.setCreditLimit(approvalMemoFacility.getCreditLimit());
+        paymentInfo.setInstallmentAmount(approvalMemoFacility.getInstallmentAmount());
+        paymentInfo.setTenure(approvalMemoFacility.getTenor());
+        paymentInfo.setDisburstAccountNo(approvalMemoFacility.getDisburstAccountNo());
+        paymentInfo.setRateType(approvalMemoFacility.getRateType());
+        paymentInfo.setLoanContractDate(approvalMemoFacility.getLoanContractDate());
+        paymentInfo.setFirstPaymentDueDate(approvalMemoFacility.getFirstPaymentDueDate());
+        paymentInfo.setPayDate(approvalMemoFacility.getPayDate());
+
+        mapRequestAmount(paymentInfo, facilityInfo, loanCalUWResponse, approvalMemoFacility, productCode);
+
+        if (Objects.nonNull(facilityInfo)) {
+            paymentInfo.setFeatureType(facilityInfo.getFeatureType());
+            paymentInfo.setOtherBank(facilityInfo.getLoanWithOtherBank());
+            paymentInfo.setOtherBankInProgress(facilityInfo.getConsiderLoanWithOtherBank());
+            paymentInfo.setPaymentMethod(facilityInfo.getPaymentMethod());
+        }
+        return paymentInfo;
+    }
+
+    private SubmissionPaymentInfo mapRequestAmount(SubmissionPaymentInfo paymentInfo, Facility facilityInfo, ResponseInstantLoanCalUW loanCalUWResponse, ApprovalMemoFacility approvalMemoFacility, String productCode) {
+        if (productCode.equals(RSLProductCodeEnum.FLASH_CARD_PLUS.getProductCode())) {
+            paymentInfo.setRequestAmount(facilityInfo.getFeature().getRequestAmount());
+            if (facilityInfo.getFeatureType().equals("S")) {
+                paymentInfo.setDisburstAccountNo(facilityInfo.getFeature().getDisbAcctNo());
+            }
+        } else if (productCode.equals(RSLProductCodeEnum.CASH_2_GO.getProductCode())) {
+            paymentInfo.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
+        } else if (productCode.equals(RSLProductCodeEnum.CASH_2_GO_TOPUP.getProductCode())) {
+            paymentInfo.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
+            paymentInfo.setOutStandingBalance(approvalMemoFacility.getOutstandingBalance());
+        }
+        return paymentInfo;
+    }
+
+    private SubmissionPaymentInfo mapPaymentFromCredit(SubmissionPaymentInfo paymentInfo, CreditCard creditCardInfo, ResponseInstantLoanCalUW loanCalUWResponse) {
+        ApprovalMemoCreditCard approvalMemoCreditCard = loanCalUWResponse.getBody().getApprovalMemoCreditCards()[0];
+        paymentInfo.setLoanContractDate(approvalMemoCreditCard.getLoanContractDate());
+        paymentInfo.setCreditLimit(approvalMemoCreditCard.getCreditLimit());
+
+        if (Objects.nonNull(creditCardInfo)) {
+            paymentInfo.setFeatureType(creditCardInfo.getFeatureType());
+            paymentInfo.setPaymentMethod(creditCardInfo.getPaymentMethod());
+        }
+        return paymentInfo;
+    }
+
     private SubmissionPricingInfo parseSubmissionPricingInfo(Pricing[] pricings) {
         SubmissionPricingInfo pricingInfo = new SubmissionPricingInfo();
         List<LoanCustomerPricing> pricingList = new ArrayList<>();
-        if (pricings != null) {
+        if (Objects.nonNull(pricings)) {
             for (Pricing p : pricings) {
                 LoanCustomerPricing customerPricing = new LoanCustomerPricing();
                 customerPricing.setMonthFrom(p.getMonthFrom());
@@ -284,7 +299,7 @@ public class FlexiLoanConfirmService {
 
     private SubmissionReceivingInfo parseSubmissionReceivingInfo(Facility facilityInfo) {
         SubmissionReceivingInfo receiving = new SubmissionReceivingInfo();
-        if (facilityInfo != null) {
+        if (Objects.nonNull(facilityInfo)) {
             receiving.setOsLimit(facilityInfo.getOsLimit());
             receiving.setHostAcfNo(facilityInfo.getHostAcfNo());
             receiving.setDisburseAccount(String.format("TMB%s", facilityInfo.getFeature().getDisbAcctNo()));
@@ -339,7 +354,7 @@ public class FlexiLoanConfirmService {
 
 
     private String parseNumberFormat(BigDecimal number) {
-        return number == null ? "-" : NumberFormat.getIntegerInstance().format(number);
+        return Objects.isNull(number) ? "-" : NumberFormat.getIntegerInstance().format(number);
     }
 
     private String parseDateThaiFormat(String dateStr) throws ParseException {
@@ -352,7 +367,7 @@ public class FlexiLoanConfirmService {
     }
 
     private String parseDateThaiFormat(Date date) {
-        if (date != null) {
+        if (Objects.nonNull(date)) {
             SimpleDateFormat formatter = new SimpleDateFormat("d MMM yy", new Locale("th", "TH"));
             return formatter.format(date);
         }
