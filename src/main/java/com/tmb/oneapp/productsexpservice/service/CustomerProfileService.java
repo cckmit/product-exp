@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.LovMaster;
@@ -242,9 +243,10 @@ public class CustomerProfileService {
 	 * @return
 	 * @throws ServiceException
 	 * @throws RemoteException
+	 * @throws JsonProcessingException 
 	 */
 	public WorkingInfoResponse getWorkingInformation(String crmId, String correlationId, FetchWorkInfoReq workInfoReq)
-			throws RemoteException, ServiceException {
+			throws RemoteException, ServiceException, JsonProcessingException {
 		WorkingInfoResponse response = new WorkingInfoResponse();
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
 				.getCustomerProfile(crmId);

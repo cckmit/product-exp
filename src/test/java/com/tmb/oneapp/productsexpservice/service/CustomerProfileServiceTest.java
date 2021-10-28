@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -129,7 +130,7 @@ public class CustomerProfileServiceTest {
 	}
 
 	@Test
-	public void testCustomerWorkingProfileInfo() throws RemoteException, ServiceException {
+	public void testCustomerWorkingProfileInfo() throws RemoteException, ServiceException, JsonProcessingException {
 		customerProfileService = new CustomerProfileService(commonServiceClient, customerServiceClient,
 				lendingServiceClient, instanceCustomerInfoClient,instnceGetEligibleProductClient);
 		TmbOneServiceResponse<CustGeneralProfileResponse> customerModuleResponse = new TmbOneServiceResponse<CustGeneralProfileResponse>();
