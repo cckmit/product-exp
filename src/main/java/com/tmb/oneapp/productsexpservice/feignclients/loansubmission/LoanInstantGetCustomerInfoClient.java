@@ -70,6 +70,7 @@ public class LoanInstantGetCustomerInfoClient {
             logger.info("LoanSubmissionGetCustomerInfo Response: {}", mapper.writeValueAsString(response));
             return response;
 		} catch (Exception e) {
+			logger.error(e.getMessage());
         	throw e;
 		}
 	}
