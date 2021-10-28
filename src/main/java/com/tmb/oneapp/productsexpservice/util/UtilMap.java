@@ -774,4 +774,9 @@ public class UtilMap {
     }
 
 
+    public static String mfLoggingMessage(String system,String method,String msg) {
+        return String.format("ProductMF call to %s:%s %s : {}",system,method,msg);
+    }
+
+
 }

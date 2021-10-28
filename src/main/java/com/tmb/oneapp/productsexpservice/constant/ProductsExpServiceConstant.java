@@ -294,6 +294,10 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND = "N";
     public static final String INVESTMENT_CREDIT_CARD_GROUP_ID = "1";
 
+
+	public static final String SYSTEM_INVESTMENT = "INVESTMENT";
+	public static final String SYSTEM_COMMON = "COMMON";
+
 	public static final String C2G = "c2g";
 	public static final String RC = "rc";
 	public static final String FLEXI = "flexi";
