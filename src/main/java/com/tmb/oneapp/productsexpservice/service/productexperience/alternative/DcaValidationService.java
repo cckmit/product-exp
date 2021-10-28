@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -15,6 +16,7 @@ import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactShe
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
+import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundListBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.service.ProductsExpService;
@@ -65,17 +67,27 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
                 return dcaValidationDtoTmbOneServiceResponse;
             }
 
-            ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, FundRuleRequestBody.builder()
+            FundRuleRequestBody fundRuleRequestBody = FundRuleRequestBody.builder()
                     .fundCode(dcaValidationRequest.getFundCode())
                     .fundHouseCode(dcaValidationRequest.getFundHouseCode())
                     .tranType(dcaValidationRequest.getTranType())
-                    .build());
+                    .build();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", "request"), fundRuleRequestBody);
+            ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter,fundRuleRequestBody );
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", "response"), UtilMap.convertObjectToStringJson(fundRule.getBody()));
+
             tmbStatus = validateAllowAipFlag(fundRule, dcaValidationDtoTmbOneServiceResponse.getStatus());
             if (!tmbStatus.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return dcaValidationDtoTmbOneServiceResponse;
             }
 
+            FundFactSheetRequestBody fundFactSheetRequestBody = FundFactSheetRequestBody.builder().fundCode(dcaValidationRequest.getFundCode()).language(dcaValidationRequest.getLanguage()).build();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFactSheet", "request"), UtilMap.convertObjectToStringJson(fundFactSheetRequestBody));
             ResponseEntity<TmbOneServiceResponse<FundFactSheetData>> fundFactSheet = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, FundFactSheetRequestBody.builder().fundCode(dcaValidationRequest.getFundCode()).language(dcaValidationRequest.getLanguage()).build());
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFactSheet", "response"), UtilMap.convertObjectToStringJson(fundFactSheet.getBody().getStatus()));
+
             dcaValidationDtoTmbOneServiceResponse.setData(DcaValidationDto.builder().factSheetData(fundFactSheet.getBody().getData().getFactSheetData()).build());
             return dcaValidationDtoTmbOneServiceResponse;
         } catch (Exception ex) {
@@ -100,9 +112,12 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
         return tmbStatus;
     }
 
-    private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) {
+    private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) throws JsonProcessingException {
 
-        ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter, crmId);
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", "request"),  UtilMap.halfCrmIdFormat(crmId));
+        ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", "response"), UtilMap.convertObjectToStringJson(ptesPort.getBody()));
+
         List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
         Optional<PtesDetail> ptesPortOptional = ptesPortList.stream()
                 .filter(t -> t.getPortfolioFlag().equals(ProductsExpServiceConstant.PTES_PORT_FOLIO_FLAG) &&

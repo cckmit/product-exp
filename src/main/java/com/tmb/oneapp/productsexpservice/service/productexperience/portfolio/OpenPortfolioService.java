@@ -95,11 +95,21 @@ public class OpenPortfolioService extends TmbErrorHandle {
             openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"createCustomer", "request"),  UtilMap.convertObjectToStringJson(customerRequest));
             ResponseEntity<TmbOneServiceResponse<CustomerResponseBody>> clientCustomer = investmentRequestClient.createCustomer(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), customerRequest);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"createCustomer", "response"),  UtilMap.convertObjectToStringJson(clientCustomer.getBody()));
+
             if (HttpStatus.OK.equals(clientCustomer.getStatusCode())) {
                 CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose = investmentAsyncService.fetchAccountPurpose(investmentRequestHeader);
                 CompletableFuture<OccupationInquiryResponseBody> occupationInquiry = investmentAsyncService.fetchOccupationInquiry(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
                 CompletableFuture.allOf(fetchAccountPurpose, occupationInquiry);
+
+                AccountPurposeResponseBody accountPurposeResponseBody = fetchAccountPurpose.get();
+                OccupationInquiryResponseBody occupationInquiryResponseBody = occupationInquiry.get();
+
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountPurpose", "response"),  UtilMap.convertObjectToStringJson(accountPurposeResponseBody));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", "response"),  UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
 
                 DepositAccount depositAccount = null;
                 if (customerRequest.isExistingCustomer()) {
@@ -107,9 +117,9 @@ public class OpenPortfolioService extends TmbErrorHandle {
                 }
 
                 return OpenPortfolioValidationResponse.builder()
-                        .accountPurposeResponse(fetchAccountPurpose.get())
+                        .accountPurposeResponse(accountPurposeResponseBody)
                         .depositAccount(depositAccount)
-                        .occupationInquiryResponse(occupationInquiry.get())
+                        .occupationInquiryResponse(occupationInquiryResponseBody)
                         .build();
             }
         } catch (TMBCommonException e) {
@@ -126,16 +136,23 @@ public class OpenPortfolioService extends TmbErrorHandle {
         return null;
     }
 
-    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId, Map<String, String> investmentRequestHeader, String crmId) {
+    private DepositAccount getDepositAccountForExisitngCustomer(String correlationId, Map<String, String> investmentRequestHeader, String crmId) throws JsonProcessingException {
+
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "request"),  UtilMap.halfCrmIdFormat(crmId));
         ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> fetchAccountRedeem = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId));
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "response"),  UtilMap.convertObjectToStringJson(fetchAccountRedeem.getBody()));
+
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
         String accountNumber = accountRedeem.getAccountRedeem();
         String accountType = UtilMap.getAccountTypeFromAccountNumber(accountNumber);
+
+        AccountDetailRequest accountDetailRequest = AccountDetailRequest.builder()
+                .accountNo(accountNumber)
+                .accountType(accountType)
+                .build();
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"getAccountDetail", "request"),  UtilMap.convertObjectToStringJson(accountDetailRequest));
         String accountAccountSavingDetail = customerExpServiceClient.getAccountDetail(
-                correlationId, AccountDetailRequest.builder()
-                        .accountNo(accountNumber)
-                        .accountType(accountType)
-                        .build());
+                correlationId, accountDetailRequest);
 
         String productNameTh = "";
         String productNameEn = "";

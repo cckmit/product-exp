@@ -46,9 +46,16 @@ public class InformationService{
             CompletableFuture<InformationBody> fetchFundInformation = investmentAsyncService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);
             CompletableFuture<DailyNavBody> fetchFundDailyNav = investmentAsyncService.fetchFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
             CompletableFuture.allOf(fetchFundInformation, fetchFundDailyNav);
+
+            InformationBody informationBody = fetchFundInformation.get();
+            DailyNavBody dailyNavBody = fetchFundDailyNav.get();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundInfo", "response"),  UtilMap.convertObjectToStringJson(informationBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundDailyNav", "response"),  UtilMap.convertObjectToStringJson(dailyNavBody));
+
             return InformationDto.builder()
-                    .information(fetchFundInformation.get())
-                    .dailyNav(fetchFundDailyNav.get())
+                    .information(informationBody)
+                    .dailyNav(dailyNavBody)
                     .build();
         } catch (ExecutionException e) {
             if(e.getCause() instanceof TMBCommonException){

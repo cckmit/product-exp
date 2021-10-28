@@ -22,6 +22,7 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.accoun
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
+import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import com.tmb.oneapp.productsexpservice.service.ProductExpAsyncService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -226,7 +227,7 @@ public class AlternativeService {
             responseResponseEntity = productExpAsyncService.fetchCustomerProfile(UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture.allOf(responseResponseEntity);
             CustGeneralProfileResponse responseData = responseResponseEntity.get();
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseData);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"getCustomerProfile", "response"), UtilMap.convertObjectToStringJson(responseData));
             if (UtilMap.isCustIdExpired(responseData)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
@@ -416,8 +417,9 @@ public class AlternativeService {
     public TmbStatus validateAccountRedeemtion(String correlationId, String crmId, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedeemtionResponse =
-                    investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest, crmId);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "request"),  UtilMap.halfCrmIdFormat(crmId));
+            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedeemtionResponse = investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "response"),  UtilMap.convertObjectToStringJson(accountRedeemtionResponse.getBody()));
 
             if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
                     StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
@@ -448,7 +450,10 @@ public class AlternativeService {
     public TmbStatus validateFundOffShelf(String correlationId, String crmId, FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest, fundRuleRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", "request"), fundRuleRequestBody);
+            ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> response = investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest, fundRuleRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", "response"), UtilMap.convertObjectToStringJson(response.getBody()));
+
         } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
             status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());

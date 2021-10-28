@@ -20,12 +20,15 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.informatio
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
+import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
+import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -54,6 +57,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<InformationBody> fetchFundInformation(Map<String, String> investmentRequestHeader, FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundInfo", "request"),  UtilMap.convertObjectToStringJson(fundCodeRequestBody));
             ResponseEntity<TmbOneServiceResponse<InformationBody>> response = investmentRequestClient.getFundInformation(investmentRequestHeader, fundCodeRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
@@ -75,6 +79,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<DailyNavBody> fetchFundDailyNav(Map<String, String> investmentRequestHeader, FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundDailyNav", "request"),  UtilMap.convertObjectToStringJson(fundCodeRequestBody));
             ResponseEntity<TmbOneServiceResponse<DailyNavBody>> response = investmentRequestClient.getFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
@@ -95,6 +100,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<AccountPurposeResponseBody> fetchAccountPurpose(Map<String, String> investmentRequestHeader) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountPurpose", "request"),  UtilMap.convertObjectToStringJson(investmentRequestHeader));
             ResponseEntity<TmbOneServiceResponse<AccountPurposeResponseBody>> response = investmentRequestClient.getCustomerAccountPurpose(investmentRequestHeader);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
@@ -113,6 +119,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
      */
     public CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem(Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "request"),  UtilMap.halfCrmIdFormat(crmId));
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
@@ -131,6 +138,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
      */
     public CompletableFuture<OccupationInquiryResponseBody> fetchOccupationInquiry(Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", "request"),  crmId);
             ResponseEntity<TmbOneServiceResponse<OccupationInquiryResponseBody>> response = investmentRequestClient.getCustomerOccupationInquiry(investmentRequestHeader, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {

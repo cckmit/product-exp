@@ -125,6 +125,11 @@ public class ProductsExpService extends TmbErrorHandle {
             AccountDetailResponse accountDetailResponse = fetchFundAccountDetail.get();
             FundRuleResponse fundRuleResponse = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"accountDetail", "response"), UtilMap.convertObjectToStringJson(accountDetailResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchFundRule", "response"), UtilMap.convertObjectToStringJson(fundRuleResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"statement", "response"), UtilMap.convertObjectToStringJson(statementResponse));
+
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TMBCommonException) {
@@ -155,14 +160,19 @@ public class ProductsExpService extends TmbErrorHandle {
             List<String> ports = getPortList(header, crmId, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
-            logger.info(unitHolder.toString());
 
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", "request"), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", "response"), UtilMap.convertObjectToStringJson(fundSummary.getBody()));
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", "request"), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", "request"), UtilMap.convertObjectToStringJson(summaryByPortResponse.getBody()));
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"countProcessOrder", "request"), crmId);
             ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
                     CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
-
-            logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE + "{}", fundSummary);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"countProcessOrder", "response"), UtilMap.convertObjectToStringJson(countOrderProcessingResponse.getBody()));
 
             if (HttpStatus.OK.value() == fundSummary.getStatusCode().value()) {
                 this.setFundSummaryBody(result, ports, fundSummary.getBody(), summaryByPortResponse.getBody());
@@ -172,6 +182,7 @@ public class ProductsExpService extends TmbErrorHandle {
             if (HttpStatus.OK.value() == countOrderProcessingResponse.getStatusCode().value()) {
                 result.setCountProcessedOrder(countOrderProcessingResponse.getBody().getData().getCountProcessOrder());
             }
+
             return result;
         } catch (FeignException feignException) {
             handleFeignException(feignException);
@@ -205,7 +216,9 @@ public class ProductsExpService extends TmbErrorHandle {
             });
         }
         if (isIncludePtesPortfolio) {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", "request"),  UtilMap.halfCrmIdFormat(crmId));
             ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, UtilMap.halfCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", "response"), UtilMap.convertObjectToStringJson(ptesDetailResult.getBody()));
 
             Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptesDetailResult)
                     .map(ResponseEntity::getBody)
@@ -306,12 +319,18 @@ public class ProductsExpService extends TmbErrorHandle {
             CompletableFuture.allOf(fetchFundRule, fetchFundHoliday, fetchAccountList, fetchCommonConfigByModule, fetchProductHoldingResponse);
             FundRuleResponse fundRuleResponse = fetchFundRule.get();
             FundHolidayBody fundHolidayBody = fetchFundHoliday.get();
-            String customerExp = fetchAccountList.get();
+            String accountList = fetchAccountList.get();
             List<CommonData> commonDataList = fetchCommonConfigByModule.get();
             ProductHoldingsResp productHoldingResponse = fetchProductHoldingResponse.get();
 
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", "response"), fundRuleResponse);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundHoliday", "response"), fundHolidayBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT,"accountList", "response"), accountList);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT,"getProductHoldings", "response"), productHoldingResponse);
+
+
             UtilMap map = new UtilMap();
-            fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, customerExp, productHoldingResponse);
+            fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, accountList, productHoldingResponse);
 
             if (fundPaymentDetailResponse.getDepositAccountList().isEmpty()) {
                 TmbStatus status = tmbOneServiceResponse.getStatus();
@@ -363,6 +382,11 @@ public class ProductsExpService extends TmbErrorHandle {
             listFund = fetchFundListInfo.get();
             FundSummaryBody fundSummaryResponse = fetchFundSummary.get();
             List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundListInfo", "response"), UtilMap.convertObjectToStringJson(listFund));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", "response"),UtilMap.convertObjectToStringJson(fundSummaryResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFavorite", "response"), UtilMap.convertObjectToStringJson(customerFavoriteFundDataList));
+
             listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
             listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
             return listFund;
@@ -390,11 +414,15 @@ public class ProductsExpService extends TmbErrorHandle {
             CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(investmentHeaderRequest, crmId);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
+
+            FundAllocationRequestBody fundAllocationRequestBody = FundAllocationRequestBody.builder()
+                    .suitabilityScore(suitabilityScore)
+                    .build();
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundAllocation", "request"),  UtilMap.convertObjectToStringJson(fundAllocationRequestBody));
             ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(
-                    investmentHeaderRequest,
-                    FundAllocationRequestBody.builder()
-                            .suitabilityScore(suitabilityScore)
-                            .build());
+                    investmentHeaderRequest,fundAllocationRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundAllocation", "response"),  UtilMap.convertObjectToStringJson(fundAllocationResponse.getBody()));
+
             return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TMBCommonException) {
