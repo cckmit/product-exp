@@ -295,8 +295,9 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_CREDIT_CARD_GROUP_ID = "1";
 
 
-	public static final String SYSTEM_INVESTMENT = "INVESTMENT";
-	public static final String SYSTEM_COMMON = "COMMON";
+	public static final String SYSTEM_INVESTMENT = "INVESTMENT-SERVICE";
+	public static final String SYSTEM_COMMON = "COMMON-SERVICE";
+	public static final String SYSTEM_CUSTOMER = "CUSTOMER-SERVICE";
 
 	public static final String C2G = "c2g";
 	public static final String RC = "rc";

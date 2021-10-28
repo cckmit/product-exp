@@ -193,8 +193,8 @@ public class ProductsExpService extends TmbErrorHandle {
     public List<String> getPortList(Map<String, String> header, String crmId, boolean isIncludePtesPortfolio) throws JsonProcessingException {
         List<String> ports = new ArrayList<>();
         List<String> ptestPortList = new ArrayList<>();
+
         String portData = customerService.getAccountSaving(header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID), crmId);
-        logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, portData);
 
         if (!StringUtils.isEmpty(portData)) {
             ObjectMapper mapper = new ObjectMapper();
