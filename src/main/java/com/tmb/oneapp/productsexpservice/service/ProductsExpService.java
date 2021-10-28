@@ -413,7 +413,13 @@ public class ProductsExpService extends TmbErrorHandle {
             CompletableFuture<FundSummaryBody> fundSummary = productExpAsyncService.fetchFundSummary(investmentHeaderRequest, unitHolder);
             CompletableFuture<SuitabilityInfo> suitabilityInfo = productExpAsyncService.fetchSuitabilityInquiry(investmentHeaderRequest, crmId);
             CompletableFuture.allOf(fundSummary, suitabilityInfo);
+
+            FundSummaryBody fundSummaryBody = fundSummary.get();
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchFundSummary", "response"),  UtilMap.convertObjectToStringJson(fundSummaryBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchSuitabilityInquiry", "response"),  suitabilityScore);
+
 
             FundAllocationRequestBody fundAllocationRequestBody = FundAllocationRequestBody.builder()
                     .suitabilityScore(suitabilityScore)
@@ -423,7 +429,7 @@ public class ProductsExpService extends TmbErrorHandle {
                     investmentHeaderRequest,fundAllocationRequestBody);
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundAllocation", "response"),  UtilMap.convertObjectToStringJson(fundAllocationResponse.getBody()));
 
-            return mappingSuggestAllocationDto(fundSummary.get().getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
+            return mappingSuggestAllocationDto(fundSummaryBody.getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();

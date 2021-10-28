@@ -320,6 +320,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<SuitabilityInfo> fetchSuitabilityInquiry(Map<String, String> investmentHeaderRequest, String crmId) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchSuitabilityInquiry", "request"),  UtilMap.halfCrmIdFormat(crmId));
             ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());

@@ -3,6 +3,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.FundListBySuitScoreBody;
 import com.tmb.oneapp.productsexpservice.model.FundListBySuitScoreRequest;
@@ -52,8 +53,12 @@ public class FundFilterService {
 
         try {
             String suitScore = fundListBySuitScoreRequest.getSuitScore();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"listFundInfo", "request"), UtilMap.convertObjectToStringJson(investmentHeaderRequest));
             ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> fundListBySuitScoreBodyResponse =
                     investmentRequestClient.callInvestmentListFundInfoService(investmentHeaderRequest);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"listFundInfo", "response"), UtilMap.convertObjectToStringJson(fundListBySuitScoreBodyResponse.getBody()));
+
             List<FundClassListInfo> fundList = fundListBySuitScoreBodyResponse.getBody().getData().getFundClassList();
             return filterFundListBasedOnSuitScore(fundList, suitScore);
         } catch (Exception ex) {

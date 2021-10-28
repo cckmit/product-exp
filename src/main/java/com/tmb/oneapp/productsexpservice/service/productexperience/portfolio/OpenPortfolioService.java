@@ -213,23 +213,33 @@ public class OpenPortfolioService extends TmbErrorHandle {
                         investmentRequestHeader, UtilMap.halfCrmIdFormat(crmId), openPortfolioRequestBody.getOccupationRequest());
                 CompletableFuture.allOf(relationship, openPortfolio, occupation);
                 occupationResponseBody = occupation.get();
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"updateOccupation", "response"), UtilMap.convertObjectToStringJson(occupationResponseBody));
+
             }
 
             openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
+            RelationshipResponseBody relationshipResponseBody = relationship.get();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"openPortfolio", "response"), UtilMap.convertObjectToStringJson(openPortfolioResponseBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"clientRelationship", "response"), UtilMap.convertObjectToStringJson(relationshipResponseBody));
+
             PortfolioNicknameRequest portfolioNicknameRequest = PortfolioNicknameRequest.builder()
                     .portfolioNumber(openPortfolioResponseBody.getPortfolioNumber())
                     .portfolioNickName(openPortfolioRequestBody.getPortfolioNickName())
                     .build();
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"portfolioNickname", "request"), UtilMap.convertObjectToStringJson(portfolioNicknameRequest));
             ResponseEntity<TmbOneServiceResponse<PortfolioNicknameResponseBody>> portfolioNickname = investmentRequestClient.updatePortfolioNickname(investmentRequestHeader, portfolioNicknameRequest);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"portfolioNickname", "response"), UtilMap.convertObjectToStringJson(portfolioNickname.getBody()));
+
 
             String fullCrmId = UtilMap.fullCrmIdFormat(crmId);
             removeCacheAfterSuccessOpenPortfolio(correlationId, fullCrmId);
 
             return PortfolioResponse.builder()
-                    .relationshipResponse(relationship.get())
-                    .openPortfolioResponse(openPortfolio.get())
+                    .relationshipResponse(relationshipResponseBody)
+                    .openPortfolioResponse(openPortfolioResponseBody)
                     .portfolioNicknameResponse(portfolioNickname.getBody().getData())
                     .occupationResponse(occupationResponseBody != null ? occupationResponseBody : null)
                     .build();
