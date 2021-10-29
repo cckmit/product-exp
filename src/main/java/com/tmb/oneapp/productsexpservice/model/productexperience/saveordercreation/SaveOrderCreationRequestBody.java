@@ -23,5 +23,4 @@ public class SaveOrderCreationRequestBody {
     private String orderAmount;
 
     private OrderConfirmPayment paymentObject;
-
 }

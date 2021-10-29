@@ -24,12 +24,11 @@ public class OrderCreationPaymentResponse {
     private String accountRedeem;
 
     private String frontEndFee;
-    private String backEndFee;
 
+    private String backEndFee;
 
     private String paymentDate;
 
-    @JsonProperty(value = "paymentobj",access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(value = "paymentobj", access = JsonProperty.Access.WRITE_ONLY)
     private OrderConfirmPayment paymentObject;
-
 }

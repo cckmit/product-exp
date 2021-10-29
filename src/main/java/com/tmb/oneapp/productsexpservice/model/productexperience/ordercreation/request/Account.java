@@ -20,5 +20,4 @@ public class Account {
     private String ltfMerchantId;
 
     private String rmfMerchantId;
-
 }
