@@ -286,6 +286,10 @@ public class ProductsExpServiceConstant {
 	/* INVESTMENT ACTIVITY LOG */
 	public static final String INVESTMENT_SWITCH_FUND_TYPE = "Switch fund";
 	public static final String INVESTMENT_SELL_FUND_TYPE = "Sell fund";
+	public static final String LOGGING_REQUEST = "request";
+	public static final String LOGGING_RESPONSE = "response";
+	public static final String INVESTMENT_ORDER_CREATION_API = "OrderCreation";
+	public static final String INVESTMENT_FUND_SUMMMARY_API = "FundSummary";
 
     /* INVESTMENT CREDIT CARD FLAG */
     public static final String INVESTMENT_CREDIT_CARD_ACTIVE_STATUS = "active";
@@ -293,6 +297,13 @@ public class ProductsExpServiceConstant {
     public static final String INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND = "Y";
     public static final String INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND = "N";
     public static final String INVESTMENT_CREDIT_CARD_GROUP_ID = "1";
+
+
+	public static final String SYSTEM_INVESTMENT = "INVESTMENT-SERVICE";
+	public static final String SYSTEM_COMMON = "COMMON-SERVICE";
+	public static final String SYSTEM_CUSTOMER = "CUSTOMER-SERVICE";
+	public static final String SYSTEM_ACCOUNT = "ACCOUNT-SERVICE";
+	public static final String SYSTEM_CACHE = "CACHE-SERVICE";
 
 	public static final String C2G = "c2g";
 	public static final String RC = "rc";
