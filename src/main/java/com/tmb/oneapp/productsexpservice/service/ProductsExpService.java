@@ -161,9 +161,9 @@ public class ProductsExpService extends TmbErrorHandle {
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundSummary.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundSummary.getBody()));
 
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
@@ -384,7 +384,7 @@ public class ProductsExpService extends TmbErrorHandle {
             List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
 
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundListInfo", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(listFund));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", ProductsExpServiceConstant.LOGGING_RESPONSE),UtilMap.convertObjectToStringJson(fundSummaryResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_RESPONSE),UtilMap.convertObjectToStringJson(fundSummaryResponse));
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFavorite", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(customerFavoriteFundDataList));
 
             listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);

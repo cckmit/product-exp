@@ -134,15 +134,15 @@ public class OrderCreationService extends TmbErrorHandle {
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
                         .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"orderCreationPayment","buy flow creditcard request"), UtilMap.convertObjectToStringJson(request));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API,"buy flow creditcard request"), UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"orderCreationPayment","buy flow creditcard response"), UtilMap.convertObjectToStringJson(response));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API,"buy flow creditcard response"), UtilMap.convertObjectToStringJson(response));
 
             } else {
                 // casa account
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"orderCreationPayment", "buy flow casa request"), UtilMap.convertObjectToStringJson(request));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa request"), UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"orderCreationPayment", "buy flow casa response"), UtilMap.convertObjectToStringJson(response));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa response"), UtilMap.convertObjectToStringJson(response));
 
             }
 
@@ -156,9 +156,9 @@ public class OrderCreationService extends TmbErrorHandle {
                 request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
             }
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"orderCreationPayment", "sell or switch request"), UtilMap.convertObjectToStringJson(request));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch request"), UtilMap.convertObjectToStringJson(request));
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"orderCreationPayment", "sell or switch response"), UtilMap.convertObjectToStringJson(response));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch response"), UtilMap.convertObjectToStringJson(response));
 
         }
 

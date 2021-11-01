@@ -288,6 +288,8 @@ public class ProductsExpServiceConstant {
 	public static final String INVESTMENT_SELL_FUND_TYPE = "Sell fund";
 	public static final String LOGGING_REQUEST = "request";
 	public static final String LOGGING_RESPONSE = "response";
+	public static final String INVESTMENT_ORDER_CREATION_API = "OrderCreation";
+	public static final String INVESTMENT_FUND_SUMMMARY_API = "FundSummary";
 
     /* INVESTMENT CREDIT CARD FLAG */
     public static final String INVESTMENT_CREDIT_CARD_ACTIVE_STATUS = "active";

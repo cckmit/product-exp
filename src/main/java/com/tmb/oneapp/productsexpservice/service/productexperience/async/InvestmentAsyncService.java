@@ -20,7 +20,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.fund.informatio
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.response.InformationBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
-import com.tmb.oneapp.productsexpservice.model.response.PtesDetail;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
