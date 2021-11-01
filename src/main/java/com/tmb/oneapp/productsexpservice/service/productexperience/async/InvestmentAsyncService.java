@@ -119,7 +119,7 @@ public class InvestmentAsyncService extends AbstactAsyncHandleBadRequest {
      */
     public CompletableFuture<AccountRedeemResponseBody> fetchAccountRedeem(Map<String, String> investmentRequestHeader, String crmId) throws TMBCommonException {
         try {
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "request"),  UtilMap.halfCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "request"), crmId);
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
