@@ -505,12 +505,17 @@ public class CreditCardLogServiceTest {
 	@Test
 	public void testUpdateEstatmentLoan() {
 		TmbOneServiceResponse<List<ProductConfig>> serviceResponse = new TmbOneServiceResponse<List<ProductConfig>>();
+		serviceResponse.setData(new ArrayList<ProductConfig>());
 		FetchCardResponse fetchCardRes = new FetchCardResponse();
 		CreditCardDetail creditCardDetail = new CreditCardDetail();
 		creditCardDetail.setAccountId("0000000050078690141000144");;
-		fetchCardRes.setCreditCard(creditCardDetail);;
+		fetchCardRes.setCreditCard(creditCardDetail);
 		when(commonServiceClient.getProductConfig(any())).thenReturn(ResponseEntity.ok().body(serviceResponse));
 		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok(fetchCardRes));
+		
+		
+		
+		
 		UpdateEStatmentRequest reqLoan = new UpdateEStatmentRequest();
 		logService.updatedEStatmentCard(new HashMap<String, String>(), reqLoan, false, "API006",null);
 		assertTrue(true);
