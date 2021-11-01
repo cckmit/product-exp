@@ -148,10 +148,10 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
                     .fundCode(alternativeBuyRequest.getFundCode())
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", "request"), UtilMap.convertObjectToStringJson(firstTradeRequestBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(firstTradeRequestBody));
             ResponseEntity<TmbOneServiceResponse<FirstTradeResponseBody>> tmbOneServiceResponse = investmentRequestClient
                     .getFirstTrade(headerParameter, firstTradeRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", "response"), UtilMap.convertObjectToStringJson(tmbOneServiceResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(tmbOneServiceResponse.getBody()));
 
             if (!tmbOneServiceResponse.getStatusCode().is2xxSuccessful()) {
                 throw new TMBCommonException(

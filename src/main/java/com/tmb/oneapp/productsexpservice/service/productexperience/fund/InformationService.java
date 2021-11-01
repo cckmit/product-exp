@@ -50,8 +50,8 @@ public class InformationService{
             InformationBody informationBody = fetchFundInformation.get();
             DailyNavBody dailyNavBody = fetchFundDailyNav.get();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundInfo", "response"),  UtilMap.convertObjectToStringJson(informationBody));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundDailyNav", "response"),  UtilMap.convertObjectToStringJson(dailyNavBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundInfo", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(informationBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getFundDailyNav", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(dailyNavBody));
 
             return InformationDto.builder()
                     .information(informationBody)

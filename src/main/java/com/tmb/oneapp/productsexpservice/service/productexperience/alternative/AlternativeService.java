@@ -93,7 +93,7 @@ public class AlternativeService {
             ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = commonServiceClient
                     .getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_COMMON,"commonConfig", "response"), UtilMap.convertObjectToStringJson(responseCommon.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_COMMON,"commonConfig", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseCommon.getBody()));
 
             if (!StringUtils.isEmpty(responseCommon)) {
                 List<CommonData> commonDataList = responseCommon.getBody().getData();
@@ -227,7 +227,7 @@ public class AlternativeService {
             responseResponseEntity = productExpAsyncService.fetchCustomerProfile(UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture.allOf(responseResponseEntity);
             CustGeneralProfileResponse responseData = responseResponseEntity.get();
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"getCustomerProfile", "response"), UtilMap.convertObjectToStringJson(responseData));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"getCustomerProfile", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseData));
             if (UtilMap.isCustIdExpired(responseData)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
@@ -417,9 +417,9 @@ public class AlternativeService {
     public TmbStatus validateAccountRedeemtion(String correlationId, String crmId, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "request"),  UtilMap.halfCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.halfCrmIdFormat(crmId));
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedeemtionResponse = investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", "response"),  UtilMap.convertObjectToStringJson(accountRedeemtionResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(accountRedeemtionResponse.getBody()));
 
             if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
                     StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
@@ -450,9 +450,9 @@ public class AlternativeService {
     public TmbStatus validateFundOffShelf(String correlationId, String crmId, FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", "request"), fundRuleRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", ProductsExpServiceConstant.LOGGING_REQUEST), fundRuleRequestBody);
             ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> response = investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest, fundRuleRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", "response"), UtilMap.convertObjectToStringJson(response.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response.getBody()));
 
         } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());

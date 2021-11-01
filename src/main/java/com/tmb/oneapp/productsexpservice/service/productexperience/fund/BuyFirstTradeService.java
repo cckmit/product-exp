@@ -49,8 +49,8 @@ public class BuyFirstTradeService extends TmbErrorHandle {
             FirstTradeResponseBody firstTradeResponseBody = firstTrade.get();
             OccupationInquiryResponseBody occupationInquiryResponseBody = occupationInquiry.get();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fisrtTrade", "response"),  UtilMap.convertObjectToStringJson(firstTradeResponseBody));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", "response"),  UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fisrtTrade", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(firstTradeResponseBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
 
             tmbOneServiceResponse.setData(TradeOccupationResponse.builder()
                     .firstTradeFlag(firstTradeResponseBody.getFirstTradeFlag())

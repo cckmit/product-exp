@@ -5,7 +5,6 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPinIsCorrectActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -192,9 +191,9 @@ public class OrderCreationService extends TmbErrorHandle {
                     .effectiveDate(response.getEffectiveDate())
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"processFirstTrade", "request"), UtilMap.convertObjectToStringJson(processFirstTradeRequestBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"processFirstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(processFirstTradeRequestBody));
             ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader, processFirstTradeRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"processFirstTrade", "response"), UtilMap.convertObjectToStringJson(processFirstTradeResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"processFirstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(processFirstTradeResponse));
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -214,9 +213,9 @@ public class OrderCreationService extends TmbErrorHandle {
                     .paymentObject(orderCreationPaymentResponse.getPaymentObject())
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"saveOrderPayment", "request"), UtilMap.convertObjectToStringJson(request));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"saveOrderPayment", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
             ResponseEntity<TmbOneServiceResponse<String>> response = investmentRequestClient.saveOrderPayment(investmentRequestHeader, request);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"saveOrderPayment", "response"), UtilMap.convertObjectToStringJson(response));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"saveOrderPayment", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response));
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -233,11 +232,11 @@ public class OrderCreationService extends TmbErrorHandle {
     private Account getAccount(String correlationId,OrderCreationPaymentRequestBody bodyRequest) throws JsonProcessingException, TMBCommonException {
         try {
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"findbyfundhousecode", "request"), bodyRequest.getFundHouseCode());
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"findbyfundhousecode", ProductsExpServiceConstant.LOGGING_REQUEST), bodyRequest.getFundHouseCode());
             ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
                     bodyRequest.getFundHouseCode());
             FundHouseBankData fundHouseResponseData = fundHouseResponse.getBody().getData();
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"findbyfundhousecode", "response"), UtilMap.convertObjectToStringJson(fundHouseResponseData));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"findbyfundhousecode", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundHouseResponseData));
 
             Account toAccount = new Account();
             Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData);

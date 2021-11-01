@@ -65,9 +65,9 @@ public class PortfolioService extends TmbErrorHandle {
                 return PortfolioResponse.builder().portfolioResponseBody(List.of()).build();
             }
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", "request"), unitHolder);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(headerParameter, unitHolder);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", "request"), UtilMap.convertObjectToStringJson(summaryByPortResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(summaryByPortResponse.getBody()));
 
             List<PortfolioByPort> portfolioList = summaryByPortResponse.getBody().getData().getPortfolioList();
             portfolioByPortList = filterTypeOfPortfolioByPorts(type, portfolioList);

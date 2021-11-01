@@ -54,10 +54,10 @@ public class FundFilterService {
         try {
             String suitScore = fundListBySuitScoreRequest.getSuitScore();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"listFundInfo", "request"), UtilMap.convertObjectToStringJson(investmentHeaderRequest));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"listFundInfo", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(investmentHeaderRequest));
             ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> fundListBySuitScoreBodyResponse =
                     investmentRequestClient.callInvestmentListFundInfoService(investmentHeaderRequest);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"listFundInfo", "response"), UtilMap.convertObjectToStringJson(fundListBySuitScoreBodyResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"listFundInfo", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundListBySuitScoreBodyResponse.getBody()));
 
             List<FundClassListInfo> fundList = fundListBySuitScoreBodyResponse.getBody().getData().getFundClassList();
             return filterFundListBasedOnSuitScore(fundList, suitScore);
