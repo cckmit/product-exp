@@ -337,7 +337,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
         List<FundClassListInfo> fundClassLists;
         logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", "request"), key);
         ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
-        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", "request"), UtilMap.convertObjectToStringJson(responseCache.getBody()));
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", "response"), UtilMap.convertObjectToStringJson(responseCache.getBody()));
 
         if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
 

@@ -93,7 +93,7 @@ public class AlternativeService {
             ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = commonServiceClient
                     .getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
-            logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCommon);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_COMMON,"commonConfig", "response"), UtilMap.convertObjectToStringJson(responseCommon.getBody()));
 
             if (!StringUtils.isEmpty(responseCommon)) {
                 List<CommonData> commonDataList = responseCommon.getBody().getData();

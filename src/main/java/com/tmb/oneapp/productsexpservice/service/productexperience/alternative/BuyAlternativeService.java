@@ -151,7 +151,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", "request"), UtilMap.convertObjectToStringJson(firstTradeRequestBody));
             ResponseEntity<TmbOneServiceResponse<FirstTradeResponseBody>> tmbOneServiceResponse = investmentRequestClient
                     .getFirstTrade(headerParameter, firstTradeRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", "response"), UtilMap.convertObjectToStringJson(firstTradeRequestBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", "response"), UtilMap.convertObjectToStringJson(tmbOneServiceResponse.getBody()));
 
             if (!tmbOneServiceResponse.getStatusCode().is2xxSuccessful()) {
                 throw new TMBCommonException(

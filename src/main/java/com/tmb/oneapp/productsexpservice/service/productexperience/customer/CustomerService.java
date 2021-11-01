@@ -67,10 +67,10 @@ public class CustomerService {
                     .searchValue(UtilMap.fullCrmIdFormat(crmId))
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"customers/ecprofile", "request"), UtilMap.convertObjectToStringJson(request));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"ecprofile", "request"), UtilMap.convertObjectToStringJson(request));
             ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
                     customerServiceClient.customerSearch(correlationId, crmId, request);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"customers/ecprofile", "response"), response.getBody().getData());
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"ecprofile", "response"), response.getBody());
             return response.getBody().getData().get(0);
         }catch (Exception ex){
             logger.error("error fetch customerSearch : {}",ex);

@@ -167,7 +167,7 @@ public class ProductsExpService extends TmbErrorHandle {
 
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", "request"), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", "request"), UtilMap.convertObjectToStringJson(summaryByPortResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", "response"), UtilMap.convertObjectToStringJson(summaryByPortResponse.getBody()));
 
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"countProcessOrder", "request"), crmId);
             ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
