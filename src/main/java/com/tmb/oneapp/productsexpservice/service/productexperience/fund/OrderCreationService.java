@@ -116,7 +116,7 @@ public class OrderCreationService extends TmbErrorHandle {
 
     private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
 
-        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
+        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
             Account toAccount = getAccount(correlationId, request);
             request.setToAccount(toAccount);
@@ -158,7 +158,6 @@ public class OrderCreationService extends TmbErrorHandle {
         }
 
         return response;
-
     }
 
     private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
@@ -203,9 +202,6 @@ public class OrderCreationService extends TmbErrorHandle {
                     .portfolioNumber(request.getPortfolioNumber())
                     .orderAmount(request.getOrderAmount())
                     .orderId(response.getOrderId())
-                    .orderDateTime(response.getOrderDateTime())
-                    .effectiveDate(response.getEffectiveDate())
-                    .workingHour(response.getWorkingHour())
                     .paymentObject(response.getPaymentObject())
                     .build();
             logger.info("saveOrderPayment request casa obj : {}", UtilMap.convertObjectToStringJson(saveOrderCreationRequestBody));

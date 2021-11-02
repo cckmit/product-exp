@@ -18,11 +18,5 @@ public class SaveOrderCreationRequestBody {
 
     private String orderId;
 
-    private String orderDateTime;
-
-    private String effectiveDate;
-
-    private String workingHour;
-
     private OrderConfirmPayment paymentObject;
 }
