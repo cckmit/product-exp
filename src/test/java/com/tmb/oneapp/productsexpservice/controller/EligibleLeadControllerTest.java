@@ -1,6 +1,8 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CashForUConfigInfo;
+import com.tmb.common.model.MinMaxAmount;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +57,26 @@ public class EligibleLeadControllerTest {
         serverResponse.setData(data);
         ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> response = new ResponseEntity<>(serverResponse, HttpStatus.OK);
         when(creditCardClient.getEligibleLeads(anyString(), any())).thenReturn(response);
+        
+        TmbOneServiceResponse<CashForUConfigInfo> serverResponseConfig = new TmbOneServiceResponse<>();
+        serverResponseConfig.setStatus(status);
+        CashForUConfigInfo cashForUConfigInfo = new CashForUConfigInfo();
+        List<MinMaxAmount> minMaxAmounts = new ArrayList<>();
+        MinMaxAmount minMaxAmount = new MinMaxAmount();
+        minMaxAmount.setMaxInUldxLead("500,000");
+        minMaxAmount.setMinInUldxLead("5,000");
+        minMaxAmount.setMaxNotInUldxLead("500,000");
+        minMaxAmount.setMinNotInUldxLead("5,000");
+        minMaxAmount.setProductId("Others");
+        minMaxAmounts.add(minMaxAmount);
+        cashForUConfigInfo.setMinMaxAmounts(minMaxAmounts);
+        ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> responseConfig = new ResponseEntity<>(serverResponseConfig, HttpStatus.OK);
+        when(creditCardClient.getCurrentCashForYouRate()).thenReturn(responseConfig);
 
         EligibleLeadRequest requestBody = new EligibleLeadRequest();
         requestBody.setGroupAccountId("1234");
         requestBody.setDisbursementDate("1234");
+        requestBody.setProductId("MFPSTD");
         Map<String, String> headers = new HashMap<String, String>();
         ResponseEntity<TmbOneServiceResponse<EligibleLeadResponse>> result = eligibleLeadController.getLoanEligibleDetail(headers, requestBody);
         assertNotEquals(200, result.getStatusCodeValue());
