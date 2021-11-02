@@ -110,7 +110,7 @@ public class EligibleLeadController {
 	private void processSetDefaultMinimunMaximumAmounts(String productId, EligibleLeadResponse loanDetails,
 			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> responseConfig, boolean isInULDX) {
 		CashForUConfigInfo cashForUConfigInfo = responseConfig.getBody().getData();
-		MinMaxAmount minMaxAmount = new MinMaxAmount();
+		MinMaxAmount minMaxAmount;
 		if (cashForUConfigInfo != null) {
 			List<MinMaxAmount> minMaxAmounts = cashForUConfigInfo.getMinMaxAmounts().stream()
 					.filter(minMaxAmountsConfig -> productId.equalsIgnoreCase(minMaxAmountsConfig.getProductId()))
