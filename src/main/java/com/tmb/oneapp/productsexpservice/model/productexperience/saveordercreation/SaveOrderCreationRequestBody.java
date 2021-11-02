@@ -12,15 +12,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SaveOrderCreationRequestBody {
 
-    private String orderId;
+    private String portfolioNumber;
 
-    private String effectiveDate;
+    private String orderAmount;
+
+    private String orderId;
 
     private String orderDateTime;
 
-    private String workingHour;
+    private String effectiveDate;
 
-    private String orderAmount;
+    private String workingHour;
 
     private OrderConfirmPayment paymentObject;
 }

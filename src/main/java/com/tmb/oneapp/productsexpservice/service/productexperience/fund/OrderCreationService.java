@@ -118,11 +118,11 @@ public class OrderCreationService extends TmbErrorHandle {
 
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
-            Account toAccount = getAccount(correlationId,request);
+            Account toAccount = getAccount(correlationId, request);
             request.setToAccount(toAccount);
             // buy flow
             if (request.isCreditCard()) {
-                // creditcard
+                // credit card
                 ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, request.getFromAccount().getAccountId());
                 CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
                 request.setCard(Card.builder()
@@ -135,7 +135,7 @@ public class OrderCreationService extends TmbErrorHandle {
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
                         .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                logger.info("createOrderPayment buy flow creditcard request casa obj : {}", UtilMap.convertObjectToStringJson(request));
+                logger.info("createOrderPayment buy flow credit card request casa obj : {}", UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
             } else {
                 // casa account
@@ -165,7 +165,7 @@ public class OrderCreationService extends TmbErrorHandle {
         String activityLogStatus = "";
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
             activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
-            saveOrderPayment(investmentRequestHeader, response.getBody(), request.getOrderAmount());
+            saveOrderPayment(investmentRequestHeader, response.getBody(), request);
             processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
             enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
         } else {
@@ -195,22 +195,23 @@ public class OrderCreationService extends TmbErrorHandle {
         }
     }
 
-    private void saveOrderPayment(Map<String, String> investmentRequestHeader, TmbOneServiceResponse<OrderCreationPaymentResponse> body, String orderAmount) {
+    private void saveOrderPayment(Map<String, String> investmentRequestHeader, TmbOneServiceResponse<OrderCreationPaymentResponse> body, OrderCreationPaymentRequestBody request) {
         try {
             OrderCreationPaymentResponse response = body.getData();
 
             SaveOrderCreationRequestBody saveOrderCreationRequestBody = SaveOrderCreationRequestBody.builder()
+                    .portfolioNumber(request.getPortfolioNumber())
+                    .orderAmount(request.getOrderAmount())
                     .orderId(response.getOrderId())
-                    .effectiveDate(response.getEffectiveDate())
                     .orderDateTime(response.getOrderDateTime())
+                    .effectiveDate(response.getEffectiveDate())
                     .workingHour(response.getWorkingHour())
-                    .orderAmount(orderAmount)
                     .paymentObject(response.getPaymentObject())
                     .build();
-            logger.info("saveOrderPayment request casa obj : {}", saveOrderCreationRequestBody);
+            logger.info("saveOrderPayment request casa obj : {}", UtilMap.convertObjectToStringJson(saveOrderCreationRequestBody));
             ResponseEntity<TmbOneServiceResponse<String>> saveOrderResponse = investmentRequestClient.saveOrderPayment(investmentRequestHeader, saveOrderCreationRequestBody);
 
-            logger.info("finish sending request to save orderpayment with {} status  ", saveOrderResponse.getBody().getStatus().getCode());
+            logger.info("finish sending request to save order payment with {} status  ", saveOrderResponse.getBody().getStatus().getCode());
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -224,7 +225,7 @@ public class OrderCreationService extends TmbErrorHandle {
      * @return
      * @throws JsonProcessingException
      */
-    private Account getAccount(String correlationId,OrderCreationPaymentRequestBody bodyRequest) throws JsonProcessingException, TMBCommonException {
+    private Account getAccount(String correlationId, OrderCreationPaymentRequestBody bodyRequest) throws JsonProcessingException, TMBCommonException {
         try {
 
             ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
