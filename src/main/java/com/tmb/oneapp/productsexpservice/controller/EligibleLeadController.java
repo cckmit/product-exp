@@ -117,7 +117,8 @@ public class EligibleLeadController {
 					.collect(Collectors.toList());
 			if (minMaxAmounts.isEmpty()) {
 				List<MinMaxAmount> othersAmounts = cashForUConfigInfo.getMinMaxAmounts().stream()
-						.filter(minMaxAmountsConfig -> "Others".equalsIgnoreCase(minMaxAmountsConfig.getProductId()))
+						.filter(minMaxAmountsConfig -> ProductsExpServiceConstant.OTHERS
+								.equalsIgnoreCase(minMaxAmountsConfig.getProductId()))
 						.collect(Collectors.toList());
 				minMaxAmount = othersAmounts.get(0);
 			} else {
@@ -133,8 +134,8 @@ public class EligibleLeadController {
 			}
 		} else {
 			logger.info("Not found cashForUConfigInfo");
-			loanDetails.setMinimumAmount("5,000");
-			loanDetails.setMaximumAmount("500,000");
+			loanDetails.setMinimumAmount(ProductsExpServiceConstant.DEFAULT_MINIMUM_AMOUNT);
+			loanDetails.setMaximumAmount(ProductsExpServiceConstant.DEFAULT_MAXIMUM_AMOUNT);
 		}
 	}
 

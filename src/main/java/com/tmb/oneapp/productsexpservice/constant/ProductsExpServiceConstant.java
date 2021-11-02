@@ -319,5 +319,9 @@ public class ProductsExpServiceConstant {
 	public static final String FINAL_APPROVAL = "final-approval";
 	public static final String CONFIRM_APPLICATION = "confirm-application";
 	public static final String LOAN_CAL = "loan-cal";
+	
+	public static final String DEFAULT_MINIMUM_AMOUNT = "5,000";
+	public static final String DEFAULT_MAXIMUM_AMOUNT = "500,000";
+	public static final String OTHERS = "Others";
 
 }
