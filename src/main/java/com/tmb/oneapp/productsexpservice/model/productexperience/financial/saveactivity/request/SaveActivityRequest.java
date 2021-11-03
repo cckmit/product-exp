@@ -87,8 +87,8 @@ public class SaveActivityRequest {
     @JsonProperty("to_bank_short_name")
     private String toBankShortName;
 
-    @JsonProperty("transaction_date16")
-    private String transactionDate16;
+    @JsonProperty("transaction_date")
+    private String transactionDate;
 
     @JsonProperty("transaction_status")
     private String transactionStatus;

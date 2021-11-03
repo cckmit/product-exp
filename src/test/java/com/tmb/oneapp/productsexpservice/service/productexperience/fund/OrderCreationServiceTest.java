@@ -5,17 +5,17 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPinIsCorrectActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardInfo;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseBankData;
 import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Fee;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.AccountDetail;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderConfirmPayment;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import feign.FeignException;
@@ -55,6 +55,9 @@ public class OrderCreationServiceTest {
 
     @Mock
     public CommonServiceClient commonServiceClient;
+
+    @Mock
+    public FinancialServiceClient financialServiceClient;
 
     @InjectMocks
     OrderCreationService orderCreationService;
@@ -125,7 +128,13 @@ public class OrderCreationServiceTest {
 
         TmbOneServiceResponse<OrderCreationPaymentResponse> orderCreationResponse = new TmbOneServiceResponse<>();
         orderCreationResponse.setStatus(TmbStatusUtil.successStatus());
-        orderCreationResponse.setData(OrderCreationPaymentResponse.builder().build());
+        OrderConfirmPayment orderConfirmPayment = new OrderConfirmPayment();
+        orderConfirmPayment.setPaymentChannel("mib");
+        orderConfirmPayment.setFromAccount(Account.builder().build());
+        orderConfirmPayment.setToAccount(Account.builder().build());
+        orderConfirmPayment.setFee(Fee.builder().build());
+        orderConfirmPayment.setAccount(new AccountDetail());
+        orderCreationResponse.setData(OrderCreationPaymentResponse.builder().paymentObject(orderConfirmPayment).build());
         when(investmentRequestClient.createOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(orderCreationResponse));
 
         TmbOneServiceResponse<String> saveOrderResponse = new TmbOneServiceResponse<>();
@@ -145,7 +154,10 @@ public class OrderCreationServiceTest {
         // then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getStatus().getCode());
         verify(cacheServiceClient,times(1)).putCacheByKey(any(),any());
+
         // after payment
+        verify(financialServiceClient,times(1)).syncData(any(),any());
+        verify(financialServiceClient,times(1)).saveActivity(any(),any());
         verify(investmentRequestClient,times(1)).saveOrderPayment(any(),any());
         verify(investmentRequestClient,times(1)).processFirstTrade(any(),any());
         verify(enterPinIsCorrectActivityLogService,times(1)).save(any(),any(),any(),any(),any(),any());
@@ -182,7 +194,13 @@ public class OrderCreationServiceTest {
 
         TmbOneServiceResponse<OrderCreationPaymentResponse> orderCreationResponse = new TmbOneServiceResponse<>();
         orderCreationResponse.setStatus(TmbStatusUtil.successStatus());
-        orderCreationResponse.setData(OrderCreationPaymentResponse.builder().build());
+        OrderConfirmPayment orderConfirmPayment = new OrderConfirmPayment();
+        orderConfirmPayment.setPaymentChannel("mib");
+        orderConfirmPayment.setFromAccount(Account.builder().build());
+        orderConfirmPayment.setToAccount(Account.builder().build());
+        orderConfirmPayment.setFee(Fee.builder().build());
+        orderConfirmPayment.setAccount(new AccountDetail());
+        orderCreationResponse.setData(OrderCreationPaymentResponse.builder().paymentObject(orderConfirmPayment).build());
         when(investmentRequestClient.createOrderPayment(any(),any())).thenReturn(ResponseEntity.ok(orderCreationResponse));
 
         TmbOneServiceResponse<String> saveOrderResponse = new TmbOneServiceResponse<>();
@@ -206,7 +224,10 @@ public class OrderCreationServiceTest {
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getStatus().getCode());
         verify(cacheServiceClient,times(1)).putCacheByKey(any(),any());
         verify(creditCardClient,times(1)).getCreditCardDetails(any(),any());
+
         // after payment
+        verify(financialServiceClient,times(1)).syncData(any(),any());
+        verify(financialServiceClient,times(1)).saveActivity(any(),any());
         verify(investmentRequestClient,times(1)).saveOrderPayment(any(),any());
         verify(investmentRequestClient,times(1)).processFirstTrade(any(),any());
         verify(enterPinIsCorrectActivityLogService,times(1)).save(any(),any(),any(),any(),any(),any());
