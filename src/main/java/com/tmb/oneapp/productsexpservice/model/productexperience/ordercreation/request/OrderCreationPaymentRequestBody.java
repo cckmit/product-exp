@@ -74,7 +74,6 @@ public class OrderCreationPaymentRequestBody {
 
     private Fee fee;
 
-
     private String fundName;
 
     private String fundThaiClassName;
@@ -97,5 +96,7 @@ public class OrderCreationPaymentRequestBody {
     private Card card;
 
     private Merchant merchant;
+
+    private String accountName;
 
 }

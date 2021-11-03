@@ -7,5 +7,4 @@ public class AccountDetail {
     private String title;
     private String ledgerBal;
     private String availBal;
-
 }
