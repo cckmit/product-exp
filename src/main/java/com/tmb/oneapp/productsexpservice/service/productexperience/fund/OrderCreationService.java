@@ -199,6 +199,7 @@ public class OrderCreationService extends TmbErrorHandle {
             OrderCreationPaymentResponse response = body.getData();
 
             SaveOrderCreationRequestBody saveOrderCreationRequestBody = SaveOrderCreationRequestBody.builder()
+                    .fundCode(request.getFundCode())
                     .portfolioNumber(request.getPortfolioNumber())
                     .orderAmount(request.getOrderAmount())
                     .orderId(response.getOrderId())
