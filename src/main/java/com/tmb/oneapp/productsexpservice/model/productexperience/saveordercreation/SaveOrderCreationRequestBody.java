@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SaveOrderCreationRequestBody {
 
+    private String fundCode;
+
     private String portfolioNumber;
 
     private String orderAmount;
