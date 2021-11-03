@@ -1,7 +1,6 @@
 package com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
