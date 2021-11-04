@@ -120,8 +120,8 @@ class LoanSubmissionOnlineServiceTest {
         TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail> oneServiceResponse = new TmbOneServiceResponse<>();
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
         oneServiceResponse.setData(dropdownsWorkingDetail);
-        when(lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
-        DropdownsLoanSubmissionWorkingDetail result = loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId");
+        when(lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(anyString(), anyString(), anyString())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        DropdownsLoanSubmissionWorkingDetail result = loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId", "caId");
         assertEquals(dropdownsWorkingDetail.getEmploymentStatus(), result.getEmploymentStatus());
     }
 
@@ -129,9 +129,9 @@ class LoanSubmissionOnlineServiceTest {
     public void testGetDropdownsLoanSubmissionWorkingDetailFailed() {
         TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse<>();
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
-        when(lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(any(), any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        when(lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(anyString(), anyString(), anyString())).thenReturn(ResponseEntity.ok(oneServiceResponse));
         assertThrows(Exception.class, () ->
-                loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId")
+                loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId", "caId")
         );
     }
 

@@ -10,4 +10,5 @@ public class AccountDetail {
     private String ledgerBal;
 
     private String availBal;
+
 }

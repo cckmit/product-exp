@@ -4,6 +4,7 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.RslCode;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.creditcard.ApprovalMemoCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -215,7 +216,10 @@ public class FlexiLoanConfirmServiceTest {
 
         ApprovalMemoFacility approvalMemoFacility = mock(ApprovalMemoFacility.class);
         ApprovalMemoFacility[] approvalMemoFacilities = {approvalMemoFacility};
+        ApprovalMemoCreditCard approvalMemoCreditCard = mock(ApprovalMemoCreditCard.class);
+        ApprovalMemoCreditCard[] approvalMemoCreditCards = {approvalMemoCreditCard};
         body.setApprovalMemoFacilities(approvalMemoFacilities);
+        body.setApprovalMemoCreditCards(approvalMemoCreditCards);
 
         body.setUnderwritingResult("APPROVE");
         response.setBody(body);

@@ -189,18 +189,8 @@ public class CreditCardLogService {
 			List<CardInstallmentResponse> data) {
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			List<CardInstallmentResponse> sucessResponse = data.stream()
-					.filter(e -> "0".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
-			List<CardInstallmentResponse> failResponse = data.stream()
-					.filter(e -> "1".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(sucessResponse) && CollectionUtils.isNotEmpty(failResponse)) {
-				constructCardEvent(correlationId, reqHeader, sucessResponse.get(0));
-			} else {
-				if (CollectionUtils.isNotEmpty(sucessResponse)) {
-					constructCardEvent(correlationId, reqHeader, sucessResponse.get(0));
-				} else {
-					constructCardEvent(correlationId, reqHeader, failResponse.get(0));
-				}
+			for(CardInstallmentResponse response: data) {
+				constructCardEvent(correlationId, reqHeader, response);
 			}
 		}
 
@@ -461,11 +451,22 @@ public class CreditCardLogService {
 	private String constructProductNameInfomation(String correlationId, UpdateEStatmentRequest updateEstatementReq) {
 
 		String productCodeName = "";
+		
 		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
 				.getProductConfig(correlationId);
 
 		List<ProductConfig> productConfigs = response.getBody().getData();
-		if (CollectionUtils.isNotEmpty(productConfigs)) {
+		
+		if(StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
+			ResponseEntity<FetchCardResponse>  fetchCardRes = creditCardClient.getCreditCardDetails(correlationId, updateEstatementReq.getAccountId());
+			String productCode = fetchCardRes.getBody().getCreditCard().getProductId();
+			for (ProductConfig productInfo : productConfigs) {
+				if (StringUtils.isNoneBlank(productCode)
+						&& productCode.equals(productInfo.getProductCode())) {
+					productCodeName = "(" + productInfo.getProductCode() + ")  " + productInfo.getProductNameEN();
+				}
+			}
+		}else {
 			for (ProductConfig productInfo : productConfigs) {
 				if (CollectionUtils.isNotEmpty(updateEstatementReq.getProductType())
 						&& updateEstatementReq.getProductType().get(0).equals(productInfo.getProductCode())) {
@@ -474,6 +475,7 @@ public class CreditCardLogService {
 				}
 			}
 		}
+		
 		return productCodeName;
 
 	}

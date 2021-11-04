@@ -846,7 +846,6 @@ public class NotificationService {
 			emailChannel.setEmailSearch(false);
 
 			record.setEmail(emailChannel);
-			record.setAccount(accountId);
 
 			Map<String, Object> params = new HashMap<>();
 			params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.FLEXI_LOAN_SUBMISSION_VALUE);
@@ -867,6 +866,7 @@ public class NotificationService {
 
 			notificationRecords.add(record);
 			notificationRequest.setRecords(notificationRecords);
+
 
 			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
 					.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
@@ -889,7 +889,7 @@ public class NotificationService {
 					customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 			notifyCommon.setAccountId(updateEstatementReq.getAccountId());
 			notifyCommon.setCrmId(crmId);
-			
+
 			sendNotificationEmailForApplyEStatement(notifyCommon, updateEstatementReq.getEmail(),
 					customerProfileInfo.getPhoneNoFull());
 		}

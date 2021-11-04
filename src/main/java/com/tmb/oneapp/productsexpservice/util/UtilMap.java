@@ -113,7 +113,7 @@ public class UtilMap {
      * @param fundRuleResponse
      * @param fundHolidayBody
      * @param responseCommon
-     * @param responseCustomerExp
+     * @param accountList
      * @param productHoldingResponse
      * @return FundPaymentDetailResponse
      */
@@ -121,10 +121,10 @@ public class UtilMap {
     public FundPaymentDetailResponse mappingPaymentResponse(FundRuleResponse fundRuleResponse,
                                                             FundHolidayBody fundHolidayBody,
                                                             List<CommonData> responseCommon,
-                                                            String responseCustomerExp,
+                                                            String accountList,
                                                             ProductHoldingsResp productHoldingResponse) {
         if (StringUtils.isEmpty(fundRuleResponse)
-                || StringUtils.isEmpty(responseCustomerExp)) {
+                || StringUtils.isEmpty(accountList)) {
             return null;
         } else {
             FundPaymentDetailResponse fundPaymentDetailResponse = new FundPaymentDetailResponse();
@@ -148,7 +148,7 @@ public class UtilMap {
             FundRuleInfoList ruleInfoList = fundRuleInfoList.get(0);
             BeanUtils.copyProperties(ruleInfoList, fundRule);
             fundPaymentDetailResponse.setFundRule(fundRule);
-            List<DepositAccount> depositAccountList = mappingAccount(responseCommon, responseCustomerExp, true);
+            List<DepositAccount> depositAccountList = mappingAccount(responseCommon, accountList, true);
             filterResponseGetFinancialId(productHoldingResponse, depositAccountList);
             fundPaymentDetailResponse.setDepositAccountList(depositAccountList);
             return fundPaymentDetailResponse;
@@ -232,6 +232,7 @@ public class UtilMap {
                 for (String productCode : eligibleAccountCodeBuy) {
                     if (productCode.equals(accCode)) {
                         depositAccount = new DepositAccount();
+                        depositAccount.setAccountName(itr.get("account_name").textValue());
                         depositAccount.setAccountNumber(itr.get("account_number_display").textValue());
                         depositAccount.setAccountStatus(itr.get("account_status_text").textValue());
                         String accType = itr.get("product_group_code").textValue();
