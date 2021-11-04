@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.service.productexperience.alternative;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -139,15 +140,19 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
      * @return boolean
      */
     @LogAround
-    private boolean isFirstTrade(String correlationId, AlternativeBuyRequest alternativeBuyRequest) throws TMBCommonException {
+    private boolean isFirstTrade(String correlationId, AlternativeBuyRequest alternativeBuyRequest) throws TMBCommonException, JsonProcessingException {
         try {
             Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
+            FirstTradeRequestBody firstTradeRequestBody = FirstTradeRequestBody.builder()
+                    .portfolioNumber(alternativeBuyRequest.getUnitHolderNumber())
+                    .fundCode(alternativeBuyRequest.getFundCode())
+                    .build();
 
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(firstTradeRequestBody));
             ResponseEntity<TmbOneServiceResponse<FirstTradeResponseBody>> tmbOneServiceResponse = investmentRequestClient
-                    .getFirstTrade(headerParameter, FirstTradeRequestBody.builder()
-                            .portfolioNumber(alternativeBuyRequest.getUnitHolderNumber())
-                            .fundCode(alternativeBuyRequest.getFundCode())
-                            .build());
+                    .getFirstTrade(headerParameter, firstTradeRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(tmbOneServiceResponse.getBody()));
+
             if (!tmbOneServiceResponse.getStatusCode().is2xxSuccessful()) {
                 throw new TMBCommonException(
                         ResponseCode.FAILED.getCode(),
@@ -157,7 +162,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             }
             return ProductsExpServiceConstant.INVESTMENT_FIRST_TRADE_FLAG
                     .equals(tmbOneServiceResponse.getBody().getData().getFirstTradeFlag());
-        } catch (TMBCommonException ex) {
+        } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, "get first trade failed");
             throw ex;
         }

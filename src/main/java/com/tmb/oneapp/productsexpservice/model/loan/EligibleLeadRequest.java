@@ -18,4 +18,6 @@ public class EligibleLeadRequest {
     @ApiModelProperty(notes = "disbursementDate", required=true, example="2021-02-01")
     @JsonProperty("disbursementDate")
     private String disbursementDate;
+    @JsonProperty("productId")
+    private String productId;
 }

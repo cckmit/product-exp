@@ -211,6 +211,18 @@ public class ProductsExpServiceTest {
             when(investmentRequestClient.callInvestmentFundSummaryByPortService(any(), any()))
                     .thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(portResponse));
 
+            ObjectMapper ptestMapperPort = new ObjectMapper();
+            TmbOneServiceResponse<List<PtesDetail>> oneServiceResponsePtes = new TmbOneServiceResponse<>();
+            List<PtesDetail> ptesDetailList = ptestMapperPort.readValue(Paths.get("src/test/resources/investment/ptest.json").toFile(),
+                    new TypeReference<>() {
+                    });
+            oneServiceResponsePtes.setData(ptesDetailList);
+            oneServiceResponsePtes.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
+                    ProductsExpServiceConstant.SUCCESS_MESSAGE,
+                    ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
+            when(investmentRequestClient.getPtesPort(any(), anyString())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders())
+                    .body(oneServiceResponsePtes));
+
             TmbOneServiceResponse<CountOrderProcessingResponseBody> oneServiceResponseCountToBeProcessOrder = new TmbOneServiceResponse<>();
             oneServiceResponseCountToBeProcessOrder.setStatus(new TmbStatus(ProductsExpServiceConstant.SUCCESS_CODE,
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
