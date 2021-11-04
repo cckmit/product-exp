@@ -13,7 +13,9 @@
 * [ONEAPP-23184](https://jira.tau2904.com/browse/ONEAPP-23184) FiID
 * [ONEAPP-23187](https://jira.tau2904.com/browse/ONEAPP-23187) Edit transaction fee for selling from frontEndFee to BackEndFee
 * [ONEAPP-23546](https://jira.tau2904.com/browse/ONEAPP-23546) [Apply so good] Act log apply so good fail case display incorrect
+* [ONEAPP-24201](https://jira.tau2904.com/browse/ONEAPP-24201) Write user activity to ONEAPP Calendar
 * [ONEAPP-24397](https://jira.tau2904.com/browse/ONEAPP-24397) [Apply e Statement] Cant do Apply e statement
+* [ONEAPP-25246](https://jira.tau2904.com/browse/ONEAPP-25246) BE - Store config in mongoDB and bundle in /get-eligible-lead
 * [ONEAPP-13008](https://jira.tau2904.com/browse/ONEAPP-13008) (BE) Submit uploading
 * [ONEAPP-14375](https://jira.tau2904.com/browse/ONEAPP-14375) Add credit card for buy flow .
 * [ONEAPP-14532](https://jira.tau2904.com/browse/ONEAPP-14532) [Personal information]Incase of life time citizen id ,Expiry date of citizen card display incorrect
