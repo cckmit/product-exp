@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
@@ -60,21 +61,25 @@ public class CashForUService {
 			responseModelInfo.setMaximumTransferAmt(
 					formateDigit(String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer())));
 
-			BigDecimal cashTransferFee = new BigDecimal(rateCashForUInfo.getCashTransferFee());
-			BigDecimal cashTransferVat = new BigDecimal(rateCashForUInfo.getCashTransferVat());
+			BigDecimal cashFee = new BigDecimal(rateCashForUInfo.getCashTransferFee());
+			BigDecimal cashVat = new BigDecimal(rateCashForUInfo.getCashTransferVat());
+			if (ProductsExpServiceConstant.MODEL_TYPE_CASH_CHILL_CHILL.equalsIgnoreCase(requestBody.getModelType())) {
+				cashFee = new BigDecimal(rateCashForUInfo.getCashChillFee());
+				cashVat = new BigDecimal(rateCashForUInfo.getCashChillVat());
+			}
 			BigDecimal fee = BigDecimal.ZERO;
 			if (allowWaiveFeeProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashFeeRate(formateDigit(BigDecimal.ZERO.toString()));
 			} else {
 				fee = new BigDecimal(
 						requestBody.getAmount() != null ? requestBody.getAmount() : BigDecimal.ZERO.toString())
-								.multiply(cashTransferFee);
+								.multiply(cashFee);
 				responseModelInfo.setCashFeeRate(formateDigit(fee.toString()));
 			}
 			if (allowWaiveVatProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashVatRate(formateDigit(BigDecimal.ZERO.toString()));
 			} else {
-				fee = fee.multiply(cashTransferVat);
+				fee = fee.multiply(cashVat);
 				responseModelInfo.setCashVatRate(formateDigit(fee.toString()));
 			}
 
