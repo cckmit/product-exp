@@ -22,6 +22,8 @@ public class DepositAccount {
 
     private String productNameEN;
 
+    private String accountName;
+
     private String accountNumber;
 
     private String accountStatus;

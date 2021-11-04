@@ -24,8 +24,8 @@ public class OrderCreationPaymentResponse {
     private String accountRedeem;
 
     private String frontEndFee;
-    private String backEndFee;
 
+    private String backEndFee;
 
     private String paymentDate;
 

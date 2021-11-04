@@ -9,18 +9,18 @@ import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPi
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
-import com.tmb.oneapp.productsexpservice.feignclients.CacheServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
-import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
-import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.common.findbyfundhouse.FundHouseBankData;
+import com.tmb.oneapp.productsexpservice.model.productexperience.financial.saveactivity.request.SaveActivityRequest;
+import com.tmb.oneapp.productsexpservice.model.productexperience.financial.sync.request.FinancalSyncRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.fund.processfirsttrade.ProcessFirstTradeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Account;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Card;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.Merchant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderConfirmPayment;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.saveordercreation.SaveOrderCreationRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.cache.CacheModel;
@@ -34,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,17 +53,22 @@ public class OrderCreationService extends TmbErrorHandle {
 
     private final CommonServiceClient commonServiceClient;
 
+    private final FinancialServiceClient financialServiceClient;
+
     @Autowired
     public OrderCreationService(CacheServiceClient cacheServiceClient,
                                 InvestmentRequestClient investmentRequestClient,
                                 EnterPinIsCorrectActivityLogService enterPinIsCorrectActivityLogService,
                                 CreditCardClient creditCardClient,
-                                CommonServiceClient commonServiceClient) {
+                                CommonServiceClient commonServiceClient,
+                                FinancialServiceClient financialServiceClient) {
         this.cacheServiceClient = cacheServiceClient;
         this.investmentRequestClient = investmentRequestClient;
         this.enterPinIsCorrectActivityLogService = enterPinIsCorrectActivityLogService;
         this.creditCardClient = creditCardClient;
         this.commonServiceClient = commonServiceClient;
+        this.financialServiceClient = financialServiceClient;
+
     }
 
     @LogAround
@@ -170,6 +176,9 @@ public class OrderCreationService extends TmbErrorHandle {
         String activityLogStatus = "";
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
             activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
+            String transactionDate = String.valueOf(Instant.now().toEpochMilli());
+            syncLogActivityToOneAppCalendar(correlationId,crmId,transactionDate,request,response);
+            saveLogActivityToOneAppCalendar(correlationId,crmId,transactionDate,request,response);
             saveOrderPayment(investmentRequestHeader, response.getBody(), request.getOrderAmount());
             processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
             enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
@@ -177,6 +186,65 @@ public class OrderCreationService extends TmbErrorHandle {
             activityLogStatus = ActivityLogStatus.FAILED.getStatus();
             enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
         }
+    }
+
+    private void syncLogActivityToOneAppCalendar(String correlationId, String crmId,String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+        try{
+            OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
+            OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
+            FinancalSyncRequest financalSyncRequest = FinancalSyncRequest.builder()
+                    .referenceId(orderConfirmPayment.getPaymentId())
+                    .crmId(UtilMap.fullCrmIdFormat(crmId))
+                    .transactionDate(transactionDate)
+                    .fromAccountNo(orderConfirmPayment.getFromAccount().getAccountId())
+                    .fromAccountName(request.getAccountName())
+                    .toAccountNo(orderConfirmPayment.getToAccount().getAccountId())
+                    .toAccountName(request.getFundHouseCode())
+                    .bankcode("11")
+                    .transactionAmount(request.getOrderAmount())
+                    .transactionFee(orderConfirmPayment.getFee().getPaymentFee())
+                    .activityTypeId("024")
+                    .fromAccountType(orderConfirmPayment.getFromAccount().getAccountType())
+                    .toAccountType(orderConfirmPayment.getToAccount().getAccountType())
+                    .channelId(orderConfirmPayment.getPaymentChannel())
+                    .transactionBalance(orderConfirmPayment.getAccount().getLedgerBal())
+                    .transactionStatus("success")
+                    .activityTypeIdNew("101000105")
+                    .errorCd("0000")
+                    .activityRefId(orderConfirmPayment.getRequestId())
+                    .txnType("001")
+                    .build();
+            financialServiceClient.syncData(correlationId,financalSyncRequest);
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED+ " financialServiceClient syncData", ex);
+        }
+    }
+
+    private void saveLogActivityToOneAppCalendar(String correlationId, String crmId,String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+
+        try{
+            OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
+            OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
+            SaveActivityRequest saveActivityRequest = SaveActivityRequest.builder()
+                    .referenceActivityTypeId("000")
+                    .activityTypeId("024")
+                    .crmId(UtilMap.fullCrmIdFormat(crmId))
+                    .channelId(orderConfirmPayment.getPaymentChannel())
+                    .transactionStatus("success")
+                    .transactionDate(transactionDate)
+                    .fromAccountNo(orderConfirmPayment.getFromAccount().getAccountId())
+                    .toAccountNo(orderConfirmPayment.getToAccount().getAccountId())
+                    .toAccountNickname(String.format("%s%s",request.getFundHouseCode(),request.getFundCode()))
+                    .toAccountName(request.getFundHouseCode())
+                    .financialTranferAmount(request.getOrderAmount())
+                    .financialTranferCrDr("2")
+                    .financialTranferRefId(orderConfirmPayment.getPaymentId())
+                    .build();
+            financialServiceClient.saveActivity(correlationId,saveActivityRequest);
+        }catch (Exception ex){
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED+ " financialServiceClient saveData", ex);
+        }
+
     }
 
     private void processFirstTrade(Map<String, String> investmentRequestHeader,
