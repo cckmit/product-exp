@@ -159,20 +159,20 @@ public class UtilMap {
         try {
             List<SavingAccount> savingAccountList = productHoldingResponse.getSavingAccounts();
             List<CurrentAccount> currentAccountLst = productHoldingResponse.getCurrentAccounts();
-            for (DepositAccount depositAccount: depositAccountList) {
+            for (DepositAccount depositAccount : depositAccountList) {
                 mappingFieldFinancialIdToResponse(savingAccountList, currentAccountLst, depositAccount);
             }
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
 
     }
 
     private void mappingFieldFinancialIdToResponse(List<SavingAccount> savingAccountList, List<CurrentAccount> currentAccountLst, DepositAccount depositAccount) {
         boolean notFoundThatInSavingAccount = true;
-        for (SavingAccount savingAccount: savingAccountList) {
+        for (SavingAccount savingAccount : savingAccountList) {
             String savingAccountNumber = getAccountNumberTenDigit(savingAccount.getAcctNbr());
-            if(savingAccountNumber.equals(depositAccount.getAccountNumber())){
+            if (savingAccountNumber.equals(depositAccount.getAccountNumber())) {
                 String fidConcat = savingAccount.getAcctCtrl1() + savingAccount.getAcctCtrl2()
                         + savingAccount.getAcctCtrl3() + savingAccount.getAcctCtrl4();
                 depositAccount.setFiId(fidConcat);
@@ -180,7 +180,7 @@ public class UtilMap {
             }
         }
 
-        if(notFoundThatInSavingAccount) {
+        if (notFoundThatInSavingAccount) {
             for (CurrentAccount currentAccount : currentAccountLst) {
                 String currentAccountNumber = getAccountNumberTenDigit(currentAccount.getAcctNbr());
                 if (currentAccountNumber.equals(depositAccount.getAccountNumber())) {
@@ -192,7 +192,7 @@ public class UtilMap {
         }
     }
 
-    private String getAccountNumberTenDigit(String accountNo){
+    private String getAccountNumberTenDigit(String accountNo) {
         return accountNo.length() > 10 ? accountNo.substring(accountNo.length() - 10) :
                 accountNo;
     }
@@ -244,8 +244,8 @@ public class UtilMap {
                         depositAccount.setAvailableBalance(balance);
                         String accStatusCode = itr.get("account_status_code").textValue();
                         depositAccount.setAccountStatusCode(accStatusCode);
-                        
-                        if(ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)){
+
+                        if (ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)) {
                             countDormantAccount++;
                         }
 
@@ -254,7 +254,7 @@ public class UtilMap {
                 }
             }
 
-            if(countDormantAccount == accountSize){
+            if (countDormantAccount == accountSize) {
                 depositAccountList = new ArrayList<>();
                 return depositAccountList;
             }
@@ -333,7 +333,7 @@ public class UtilMap {
      * @param crmId
      * @return Map
      */
-    public static Map<String, String> createHeaderWithCrmId(String correlationId,String crmId) {
+    public static Map<String, String> createHeaderWithCrmId(String correlationId, String crmId) {
         Map<String, String> investmentHeader = new HashMap<>();
         investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
         investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
@@ -770,14 +770,11 @@ public class UtilMap {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         return (mapper.writeValueAsString(obj)) != null ?
-                (mapper.writeValueAsString(obj)).replaceAll("\\s+"," ")
+                (mapper.writeValueAsString(obj)).replaceAll("\\s+", " ")
                 : null;
     }
 
-
-    public static String mfLoggingMessage(String system,String method,String msg) {
-        return String.format("ProductMF call to %s:%s %s : {}",system,method,msg);
+    public static String mfLoggingMessage(String system, String method, String msg) {
+        return String.format("ProductMF call to %s:%s %s : {}", system, method, msg);
     }
-
-
 }

@@ -5,14 +5,22 @@ import lombok.Data;
 
 @Data
 public class Payment {
-    private String requestId;
-    private String requestDateTime;
-    private String appId;
-    private String paymentChannel;
-    private String paymentId;
-    private String tellerId;
-    private String epayCode;
-    private Account fromAccount;
-    private Account toAccount;
 
+    private String requestId;
+
+    private String requestDateTime;
+
+    private String appId;
+
+    private String paymentChannel;
+
+    private String paymentId;
+
+    private String tellerId;
+
+    private String epayCode;
+
+    private Account fromAccount;
+
+    private Account toAccount;
 }

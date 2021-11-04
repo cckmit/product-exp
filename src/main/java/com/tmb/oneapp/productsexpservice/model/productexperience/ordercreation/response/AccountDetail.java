@@ -4,7 +4,11 @@ import lombok.Data;
 
 @Data
 public class AccountDetail {
+
     private String title;
+
     private String ledgerBal;
+
     private String availBal;
+
 }

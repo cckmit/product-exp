@@ -29,7 +29,6 @@ public class OrderCreationPaymentResponse {
 
     private String paymentDate;
 
-    @JsonProperty(value = "paymentobj",access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(value = "paymentobj", access = JsonProperty.Access.WRITE_ONLY)
     private OrderConfirmPayment paymentObject;
-
 }
