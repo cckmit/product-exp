@@ -139,7 +139,7 @@ public class ApplyEStatementService {
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
 		List<LoanAccount> loanProducts = accountResponse.getBody().getData().getLoanAccounts();
-		if (CollectionUtils.isNotEmpty(loanProducts)) {
+		if (CollectionUtils.isNotEmpty(loanProducts) && StringUtils.isNotEmpty(updateEstatementReq.getLoanId())) {
 			statementFlag.setECashToGoStatementFlag("Y");
 			currentEstatementResponse.setProductGroupTH(groupLoanProductTh);
 			currentEstatementResponse.setProductGroupEN(groupLoanProductEn);

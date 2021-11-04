@@ -38,7 +38,7 @@ public class ProductsExpServiceConstant {
 	public static final String FAILED_MESSAGE = "failed";
 	public static final String DATA_NOT_FOUND_CODE = "0009";
 	public static final String DATA_NOT_FOUND_MESSAGE = "DATA NOT FOUND";
-	public static final String EXCEPTION_OCCURRED = "Exception occurred : {}";
+	public static final String EXCEPTION_OCCURRED = "accountName : {}";
 
 	public static final int ZERO = 0;
 	public static final String STRING_ZERO = "0";
@@ -319,5 +319,9 @@ public class ProductsExpServiceConstant {
 	public static final String FINAL_APPROVAL = "final-approval";
 	public static final String CONFIRM_APPLICATION = "confirm-application";
 	public static final String LOAN_CAL = "loan-cal";
+	
+	public static final String DEFAULT_MINIMUM_AMOUNT = "5,000";
+	public static final String DEFAULT_MAXIMUM_AMOUNT = "500,000";
+	public static final String OTHERS = "Others";
 
 }
