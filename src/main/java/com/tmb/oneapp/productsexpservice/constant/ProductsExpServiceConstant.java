@@ -323,5 +323,7 @@ public class ProductsExpServiceConstant {
 	public static final String DEFAULT_MINIMUM_AMOUNT = "5,000";
 	public static final String DEFAULT_MAXIMUM_AMOUNT = "500,000";
 	public static final String OTHERS = "Others";
+	
+	public static final String MODEL_TYPE_CASH_CHILL_CHILL = "IL";
 
 }
