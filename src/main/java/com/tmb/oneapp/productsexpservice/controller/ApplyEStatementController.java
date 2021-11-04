@@ -101,7 +101,7 @@ public class ApplyEStatementController {
 		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
 			logger.info("Enable ApplyEStatementResponse for : {}", crmId);
-			UpdateEStatmentResp estatementResponse = applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
+			UpdateEStatmentResp estatementResponse = applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,headers);
 			oneServiceResponse.setData(estatementResponse);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

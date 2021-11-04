@@ -81,18 +81,15 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @param requestHeaders 
 	 * @param productGroupTH
 	 * @param productGroupEN
 	 * @return
 	 * @throws TMBCommonException
 	 */
 	public UpdateEStatmentResp updateEstatement(String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException {
+			UpdateEStatmentRequest updateEstatementReq, Map<String, String> requestHeaders) throws TMBCommonException {
 		UpdateEStatmentResp currentEstatementResponse = getEStatement(crmId, correlationId);
-		Map<String, String> requestHeaders = new HashMap<>();
-		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
-		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		
 		
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
