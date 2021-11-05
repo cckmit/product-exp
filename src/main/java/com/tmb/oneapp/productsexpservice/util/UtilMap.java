@@ -768,7 +768,15 @@ public class UtilMap {
     public static String convertObjectToStringJson(Object obj) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        return mapper.writeValueAsString(obj);
+        return (mapper.writeValueAsString(obj)) != null ?
+                (mapper.writeValueAsString(obj)).replaceAll("\\s+"," ")
+                : null;
     }
+
+
+    public static String mfLoggingMessage(String system,String method,String msg) {
+        return String.format("ProductMF call to %s:%s %s : {}",system,method,msg);
+    }
+
 
 }

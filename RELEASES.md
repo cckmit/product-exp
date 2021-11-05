@@ -1,6 +1,7 @@
 
 * [ONEAPP-15666](https://jira.tau2904.com/browse/ONEAPP-15666) [BE] Service /products/credit-card/statement/get-unbilled-statement working to not correct
 * [ONEAPP-16586](https://jira.tau2904.com/browse/ONEAPP-16586) [BE] Create initial vector param field
+* [ONEAPP-18412](https://jira.tau2904.com/browse/ONEAPP-18412) [Apply eStatement] After finish success apply eStatement C2G - menu still display
 * [ONEAPP-21818](https://jira.tau2904.com/browse/ONEAPP-21818) [Set PIN] Activity Log display incorrect
 * [ONEAPP-21897](https://jira.tau2904.com/browse/ONEAPP-21897) (BE) Apply eStatement - require clearing radish after success applying
 * [ONEAPP-22137](https://jira.tau2904.com/browse/ONEAPP-22137) Create property for cal risk

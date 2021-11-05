@@ -65,10 +65,16 @@ public class DcaInformationService extends TmbErrorHandle {
             List<String> portList = productsExpService.getPortList(headerParameter, crmId, false);
             UnitHolder unitHolder = new UnitHolder();
             unitHolder.setUnitHolderNumber(portList.stream().collect(Collectors.joining(",")));
-            ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummaryResponse = investmentRequestClient.callInvestmentFundSummaryService(headerParameter,
-                    unitHolder);
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
+            ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary = investmentRequestClient.callInvestmentFundSummaryService(headerParameter, unitHolder);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundSummary.getBody()));
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_REQUEST), "");
             ResponseEntity<TmbOneServiceResponse<FundListBody>> fundListBody = investmentRequestClient.callInvestmentFundListInfoService(headerParameter);
-            return mappingDcaInformationDto(fundSummaryResponse, fundListBody, dcaInformationDto);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundListBody.getBody().getData()));
+
+            return mappingDcaInformationDto(fundSummary, fundListBody, dcaInformationDto);
         } catch (FeignException feignException) {
             handleFeignException(feignException);
         } catch (Exception ex) {

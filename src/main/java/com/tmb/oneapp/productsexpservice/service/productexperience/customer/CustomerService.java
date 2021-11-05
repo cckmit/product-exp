@@ -42,7 +42,10 @@ public class CustomerService {
      */
     public String getAccountSaving(String correlationId, String crmId){
         try {
-            return customerExpServiceClient.getAccountSaving(correlationId, UtilMap.fullCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"accounts/saving", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.fullCrmIdFormat(crmId));
+            String response = customerExpServiceClient.getAccountSaving(correlationId, UtilMap.fullCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"accounts/saving", ProductsExpServiceConstant.LOGGING_RESPONSE), response);
+            return response;
         }catch (Exception ex){
             logger.error("customerExpServiceClient getAccountSaving error: {}",ex);
         }
@@ -63,8 +66,11 @@ public class CustomerService {
                     .searchType(ProductsExpServiceConstant.SEARCH_TYPE)
                     .searchValue(UtilMap.fullCrmIdFormat(crmId))
                     .build();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"ecprofile", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
             ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
                     customerServiceClient.customerSearch(correlationId, crmId, request);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"ecprofile", ProductsExpServiceConstant.LOGGING_RESPONSE), response.getBody());
             return response.getBody().getData().get(0);
         }catch (Exception ex){
             logger.error("error fetch customerSearch : {}",ex);

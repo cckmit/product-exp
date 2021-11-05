@@ -81,9 +81,9 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<AccountDetailResponse> fetchFundAccountDetail(Map<String, String> header, FundAccountRequestBody fundAccountRequestBody) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"accountDetail", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(fundAccountRequestBody));
             ResponseEntity<TmbOneServiceResponse<AccountDetailResponse>> response = investmentRequestClient
                     .callInvestmentFundAccountDetailService(header, fundAccountRequestBody);
-            logger.info("fetchFundAccountDetail : {}", response);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (FeignException feignException) {
             handleFeignException(feignException);
@@ -107,9 +107,9 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<FundRuleResponse> fetchFundRule(Map<String, String> header, FundRuleRequestBody fundRuleRequestBody) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchFundRule", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(fundRuleRequestBody));
             ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> responseEntity = investmentRequestClient
                     .callInvestmentFundRuleService(header, fundRuleRequestBody);
-            logger.info("fetchFundRule : {}", responseEntity);
             return CompletableFuture.completedFuture(responseEntity.getBody().getData());
         } catch (FeignException feignException) {
             handleFeignException(feignException);
@@ -131,6 +131,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<StatementResponse> fetchStatementByPort(Map<String, String> header, OrderStmtByPortRequest orderStmtByPortRequest) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"statement", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(orderStmtByPortRequest));
             ResponseEntity<TmbOneServiceResponse<StatementResponse>> responseStmt = investmentRequestClient
                     .callInvestmentStatementByPortService(header, orderStmtByPortRequest);
             return CompletableFuture.completedFuture(responseStmt.getBody().getData());
@@ -154,6 +155,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<FundHolidayBody> fetchFundHoliday(Map<String, String> invHeaderReqParameter, String fundCode) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundHoliday", ProductsExpServiceConstant.LOGGING_REQUEST), fundCode);
             ResponseEntity<TmbOneServiceResponse<FundHolidayBody>> responseFundHoliday = investmentRequestClient.
                     callInvestmentFundHolidayService(invHeaderReqParameter, fundCode);
             return CompletableFuture.completedFuture(responseFundHoliday.getBody().getData());
@@ -177,6 +179,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<String> getAccountList(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT,"accountList", ProductsExpServiceConstant.LOGGING_REQUEST), crmId);
             String responseFundHoliday = accountRequestClient.getAccountList(headerParameter, crmId);
             return CompletableFuture.completedFuture(responseFundHoliday);
         } catch (FeignException feignException) {
@@ -221,6 +224,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<CustGeneralProfileResponse> fetchCustomerProfile(String crmId) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"getCustomerProfile", ProductsExpServiceConstant.LOGGING_REQUEST), crmId);
             ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseResponseEntity = customerServiceClient.
                     getCustomerProfile(crmId);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
@@ -267,6 +271,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<FundSummaryBody> fetchFundSummary(Map<String, String> invHeaderReqParameter, UnitHolder unitHolder) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummary", ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundSummaryService(invHeaderReqParameter, unitHolder);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
@@ -291,6 +296,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     public CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
             headerParameter.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFavorite", ProductsExpServiceConstant.LOGGING_REQUEST), crmId);
             ResponseEntity<TmbOneServiceResponse<List<CustomerFavoriteFundData>>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundFavoriteService(headerParameter);
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
@@ -314,6 +320,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<SuitabilityInfo> fetchSuitabilityInquiry(Map<String, String> investmentHeaderRequest, String crmId) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchSuitabilityInquiry", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.halfCrmIdFormat(crmId));
             ResponseEntity<TmbOneServiceResponse<SuitabilityInfo>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundSuitabilityService(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
             return CompletableFuture.completedFuture(responseResponseEntity.getBody().getData());
@@ -328,13 +335,22 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
 
     public CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter, String correlationId, String key, ObjectMapper mapper) throws JsonProcessingException {
         List<FundClassListInfo> fundClassLists;
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", ProductsExpServiceConstant.LOGGING_REQUEST), key);
         ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseCache.getBody()));
+
         if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_REQUEST), "");
             ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
                     investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseResponseEntity.getBody().getData()));
+
             fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
             String fundClassStr = mapper.writeValueAsString(fundClassLists);
             cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
+
+
         } else {
             fundClassLists = getFundClassListInfoList(mapper, responseCache);
         }
@@ -359,6 +375,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     @Async
     public CompletableFuture<ProductHoldingsResp> fetchProductHoldingService(Map<String, String> headerParameter, String crmId) throws TMBCommonException {
         try {
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT,"getProductHoldings", ProductsExpServiceConstant.LOGGING_REQUEST), crmId);
             ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> result = accountRequestClient.getProductHoldingService(headerParameter, crmId);
             return CompletableFuture.completedFuture(result.getBody().getData());
         } catch (FeignException feignException) {
