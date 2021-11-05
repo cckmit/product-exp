@@ -129,9 +129,11 @@ public class ApplyEStatementService {
 	 * @param statementFlag
 	 * @param updateEstatementReq
 	 */
-	private void constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
+	private void constructStatementFlagReq(Map<String, String> header, StatementFlag statementFlag,
 			UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp currentEstatementResponse) {
-
+		Map<String, String> requestHeaders = new HashMap<>();
+		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID));
+		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, header.get(ProductsExpServiceConstant.X_CRMID));
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
