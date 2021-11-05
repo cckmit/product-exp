@@ -88,9 +88,11 @@ public class ApplyEStatementService {
 	 * @throws TMBCommonException
 	 */
 	public UpdateEStatmentResp updateEstatement(String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq, Map<String, String> requestHeaders) throws TMBCommonException {
+			UpdateEStatmentRequest updateEstatementReq, Map<String, String> header) throws TMBCommonException {
 		UpdateEStatmentResp currentEstatementResponse = getEStatement(crmId, correlationId);
-		
+		Map<String, String> requestHeaders = new HashMap<>();
+		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
+		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
 		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
@@ -105,15 +107,15 @@ public class ApplyEStatementService {
 				throw new TMBCommonException("Fail on update EC system");
 			}
 			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-				activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, true, null,currentEstatementResponse.getInitialVector());
+				activitylogService.updatedEStatmentCard(header, updateEstatementReq, true, null,currentEstatementResponse.getInitialVector());
 			} else {
-				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, true, null);
+				activitylogService.updatedEStatmentLoan(header, updateEstatementReq, true, null);
 			}
 
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
 			if (StringUtils.isNotEmpty(updateEstatementReq.getLoanId())) {
-				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, false, null);
+				activitylogService.updatedEStatmentLoan(header, updateEstatementReq, false, null);
 			}
 			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
@@ -129,11 +131,8 @@ public class ApplyEStatementService {
 	 * @param statementFlag
 	 * @param updateEstatementReq
 	 */
-	private void constructStatementFlagReq(Map<String, String> header, StatementFlag statementFlag,
+	private void constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
 			UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp currentEstatementResponse) {
-		Map<String, String> requestHeaders = new HashMap<>();
-		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, header.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID));
-		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, header.get(ProductsExpServiceConstant.X_CRMID));
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
