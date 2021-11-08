@@ -212,10 +212,10 @@ public class CashForUServiceTest {
 		requestBody.setCashChillChillFlag(cashChillChillFlag);
 		requestBody.setCashTransferFlag(cashTransferFlag);
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
-		Assert.assertEquals(cashResponse.getFeeCashTransfer(), "300.00");
-		Assert.assertEquals(cashResponse.getVatCashTransfer(), "21.00");
-		Assert.assertEquals(cashResponse.getFeeCashChillChill(), "0.00");
-		Assert.assertEquals(cashResponse.getVatCashChillChill(), "0.00");
+		Assert.assertEquals("300.00", cashResponse.getFeeCashTransfer());
+		Assert.assertEquals("21.00", cashResponse.getVatCashTransfer());
+		Assert.assertEquals("0.00", cashResponse.getFeeCashChillChill());
+		Assert.assertEquals("0.00", cashResponse.getVatCashChillChill());
 	}
 	
 	@Test
@@ -282,10 +282,10 @@ public class CashForUServiceTest {
 		requestBody.setCashChillChillFlag(cashChillChillFlag);
 		requestBody.setCashTransferFlag(cashTransferFlag);
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
-		Assert.assertEquals(cashResponse.getFeeCashTransfer(), "0.00");
-		Assert.assertEquals(cashResponse.getVatCashTransfer(), "0.00");
-		Assert.assertEquals(cashResponse.getFeeCashChillChill(), "0.00");
-		Assert.assertEquals(cashResponse.getVatCashChillChill(), "0.00");
+		Assert.assertEquals("0.00", cashResponse.getFeeCashTransfer());
+		Assert.assertEquals("0.00", cashResponse.getVatCashTransfer());
+		Assert.assertEquals("0.00", cashResponse.getFeeCashChillChill());
+		Assert.assertEquals("0.00", cashResponse.getVatCashChillChill());
 	}
 
 }
