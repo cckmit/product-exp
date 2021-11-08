@@ -25,4 +25,14 @@ public class CashForYourResponse {
 	@JsonProperty("max_transfer_amt")
 	private String maximumTransferAmt;
 
+	@JsonProperty("fee_cash_transfer")
+	private String feeCashTransfer;
+	@JsonProperty("vat_cash_transfer")
+	private String vatCashTransfer;
+	
+	@JsonProperty("fee_cash_chill_chill")
+	private String feeCashChillChill;
+	@JsonProperty("vat_cash_chill_chill")
+	private String vatCashChillChill;
+	
 }

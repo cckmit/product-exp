@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.tmb.common.model.CashForUConfigInfo;
@@ -147,6 +146,146 @@ public class CashForUServiceTest {
 		requestBody.setAmount(rateRequest.getAmount());
 		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
 		Assert.assertNull(cashResponse.getInstallmentData());
+	}
+	
+	@Test
+	public void testCalculateInstallmentForCashForYou() {
+		InstallmentRateResponse installmentRateResponse = new InstallmentRateResponse();
+		InstallmentData cashChillChillInst = new InstallmentData();
+		cashChillChillInst.setCashChillChillModel("Y");
+		cashChillChillInst.setCashTransferModel("Y");
+		List<ModelTenor> modelTenors = new ArrayList<ModelTenor>();
+		cashChillChillInst.setModelTenors(modelTenors);
+		installmentRateResponse.setInstallmentData(cashChillChillInst);
+
+		String cashChillChillFlag = "Y";
+		String cashTransferFlag = "Y";
+		String correlationId = "xxdasdvvd";
+		EnquiryInstallmentRequest requestBody = new EnquiryInstallmentRequest();
+
+		FetchCardResponse cardResponse = new FetchCardResponse();
+
+		CreditCardDetail creditCardDetail = new CreditCardDetail();
+		CardBalances cardBalance = new CardBalances();
+		cardBalance.setAvailableCashAdvance(BigDecimal.TEN);
+		cardBalance.setAvailableCreditAllowance(BigDecimal.TEN);
+		creditCardDetail.setCardBalances(cardBalance);
+
+		CardCashAdvance cashAdvance = new CardCashAdvance();
+		cashAdvance.setCashAdvFeeFixedAmt(BigDecimal.ZERO);
+		cashAdvance.setCashAdvFeeRate(BigDecimal.ZERO);
+		cashAdvance.setCashAdvFeeVATRate(BigDecimal.ZERO);
+		cashAdvance.setCashAdvIntRate(BigDecimal.ZERO);
+		creditCardDetail.setCardCashAdvance(cashAdvance);
+
+		CardBalances cBalance = new CardBalances();
+		BalanceCredit balanceCredit = new BalanceCredit();
+		balanceCredit.setAvailableToTransfer(BigDecimal.ZERO);
+		cBalance.setBalanceCreditLimit(balanceCredit);
+		creditCardDetail.setCardBalances(cBalance);
+
+		cardResponse.setCreditCard(creditCardDetail);
+
+		TmbOneServiceResponse<CashForUConfigInfo> serviceResponse = new TmbOneServiceResponse<CashForUConfigInfo>();
+		CashForUConfigInfo configInfo = new CashForUConfigInfo();
+		
+		List<String> productList = new ArrayList<String>();
+		
+		configInfo.setWaiveFeeProducts(productList);
+		configInfo.setWaiveVatProducts(productList);
+		configInfo.setCashTransferFee("0.03");
+		configInfo.setCashTransferVat("0.07");
+		configInfo.setCashChillFee("0.00");
+		configInfo.setCashChillVat("0.00");
+		serviceResponse.setData(configInfo);
+		
+		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
+		when(creditCardClient.getCurrentCashForYouRate()).thenReturn(ResponseEntity.ok(serviceResponse));
+		
+		TmbOneServiceResponse<InstallmentRateResponse> serviceResponseInstallmentRate = new TmbOneServiceResponse<InstallmentRateResponse>();
+		serviceResponseInstallmentRate.setData(installmentRateResponse);
+		when(creditCardClient.getInstallmentRate(any(), any())).thenReturn(ResponseEntity.ok(serviceResponseInstallmentRate));
+		
+		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
+		rateRequest.setAmount("10000");
+		requestBody.setAmount(rateRequest.getAmount());
+		requestBody.setCashChillChillFlag(cashChillChillFlag);
+		requestBody.setCashTransferFlag(cashTransferFlag);
+		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
+		Assert.assertEquals("300.00", cashResponse.getFeeCashTransfer());
+		Assert.assertEquals("21.00", cashResponse.getVatCashTransfer());
+		Assert.assertEquals("0.00", cashResponse.getFeeCashChillChill());
+		Assert.assertEquals("0.00", cashResponse.getVatCashChillChill());
+	}
+	
+	@Test
+	public void testCalculateInstallmentForCashForYouWaive() {
+		InstallmentRateResponse installmentRateResponse = new InstallmentRateResponse();
+		InstallmentData cashChillChillInst = new InstallmentData();
+		cashChillChillInst.setCashChillChillModel("Y");
+		cashChillChillInst.setCashTransferModel("Y");
+		List<ModelTenor> modelTenors = new ArrayList<ModelTenor>();
+		cashChillChillInst.setModelTenors(modelTenors);
+		installmentRateResponse.setInstallmentData(cashChillChillInst);
+
+		String cashChillChillFlag = "Y";
+		String cashTransferFlag = "Y";
+		String correlationId = "xxdasdvvd";
+		EnquiryInstallmentRequest requestBody = new EnquiryInstallmentRequest();
+
+		FetchCardResponse cardResponse = new FetchCardResponse();
+
+		CreditCardDetail creditCardDetail = new CreditCardDetail();
+		CardBalances cardBalance = new CardBalances();
+		cardBalance.setAvailableCashAdvance(BigDecimal.TEN);
+		cardBalance.setAvailableCreditAllowance(BigDecimal.TEN);
+		creditCardDetail.setCardBalances(cardBalance);
+
+		CardCashAdvance cashAdvance = new CardCashAdvance();
+		cashAdvance.setCashAdvFeeFixedAmt(BigDecimal.ZERO);
+		cashAdvance.setCashAdvFeeRate(BigDecimal.ZERO);
+		cashAdvance.setCashAdvFeeVATRate(BigDecimal.ZERO);
+		cashAdvance.setCashAdvIntRate(BigDecimal.ZERO);
+		creditCardDetail.setCardCashAdvance(cashAdvance);
+
+		CardBalances cBalance = new CardBalances();
+		BalanceCredit balanceCredit = new BalanceCredit();
+		balanceCredit.setAvailableToTransfer(BigDecimal.ZERO);
+		cBalance.setBalanceCreditLimit(balanceCredit);
+		creditCardDetail.setCardBalances(cBalance);
+		creditCardDetail.setProductId("VFPSTD");
+		cardResponse.setCreditCard(creditCardDetail);
+
+		TmbOneServiceResponse<CashForUConfigInfo> serviceResponse = new TmbOneServiceResponse<CashForUConfigInfo>();
+		CashForUConfigInfo configInfo = new CashForUConfigInfo();
+		
+		List<String> productList = new ArrayList<String>();
+		productList.add("VFPSTD");
+		configInfo.setWaiveFeeProducts(productList);
+		configInfo.setWaiveVatProducts(productList);
+		configInfo.setCashTransferFee("0.03");
+		configInfo.setCashTransferVat("0.07");
+		configInfo.setCashChillFee("0.00");
+		configInfo.setCashChillVat("0.00");
+		serviceResponse.setData(configInfo);
+		
+		when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.ok().body(cardResponse));
+		when(creditCardClient.getCurrentCashForYouRate()).thenReturn(ResponseEntity.ok(serviceResponse));
+		
+		TmbOneServiceResponse<InstallmentRateResponse> serviceResponseInstallmentRate = new TmbOneServiceResponse<InstallmentRateResponse>();
+		serviceResponseInstallmentRate.setData(installmentRateResponse);
+		when(creditCardClient.getInstallmentRate(any(), any())).thenReturn(ResponseEntity.ok(serviceResponseInstallmentRate));
+		
+		InstallmentRateRequest rateRequest = new InstallmentRateRequest();
+		rateRequest.setAmount("10000");
+		requestBody.setAmount(rateRequest.getAmount());
+		requestBody.setCashChillChillFlag(cashChillChillFlag);
+		requestBody.setCashTransferFlag(cashTransferFlag);
+		CashForYourResponse cashResponse = cashForUservice.calculateInstallmentForCashForYou(rateRequest, correlationId, requestBody);
+		Assert.assertEquals("0.00", cashResponse.getFeeCashTransfer());
+		Assert.assertEquals("0.00", cashResponse.getVatCashTransfer());
+		Assert.assertEquals("0.00", cashResponse.getFeeCashChillChill());
+		Assert.assertEquals("0.00", cashResponse.getVatCashChillChill());
 	}
 
 }
