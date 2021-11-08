@@ -103,15 +103,15 @@ class LoanSubmissionOnlineControllerTest {
     @Test
     public void testGetDropdownLoanSubmissionWorkingDetailSuccess() throws TMBCommonException {
         DropdownsLoanSubmissionWorkingDetail dropdownWorkingDetail = new DropdownsLoanSubmissionWorkingDetail();
-        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(any(), any())).thenReturn(dropdownWorkingDetail);
-        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid");
+        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString(), anyString())).thenReturn(dropdownWorkingDetail);
+        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid", "caId");
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void testGetDropdownLoanSubmissionWorkingDetailFail() throws TMBCommonException {
-        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(any(), any())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid");
+        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString(), anyString())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid", "caId");
         assertTrue(responseEntity.getStatusCode().isError());
     }
 
