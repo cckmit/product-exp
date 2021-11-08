@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
@@ -61,26 +60,37 @@ public class CashForUService {
 			responseModelInfo.setMaximumTransferAmt(
 					formateDigit(String.valueOf(cardBalances.getBalanceCreditLimit().getAvailableToTransfer())));
 
-			BigDecimal cashFee = new BigDecimal(rateCashForUInfo.getCashTransferFee());
-			BigDecimal cashVat = new BigDecimal(rateCashForUInfo.getCashTransferVat());
-			if (ProductsExpServiceConstant.MODEL_TYPE_CASH_CHILL_CHILL.equalsIgnoreCase(requestBody.getModelType())) {
-				cashFee = new BigDecimal(rateCashForUInfo.getCashChillFee());
-				cashVat = new BigDecimal(rateCashForUInfo.getCashChillVat());
-			}
-			BigDecimal fee = BigDecimal.ZERO;
+			BigDecimal cashTransferFee = new BigDecimal(rateCashForUInfo.getCashTransferFee());
+			BigDecimal cashTransferVat = new BigDecimal(rateCashForUInfo.getCashTransferVat());
+			BigDecimal cashChillFee = new BigDecimal(rateCashForUInfo.getCashChillFee());
+			BigDecimal cashChillVat = new BigDecimal(rateCashForUInfo.getCashChillVat());
+			BigDecimal feeTransfer = BigDecimal.ZERO;
+			BigDecimal feeChill = BigDecimal.ZERO;
 			if (allowWaiveFeeProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashFeeRate(formateDigit(BigDecimal.ZERO.toString()));
+				responseModelInfo.setFeeCashTransfer(formateDigit(BigDecimal.ZERO.toString()));
+				responseModelInfo.setFeeCashChillChill(formateDigit(BigDecimal.ZERO.toString()));
 			} else {
-				fee = new BigDecimal(
+				feeTransfer = new BigDecimal(
 						requestBody.getAmount() != null ? requestBody.getAmount() : BigDecimal.ZERO.toString())
-								.multiply(cashFee);
-				responseModelInfo.setCashFeeRate(formateDigit(fee.toString()));
+								.multiply(cashTransferFee);
+				feeChill = new BigDecimal(
+						requestBody.getAmount() != null ? requestBody.getAmount() : BigDecimal.ZERO.toString())
+								.multiply(cashChillFee);
+				responseModelInfo.setCashFeeRate(formateDigit(feeTransfer.toString()));
+				responseModelInfo.setFeeCashTransfer(formateDigit(feeTransfer.toString()));
+				responseModelInfo.setFeeCashChillChill(formateDigit(feeChill.toString()));
 			}
 			if (allowWaiveVatProduct(rateCashForUInfo, fetchCardResponse.getBody().getCreditCard().getProductId())) {
 				responseModelInfo.setCashVatRate(formateDigit(BigDecimal.ZERO.toString()));
+				responseModelInfo.setVatCashTransfer(formateDigit(BigDecimal.ZERO.toString()));
+				responseModelInfo.setVatCashChillChill(formateDigit(BigDecimal.ZERO.toString()));
 			} else {
-				fee = fee.multiply(cashVat);
-				responseModelInfo.setCashVatRate(formateDigit(fee.toString()));
+				feeTransfer = feeTransfer.multiply(cashTransferVat);
+				feeChill = feeChill.multiply(cashChillVat);
+				responseModelInfo.setCashVatRate(formateDigit(feeTransfer.toString()));
+				responseModelInfo.setVatCashTransfer(formateDigit(feeTransfer.toString()));
+				responseModelInfo.setVatCashChillChill(formateDigit(feeChill.toString()));
 			}
 
 		} else {
@@ -121,8 +131,9 @@ public class CashForUService {
 		if (Objects.nonNull(cashTransferModel)) {
 			List<PricingTier> pricingTier = cashTransferModel.getPricingTiers();
 			rateCashTrasfer = pricingTier.get(0).getRate();
+		} else {
+			rateCashTrasfer = "0.00";
 		}
-
 		return rateCashTrasfer;
 	}
 

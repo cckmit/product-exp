@@ -31,7 +31,5 @@ public class EnquiryInstallmentRequest {
 	@ApiModelProperty(notes = "getAllDetailFlag", required = true, example = "N")
 	@JsonProperty("getAllDetailFlag")
 	private String getAllDetailFlag;
-	@ApiModelProperty(notes = "modelType", required = true, example = "CT")
-	@JsonProperty("modelType")
-	private String modelType;
+	
 }
