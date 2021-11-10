@@ -71,8 +71,8 @@ public class NotificationService {
 
 	@Autowired
 	public NotificationService(NotificationServiceClient notificationServiceClient,
-			CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
-			CommonServiceClient commonServiceClient, TemplateService templateService) {
+							   CustomerServiceClient customerServiceClient, CreditCardClient creditCardClient,
+							   CommonServiceClient commonServiceClient, TemplateService templateService) {
 
 		this.notificationClient = notificationServiceClient;
 		this.customerClient = customerServiceClient;
@@ -211,7 +211,7 @@ public class NotificationService {
 	 * @param supportNo
 	 */
 	private void sendNotificationEmailForSetpin(NotifyCommon notifyCommon, String supportNo, String email,
-			String smsNo, String productId) {
+												String smsNo, String productId) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 
@@ -251,7 +251,7 @@ public class NotificationService {
 	 */
 	@Async
 	public void doNotifySuccessForChangeUsageLimit(String xCorrelationId, String accountId, String crmId,
-			SetCreditLimitReq requestBodyParameter) {
+												   SetCreditLimitReq requestBodyParameter) {
 		logger.info("xCorrelationId:{} request customer name in th and en for change usage limit", xCorrelationId);
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = customerClient
 				.getCustomerProfile(crmId);
@@ -295,7 +295,7 @@ public class NotificationService {
 	 * @param email
 	 */
 	private void sendNotifySuccessForChangeUsage(NotifyCommon notifyCommon, String oldLimit, String newLimit,
-			String email, String tranDate, String tranTime, String productID) {
+												 String email, String tranDate, String tranTime, String productID) {
 
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
@@ -365,7 +365,7 @@ public class NotificationService {
 	 */
 	@Async
 	public void doNotifySuccessForTemporaryLimit(String correlationId, String accountId, String crmId,
-			SetCreditLimitReq requestBodyParameter) {
+												 SetCreditLimitReq requestBodyParameter) {
 		logger.info("xCorrelationId:{} request customer name in th and en to temporary limit", correlationId);
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = customerClient
 				.getCustomerProfile(crmId);
@@ -391,7 +391,7 @@ public class NotificationService {
 				String tempLimit = formateForCurrency(
 						cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit().getAmounts() != null
 								? cardResponse.getCreditCard().getCardCreditLimit().getTemporaryCreditLimit()
-										.getAmounts().toString()
+								.getAmounts().toString()
 								: null);
 				String reasonEN = requestBodyParameter.getReasonDescEn();
 				String reasonTH = requestBodyParameter.getReasonDesTh();
@@ -504,7 +504,7 @@ public class NotificationService {
 	 * @param email
 	 */
 	private void sendNotificationEmailForBlockCard(NotifyCommon notifyCommon, String email, String smsNo,
-			String gobalCallCenter, String productID) {
+												   String gobalCallCenter, String productID) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 
@@ -547,7 +547,7 @@ public class NotificationService {
 	 * @param reasonTH
 	 */
 	private void sendNotifySuccessForRequestTemporary(NotifyCommon notifyCommon, String email, String expiryDate,
-			String tempLimit, String reasonEN, String reasonTH, String productID) {
+													  String tempLimit, String reasonEN, String reasonTH, String productID) {
 
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
@@ -589,7 +589,7 @@ public class NotificationService {
 	 * @param notificationRequest
 	 */
 	private void processResultLog(TmbOneServiceResponse<NotificationResponse> sendEmailResponse,
-			NotificationRequest notificationRequest) {
+								  NotificationRequest notificationRequest) {
 		if (ResponseCode.SUCESS.getCode().equals(sendEmailResponse.getStatus().getCode())) {
 			logger.info("xCorrelationId:{} ,e-noti response sent email success", notificationRequest);
 		} else {
@@ -606,7 +606,7 @@ public class NotificationService {
 	 * @return
 	 */
 	private ProductCodeData generateProductCodeData(ResponseEntity<FetchCardResponse> cardInfoResponse,
-			String correlationId) {
+													String correlationId) {
 		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
 				.getProductConfig(correlationId);
 		List<ProductConfig> productConfigList = response.getBody().getData();
@@ -637,7 +637,7 @@ public class NotificationService {
 	 */
 	@Async
 	public void doNotifyApplySoGood(String correlationId, String accountId, String crmId,
-			List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
+									List<CardInstallmentResponse> data, CardInstallmentQuery requestBodyParameter) {
 		logger.info("xCorrelationId:{} request apply SO Good", correlationId);
 
 		List<CardInstallmentResponse> successItems = fillerForSuccessCardInstallmentRequest(data);
@@ -680,7 +680,7 @@ public class NotificationService {
 	 * @return
 	 */
 	SoGoodWrapper generateSoGoodWraperModel(InstallmentPlan installment, List<CardInstallmentResponse> successItems,
-			CardInstallmentQuery requestBodyParameter) {
+											CardInstallmentQuery requestBodyParameter) {
 		SoGoodWrapper wrapperInfo = new SoGoodWrapper();
 		wrapperInfo.setTenor(installment.getPaymentTerm());
 		wrapperInfo.setInterestRatePercent(installment.getInterestRate());
@@ -778,7 +778,7 @@ public class NotificationService {
 	 * @param SoGoodWrapper
 	 */
 	void sendNotifyApplySoGood(NotifyCommon notifyCommon, String email, String phoneNo, SoGoodWrapper soGoodWrapper,
-			BigDecimal totalAmt, String productID) {
+							   BigDecimal totalAmt, String productID) {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		List<NotificationRecord> notificationRecords = new ArrayList<>();
 		NotificationRecord record = new NotificationRecord();
@@ -822,7 +822,7 @@ public class NotificationService {
 	}
 
 	public void sendNotifyFlexiLoanSubmission(String correlationId, String accountId, String crmId,
-			FlexiLoanSubmissionWrapper wrapper) {
+											  FlexiLoanSubmissionWrapper wrapper) {
 		NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
 				defaultChannelTh, null, wrapper.getProductName(), null, wrapper.getCustomerName());
 		String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HTML_DATE_FORMAT));
@@ -846,7 +846,6 @@ public class NotificationService {
 			emailChannel.setEmailSearch(false);
 
 			record.setEmail(emailChannel);
-			record.setAccount(accountId);
 
 			Map<String, Object> params = new HashMap<>();
 			params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.FLEXI_LOAN_SUBMISSION_VALUE);
@@ -868,6 +867,7 @@ public class NotificationService {
 			notificationRecords.add(record);
 			notificationRequest.setRecords(notificationRecords);
 
+
 			TmbOneServiceResponse<NotificationResponse> sendEmailResponse = notificationClient
 					.sendMessage(notifyCommon.getXCorrelationId(), notificationRequest);
 
@@ -877,7 +877,7 @@ public class NotificationService {
 
 	@Async
 	public void doNotifySuccessForApplyEStatement(String correlationId, String crmId,
-			UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp estatementResponse) {
+												  UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp estatementResponse) {
 		logger.info("xCorrelationId:{} request customer name in th and en to customer-service", correlationId);
 		ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> response = customerClient
 				.getCustomerProfile(crmId);
@@ -889,7 +889,7 @@ public class NotificationService {
 					customerProfileInfo.getThaFname() + " " + customerProfileInfo.getThaLname());
 			notifyCommon.setAccountId(updateEstatementReq.getAccountId());
 			notifyCommon.setCrmId(crmId);
-			
+
 			sendNotificationEmailForApplyEStatement(notifyCommon, updateEstatementReq.getEmail(),
 					customerProfileInfo.getPhoneNoFull());
 		}
