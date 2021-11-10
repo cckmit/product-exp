@@ -78,21 +78,6 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             TmbOneServiceResponse<String> fundOffShelf = handleFundOffShelf(correlationId, crmId, alternativeBuyRequest, tmbOneServiceResponse, status);
             if (fundOffShelf != null) return fundOffShelf;
 
-            // validate id card expired
-            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-                String reason = tmbOneServiceResponse.getStatus().getDescription();
-                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
-            }
-
-            // validate flatca flag not valid
-            tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
-            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                String reason = tmbOneServiceResponse.getStatus().getDescription();
-                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
-            }
-
             // validate suitability expired
             tmbOneServiceResponse = validateSuitabilityExpired(correlationId, crmId, tmbOneServiceResponse, status);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
