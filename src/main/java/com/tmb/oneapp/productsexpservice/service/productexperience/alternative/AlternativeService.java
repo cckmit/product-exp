@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -254,9 +255,11 @@ public class AlternativeService {
     public TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList, TmbStatus status) {
         if (depositAccountList != null) {
             boolean isAccountActiveOnce = false;
+            BigDecimal zeroBalance = new BigDecimal("0");
             for (DepositAccount depositAccount :
                     depositAccountList) {
-                if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
+                if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)
+                        && depositAccount.getAvailableBalance().compareTo(zeroBalance) == 1) {
                     isAccountActiveOnce = true;
                 }
             }
