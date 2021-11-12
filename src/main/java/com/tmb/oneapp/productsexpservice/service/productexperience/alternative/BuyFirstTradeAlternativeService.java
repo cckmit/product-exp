@@ -74,7 +74,8 @@ public class BuyFirstTradeAlternativeService {
             }
 
             tmbOneServiceResponse.setData(tradeAndOccupationInquiry);
-            boolean isFirstTrade = tradeAndOccupationInquiry.getFirstTradeFlag().equals("Y");
+            String isFirstTradeString = StringUtils.isEmpty(tradeAndOccupationInquiry.getFirstTradeFlag())?"Y":tradeAndOccupationInquiry.getFirstTradeFlag();
+            boolean isFirstTrade = isFirstTradeString.equals("Y");
             if(!isFirstTrade){
                 return tmbOneServiceResponse;
             }

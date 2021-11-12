@@ -259,7 +259,7 @@ public class AlternativeService {
             for (DepositAccount depositAccount :
                     depositAccountList) {
                 if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)
-                        && depositAccount.getAvailableBalance().compareTo(zeroBalance) == 1) {
+                        && depositAccount.getAvailableBalance().compareTo(zeroBalance) > 0) {
                     isAccountActiveOnce = true;
                 }
             }
