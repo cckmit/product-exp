@@ -467,9 +467,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateFatcaFlagNotValid("0", TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDescription(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -479,9 +479,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateFatcaFlagNotValid("8", TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getDescription(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -491,9 +491,57 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateFatcaFlagNotValid("9", TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getDescription(), actual.getDescription());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_success_when_call_validate_fatca_flag_not_valid_given_fatca_flag_N() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("N", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_success_when_call_validate_fatca_flag_not_valid_given_fatca_flag_I() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("I", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_success_when_call_validate_fatca_flag_not_valid_given_fatca_flag_U() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("U", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000018_when_call_validate_fatca_flag_not_valid_given_validate_fatca_flag_valid() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("V", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getDescription(), actual.getDescription());
     }
 
     @Test
