@@ -318,12 +318,10 @@ public class AlternativeService {
     public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag,String documentType, String expireDate, TmbStatus status) {
         // document type id != ci kick
         boolean isKycAndIdCardExpiredValid = false;
-        if(documentType.equals("CI")){
-            if ((kycLimitFlag != null && expireDate != null) &&
-                    (kycLimitFlag.equalsIgnoreCase("U") ||
-                            kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)) {
+        if(documentType.equals("CI") && ((kycLimitFlag != null && expireDate != null) &&
+                (kycLimitFlag.equalsIgnoreCase("U") ||
+                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate))){
                 isKycAndIdCardExpiredValid = true;
-            }
         }
 
         if (!isKycAndIdCardExpiredValid) {
