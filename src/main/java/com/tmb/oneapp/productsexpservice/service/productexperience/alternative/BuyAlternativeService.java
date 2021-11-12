@@ -67,7 +67,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
                 return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
             }
 
-            tmbOneServiceResponse = validateBuyAndDca(correlationId, crmId, customerInfo, tmbOneServiceResponse, status, true, isFirstTrade(correlationId, alternativeBuyRequest));
+            tmbOneServiceResponse = validateBuyAndDca(correlationId, crmId, customerInfo, tmbOneServiceResponse, status, true, false);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 String reason = tmbOneServiceResponse.getStatus().getDescription();
                 return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
@@ -114,42 +114,6 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
         }
 
         return null;
-    }
-
-    /**
-     * Generic Method to check is process first trade
-     *
-     * @param correlationId         the correlation id
-     * @param alternativeBuyRequest the alternative buy request
-     * @return boolean
-     */
-    @LogAround
-    private boolean isFirstTrade(String correlationId, AlternativeBuyRequest alternativeBuyRequest) throws TMBCommonException, JsonProcessingException {
-        try {
-            Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
-            FirstTradeRequestBody firstTradeRequestBody = FirstTradeRequestBody.builder()
-                    .portfolioNumber(alternativeBuyRequest.getUnitHolderNumber())
-                    .fundCode(alternativeBuyRequest.getFundCode())
-                    .build();
-
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(firstTradeRequestBody));
-            ResponseEntity<TmbOneServiceResponse<FirstTradeResponseBody>> tmbOneServiceResponse = investmentRequestClient
-                    .getFirstTrade(headerParameter, firstTradeRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"firstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(tmbOneServiceResponse.getBody()));
-
-            if (!tmbOneServiceResponse.getStatusCode().is2xxSuccessful()) {
-                throw new TMBCommonException(
-                        ResponseCode.FAILED.getCode(),
-                        String.format(ProductsExpServiceConstant.SERVICE_IS_NOT_AVAILABLE, "get first trade failed"),
-                        ResponseCode.FAILED.getService(),
-                        HttpStatus.BAD_REQUEST, null);
-            }
-            return ProductsExpServiceConstant.INVESTMENT_FIRST_TRADE_FLAG
-                    .equals(tmbOneServiceResponse.getBody().getData().getFirstTradeFlag());
-        } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, "get first trade failed");
-            throw ex;
-        }
     }
 
     private TmbOneServiceResponse<String> returnResponseAfterSavingActivityLog(String correlationId, String crmId, String reason,
