@@ -27,6 +27,9 @@ public class CashForUService {
 
 	private CreditCardClient creditCardClient;
 
+	private static String FIXED_RATE = "Fixed Rate";
+	private static String EFFECTED_RATE = "Effective Rate";
+
 	public CashForUService(CreditCardClient creditCardClient) {
 		this.creditCardClient = creditCardClient;
 	}
@@ -42,18 +45,22 @@ public class CashForUService {
 	public CashForYourResponse calculateInstallmentForCashForYou(InstallmentRateRequest rateRequest,
 			String correlationId, EnquiryInstallmentRequest requestBody) {
 		CashForYourResponse responseModelInfo = new CashForYourResponse();
+		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
+				.getCurrentCashForYouRate();
+		CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
 		if ("Y".equals(requestBody.getCashChillChillFlag()) && "Y".equals(requestBody.getCashTransferFlag())) {
 
 			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
 					.getInstallmentRate(correlationId, rateRequest);
 			InstallmentRateResponse installmentRateResponse = loanResponse.getBody().getData();
-			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
-					.getCurrentCashForYouRate();
-			CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
 
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
+
+			processResponRateType(responseModelInfo, rateCashForUInfo, requestBody,
+					fetchCardResponse.getBody().getCreditCard().getProductId());
+
 			CardBalances cardBalances = fetchCardResponse.getBody().getCreditCard().getCardBalances();
 			String leadRate = fillterForRateCashTrasfer(installmentRateResponse);
 			responseModelInfo.setCashInterestRate(formateDigit(leadRate));
@@ -94,9 +101,38 @@ public class CashForUService {
 			}
 
 		} else {
-			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody);
+			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody, rateCashForUInfo);
 		}
 		return responseModelInfo;
+	}
+
+	/**
+	 * Process response by type
+	 * 
+	 * @param responseModelInfo
+	 * @param rateCashForUInfo
+	 * @param requestBody
+	 * @param productId
+	 */
+	private void processResponRateType(CashForYourResponse responseModelInfo, CashForUConfigInfo rateCashForUInfo,
+			EnquiryInstallmentRequest requestBody, String productId) {
+		List<String> targetProducts = rateCashForUInfo.getEffRateProducts();
+		boolean isMatch = false;
+		if (CollectionUtils.isNotEmpty(targetProducts)) {
+			for (String code : targetProducts) {
+				if (productId.equals(code) && (Integer.parseInt(requestBody.getBillCycleCutDate()) <= Integer
+						.parseInt(rateCashForUInfo.getNoneFlashMonth()))) {
+					isMatch = true;
+				}
+			}
+		}
+
+		if (isMatch) {
+			responseModelInfo.setRateCaculationInfo(FIXED_RATE);
+		} else {
+			responseModelInfo.setRateCaculationInfo(EFFECTED_RATE);
+		}
+
 	}
 
 	/**
@@ -142,12 +178,17 @@ public class CashForUService {
 	 * @param responseModelInfo
 	 * @param correlationId
 	 * @param requestBody
+	 * @param rateCashForUInfo
 	 */
 	private void calcualteForCaseCashAdvance(CashForYourResponse responseModelInfo, String correlationId,
-			EnquiryInstallmentRequest requestBody) {
+			EnquiryInstallmentRequest requestBody, CashForUConfigInfo rateCashForUInfo) {
 		ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 				requestBody.getAccountId());
+
 		CreditCardDetail cardDetail = fetchCardResponse.getBody().getCreditCard();
+
+		processResponRateType(responseModelInfo, rateCashForUInfo, requestBody, cardDetail.getProductId());
+
 		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
 
 		BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))
