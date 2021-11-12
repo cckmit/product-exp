@@ -154,7 +154,7 @@ public class BuyFirstTradeAlternativeService {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
 
            return TradeOccupationResponse.builder()
-                    .firstTradeFlag(StringUtils.isEmpty(firstTradeResponseBody.getFirstTradeFlag())? "N" : firstTradeResponseBody.getFirstTradeFlag())
+                    .firstTradeFlag(StringUtils.isEmpty(firstTradeResponseBody.getFirstTradeFlag())? "Y" : firstTradeResponseBody.getFirstTradeFlag())
                     .requirePosition(occupationInquiryResponseBody.getRequirePosition())
                     .requireUpdate(occupationInquiryResponseBody.getRequireUpdate())
                     .occupationCode(occupationInquiryResponseBody.getOccupationCode())
