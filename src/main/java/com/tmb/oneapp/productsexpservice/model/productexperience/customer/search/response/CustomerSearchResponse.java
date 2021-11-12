@@ -21,6 +21,9 @@ public class CustomerSearchResponse {
     @JsonAlias("rm_id")
     private String crmId;
 
+    @JsonAlias("id_type")
+    private String idType;
+
     @JsonAlias({"id_no"})
     private String idNumber;
 

@@ -644,8 +644,8 @@ public class ProductExpServiceTest {
         listFund = fetchFundListInfo.get();
         FundSummaryBody fundSummaryResponse = fetchFundSummary.get();
         List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
-        listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
-        listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
+        UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
+        UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
 
         CacheModel cacheModel = UtilMap.mappingCache("teeeeeeee", "abc");
         Assert.assertNotNull(cacheModel);

@@ -500,7 +500,7 @@ public class AlternativeServiceTest {
     void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired() {
         // Given
         // When
-        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0", "2021-07-08", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0", "CI","2021-07-08", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());

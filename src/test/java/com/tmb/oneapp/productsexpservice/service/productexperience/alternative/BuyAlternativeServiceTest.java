@@ -236,54 +236,6 @@ public class BuyAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_customer_id_card_expired_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
-        // given
-        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED);
-        byPassAllAlternative();
-        TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
-        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(status);
-
-        // when
-        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String> actual = buyAlternativeService.validationBuy(correlationId, crmId, alternativeBuyRequest);
-
-        // then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
-                actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(),
-                actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
-    }
-
-    @Test
-    public void should_return_failed_customer_not_fill_fatca_form_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
-        // given
-        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);
-        byPassAllAlternative();
-        TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
-        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(status);
-
-        // when
-        AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder().processFlag("Y").build();
-        TmbOneServiceResponse<String> actual = buyAlternativeService.validationBuy(correlationId, crmId, alternativeBuyRequest);
-
-        // then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
-                actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
-                actual.getStatus().getMessage());
-        verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
-    }
-
-    @Test
     public void should_return_failed_Fund_Off_shelf_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);

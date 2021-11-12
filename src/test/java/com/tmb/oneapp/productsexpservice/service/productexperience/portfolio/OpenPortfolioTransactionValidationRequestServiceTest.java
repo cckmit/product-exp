@@ -451,7 +451,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
         mockSuccessAllAlternative();
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription()));
@@ -484,7 +484,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription()));
@@ -502,7 +502,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
