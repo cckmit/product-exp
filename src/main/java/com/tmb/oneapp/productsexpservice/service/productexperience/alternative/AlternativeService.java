@@ -309,17 +309,21 @@ public class AlternativeService {
      * Method validateKycAndIdCardExpire method validate ekyc and cardid expired
      *
      * @param kycLimitFlag
+     * @param documentType
      * @param expireDate
      * @param status
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String expireDate, TmbStatus status) {
+    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag,String documentType, String expireDate, TmbStatus status) {
+        // document type id != ci kick
         boolean isKycAndIdCardExpiredValid = false;
-        if ((kycLimitFlag != null && expireDate != null) &&
-                (kycLimitFlag.equalsIgnoreCase("U") ||
-                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)) {
-            isKycAndIdCardExpiredValid = true;
+        if(documentType.equals("CI")){
+            if ((kycLimitFlag != null && expireDate != null) &&
+                    (kycLimitFlag.equalsIgnoreCase("U") ||
+                            kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)) {
+                isKycAndIdCardExpiredValid = true;
+            }
         }
 
         if (!isKycAndIdCardExpiredValid) {
