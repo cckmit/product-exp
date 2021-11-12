@@ -16,6 +16,7 @@ import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -53,13 +54,15 @@ public class BuyFirstTradeService extends TmbErrorHandle {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
 
             tmbOneServiceResponse.setData(TradeOccupationResponse.builder()
-                    .firstTradeFlag(firstTradeResponseBody.getFirstTradeFlag())
+                    .firstTradeFlag(StringUtils.isEmpty(firstTradeResponseBody.getFirstTradeFlag())? "N" : firstTradeResponseBody.getFirstTradeFlag())
                     .requirePosition(occupationInquiryResponseBody.getRequirePosition())
                     .requireUpdate(occupationInquiryResponseBody.getRequireUpdate())
                     .occupationCode(occupationInquiryResponseBody.getOccupationCode())
                     .occupationDescription(occupationInquiryResponseBody.getOccupationDescription())
                     .build());
+
             return tmbOneServiceResponse;
+
         } catch (ExecutionException e) {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();

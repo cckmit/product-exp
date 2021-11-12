@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -254,9 +255,11 @@ public class AlternativeService {
     public TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList, TmbStatus status) {
         if (depositAccountList != null) {
             boolean isAccountActiveOnce = false;
+            BigDecimal zeroBalance = new BigDecimal("0");
             for (DepositAccount depositAccount :
                     depositAccountList) {
-                if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
+                if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)
+                        && depositAccount.getAvailableBalance().compareTo(zeroBalance) > 0) {
                     isAccountActiveOnce = true;
                 }
             }
@@ -306,17 +309,19 @@ public class AlternativeService {
      * Method validateKycAndIdCardExpire method validate ekyc and cardid expired
      *
      * @param kycLimitFlag
+     * @param documentType
      * @param expireDate
      * @param status
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String expireDate, TmbStatus status) {
+    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag,String documentType, String expireDate, TmbStatus status) {
+        // document type id != ci kick
         boolean isKycAndIdCardExpiredValid = false;
-        if ((kycLimitFlag != null && expireDate != null) &&
+        if(documentType.equals("CI") && ((kycLimitFlag != null && expireDate != null) &&
                 (kycLimitFlag.equalsIgnoreCase("U") ||
-                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)) {
-            isKycAndIdCardExpiredValid = true;
+                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate))){
+                isKycAndIdCardExpiredValid = true;
         }
 
         if (!isKycAndIdCardExpiredValid) {
