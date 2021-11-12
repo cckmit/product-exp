@@ -533,10 +533,10 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000018_when_call_validate_fatca_flag_not_valid_given_validate_fatca_flag_valid() {
+    void should_return_status_code_2000018_when_call_validate_fatca_flag_not_valid_given_validate_fatca_flag_P_or_R() {
         // Given
         // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("V", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("P", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode(), actual.getCode());
