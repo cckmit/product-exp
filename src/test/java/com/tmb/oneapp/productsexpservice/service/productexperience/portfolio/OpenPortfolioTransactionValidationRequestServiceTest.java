@@ -405,7 +405,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
         mockCommonConfig();
-        mockCustomerResponse(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);
+        mockCustomerResponse(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM);
 
         DepositAccount depositAccount = new DepositAccount();
         depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
@@ -420,16 +420,16 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(
-                mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDescription()));
+                mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(),
+                        AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getDescription()));
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(), actual.getStatus().getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
