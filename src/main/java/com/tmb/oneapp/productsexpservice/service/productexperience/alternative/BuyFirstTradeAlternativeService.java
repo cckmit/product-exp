@@ -139,6 +139,7 @@ public class BuyFirstTradeAlternativeService {
      */
     @LogAround
     private TradeOccupationResponse getFirstTradeAndOccupationInquiry(String correlationId,String crmId, String portfolioNumber, String fundCode) throws TMBCommonException{
+        TradeOccupationResponse tradeOccupationResponse = new TradeOccupationResponse();
         try {
             Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
             CompletableFuture<OccupationInquiryResponseBody> occupationInquiry = investmentAsyncService.fetchOccupationInquiry(headerParameter, crmId);
@@ -153,13 +154,12 @@ public class BuyFirstTradeAlternativeService {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fisrtTrade", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(firstTradeResponseBody));
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
 
-           return TradeOccupationResponse.builder()
-                    .firstTradeFlag(StringUtils.isEmpty(firstTradeResponseBody.getFirstTradeFlag())? "Y" : firstTradeResponseBody.getFirstTradeFlag())
-                    .requirePosition(occupationInquiryResponseBody.getRequirePosition())
-                    .requireUpdate(occupationInquiryResponseBody.getRequireUpdate())
-                    .occupationCode(occupationInquiryResponseBody.getOccupationCode())
-                    .occupationDescription(occupationInquiryResponseBody.getOccupationDescription())
-                    .build();
+            tradeOccupationResponse.setFirstTradeFlag(firstTradeResponseBody.getFirstTradeFlag());
+            tradeOccupationResponse.setRequirePosition(occupationInquiryResponseBody.getRequirePosition());
+            tradeOccupationResponse.setRequireUpdate(occupationInquiryResponseBody.getRequireUpdate());
+            tradeOccupationResponse.setOccupationCode(occupationInquiryResponseBody.getOccupationCode());
+            tradeOccupationResponse.setOccupationDescription(occupationInquiryResponseBody.getOccupationDescription());
+            return tradeOccupationResponse;
         } catch (ExecutionException e) {
             if(e.getCause() instanceof TMBCommonException){
                 throw (TMBCommonException) e.getCause();
@@ -168,7 +168,7 @@ public class BuyFirstTradeAlternativeService {
             logger.error(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, "get first trade failed");
         }
 
-        return null;
+        return tradeOccupationResponse;
     }
 
 }
