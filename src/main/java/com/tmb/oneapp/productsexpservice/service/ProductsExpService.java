@@ -387,8 +387,8 @@ public class ProductsExpService extends TmbErrorHandle {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_RESPONSE),UtilMap.convertObjectToStringJson(fundSummaryResponse));
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFavorite", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(customerFavoriteFundDataList));
 
-            listFund = UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
-            listFund = UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
+            UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
+            UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
             return listFund;
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);

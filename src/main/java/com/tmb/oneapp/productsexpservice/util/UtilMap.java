@@ -606,20 +606,15 @@ public class UtilMap {
      * @return List<FundClassList>
      */
     @LogAround
-    public static List<FundClassListInfo> mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustomerFavoriteFundData> customerFavoriteFundDataList) {
-        List<FundClassListInfo> fundClassLists = new ArrayList<>();
+    public static void mappingFollowingFlag(List<FundClassListInfo> fundClassList, List<CustomerFavoriteFundData> customerFavoriteFundDataList) {
         for (FundClassListInfo fundClass : fundClassList) {
+            fundClass.setFollowingFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
             for (CustomerFavoriteFundData customerFavoriteFund : customerFavoriteFundDataList) {
                 if (customerFavoriteFund.getFundCode().equals(fundClass.getFundCode())) {
                     fundClass.setFollowingFlag(ProductsExpServiceConstant.PROCESS_FLAG_Y);
                 }
             }
-            if (StringUtils.isEmpty(fundClass.getFollowingFlag())) {
-                fundClass.setFollowingFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
-            }
-            fundClassLists.add(fundClass);
         }
-        return fundClassLists;
     }
 
     /**
@@ -630,23 +625,18 @@ public class UtilMap {
      * @return List<FundClassList>
      */
     @LogAround
-    public static List<FundClassListInfo> mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryBody fundSummaryResponse) {
-        List<FundClassListInfo> fundClassLists = new ArrayList<>();
+    public static void mappingBoughtFlag(List<FundClassListInfo> fundClassList, FundSummaryBody fundSummaryResponse) {
         try {
             for (FundClassListInfo fundClass : fundClassList) {
+                fundClass.setBoughtFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
                 for (FundClass fundClassLoop : fundSummaryResponse.getFundClassList().getFundClass()) {
                     List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
                     mappingBoughtFlagWithFundHouse(fundClass, fundHouseList);
                 }
-                if (StringUtils.isEmpty(fundClass.getBoughtFlag())) {
-                    fundClass.setBoughtFlag(ProductsExpServiceConstant.BUSINESS_HR_CLOSE);
-                }
-                fundClassLists.add(fundClass);
             }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
-        return fundClassLists;
     }
 
     /**
