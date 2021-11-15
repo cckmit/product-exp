@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
@@ -26,9 +27,6 @@ import com.tmb.oneapp.productsexpservice.model.loan.PricingTier;
 public class CashForUService {
 
 	private CreditCardClient creditCardClient;
-
-	private static String FIXED_RATE = "Fixed Rate";
-	private static String EFFECTED_RATE = "Effective Rate";
 
 	public CashForUService(CreditCardClient creditCardClient) {
 		this.creditCardClient = creditCardClient;
@@ -123,14 +121,15 @@ public class CashForUService {
 				if (productId.equals(code) && (Integer.parseInt(requestBody.getBillCycleCutDate()) <= Integer
 						.parseInt(rateCashForUInfo.getNoneFlashMonth()))) {
 					isMatch = true;
+					break;
 				}
 			}
 		}
 
 		if (isMatch) {
-			responseModelInfo.setRateCaculationInfo(FIXED_RATE);
+			responseModelInfo.setRateCaculationInfo(ProductsExpServiceConstant.FIXED_RATE_LABEL);
 		} else {
-			responseModelInfo.setRateCaculationInfo(EFFECTED_RATE);
+			responseModelInfo.setRateCaculationInfo(ProductsExpServiceConstant.EFFECTED_RATE_LABEL);
 		}
 
 	}
