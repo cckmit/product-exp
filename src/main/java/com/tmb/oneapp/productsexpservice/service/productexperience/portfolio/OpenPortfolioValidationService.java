@@ -97,6 +97,9 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
                 throwTmbException("========== failed get termandcondition service ==========");
             }
 
+            if (openPortfolioValidateRequest.isExistingCustomer()) {
+                depositAccountList = null;
+            }
             mappingOpenPortFolioValidationResponse(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
             return tmbOneServiceResponse;
         } catch (Exception ex) {
