@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.model.CashForUConfigInfo;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CardBalances;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
@@ -42,18 +43,22 @@ public class CashForUService {
 	public CashForYourResponse calculateInstallmentForCashForYou(InstallmentRateRequest rateRequest,
 			String correlationId, EnquiryInstallmentRequest requestBody) {
 		CashForYourResponse responseModelInfo = new CashForYourResponse();
+		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
+				.getCurrentCashForYouRate();
+		CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
 		if ("Y".equals(requestBody.getCashChillChillFlag()) && "Y".equals(requestBody.getCashTransferFlag())) {
 
 			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
 					.getInstallmentRate(correlationId, rateRequest);
 			InstallmentRateResponse installmentRateResponse = loanResponse.getBody().getData();
-			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
-					.getCurrentCashForYouRate();
-			CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
 
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
+
+			processResponRateType(responseModelInfo, rateCashForUInfo, requestBody,
+					fetchCardResponse.getBody().getCreditCard().getProductId());
+
 			CardBalances cardBalances = fetchCardResponse.getBody().getCreditCard().getCardBalances();
 			String leadRate = fillterForRateCashTrasfer(installmentRateResponse);
 			responseModelInfo.setCashInterestRate(formateDigit(leadRate));
@@ -94,9 +99,39 @@ public class CashForUService {
 			}
 
 		} else {
-			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody);
+			calcualteForCaseCashAdvance(responseModelInfo, correlationId, requestBody, rateCashForUInfo);
 		}
 		return responseModelInfo;
+	}
+
+	/**
+	 * Process response by type
+	 * 
+	 * @param responseModelInfo
+	 * @param rateCashForUInfo
+	 * @param requestBody
+	 * @param productId
+	 */
+	private void processResponRateType(CashForYourResponse responseModelInfo, CashForUConfigInfo rateCashForUInfo,
+			EnquiryInstallmentRequest requestBody, String productId) {
+		List<String> targetProducts = rateCashForUInfo.getEffRateProducts();
+		boolean isMatch = false;
+		if (CollectionUtils.isNotEmpty(targetProducts)) {
+			for (String code : targetProducts) {
+				if (productId.equals(code) && (Integer.parseInt(requestBody.getBillCycleCutDate()) <= Integer
+						.parseInt(rateCashForUInfo.getNoneFlashMonth()))) {
+					isMatch = true;
+					break;
+				}
+			}
+		}
+
+		if (isMatch) {
+			responseModelInfo.setRateCaculationInfo(ProductsExpServiceConstant.FIXED_RATE_LABEL);
+		} else {
+			responseModelInfo.setRateCaculationInfo(ProductsExpServiceConstant.EFFECTED_RATE_LABEL);
+		}
+
 	}
 
 	/**
@@ -142,12 +177,17 @@ public class CashForUService {
 	 * @param responseModelInfo
 	 * @param correlationId
 	 * @param requestBody
+	 * @param rateCashForUInfo
 	 */
 	private void calcualteForCaseCashAdvance(CashForYourResponse responseModelInfo, String correlationId,
-			EnquiryInstallmentRequest requestBody) {
+			EnquiryInstallmentRequest requestBody, CashForUConfigInfo rateCashForUInfo) {
 		ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 				requestBody.getAccountId());
+
 		CreditCardDetail cardDetail = fetchCardResponse.getBody().getCreditCard();
+
+		processResponRateType(responseModelInfo, rateCashForUInfo, requestBody, cardDetail.getProductId());
+
 		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
 
 		BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))

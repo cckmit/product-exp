@@ -34,5 +34,7 @@ public class CashForYourResponse {
 	private String feeCashChillChill;
 	@JsonProperty("vat_cash_chill_chill")
 	private String vatCashChillChill;
+	@JsonProperty("rate_cal_info")
+	private String rateCaculationInfo;
 	
 }

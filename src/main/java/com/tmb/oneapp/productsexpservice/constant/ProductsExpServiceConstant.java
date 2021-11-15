@@ -325,5 +325,8 @@ public class ProductsExpServiceConstant {
 	public static final String OTHERS = "Others";
 	
 	public static final String MODEL_TYPE_CASH_CHILL_CHILL = "IL";
+	public static String FIXED_RATE_LABEL = "Fixed Rate";
+	public static String EFFECTED_RATE_LABEL = "Effective Rate";
+
 
 }
