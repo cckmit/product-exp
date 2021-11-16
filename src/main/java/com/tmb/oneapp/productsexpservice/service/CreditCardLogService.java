@@ -209,7 +209,7 @@ public class CreditCardLogService {
 
 		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
 		creditCardEvent.setTransactionDescription(e.getCreditCard().getCardInstallment().getTransactionDescription());
-		creditCardEvent.setTransactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		creditCardEvent.setTransectionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();

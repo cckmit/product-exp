@@ -39,7 +39,7 @@ public class CreditCardEvent extends BaseEvent {
     @JsonProperty("transaction_description")
     private String transactionDescription;
     @JsonProperty("transection_date")
-    private String transactionDate;
+    private String transectionDate;
     @JsonProperty("loan_number")
     private String loanNumber;
     @JsonProperty("product_name")
