@@ -545,10 +545,46 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired() {
+    void should_return_status_code_success_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired_given_id_card_not_expired_and_allow_kyc_flag() {
         // Given
         // When
-        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0", "CI","2021-07-08", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("U", "CI", "2121-07-08", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired_given_id_card_expired_and_allow_kyc_flag() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("S", "CI", "2021-07-08", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired_given_id_card_not_expired_and_not_allow_kyc_flag() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0", "CI", "2121-07-08", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000022_when_call_validateOpenPortfolioService_validate_kyc_and_id_card_expired_given_id_card_expired_and_not_allow_kyc_flag() {
+        // Given
+        // When
+        TmbStatus actual = alternativeService.validateKycAndIdCardExpire("0", "CI", "2021-07-08", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());

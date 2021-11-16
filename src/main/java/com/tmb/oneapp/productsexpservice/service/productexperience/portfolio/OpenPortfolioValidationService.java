@@ -152,7 +152,7 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
         }
 
         // validate customer pass kyc (U,Blank) allow  and id card has not expired
-        tmbOneServiceResponse.setStatus(alternativeService.validateKycAndIdCardExpire(customerInfo.getKycLimitedFlag(),customerInfo.getIdType(), customerInfo.getExpiryDate(), status));
+        tmbOneServiceResponse.setStatus(alternativeService.validateKycAndIdCardExpire(customerInfo.getKycLimitedFlag(), customerInfo.getIdType(), customerInfo.getExpiryDate(), status));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage());
             return tmbOneServiceResponse;

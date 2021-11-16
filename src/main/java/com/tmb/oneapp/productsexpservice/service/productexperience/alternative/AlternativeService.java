@@ -43,6 +43,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /**
  * AlternativeService class will handle all of alternative of investment
@@ -321,13 +322,13 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag,String documentType, String expireDate, TmbStatus status) {
+    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String documentType, String expireDate, TmbStatus status) {
         // document type id != ci kick
         boolean isKycAndIdCardExpiredValid = false;
-        if(documentType.equals("CI") && ((kycLimitFlag != null && expireDate != null) &&
-                (kycLimitFlag.equalsIgnoreCase("U") ||
-                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate))){
-                isKycAndIdCardExpiredValid = true;
+        if (documentType.equals("CI") && ((kycLimitFlag != null && expireDate != null) &&
+                (Stream.of("U", "S", "T").anyMatch(kycLimitFlag::equalsIgnoreCase) ||
+                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate))) {
+            isKycAndIdCardExpiredValid = true;
         }
 
         if (!isKycAndIdCardExpiredValid) {
