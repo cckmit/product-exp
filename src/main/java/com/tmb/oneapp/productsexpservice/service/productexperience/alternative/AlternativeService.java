@@ -35,7 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -253,24 +252,21 @@ public class AlternativeService {
      */
     @LogAround
     public TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList, TmbStatus status) {
-        if (depositAccountList != null) {
-            boolean isAccountActiveOnce = false;
-            BigDecimal zeroBalance = new BigDecimal("0");
-            for (DepositAccount depositAccount :
-                    depositAccountList) {
-                if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)
-                        && depositAccount.getAvailableBalance().compareTo(zeroBalance) > 0) {
-                    isAccountActiveOnce = true;
-                }
-            }
-            if (!isAccountActiveOnce || depositAccountList.isEmpty()) {
-                status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
-                status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDescription());
-                status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMessage());
-                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-                return status;
+        boolean isAccountActiveOnce = false;
+        for (DepositAccount depositAccount :
+                depositAccountList) {
+            if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
+                isAccountActiveOnce = true;
             }
         }
+        if (!isAccountActiveOnce || depositAccountList.isEmpty()) {
+            status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDescription());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMessage());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            return status;
+        }
+
         return status;
     }
 
