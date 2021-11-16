@@ -1,6 +1,8 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -208,7 +210,8 @@ public class CreditCardLogService {
 				ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
 
 		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
-
+		creditCardEvent.setTransactionDescription(e.getCreditCard().getCardInstallment().getTransactionDescription());
+		creditCardEvent.setTransactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
