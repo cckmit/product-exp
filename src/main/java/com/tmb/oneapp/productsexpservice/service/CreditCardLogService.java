@@ -1,10 +1,11 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardRespo
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.SetCreditLimitReq;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.cardinstallment.ErrorStatus;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.InstallmentPlan;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
@@ -208,7 +208,8 @@ public class CreditCardLogService {
 				ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
 
 		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
-
+		creditCardEvent.setTransactionDescription(e.getCreditCard().getCardInstallment().getTransactionDescription());
+		creditCardEvent.setTransactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
