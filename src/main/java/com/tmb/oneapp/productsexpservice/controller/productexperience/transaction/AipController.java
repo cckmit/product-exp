@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.controller.productexperience.transaction;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
@@ -44,7 +45,7 @@ public class AipController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestBody OrderAIPRequestBody orderAIPRequestBody) {
+            @Valid @RequestBody OrderAIPRequestBody orderAIPRequestBody) throws TMBCommonException {
 
         TmbOneServiceResponse<OrderAIPResponseBody> oneServiceResponse = aipService.createAipOrder(correlationId, crmId, orderAIPRequestBody);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {

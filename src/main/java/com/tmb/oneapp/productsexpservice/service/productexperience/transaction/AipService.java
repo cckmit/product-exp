@@ -11,7 +11,10 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDeta
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.orderaip.request.OrderAIPRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.orderaip.response.OrderAIPResponseBody;
+import com.tmb.oneapp.productsexpservice.service.productexperience.TmbErrorHandle;
+import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +23,7 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 
 @Service
-public class AipService {
+public class AipService extends TmbErrorHandle {
 
     private static final TMBLogger<AipService> logger = new TMBLogger<>(AipService.class);
 
@@ -42,8 +45,9 @@ public class AipService {
      * @param orderAIPRequestBody
      */
     @LogAround
-    public TmbOneServiceResponse<OrderAIPResponseBody> createAipOrder(String correlationId, String crmId, OrderAIPRequestBody orderAIPRequestBody) {
+    public TmbOneServiceResponse<OrderAIPResponseBody> createAipOrder(String correlationId, String crmId, OrderAIPRequestBody orderAIPRequestBody) throws TMBCommonException {
         TmbOneServiceResponse<OrderAIPResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse();
+        tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
         try {
 
             // credit card replace expiry date
@@ -58,14 +62,16 @@ public class AipService {
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId, crmId);
             ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> oneServiceResponseResponseEntity = investmentRequestClient.createAipOrder(investmentRequestHeader,orderAIPRequestBody);
-            return oneServiceResponseResponseEntity.getBody();
+            tmbOneServiceResponse.setData(oneServiceResponseResponseEntity.getBody().getData());
 
+        } catch (FeignException feignException) {
+            handleFeignException(feignException);
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
             tmbOneServiceResponse.setStatus(null);
             tmbOneServiceResponse.setData(null);
-            return tmbOneServiceResponse;
         }
+        return tmbOneServiceResponse;
     }
 
 }
