@@ -19,11 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * CreditCardInformationService get credit information
@@ -117,7 +117,7 @@ public class CreditCardInformationService {
                 .collect(Collectors.toList());
 
         List<CreditCard> creditCardEligiblePurchaseMutualFund =
-                mappingEligiblePurchaseValue(productConfigList,creditCardWithFilterStatusAndType);
+                filterAllowPurchaseMfAndAccountTypeIsCCA(productConfigList,creditCardWithFilterStatusAndType);
         creditcardInformationResponse.setCreditCards(creditCardEligiblePurchaseMutualFund);
 
         response.setStatus(TmbStatusUtil.successStatus());
@@ -126,40 +126,19 @@ public class CreditCardInformationService {
     }
 
     @LogAround
-    private List<CreditCard> mappingEligiblePurchaseValue(List<ProductConfig> productConfigList, List<CreditCard> creditCardWithFilterStatusAndType) {
-
-        List<ProductConfig> productConfigStream = getCreditCardAllowPurchaseProductConfig(productConfigList);
-
+    private List<CreditCard> filterAllowPurchaseMfAndAccountTypeIsCCA(List<ProductConfig> productConfigList, List<CreditCard> creditCardWithFilterStatusAndType) {
+        List<CreditCard> filterCreditCardResult = new ArrayList<>();
         for (CreditCard creditCard: creditCardWithFilterStatusAndType) {
-
-            Optional<ProductConfig> productConfigOptional = productConfigStream.stream().filter(pc -> pc.getProductCode().equals(creditCard.getProductCode())).findFirst();
-
+            Optional<ProductConfig> productConfigOptional = productConfigList.stream()
+                    .filter(pc -> "1".equals(pc.getAllowToPurchaseMf()) &&
+                            ProductsExpServiceConstant.ACC_TYPE_CCA.equals(pc.getAccountType()) &&
+                            pc.getProductCode().equals(creditCard.getProductCode()))
+                    .findFirst();
             if(productConfigOptional.isPresent()){
-
-                ProductConfig productConfig = productConfigOptional.get();
-                creditCard.setAccountType(productConfig.getAccountType());
-                if(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND
-                        .equals(productConfig.getEligibleForPurchasingMf())){
-                    creditCard.setEligibleForPurchasingMutualfund(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND);
-                }else{
-                    creditCard.setEligibleForPurchasingMutualfund(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND);
-                }
-
-            }else{
-                creditCard.setEligibleForPurchasingMutualfund(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND);
+                filterCreditCardResult.add(creditCard);
             }
         }
-
-        return creditCardWithFilterStatusAndType;
+        return filterCreditCardResult;
     }
-
-    public List<ProductConfig> getCreditCardAllowPurchaseProductConfig(List<ProductConfig> productConfigs) {
-        return productConfigs
-                .stream()
-                .filter(pc -> Stream.of("VABSIN", "VBKDSI", "VABSSN","MABSSN","VSOFAS",
-                        "MSOFAS","VSOSMT","MSOSMT","VSOCHI","MSCHIL",
-                        "VTOPBR","VTTBCP").anyMatch(t -> t.equals(pc.getProductCode()))).collect(Collectors.toList());
-    }
-
 
 }

@@ -20,7 +20,7 @@ public class ProductConfig {
         return openEkyc;
     }
 
-    private String eligibleForPurchasingMf;
+    private String allowToPurchaseMf;
     private String accountType;
     
 }
