@@ -130,7 +130,9 @@ public class CreditCardInformationService {
         List<CreditCard> filterCreditCardResult = new ArrayList<>();
         for (CreditCard creditCard: creditCardWithFilterStatusAndType) {
             Optional<ProductConfig> productConfigOptional = productConfigList.stream()
-                    .filter(pc -> "1".equals(pc.getAllowToPurchaseMf()) &&  ProductsExpServiceConstant.ACC_TYPE_CCA.equals(pc.getAccountType()))
+                    .filter(pc -> "1".equals(pc.getAllowToPurchaseMf()) &&
+                            ProductsExpServiceConstant.ACC_TYPE_CCA.equals(pc.getAccountType()) &&
+                            pc.getProductCode().equals(creditCard.getProductCode()))
                     .findFirst();
             if(productConfigOptional.isPresent()){
                 filterCreditCardResult.add(creditCard);
