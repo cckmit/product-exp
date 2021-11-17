@@ -22,5 +22,6 @@ public class ProductConfig {
 
     private String allowToPurchaseMf;
     private String accountType;
+    private String accountTypeDescTh;
     
 }
