@@ -64,6 +64,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.INVESTMENT_JOINT_FLAG_INDIVIDUAL;
 
@@ -126,9 +127,9 @@ public class ProductsExpService extends TmbErrorHandle {
             FundRuleResponse fundRuleResponse = fetchFundRule.get();
             StatementResponse statementResponse = fetchStmtByPort.get();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"accountDetail", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(accountDetailResponse));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchFundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundRuleResponse));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"statement", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(statementResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "accountDetail", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(accountDetailResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchFundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundRuleResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "statement", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(statementResponse));
 
             fundAccountResponse = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
         } catch (ExecutionException e) {
@@ -161,18 +162,18 @@ public class ProductsExpService extends TmbErrorHandle {
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryBody>> fundSummary = investmentRequestClient.callInvestmentFundSummaryService(header, unitHolder);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundSummary.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundSummary.getBody()));
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundSummaryByPort", ProductsExpServiceConstant.LOGGING_REQUEST), unitHolder);
             ResponseEntity<TmbOneServiceResponse<FundSummaryByPortBody>> summaryByPortResponse = investmentRequestClient.callInvestmentFundSummaryByPortService(header, unitHolder);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundSummaryByPort", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(summaryByPortResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundSummaryByPort", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(summaryByPortResponse.getBody()));
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"countProcessOrder", ProductsExpServiceConstant.LOGGING_REQUEST), crmId);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "countProcessOrder", ProductsExpServiceConstant.LOGGING_REQUEST), crmId);
             ResponseEntity<TmbOneServiceResponse<CountOrderProcessingResponseBody>> countOrderProcessingResponse = investmentRequestClient.callInvestmentCountProcessOrderService(header, crmId,
                     CountToBeProcessOrderRequestBody.builder().serviceType("1").build());
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"countProcessOrder", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(countOrderProcessingResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "countProcessOrder", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(countOrderProcessingResponse.getBody()));
 
             if (HttpStatus.OK.value() == fundSummary.getStatusCode().value()) {
                 this.setFundSummaryBody(result, ports, fundSummary.getBody(), summaryByPortResponse.getBody());
@@ -216,9 +217,9 @@ public class ProductsExpService extends TmbErrorHandle {
             });
         }
         if (isIncludePtesPortfolio) {
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.halfCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "getPtesPort", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.halfCrmIdFormat(crmId));
             ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesDetailResult = investmentRequestClient.getPtesPort(header, UtilMap.halfCrmIdFormat(crmId));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(ptesDetailResult.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "getPtesPort", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(ptesDetailResult.getBody()));
 
             Optional<List<PtesDetail>> ptesDetailList = Optional.ofNullable(ptesDetailResult)
                     .map(ResponseEntity::getBody)
@@ -283,7 +284,7 @@ public class ProductsExpService extends TmbErrorHandle {
                 result.setIsJointPortOnly(!individualAccountExist);
             }
 
-            List<String> ptPorts = ports.stream().filter(port -> port.startsWith("PT")).collect(Collectors.toList());
+            List<String> ptPorts = ports.stream().filter(port -> Stream.of("PT0", "PT1").anyMatch(port::startsWith)).collect(Collectors.toList());
             if (!ptPorts.isEmpty()) {
                 result.setIsPt(Boolean.TRUE);
             }
@@ -323,10 +324,10 @@ public class ProductsExpService extends TmbErrorHandle {
             List<CommonData> commonDataList = fetchCommonConfigByModule.get();
             ProductHoldingsResp productHoldingResponse = fetchProductHoldingResponse.get();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), fundRuleResponse);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundHoliday", ProductsExpServiceConstant.LOGGING_RESPONSE), fundHolidayBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT,"accountList", ProductsExpServiceConstant.LOGGING_RESPONSE), accountList);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT,"getProductHoldings", ProductsExpServiceConstant.LOGGING_RESPONSE), productHoldingResponse);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), fundRuleResponse);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundHoliday", ProductsExpServiceConstant.LOGGING_RESPONSE), fundHolidayBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT, "accountList", ProductsExpServiceConstant.LOGGING_RESPONSE), accountList);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT, "getProductHoldings", ProductsExpServiceConstant.LOGGING_RESPONSE), productHoldingResponse);
 
 
             UtilMap map = new UtilMap();
@@ -383,9 +384,9 @@ public class ProductsExpService extends TmbErrorHandle {
             FundSummaryBody fundSummaryResponse = fetchFundSummary.get();
             List<CustomerFavoriteFundData> customerFavoriteFundDataList = fetchFundFavorite.get();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundListInfo", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(listFund));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_RESPONSE),UtilMap.convertObjectToStringJson(fundSummaryResponse));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFavorite", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(customerFavoriteFundDataList));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundListInfo", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(listFund));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_FUND_SUMMMARY_API, ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundSummaryResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundFavorite", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(customerFavoriteFundDataList));
 
             UtilMap.mappingFollowingFlag(listFund, customerFavoriteFundDataList);
             UtilMap.mappingBoughtFlag(listFund, fundSummaryResponse);
@@ -417,17 +418,17 @@ public class ProductsExpService extends TmbErrorHandle {
             FundSummaryBody fundSummaryBody = fundSummary.get();
             String suitabilityScore = suitabilityInfo.get().getSuitabilityScore();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchFundSummary", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(fundSummaryBody));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchSuitabilityInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE),  suitabilityScore);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchFundSummary", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundSummaryBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchSuitabilityInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE), suitabilityScore);
 
 
             FundAllocationRequestBody fundAllocationRequestBody = FundAllocationRequestBody.builder()
                     .suitabilityScore(suitabilityScore)
                     .build();
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundAllocation", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.convertObjectToStringJson(fundAllocationRequestBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundAllocation", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(fundAllocationRequestBody));
             ResponseEntity<TmbOneServiceResponse<FundAllocationResponse>> fundAllocationResponse = investmentRequestClient.callInvestmentFundAllocation(
-                    investmentHeaderRequest,fundAllocationRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundAllocation", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(fundAllocationResponse.getBody()));
+                    investmentHeaderRequest, fundAllocationRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundAllocation", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundAllocationResponse.getBody()));
 
             return mappingSuggestAllocationDto(fundSummaryBody.getFundClassList().getFundClass(), fundAllocationResponse.getBody().getData());
         } catch (ExecutionException e) {
