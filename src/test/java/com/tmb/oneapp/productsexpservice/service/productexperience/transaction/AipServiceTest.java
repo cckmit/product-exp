@@ -65,7 +65,7 @@ public class AipServiceTest {
         when(investmentRequestClient.createAipOrder(any(),any())).thenReturn(ResponseEntity.ok(orderAIPResponse));
 
         // when
-        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId,crmId, OrderAIPRequestBody.builder().orderType("C").build());
+        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId,crmId, OrderAIPRequestBody.builder().bankAccountType("C").build());
 
         // then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getStatus().getCode());
@@ -80,7 +80,7 @@ public class AipServiceTest {
         when(creditCardClient.getCreditCardDetails(any(), any())).thenThrow(MockitoException.class);
 
         // when
-        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId,crmId, OrderAIPRequestBody.builder().orderType("C").build());
+        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId,crmId, OrderAIPRequestBody.builder().bankAccountType("C").build());
 
         // then
         assertNull(actual.getStatus());
