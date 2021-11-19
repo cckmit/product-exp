@@ -236,6 +236,9 @@ public class CreditCardLogService {
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILED);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
+			if (!e.getStatus().getErrorStatus().isEmpty()) {
+				creditCardEvent.setFailReason(e.getStatus().getErrorStatus().get(0).getDescription());
+			}
 		}
 		logActivity(creditCardEvent);
 
