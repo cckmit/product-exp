@@ -304,6 +304,7 @@ public class ProductsExpServiceConstant {
 	public static final String SYSTEM_CUSTOMER = "CUSTOMER-SERVICE";
 	public static final String SYSTEM_ACCOUNT = "ACCOUNT-SERVICE";
 	public static final String SYSTEM_CACHE = "CACHE-SERVICE";
+	public static final String SYSTEM_CREDIT_CARD = "CREDIT_CARD_SERVICE";
 
 	public static final String C2G = "c2g";
 	public static final String RC = "rc";

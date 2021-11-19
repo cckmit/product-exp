@@ -51,8 +51,11 @@ public class AipService extends TmbErrorHandle {
         try {
 
             // credit card replace expiry date
-            if("C".equals(orderAIPRequestBody.getOrderType())){
+            if("C".equals(orderAIPRequestBody.getBankAccountType())){
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CREDIT_CARD,"getCreditCardDetails", ProductsExpServiceConstant.LOGGING_REQUEST),  orderAIPRequestBody.getBankAccountId());
                 ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, orderAIPRequestBody.getBankAccountId());
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CREDIT_CARD,"getCreditCardDetails", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(cardResponse.getBody()));
+
                 CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
                 String creditCardExpiry = creditCard.getCardInfo().getExpiredBy();
                 if(StringUtils.isEmpty(creditCardExpiry))
@@ -61,7 +64,10 @@ public class AipService extends TmbErrorHandle {
             }
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId, crmId);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"createAipOrder", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.convertObjectToStringJson(orderAIPRequestBody));
             ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> oneServiceResponseResponseEntity = investmentRequestClient.createAipOrder(investmentRequestHeader,orderAIPRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"createAipOrder", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(oneServiceResponseResponseEntity.getBody()));
+
             tmbOneServiceResponse.setData(oneServiceResponseResponseEntity.getBody().getData());
 
         } catch (FeignException feignException) {

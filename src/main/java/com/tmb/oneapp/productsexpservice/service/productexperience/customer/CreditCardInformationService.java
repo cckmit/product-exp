@@ -135,6 +135,7 @@ public class CreditCardInformationService {
                             pc.getProductCode().equals(creditCard.getProductCode()))
                     .findFirst();
             if(productConfigOptional.isPresent()){
+                creditCard.setAccountType(productConfigOptional.get().getAccountType());
                 filterCreditCardResult.add(creditCard);
             }
         }
