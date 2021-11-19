@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.controller;
 
+import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.X_CRMID;
+
 import java.time.Instant;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * SetCreditLimitController request mapping will handle apis call and then
@@ -67,11 +70,11 @@ public class SetCreditLimitController {
 	@ApiOperation(value = "Temporary and Permanent Credit Card Limit")
 	@PostMapping(value = "/credit-card/set-credit-limit")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, value = "Correlation Id", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da") })
-
+			@ApiImplicitParam(name = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da"),
+			@ApiImplicitParam(name = X_CRMID, defaultValue = "001100000000000000000000611330", required = true, dataType = "string", paramType = "header") })
 	public ResponseEntity<TmbOneServiceResponse<SetCreditLimitResp>> setCreditLimit(
 			@RequestBody SetCreditLimitReq requestBodyParameter,
-			@RequestHeader Map<String, String> requestHeadersParameter) {
+			@ApiParam(hidden = true) @RequestHeader Map<String, String> requestHeadersParameter) {
 		logger.info("Request Parameter fetchCreditLimit : {} ", requestBodyParameter);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -84,7 +87,7 @@ public class SetCreditLimitController {
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
 				ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
-		
+
 		try {
 
 			CreditCardEvent creditCardRequestAdjustEvent = new CreditCardEvent(correlationId, activityDate,
