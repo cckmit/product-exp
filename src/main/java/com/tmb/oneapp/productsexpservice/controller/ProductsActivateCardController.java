@@ -93,20 +93,21 @@ public class ProductsActivateCardController {
 								new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 										ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 						oneServiceResponse.setData(response);
+						String errorCode = response.getStatus().getErrorStatus().get(0).getErrorCode();
+						crditCardLogService.processActivateCard(headers, iv, accountId, false, errorCode);
 						return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 					}
 					oneServiceResponse
 							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 					oneServiceResponse.setData(response);
-					crditCardLogService.processActivateCard(headers,iv,accountId,true);
+					crditCardLogService.processActivateCard(headers, iv, accountId, true, null);
 					notificationService.sendCardActiveEmail(correlationId, accountId, crmId);
 					cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 				} else {
-					crditCardLogService.processActivateCard(headers,iv,accountId,false);
+					crditCardLogService.processActivateCard(headers, iv, accountId, false, ResponseCode.DATA_NOT_FOUND_ERROR.getDesc());
 					return dataNotFoundError(responseHeaders, oneServiceResponse);
-
 				}
 			} else {
 				return dataNotFoundError(responseHeaders, oneServiceResponse);
