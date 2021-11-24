@@ -92,6 +92,8 @@ public class ProductsActivateCardController {
 				if (activateCardResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 					response = activateCardResponse.getBody().getData();
 					if (1 == response.getStatus().getStatusCode() && !response.getStatus().getErrorStatus().isEmpty()) {
+                        String errorCode = response.getStatus().getErrorStatus().get(0).getErrorCode();
+                        crditCardLogService.processActivateCard(headers, iv, accountId, false, errorCode);
 						return (ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>>) InternalRespUtil
 								.generatedResponseFromService(responseHeaders, oneServiceResponse,activateCardResponse.getBody().getData().getStatus().getErrorStatus());
 					}
@@ -99,15 +101,14 @@ public class ProductsActivateCardController {
 							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 					oneServiceResponse.setData(response);
-					crditCardLogService.processActivateCard(headers, iv, accountId, true);
+                    crditCardLogService.processActivateCard(headers, iv, accountId, true, null);
 					notificationService.sendCardActiveEmail(correlationId, accountId, crmId);
 					cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 				} else {
-					crditCardLogService.processActivateCard(headers, iv, accountId, false);
+                    crditCardLogService.processActivateCard(headers, iv, accountId, false, ResponseCode.DATA_NOT_FOUND_ERROR.getDesc());
 					return (ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>>) InternalRespUtil
 							.generatedResponseFromService(responseHeaders, oneServiceResponse,activateCardResponse.getBody().getData().getStatus().getErrorStatus());
-
 				}
 			} else {
 				return dataNotFoundError(responseHeaders, oneServiceResponse);
