@@ -533,11 +533,13 @@ public class CreditCardLogService {
 	 * Create activate card event
 	 * 
 	 * @param headers
+	 * @param iv
 	 * @param accountId
-	 * @param accountId2
 	 * @param processStatus
+	 * @param errorCode
 	 */
-	public void processActivateCard(Map<String, String> headers, String iv, String accountId, boolean processStatus) {
+	public void processActivateCard(Map<String, String> headers, String iv, String accountId, boolean processStatus,
+			String errorCode) {
 		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, Long.toString(System.currentTimeMillis()),
 				ProductsExpServiceConstant.ACTIVATED_CARD);
@@ -549,8 +551,10 @@ public class CreditCardLogService {
 		creditCardEvent.setActivityStatus(result);
 		creditCardEvent.setCardNumber(cardNo);
 		creditCardEvent.setInitailVector(iv);
-		creditCardEvent
-				.setResult(processStatus ? ProductsExpServiceConstant.SUCCESS : ProductsExpServiceConstant.FAILED);
+		creditCardEvent.setResult(result);
+		if (errorCode != null) {
+			creditCardEvent.setFailReason(errorCode);
+		}
 		logActivity(creditCardEvent);
 	}
 

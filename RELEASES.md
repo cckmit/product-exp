@@ -9,6 +9,7 @@
 * [ONEAPP-22220](https://jira.tau2904.com/browse/ONEAPP-22220) Year of work fields are missing
 * [ONEAPP-22390](https://jira.tau2904.com/browse/ONEAPP-22390) [BE] activitylog for apply estatment loan id 100701003
 * [ONEAPP-22539](https://jira.tau2904.com/browse/ONEAPP-22539) [BE] Change logic supported e-statment to seperate for loan action
+* [ONEAPP-22863](https://jira.tau2904.com/browse/ONEAPP-22863) Loan: Product Landing - Adjust interest field format
 * [ONEAPP-22914](https://jira.tau2904.com/browse/ONEAPP-22914) [BE] - Modify creditcard-group service
 * [ONEAPP-23184](https://jira.tau2904.com/browse/ONEAPP-23184) FiID
 * [ONEAPP-23187](https://jira.tau2904.com/browse/ONEAPP-23187) Edit transaction fee for selling from frontEndFee to BackEndFee
