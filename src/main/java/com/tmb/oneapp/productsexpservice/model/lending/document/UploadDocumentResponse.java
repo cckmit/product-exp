@@ -12,5 +12,7 @@ public class UploadDocumentResponse {
 
     private String docCode;
     private String fileName;
+    private String appRefNo;
+    private String ncbConsentFlag;
 
 }
