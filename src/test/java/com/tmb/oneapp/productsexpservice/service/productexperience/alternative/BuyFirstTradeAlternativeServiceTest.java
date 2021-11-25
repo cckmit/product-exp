@@ -72,7 +72,7 @@ public class BuyFirstTradeAlternativeServiceTest {
         ObjectMapper mapper = new ObjectMapper();
         FirstTradeResponseBody firstTradeResponseBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/first_trade_body.json").toFile(),
                 FirstTradeResponseBody.class);
-        firstTradeResponseBody.setFirstTradeFlag("Y");
+        firstTradeResponseBody.setFirstTradeFlag("N");
         when(investmentAsyncService.getFirstTrade(any(), any())).thenReturn(CompletableFuture.completedFuture(firstTradeResponseBody));
 
         OccupationInquiryResponseBody occupationInquiryResponseBody = mapper.readValue(Paths.get("src/test/resources/investment/customer/occupation_inquiry_body.json").toFile(),

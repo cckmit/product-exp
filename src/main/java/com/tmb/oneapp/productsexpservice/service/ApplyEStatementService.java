@@ -81,25 +81,24 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @param requestHeaders 
 	 * @param productGroupTH
 	 * @param productGroupEN
 	 * @return
 	 * @throws TMBCommonException
 	 */
 	public UpdateEStatmentResp updateEstatement(String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException {
+			UpdateEStatmentRequest updateEstatementReq, Map<String, String> header) throws TMBCommonException {
 		UpdateEStatmentResp currentEstatementResponse = getEStatement(crmId, correlationId);
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		
-		
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
 		constructStatementFlagReq(requestHeaders, statementFlag, updateEstatementReq, currentEstatementResponse);
 		try {
 			if (StringUtils.isNoneBlank(updateEstatementReq.getAccountId())) {
-				updateEStatementOnSilverLake(requestHeaders, crmId, correlationId, updateEstatementReq);
+				updateEStatementOnSilverLake(requestHeaders, crmId, correlationId, updateEstatementReq,currentEstatementResponse);
 			}
 
 			ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> response = customerServiceClient
@@ -108,15 +107,15 @@ public class ApplyEStatementService {
 				throw new TMBCommonException("Fail on update EC system");
 			}
 			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-				activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, true, null,currentEstatementResponse.getInitialVector());
+				activitylogService.updatedEStatmentCard(header, updateEstatementReq, true, null,currentEstatementResponse.getInitialVector());
 			} else {
-				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, true, null);
+				activitylogService.updatedEStatmentLoan(header, updateEstatementReq, true, null);
 			}
 
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
 			if (StringUtils.isNotEmpty(updateEstatementReq.getLoanId())) {
-				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, false, null);
+				activitylogService.updatedEStatmentLoan(header, updateEstatementReq, false, null);
 			}
 			rollBackSilverlake(crmId, correlationId, updateEstatementReq);
 			throw new TMBCommonException(e.getMessage());
@@ -134,7 +133,6 @@ public class ApplyEStatementService {
 	 */
 	private void constructStatementFlagReq(Map<String, String> requestHeaders, StatementFlag statementFlag,
 			UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp currentEstatementResponse) {
-
 		String crmId = requestHeaders.get(ProductsExpServiceConstant.X_CRMID);
 		ResponseEntity<TmbOneServiceResponse<ProductHoldingsResp>> accountResponse = accountReqClient
 				.getProductHoldingService(requestHeaders, crmId);
@@ -232,19 +230,22 @@ public class ApplyEStatementService {
 	 * @param crmId
 	 * @param correlationId
 	 * @param updateEstatementReq
+	 * @param currentEstatementResponse 
 	 * @throws TMBCommonException 
 	 * @throws Exception
 	 */
 	private void updateEStatementOnSilverLake(Map<String, String> requestHeaders, String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException{
+			UpdateEStatmentRequest updateEstatementReq, UpdateEStatmentResp currentEstatementResponse) throws TMBCommonException{
 		Map<String, String> headers = new HashMap<>();
 		headers.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		headers.put(ProductsExpServiceConstant.X_CRMID, crmId);
 		String errorCode = null;
+		String iv = null;
 		try {
 			ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> responseEmail = creditCardClient
 					.updateEmailEStatement(headers, updateEstatementReq);
-
+			iv = responseEmail.getBody().getData().getInitialVector();
+			currentEstatementResponse.setInitialVector(iv);
 			if (!ResponseCode.SUCESS.getCode().equals(responseEmail.getBody().getStatus().getCode())) {
 				errorCode = responseEmail.getBody().getStatus().getCode();
 				throw new TMBCommonException(responseEmail.getBody().getStatus().getCode(),
@@ -253,21 +254,23 @@ public class ApplyEStatementService {
 			}
 			ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> responseEstatment = creditCardClient
 					.updateEnableEStatement(headers, updateEstatementReq);
+			iv = responseEstatment.getBody().getData().getInitialVector();
 			if (!ResponseCode.SUCESS.getCode().equals(responseEstatment.getBody().getStatus().getCode())) {
 				errorCode = responseEstatment.getBody().getStatus().getCode();
 				throw new TMBCommonException(responseEstatment.getBody().getStatus().getCode(),
 						responseEstatment.getBody().getStatus().getMessage(),
 						responseEstatment.getBody().getStatus().getService(), HttpStatus.BAD_REQUEST, new Exception());
 			}
+			currentEstatementResponse.setInitialVector(iv);
 
 		}catch (TMBCommonException e) {
 			logger.error(e.toString(),e);
-			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, e.getErrorCode(),null);
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, e.getErrorCode(),iv);
 			throw e;
 		} 
 		catch (Exception e) {
 			logger.error(e.toString(),e);
-			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, errorCode,null);
+			activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, false, errorCode,iv);
 			throw e;
 		}
 

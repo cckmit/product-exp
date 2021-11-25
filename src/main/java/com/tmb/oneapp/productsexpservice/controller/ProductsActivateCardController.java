@@ -12,6 +12,8 @@ import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
+import com.tmb.oneapp.productsexpservice.util.InternalRespUtil;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -56,6 +58,7 @@ public class ProductsActivateCardController {
 	 * @param headers
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@LogAround
 	@ApiOperation(value = "Activate card Api")
 	@ApiImplicitParams({
@@ -83,36 +86,34 @@ public class ProductsActivateCardController {
 				if (Objects.nonNull(activateCardResponse.getBody().getData())
 						&& Objects.nonNull(activateCardResponse.getBody().getData().getStatus())) {
 					iv = activateCardResponse.getBody().getData().getStatus().getInitialVector();
-				}	
+				}
 				
 				HttpStatus statusCode = activateCardResponse.getStatusCode();
 				if (activateCardResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 					response = activateCardResponse.getBody().getData();
 					if (1 == response.getStatus().getStatusCode() && !response.getStatus().getErrorStatus().isEmpty()) {
-						oneServiceResponse.setStatus(
-								new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-										ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-						oneServiceResponse.setData(response);
-						String errorCode = response.getStatus().getErrorStatus().get(0).getErrorCode();
-						crditCardLogService.processActivateCard(headers, iv, accountId, false, errorCode);
-						return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+                        String errorCode = response.getStatus().getErrorStatus().get(0).getErrorCode();
+                        crditCardLogService.processActivateCard(headers, iv, accountId, false, errorCode);
+						return (ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>>) InternalRespUtil
+								.generatedResponseFromService(responseHeaders, oneServiceResponse,activateCardResponse.getBody().getData().getStatus().getErrorStatus());
 					}
 					oneServiceResponse
 							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 					oneServiceResponse.setData(response);
-					crditCardLogService.processActivateCard(headers, iv, accountId, true, null);
+                    crditCardLogService.processActivateCard(headers, iv, accountId, true, null);
 					notificationService.sendCardActiveEmail(correlationId, accountId, crmId);
 					cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
 					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 				} else {
-					crditCardLogService.processActivateCard(headers, iv, accountId, false, ResponseCode.DATA_NOT_FOUND_ERROR.getDesc());
-					return dataNotFoundError(responseHeaders, oneServiceResponse);
+                    crditCardLogService.processActivateCard(headers, iv, accountId, false, ResponseCode.DATA_NOT_FOUND_ERROR.getDesc());
+					return (ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>>) InternalRespUtil
+							.generatedResponseFromService(responseHeaders, oneServiceResponse,activateCardResponse.getBody().getData().getStatus().getErrorStatus());
 				}
 			} else {
 				return dataNotFoundError(responseHeaders, oneServiceResponse);
 			}
-			
+
 		} catch (Exception e) {
 			logger.error("Error while getCreditCardDetails: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),

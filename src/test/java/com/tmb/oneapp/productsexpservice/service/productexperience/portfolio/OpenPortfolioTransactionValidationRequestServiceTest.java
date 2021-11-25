@@ -204,7 +204,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInformation());
         assertNotNull(actual.getData().getTermsConditions());
-        assertNull(actual.getData().getDepositAccountList());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
