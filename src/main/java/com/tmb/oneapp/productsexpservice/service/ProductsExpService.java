@@ -156,7 +156,7 @@ public class ProductsExpService extends TmbErrorHandle {
 
         try {
             UnitHolder unitHolder = new UnitHolder();
-            Map<String, String> header = UtilMap.createHeader(correlationId);
+            Map<String, String> header = UtilMap.createHeaderWithCrmId(correlationId,crmId);
             List<String> ports = getPortList(header, crmId, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
@@ -366,7 +366,7 @@ public class ProductsExpService extends TmbErrorHandle {
      */
     @LogAround
     public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
-        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> headerParameter = UtilMap.createHeaderWithCrmId(correlationId,crmId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
             UnitHolder unitHolder = new UnitHolder();
@@ -406,7 +406,7 @@ public class ProductsExpService extends TmbErrorHandle {
     @LogAround
     public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmId) throws TMBCommonException {
         UnitHolder unitHolder = new UnitHolder();
-        Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
+        Map<String, String> investmentHeaderRequest = UtilMap.createHeaderWithCrmId(correlationId,crmId);
         try {
             List<String> portList = getPortListForFundSummary(investmentHeaderRequest, crmId);
             unitHolder.setUnitHolderNumber(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
