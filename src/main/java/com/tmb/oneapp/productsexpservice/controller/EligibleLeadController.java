@@ -84,6 +84,9 @@ public class EligibleLeadController {
 				loanDetails = loanResponse.getBody().getData();
 				long endTime = System.currentTimeMillis();
 				logger.info("/loan/get-eligible-lead Execution Time : " + (endTime - startTime));
+				if(!loanResponse.getBody().getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+					throw new Exception("Fail from eligibke lead service");
+				}
 				
 				processSetDefaultMinimunMaximumAmounts(productId, loanDetails, responseConfig, true);
 				
