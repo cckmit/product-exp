@@ -11,7 +11,6 @@ import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.CreditCardClient;
 import com.tmb.oneapp.productsexpservice.model.activitylog.CreditCardEvent;
-import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import com.tmb.oneapp.productsexpservice.model.cardinstallment.CardInstallmentQuery;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
@@ -105,12 +104,7 @@ public class CardInstallmentController {
 						.confirmCardInstallment(correlationId, requestBodyParameter);
 				TmbOneServiceResponse<List<CardInstallmentResponse>> cardInstallmentResp = cardInstallment.getBody();
 				if (cardInstallmentResp != null) {
-
-					Status status = new Status();
-					status.setStatusCode(cardInstallment.getBody().getStatus().getCode());
-
 					List<CardInstallmentResponse> data = cardInstallmentResp.getData();
-
 					if (data != null) {
 						notificationService.doNotifyApplySoGood(correlationId, accountId, crmId, data,
 								requestBodyParameter);

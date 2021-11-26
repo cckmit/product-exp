@@ -15,6 +15,8 @@ import com.tmb.oneapp.productsexpservice.model.blockcard.Status;
 import com.tmb.oneapp.productsexpservice.service.CacheService;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
+import com.tmb.oneapp.productsexpservice.util.InternalRespUtil;
+
 import io.swagger.annotations.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,6 +73,7 @@ public class BlockCardController {
 	 * @param requestHeadersParameter
 	 * @return block card response
 	 */
+	@SuppressWarnings("unchecked")
 	@LogAround
 	@ApiOperation(value = "Block Card Api")
 	@PostMapping(value = "/credit-card/block-card")
@@ -104,7 +107,7 @@ public class BlockCardController {
 				if (Objects.nonNull(blockCardResp) && StringUtils.isNotEmpty(blockCardResp.getInitialVector())) {
 					iv = blockCardResp.getInitialVector();
 				}
-				if (blockCardRes.getBody().getStatus().getStatusCode().equalsIgnoreCase("0")) {
+				if (blockCardRes.getBody().getStatus().getStatusCode().equals("0")) {
 					String txnId = UUID.randomUUID().toString();
 					Status status = new Status();
 					status.setStatusCode(blockCardRes.getBody().getStatus().getStatusCode());
@@ -123,13 +126,12 @@ public class BlockCardController {
 					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
 				} else {
-					oneServiceResponse.setStatus(
-							new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(), ResponseCode.GENERAL_ERROR.getMessage(),
-									ResponseCode.GENERAL_ERROR.getService(), ResponseCode.GENERAL_ERROR.getDesc()));
 					creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
 							correlationId, accountId, ProductsExpServiceConstant.INTERNAL_SERVER,
 							requestHeadersParameter, iv);
-					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+					return (ResponseEntity<TmbOneServiceResponse<BlockCardResponse>>) InternalRespUtil
+							.generatedResponseFromService(responseHeaders, oneServiceResponse,
+									blockCardResp.getStatus().getErrorStatus());
 				}
 			} else {
 				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
