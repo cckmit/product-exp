@@ -41,7 +41,7 @@ public class ProductExpServiceCloseTest {
 
     @Test
     public void isBusinessCloseException() {
-        boolean fundAccountRs = UtilMap.isBusinessClose("06:00", "08:00");
+        boolean fundAccountRs = UtilMap.isBusinessClose("10:00", "10:01");
         Assert.assertFalse(fundAccountRs);
     }
 
