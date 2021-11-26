@@ -82,7 +82,7 @@ public class ProductsExpServiceConstant {
 	public static final String ID_EXPIRED_DESC = "Error";
 
 	/* CONNECTION FAIL */
-	public static final String SERVICE_NOT_READY = "MSG999";
+	public static final String SERVICE_NOT_READY = "999";
 	public static final String SERVICE_NOT_READY_MESSAGE = "INTERNET CONNECTION FAIL";
 	public static final String SERVICE_NOT_READY_DESC = "SOMETHING WENT WRONG, TRY AGAIN";
 	public static final String SERVICE_NOT_READY_DESC_MESSAGE = "SOMETHING WENT WRONG :%s, TRY AGAIN";
