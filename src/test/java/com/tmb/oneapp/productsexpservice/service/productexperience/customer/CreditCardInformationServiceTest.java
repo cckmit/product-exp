@@ -56,6 +56,8 @@ public class CreditCardInformationServiceTest {
 
         ProductConfig productConfig = new ProductConfig();
         productConfig.setProductCode("VABSIN");
+        productConfig.setAllowToPurchaseMf("1");
+        productConfig.setAccountType("CCA");
         List<ProductConfig> productConfigList = new ArrayList<>();
         productConfigList.add(productConfig);
         TmbOneServiceResponse tmbOneServiceResponse = new TmbOneServiceResponse();
@@ -68,7 +70,6 @@ public class CreditCardInformationServiceTest {
         //Then
         assertEquals(TmbStatusUtil.successStatus().getCode(),actual.getStatus().getCode());
         assertEquals(creditcardInformationResponse, actual.getData());
-        assertEquals("N",actual.getData().getCreditCards().get(0).getEligibleForPurchasingMutualfund());
     }
 
     @Test

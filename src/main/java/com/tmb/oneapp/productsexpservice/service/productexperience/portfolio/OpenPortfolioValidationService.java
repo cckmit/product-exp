@@ -84,11 +84,7 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
             validateCustomerService(customerInfoResponse);
             CustomerSearchResponse customerInfo = customerInfoResponse.getBody().getData().get(0);
 
-            List<DepositAccount> depositAccountList = null;
-            if (!openPortfolioValidateRequest.isExistingCustomer()) {
-                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId, false);
-            }
-
+            List<DepositAccount> depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId, false);
             validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
 
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
@@ -101,6 +97,9 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
                 throwTmbException("========== failed get termandcondition service ==========");
             }
 
+            if (openPortfolioValidateRequest.isExistingCustomer()) {
+                depositAccountList = null;
+            }
             mappingOpenPortFolioValidationResponse(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
             return tmbOneServiceResponse;
         } catch (Exception ex) {

@@ -33,6 +33,8 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickn
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.response.OpenPortfolioResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.saveordercreation.SaveOrderCreationRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.orderaip.request.OrderAIPRequestBody;
+import com.tmb.oneapp.productsexpservice.model.productexperience.transaction.orderaip.response.OrderAIPResponseBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
@@ -399,12 +401,25 @@ public interface InvestmentRequestClient {
      *
      * @param header the headers
      * @param orderCreationPaymentRequestBody the body
-     * @return the FundListBody response
+     * @return the OrderCreationPaymentResponse response
      */
     @PostMapping(value = "${investment.service.fund.transaction.order.creation.payment}")
     ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> createOrderPayment(
             @RequestHeader Map<String, String> header,
             @RequestBody OrderCreationPaymentRequestBody orderCreationPaymentRequestBody);
+
+
+    /**
+     * Call investment create aip order service.
+     *
+     * @param header the headers
+     * @param orderAIPRequestBody the body
+     * @return the OrderAIPResponseBody response
+     */
+    @PostMapping(value = "${investment.service.fund.transaction.create.aip.order}")
+    ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> createAipOrder(
+            @RequestHeader Map<String, String> header,
+            @RequestBody OrderAIPRequestBody orderAIPRequestBody);
 
 
 }
