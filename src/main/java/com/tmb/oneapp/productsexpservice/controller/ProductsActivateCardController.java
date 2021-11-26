@@ -75,6 +75,7 @@ public class ProductsActivateCardController {
 			String accountId = headers.get(ProductsExpServiceConstant.ACCOUNT_ID);
 			String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 			String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
+			headers.put(ProductsExpServiceConstant.CHANNEL, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
 			if (!Strings.isNullOrEmpty(accountId)) {
 				ResponseEntity<TmbOneServiceResponse<ActivateCardResponse>> activateCardResponse = creditCardClient
 						.activateCard(headers);
