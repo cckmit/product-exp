@@ -95,6 +95,7 @@ public class OpenPortfolioActivityLogService {
 
     private OpenPortfolioActivityLog initialActivityLogData(String correlationId, String crmId, String activityTypeId) {
         OpenPortfolioActivityLog activityData = new OpenPortfolioActivityLog(correlationId, String.valueOf(System.currentTimeMillis()), activityTypeId);
+        activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_CHANNEL);
         activityData.setActivityStatus(ProductsExpServiceConstant.SUCCESS);
         activityData.setCrmId(UtilMap.fullCrmIdFormat(crmId));
         return activityData;
