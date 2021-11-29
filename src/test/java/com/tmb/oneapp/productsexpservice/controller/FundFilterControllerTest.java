@@ -49,11 +49,11 @@ public class FundFilterControllerTest {
         try {
             ObjectMapper mapper = new ObjectMapper();
             expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_filter.json").toFile(), FundListBySuitScoreBody.class);
-            when(fundFilterService.getFundListBySuitScore(correlationId, fundListBySuitScoreRequest)).thenReturn(expectedResponse);
+            when(fundFilterService.getFundListBySuitScore(correlationId,"crmid", fundListBySuitScoreRequest)).thenReturn(expectedResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> actualResult = fundFilterController.getFundListBySuitScore(correlationId , fundListBySuitScoreRequest);
+        ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> actualResult = fundFilterController.getFundListBySuitScore(correlationId,"crmid",fundListBySuitScoreRequest);
         Assert.assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertEquals(expectedResponse.getFundClassList(), actualResult.getBody().getData().getFundClassList());
 
@@ -69,11 +69,11 @@ public class FundFilterControllerTest {
         try {
             ObjectMapper mapper = new ObjectMapper();
             expectedResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund_filter_not_fund.json").toFile(), FundListBySuitScoreBody.class);
-            when(fundFilterService.getFundListBySuitScore(correlationId, fundListBySuitScoreRequest)).thenReturn(expectedResponse);
+            when(fundFilterService.getFundListBySuitScore(correlationId,"crmid", fundListBySuitScoreRequest)).thenReturn(expectedResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> actualResult = fundFilterController.getFundListBySuitScore(correlationId , fundListBySuitScoreRequest);
+        ResponseEntity<TmbOneServiceResponse<FundListBySuitScoreBody>> actualResult = fundFilterController.getFundListBySuitScore(correlationId,"crmid", fundListBySuitScoreRequest);
        Assert.assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
 
     }
