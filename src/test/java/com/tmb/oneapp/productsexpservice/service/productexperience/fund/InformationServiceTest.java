@@ -56,7 +56,7 @@ class InformationServiceTest {
         when(investmentAsyncService.fetchFundDailyNav(any(), any())).thenReturn(CompletableFuture.completedFuture(dailyNavResponse.getData()));
 
         //When
-        InformationDto actual = informationService.getFundInformation(correlationId, fundCodeRequestBody);
+        InformationDto actual = informationService.getFundInformation(correlationId,"crmId", fundCodeRequestBody);
 
         //Then
         InformationDto expected = InformationDto.builder()
@@ -78,7 +78,7 @@ class InformationServiceTest {
         when(investmentAsyncService.fetchFundInformation(any(), any())).thenThrow(TMBCommonException.class);
 
         //When
-        InformationDto actual = informationService.getFundInformation(correlationId, fundCodeRequestBody);
+        InformationDto actual = informationService.getFundInformation(correlationId,"crmId", fundCodeRequestBody);
 
         //Then
         assertNull(actual);
@@ -100,7 +100,7 @@ class InformationServiceTest {
 
         // when
         try {
-            informationService.getFundInformation(correlationId, fundCodeRequestBody);
+            informationService.getFundInformation(correlationId,"crmId", fundCodeRequestBody);
         }catch (TMBCommonException e){
 
             // then

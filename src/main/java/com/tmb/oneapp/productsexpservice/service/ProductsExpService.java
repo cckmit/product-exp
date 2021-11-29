@@ -108,14 +108,14 @@ public class ProductsExpService extends TmbErrorHandle {
      * @return
      */
     @LogAround
-    public FundAccountResponse getFundAccountDetail(String correlationId, FundAccountRequest fundAccountRequest) throws TMBCommonException {
+    public FundAccountResponse getFundAccountDetail(String correlationId, String crmId, FundAccountRequest fundAccountRequest) throws TMBCommonException {
         FundAccountResponse fundAccountResponse = null;
         FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAcc(fundAccountRequest);
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRequest);
         OrderStmtByPortRequest orderStmtByPortRequest = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
                 ProductsExpServiceConstant.FIXED_START_PAGE, ProductsExpServiceConstant.FIXED_END_PAGE);
 
-        Map<String, String> header = UtilMap.createHeader(correlationId);
+        Map<String, String> header = UtilMap.createHeaderWithCrmId(correlationId,crmId);
         try {
             CompletableFuture<AccountDetailResponse> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(header, fundAccountRequestBody);
             CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(header, fundRuleRequestBody);
