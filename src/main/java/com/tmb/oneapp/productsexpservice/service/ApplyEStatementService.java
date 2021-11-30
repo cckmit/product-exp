@@ -86,13 +86,12 @@ public class ApplyEStatementService {
 	 * @return
 	 * @throws TMBCommonException
 	 */
-	public UpdateEStatmentResp updateEstatement(Map<String, String> headers, String crmId, String correlationId,
-			UpdateEStatmentRequest updateEstatementReq) throws TMBCommonException {
+	public UpdateEStatmentResp updateEstatement(String crmId, String correlationId,
+			UpdateEStatmentRequest updateEstatementReq, Map<String, String> header) throws TMBCommonException {
 		UpdateEStatmentResp currentEstatementResponse = getEStatement(crmId, correlationId);
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
 		requestHeaders.put(ProductsExpServiceConstant.X_CRMID, crmId);
-		requestHeaders.put(ProductsExpServiceConstant.CHANNEL, headers.get(ProductsExpServiceConstant.CHANNEL));
 		
 		StatementFlag statementFlag = currentEstatementResponse.getCustomer().getStatementFlag();
 
@@ -108,9 +107,9 @@ public class ApplyEStatementService {
 				throw new TMBCommonException("Fail on update EC system");
 			}
 			if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-				activitylogService.updatedEStatmentCard(requestHeaders, updateEstatementReq, true, null,currentEstatementResponse.getInitialVector());
+				activitylogService.updatedEStatmentCard(header, updateEstatementReq, true, null,currentEstatementResponse.getInitialVector());
 			} else {
-				activitylogService.updatedEStatmentLoan(requestHeaders, updateEstatementReq, true, null);
+				activitylogService.updatedEStatmentLoan(header, updateEstatementReq, true, null);
 			}
 
 		} catch (Exception e) {
