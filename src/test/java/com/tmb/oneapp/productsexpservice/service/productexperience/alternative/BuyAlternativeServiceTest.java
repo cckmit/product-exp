@@ -236,16 +236,16 @@ public class BuyAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_Fund_Off_shelf_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
+    public void should_return_failed_fund_Off_shelf_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
         // given
-        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF);
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateFundOffShelf(any(), any(),any(), any())).thenReturn(status);
+        when(alternativeService.validateFundOffShelf(any(), any(), any(), any())).thenReturn(status);
 
         // when
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest
@@ -263,5 +263,4 @@ public class BuyAlternativeServiceTest {
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
-
 }

@@ -435,16 +435,16 @@ public class AlternativeService {
 
             if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
                     StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
-                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDesc());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
 
         } catch (Exception ex) {
-            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDesc());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;

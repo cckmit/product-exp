@@ -66,9 +66,7 @@ public class BuyFirstTradeAlternativeServiceTest {
     }
 
     private void byPassAllAlternative() throws TMBCommonException, IOException {
-        TmbStatus successStatus = TmbStatusUtil.successStatus();
-
-        // Given
+        // given
         ObjectMapper mapper = new ObjectMapper();
         FirstTradeResponseBody firstTradeResponseBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/first_trade_body.json").toFile(),
                 FirstTradeResponseBody.class);
@@ -79,16 +77,15 @@ public class BuyFirstTradeAlternativeServiceTest {
                 OccupationInquiryResponseBody.class);
         when(investmentAsyncService.fetchOccupationInquiry(any(), any())).thenReturn(CompletableFuture.completedFuture(occupationInquiryResponseBody));
 
-
         ValidateServiceHourResponse statusWithTime = new ValidateServiceHourResponse();
+        TmbStatus successStatus = TmbStatusUtil.successStatus();
         BeanUtils.copyProperties(successStatus, statusWithTime);
 
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(successStatus);
-
+        when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(successStatus);
     }
 
     @Test
@@ -102,7 +99,6 @@ public class BuyFirstTradeAlternativeServiceTest {
         assertNull(actual.getStatus());
         assertNull(actual.getData());
     }
-
 
     @Test
     public void should_return_failed_validate_customer_risk_level_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() throws TMBCommonException, IOException {
@@ -149,31 +145,6 @@ public class BuyFirstTradeAlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(),
-                actual.getStatus().getMessage());
-    }
-
-
-    @Test
-    public void should_return_failed_validate_fatca_not_valid_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() throws TMBCommonException, IOException {
-        // given
-        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
-        byPassAllAlternative();
-        TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
-        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(status);
-
-        // when
-        AlternativeBuyFirstTTradeRequest alternativeBuyRequest = AlternativeBuyFirstTTradeRequest.builder().build();
-        TmbOneServiceResponse<TradeOccupationResponse> actual = buyFirstTradeAlternativeService.validationBuyFirstTrade(correlationId, crmId, alternativeBuyRequest);
-
-        // then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
-                actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
                 actual.getStatus().getMessage());
     }
 
@@ -224,6 +195,4 @@ public class BuyFirstTradeAlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
                 actual.getStatus().getMessage());
     }
-
-
 }

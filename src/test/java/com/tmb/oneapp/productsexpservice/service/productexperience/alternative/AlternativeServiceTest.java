@@ -407,9 +407,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateAccountRedeemtion(correlationId, "crmid", TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDesc(), actual.getDescription());
     }
 
     @Test

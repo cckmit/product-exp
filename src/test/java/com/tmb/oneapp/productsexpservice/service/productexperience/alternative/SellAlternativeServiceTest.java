@@ -4,7 +4,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.response.servicehour.ValidateServiceHourResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -22,8 +21,6 @@ import org.springframework.beans.BeanUtils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,8 +59,8 @@ public class SellAlternativeServiceTest {
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateIdCardExpired(any(),any())).thenReturn(successStatus);
-        when(alternativeService.validateFatcaFlagNotValid(any(),any())).thenReturn(successStatus);
+        when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
     }
 
     @Test
@@ -151,9 +148,9 @@ public class SellAlternativeServiceTest {
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDesc());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateAccountRedeemtion(any(), any(), any())).thenReturn(status);
 
@@ -161,9 +158,9 @@ public class SellAlternativeServiceTest {
         TmbOneServiceResponse<String> actual = sellAlternativeService.validationSell(correlationId, crmId);
 
         // then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg(),
                 actual.getStatus().getMessage());
     }
 

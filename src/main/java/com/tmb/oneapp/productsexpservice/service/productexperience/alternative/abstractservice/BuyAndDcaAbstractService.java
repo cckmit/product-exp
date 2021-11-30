@@ -78,7 +78,6 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
                                                               boolean isBuyFlow,
                                                               boolean isFirstTrade) {
 
-
         BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(isBuyFlow).isFirstTrade(isFirstTrade).build();
         tmbOneServiceResponse = validateGroupingService(correlationId, customerInfo, tmbOneServiceResponse, status, buyFlowFirstTrade);
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
@@ -90,8 +89,6 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             return tmbOneServiceResponse;
         }
-
-
         return tmbOneServiceResponse;
     }
 }
