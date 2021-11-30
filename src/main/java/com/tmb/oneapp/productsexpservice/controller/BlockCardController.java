@@ -94,9 +94,12 @@ public class BlockCardController {
 				.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID.toLowerCase());
 		String accountId = requestBodyParameter.getAccountId();
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
-		requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
-				ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
-
+		
+		if (Strings.isNullOrEmpty(requestHeadersParameter.get(ProductsExpServiceConstant.CHANNEL))) {
+			requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
+					ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+		}
+		
 		try {
 			if (!Strings.isNullOrEmpty(accountId) && !Strings.isNullOrEmpty(correlationId)
 					&& accountId.length() == 25) {

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Strings;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.exception.model.TMBCommonExceptionWithResponse;
 import com.tmb.common.logger.LogAround;
@@ -94,8 +95,11 @@ public class SetPinController {
 			String correlationId = requestHeadersParameter.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 			String accountId = requestBodyParameter.getAccountId();
 			String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
-			requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
-					ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+			
+			if (Strings.isNullOrEmpty(requestHeadersParameter.get(ProductsExpServiceConstant.CHANNEL))) {
+				requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
+						ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+			}
 
 			TmbOneServiceResponse<SetPinResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 			TranslatePinRes translatePinRes = oneappAuthClient.fetchEcasTranslatePinData(correlationId,
