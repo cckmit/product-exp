@@ -1,6 +1,7 @@
 
 package com.tmb.oneapp.productsexpservice.controller;
 
+import com.google.common.base.Strings;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -91,7 +92,10 @@ public class CardInstallmentController {
 		String activityId = ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON;
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
 		String activityDate = Long.toString(System.currentTimeMillis());
-
+		if (Strings.isNullOrEmpty(requestHeadersParameter.get(ProductsExpServiceConstant.CHANNEL))) {
+			requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
+					ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+		}
 		CreditCardEvent creditCardEvent = new CreditCardEvent(correlationId, activityDate, activityId);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
