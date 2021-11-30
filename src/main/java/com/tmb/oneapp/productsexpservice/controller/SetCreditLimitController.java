@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.base.Strings;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.ErrorStatusInfo;
@@ -89,9 +90,10 @@ public class SetCreditLimitController {
 		String activityDate = Long.toString(System.currentTimeMillis());
 		String accountId = requestBodyParameter.getAccountId();
 		String crmId = requestHeadersParameter.get(ProductsExpServiceConstant.X_CRMID);
-		requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
-				ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
-
+		if (Strings.isNullOrEmpty(requestHeadersParameter.get(ProductsExpServiceConstant.CHANNEL))) {
+			requestHeadersParameter.put(ProductsExpServiceConstant.CHANNEL,
+					ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+		}
 		try {
 
 			CreditCardEvent creditCardRequestAdjustEvent = new CreditCardEvent(correlationId, activityDate,
