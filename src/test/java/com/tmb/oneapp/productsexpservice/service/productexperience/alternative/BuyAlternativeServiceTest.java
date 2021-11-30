@@ -22,12 +22,10 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,7 +106,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getMessage(),
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
@@ -119,8 +117,8 @@ public class BuyAlternativeServiceTest {
         byPassAllAlternative();
         ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         status.setStartTime("19:00");
         status.setEndTime("20:00");
@@ -133,7 +131,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMessage(),
                 actual.getStatus().getMessage());
         assertEquals("19:00-20:00", (actual.getData()));
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
@@ -146,8 +144,8 @@ public class BuyAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(status);
 
@@ -158,7 +156,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getMessage(),
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
@@ -170,8 +168,8 @@ public class BuyAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(status);
 
@@ -182,7 +180,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(),
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
@@ -194,8 +192,8 @@ public class BuyAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(status);
 
@@ -206,7 +204,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage(),
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
@@ -218,8 +216,8 @@ public class BuyAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(status);
 
@@ -230,7 +228,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage(),
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }
@@ -242,8 +240,8 @@ public class BuyAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         when(alternativeService.validateFundOffShelf(any(), any(), any(), any())).thenReturn(status);
 
@@ -259,7 +257,7 @@ public class BuyAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage(),
                 actual.getStatus().getMessage());
         verify(buyActivityLogService, times(1)).clickPurchaseButtonAtFundFactSheetScreen(anyString(), anyString(), any(), anyString());
     }

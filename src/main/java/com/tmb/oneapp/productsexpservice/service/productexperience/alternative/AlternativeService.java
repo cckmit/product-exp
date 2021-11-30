@@ -172,8 +172,8 @@ public class AlternativeService {
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             if (UtilMap.isCASADormant(responseCustomerExp)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -201,8 +201,8 @@ public class AlternativeService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
             if (UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData())) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -231,8 +231,8 @@ public class AlternativeService {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "getCustomerProfile", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseData));
             if (UtilMap.isCustIdExpired(responseData)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -436,15 +436,15 @@ public class AlternativeService {
             if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
                     StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
 
         } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
@@ -468,8 +468,8 @@ public class AlternativeService {
 
         } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;

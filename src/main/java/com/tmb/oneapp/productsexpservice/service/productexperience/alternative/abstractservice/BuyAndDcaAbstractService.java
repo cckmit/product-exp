@@ -48,8 +48,8 @@ public abstract class BuyAndDcaAbstractService extends ValidateGroupingAbstractS
         // process flag != Y = Can not buy fund
         if (!ProductsExpServiceConstant.PROCESS_FLAG_Y.equals(processFlag)) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getMsg());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             tmbOneServiceResponse.setStatus(status);
             return tmbOneServiceResponse;

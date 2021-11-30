@@ -19,6 +19,7 @@ public enum AlternativeOpenPortfolioErrorEnums {
 
     private static final String ERROR_DESC = "error";
     private static final String ERROR_CODE_200018 = "2000018";
+
     private String code;
     private String message;
     private String description;

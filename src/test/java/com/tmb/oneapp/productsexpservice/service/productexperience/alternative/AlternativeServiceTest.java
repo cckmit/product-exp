@@ -171,8 +171,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -190,8 +190,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -207,8 +207,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -408,8 +408,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -455,8 +455,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription(), actual.getDescription());
 
     }
 

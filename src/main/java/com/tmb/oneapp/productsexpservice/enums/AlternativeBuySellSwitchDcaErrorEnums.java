@@ -19,12 +19,12 @@ public enum AlternativeBuySellSwitchDcaErrorEnums {
     private static final String ERROR_CODE_200018 = "2000018";
 
     private String code;
-    private String msg;
-    private String desc;
+    private String message;
+    private String description;
 
-    AlternativeBuySellSwitchDcaErrorEnums(String code, String msg, String desc) {
+    AlternativeBuySellSwitchDcaErrorEnums(String code, String message, String description) {
         this.code = code;
-        this.msg = msg;
-        this.desc = desc;
+        this.message = message;
+        this.description = description;
     }
 }
