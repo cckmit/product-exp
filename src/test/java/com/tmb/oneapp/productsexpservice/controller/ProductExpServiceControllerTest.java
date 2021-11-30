@@ -153,13 +153,13 @@ public class ProductExpServiceControllerTest {
         fundAccountRequest.setTranType("All");
 
         try {
-            when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(fundAccountResponse);
+            when(productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest)).thenReturn(fundAccountResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(correlationId, fundAccountRequest);
+                .getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         assertEquals(success_code, actualResult.getBody().getStatus().getCode());
 
@@ -179,13 +179,13 @@ public class ProductExpServiceControllerTest {
         fundAccountRequest.setTranType("All");
 
         try {
-            when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(null);
+            when(productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(correlationId, fundAccountRequest);
+                .getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 
@@ -203,13 +203,13 @@ public class ProductExpServiceControllerTest {
         try {
             FundAccountDetail fundAccountDetail = mappingResponse(accountDetailResponse, fundRuleResponse);
             fundAccountResponse.setDetails(fundAccountDetail);
-            when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(fundAccountResponse);
+            when(productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest)).thenReturn(fundAccountResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(correlationId, fundAccountRequest);
+                .getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         Assert.assertNotNull(actualResult.getBody().getData().getDetails());
     }
@@ -256,13 +256,13 @@ public class ProductExpServiceControllerTest {
         try {
             FundAccountDetail fundAccountDetail = mappingResponse(accountDetailResponse, fundRuleResponse);
             fundAccountResponse.setDetails(fundAccountDetail);
-            when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(null);
+            when(productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         ResponseEntity<TmbOneServiceResponse<FundAccountResponse>> actualResult = productExpServiceController
-                .getFundAccountDetail(correlationId, fundAccountRequest);
+                .getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         assertEquals(HttpStatus.NOT_FOUND, actualResult.getStatusCode());
     }
 

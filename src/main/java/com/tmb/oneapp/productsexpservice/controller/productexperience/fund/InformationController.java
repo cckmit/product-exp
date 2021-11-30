@@ -53,13 +53,14 @@ public class InformationController {
     public ResponseEntity<TmbOneServiceResponse<InformationDto>> getFundInformation(
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
 
         TmbOneServiceResponse<InformationDto> oneServiceResponse = new TmbOneServiceResponse<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
-        InformationDto fundInformation = informationService.getFundInformation(correlationId, fundCodeRequestBody);
+        InformationDto fundInformation = informationService.getFundInformation(correlationId,crmId, fundCodeRequestBody);
         if (!StringUtils.isEmpty(fundInformation)) {
             return getTmbOneServiceResponseEntity(oneServiceResponse, fundInformation, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
         } else {
