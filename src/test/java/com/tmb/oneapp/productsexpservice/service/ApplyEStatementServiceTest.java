@@ -75,7 +75,6 @@ public class ApplyEStatementServiceTest {
 	void testUpdateEStatementProductGroupLoan() throws Exception {
 		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
-		Map<String, String> requestHeaders = new HashMap<>();
 		UpdateEStatmentRequest updateEstatementReq = new UpdateEStatmentRequest();
 
 		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -115,7 +114,7 @@ public class ApplyEStatementServiceTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
 
-		applyEStatementService.updateEstatement(requestHeaders, crmId, correlationId, updateEstatementReq);
+		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}
 
@@ -123,7 +122,6 @@ public class ApplyEStatementServiceTest {
 	void testUpdateEStatementProductGroupCreditCard() throws Exception {
 		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
-		Map<String, String> requestHeaders = new HashMap<>();
 		UpdateEStatmentRequest updateEstatementReq = new UpdateEStatmentRequest();
 		updateEstatementReq.setAccountId("5213323");
 		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -164,7 +162,7 @@ public class ApplyEStatementServiceTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
 
-		applyEStatementService.updateEstatement(requestHeaders, crmId, correlationId, updateEstatementReq);
+		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}
 
@@ -172,7 +170,6 @@ public class ApplyEStatementServiceTest {
 	void testUpdateEStatementProductGroupFlashCard() throws Exception {
 		String correlationId = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID;
 		String crmId = ProductsExpServiceConstant.X_CRMID;
-		Map<String, String> requestHeaders = new HashMap<>();
 		UpdateEStatmentRequest updateEstatementReq = new UpdateEStatmentRequest();
 		updateEstatementReq.setAccountId("5213323");
 		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
@@ -215,7 +212,7 @@ public class ApplyEStatementServiceTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
 		
-		applyEStatementService.updateEstatement(requestHeaders, crmId, correlationId, updateEstatementReq);
+		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}
 
