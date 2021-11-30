@@ -22,8 +22,8 @@ public class InternalRespUtil {
 	 * @param errorStatusInfo
 	 * @return
 	 */
-	public static ResponseEntity<?> generatedResponseFromService(HttpHeaders responseHeaders,
-			TmbOneServiceResponse<?> oneServiceResponse, List<ErrorStatusInfo> errorStatusInfo) {
+	public static ResponseEntity generatedResponseFromService(HttpHeaders responseHeaders,
+			TmbOneServiceResponse oneServiceResponse, List<ErrorStatusInfo> errorStatusInfo) {
 
 		if (CollectionUtils.isNotEmpty(errorStatusInfo)) {
 			ErrorStatusInfo errorInfo = errorStatusInfo.get(0);
@@ -44,8 +44,8 @@ public class InternalRespUtil {
 	 * @param serviceResponse
 	 * @param status
 	 */
-	public static ResponseEntity<?> generatedResponseFromService(HttpHeaders responseHeaders,
-			TmbOneServiceResponse<?> serviceResponse, TmbStatus status) {
+	public static ResponseEntity generatedResponseFromService(HttpHeaders responseHeaders,
+			TmbOneServiceResponse serviceResponse, TmbStatus status) {
 		serviceResponse.setStatus(new TmbStatus(status.getCode(), status.getDescription(), status.getService()));
 		return ResponseEntity.badRequest().headers(responseHeaders).body(serviceResponse);
 	}
@@ -57,8 +57,8 @@ public class InternalRespUtil {
 	 * @param errorStatus
 	 * @return
 	 */
-	public static ResponseEntity<?> generatedResponseFromSilverLake(HttpHeaders responseHeaders,
-			TmbOneServiceResponse<?> oneServiceResponse, List<SilverlakeErrorStatus> errorStatus) {
+	public static ResponseEntity generatedResponseFromSilverLake(HttpHeaders responseHeaders,
+			TmbOneServiceResponse oneServiceResponse, List<SilverlakeErrorStatus> errorStatus) {
 		if (CollectionUtils.isNotEmpty(errorStatus)) {
 			SilverlakeErrorStatus silverLakeError = errorStatus.get(0);
 			oneServiceResponse.setStatus(new TmbStatus(silverLakeError.getErrorCode(), silverLakeError.getDescription(),

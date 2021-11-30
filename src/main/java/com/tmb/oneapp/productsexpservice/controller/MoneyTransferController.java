@@ -82,7 +82,7 @@ public class MoneyTransferController {
 				int statusCodeValue = tmbOneServiceResponse.getStatusCodeValue();
 				HttpStatus statusCode = tmbOneServiceResponse.getStatusCode();
 
-				if (response != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
+				if (statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 					serviceResponse
 							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

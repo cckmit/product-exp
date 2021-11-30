@@ -103,36 +103,45 @@ public class BlockCardController {
 				ResponseEntity<com.tmb.common.model.creditcard.BlockCardResponse> blockCardRes = creditCardClient
 						.getBlockCardDetails(requestBodyParameter);
 				com.tmb.common.model.creditcard.BlockCardResponse blockCardResp = blockCardRes.getBody();
-				String iv = null;
-				if (Objects.nonNull(blockCardResp) && StringUtils.isNotEmpty(blockCardResp.getInitialVector())) {
-					iv = blockCardResp.getInitialVector();
-				}
-				if (blockCardRes.getBody().getStatus().getStatusCode().equals("0")) {
-					String txnId = UUID.randomUUID().toString();
-					Status status = new Status();
-					status.setStatusCode(blockCardRes.getBody().getStatus().getStatusCode());
-					status.setDate(Long.toString(System.currentTimeMillis()));
-					status.setTxnId(txnId);
-					BlockCardResponse res = new BlockCardResponse();
-					res.setStatus(status);
-					oneServiceResponse.setData(res);
-					oneServiceResponse
-							.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-									ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-					creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.SUCCESS, correlationId,
-							accountId, "", requestHeadersParameter, iv);
-					notificationService.doNotifySuccessForBlockCard(correlationId, accountId, crmId);
-					cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
-					return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
+				if (Objects.nonNull(blockCardResp)) {
+					String iv = null;
+
+					if (StringUtils.isNotEmpty(blockCardResp.getInitialVector())) {
+						iv = blockCardResp.getInitialVector();
+					}
+					if (blockCardRes.getBody().getStatus().getStatusCode().equals("0")) {
+						String txnId = UUID.randomUUID().toString();
+						Status status = new Status();
+						status.setStatusCode(blockCardRes.getBody().getStatus().getStatusCode());
+						status.setDate(Long.toString(System.currentTimeMillis()));
+						status.setTxnId(txnId);
+						BlockCardResponse res = new BlockCardResponse();
+						res.setStatus(status);
+						oneServiceResponse.setData(res);
+						oneServiceResponse.setStatus(
+								new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
+										ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
+						creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.SUCCESS,
+								correlationId, accountId, "", requestHeadersParameter, iv);
+						notificationService.doNotifySuccessForBlockCard(correlationId, accountId, crmId);
+						cacheService.removeCacheAfterSuccessCreditCard(correlationId, crmId);
+						return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+
+					} else {
+						creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
+								correlationId, accountId, ProductsExpServiceConstant.INTERNAL_SERVER,
+								requestHeadersParameter, iv);
+						return (ResponseEntity<TmbOneServiceResponse<BlockCardResponse>>) InternalRespUtil
+								.generatedResponseFromService(responseHeaders, oneServiceResponse,
+										blockCardResp.getStatus().getErrorStatus());
+					}
 				} else {
-					creditCardLogService.finishBlockCardActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
-							correlationId, accountId, ProductsExpServiceConstant.INTERNAL_SERVER,
-							requestHeadersParameter, iv);
-					return (ResponseEntity<TmbOneServiceResponse<BlockCardResponse>>) InternalRespUtil
-							.generatedResponseFromService(responseHeaders, oneServiceResponse,
-									blockCardResp.getStatus().getErrorStatus());
+					oneServiceResponse.setStatus(new TmbStatus(ResponseCode.GENERAL_ERROR.getCode(),
+							ResponseCode.GENERAL_ERROR.getMessage(), ResponseCode.GENERAL_ERROR.getService()));
+					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 				}
+
 			} else {
 				oneServiceResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND_ERROR.getCode(),
 						ResponseCode.DATA_NOT_FOUND_ERROR.getMessage(), ResponseCode.DATA_NOT_FOUND_ERROR.getService(),
