@@ -35,44 +35,44 @@ public class BuyValidationControllerTest {
     public static final String crmId = "crmId";
 
     @Test
-    public void should_return_success_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_success_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-        when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
+        when(buyAlternativeService.validationBuy(any(), any(), any())).thenReturn(tmbOneServiceResponse);
 
         // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId, crmId, AlternativeBuyRequest.builder().build());
 
         // then
-        assertEquals(HttpStatus.OK,actual.getStatusCode());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getBody().getStatus().getCode());
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getBody().getStatus().getCode());
 
     }
 
     @Test
-    public void should_return_bad_request_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_bad_request_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
         tmbOneServiceResponse.setStatus(tmbStatus);
-        when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
+        when(buyAlternativeService.validationBuy(any(), any(), any())).thenReturn(tmbOneServiceResponse);
 
         // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId, crmId, AlternativeBuyRequest.builder().build());
 
         // then
-        assertEquals(HttpStatus.BAD_REQUEST,actual.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
                 actual.getBody().getStatus().getCode());
 
     }
 
     @Test
-    public void should_return_bad_request_status_with_service_hour_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_bad_request_status_with_service_hour_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
@@ -80,41 +80,41 @@ public class BuyValidationControllerTest {
 
         ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
         validateServiceHourResponse.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
-        validateServiceHourResponse.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg());
-        validateServiceHourResponse.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc());
-        BeanUtils.copyProperties(validateServiceHourResponse,tmbOneServiceResponse.getStatus());
+        validateServiceHourResponse.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMessage());
+        validateServiceHourResponse.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDescription());
+        BeanUtils.copyProperties(validateServiceHourResponse, tmbOneServiceResponse.getStatus());
         tmbOneServiceResponse.setData("19:00-20:00");
-        when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
+        when(buyAlternativeService.validationBuy(any(), any(), any())).thenReturn(tmbOneServiceResponse);
 
         // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId, crmId, AlternativeBuyRequest.builder().build());
 
         // then
-        assertEquals(HttpStatus.BAD_REQUEST,actual.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
                 actual.getBody().getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getMessage(),
                 actual.getBody().getStatus().getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDesc(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getDescription(),
                 actual.getBody().getStatus().getDescription());
-        assertEquals("19:00-20:00",actual.getBody().getData());
+        assertEquals("19:00-20:00", actual.getBody().getData());
 
     }
 
     @Test
-    public void should_return_not_found_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
+    public void should_return_not_found_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
 
         // given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(null);
         tmbOneServiceResponse.setData(null);
-        when(buyAlternativeService.validationBuy(any(),any(),any())).thenReturn(tmbOneServiceResponse);
+        when(buyAlternativeService.validationBuy(any(), any(), any())).thenReturn(tmbOneServiceResponse);
 
         // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId,crmId, AlternativeBuyRequest.builder().build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = buyValidationController.validationBuy(correlationId, crmId, AlternativeBuyRequest.builder().build());
 
         // then
-        assertEquals(HttpStatus.NOT_FOUND,actual.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
                 actual.getBody().getStatus().getCode());
 

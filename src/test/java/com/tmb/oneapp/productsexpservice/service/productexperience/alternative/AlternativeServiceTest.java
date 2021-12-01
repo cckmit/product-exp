@@ -171,8 +171,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -190,8 +190,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -207,8 +207,8 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -371,18 +371,6 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_2000018_when_call_validate_customer_assurance_level() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateIdentityAssuranceLevel("100", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription(), actual.getDescription());
-    }
-
-    @Test
     void should_return_status_code_2000018_when_call_validate_customer_nationality() throws Exception {
         // Given
         mockCommonConfig();
@@ -407,9 +395,9 @@ public class AlternativeServiceTest {
         TmbStatus actual = alternativeService.validateAccountRedeemtion(correlationId, "crmid", TmbStatusUtil.successStatus());
 
         // Then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -455,93 +443,9 @@ public class AlternativeServiceTest {
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode(), actual.getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg(), actual.getMessage());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc(), actual.getDescription());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription(), actual.getDescription());
 
-    }
-
-    @Test
-    void should_return_status_code_2000032_when_call_validateOpenPortfolioService_validate_customer_not_fill_fatca_form() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("0", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getDescription(), actual.getDescription());
-    }
-
-    @Test
-    void should_return_status_code_2000034_when_call_validate_fatca_flag_not_valid_given_fatca_flag_8() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("8", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getDescription(), actual.getDescription());
-    }
-
-    @Test
-    void should_return_status_code_2000034_when_call_validate_fatca_flag_not_valid_given_fatca_flag_9() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("9", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getDescription(), actual.getDescription());
-    }
-
-    @Test
-    void should_return_status_code_success_when_call_validate_fatca_flag_not_valid_given_fatca_flag_N() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("N", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
-    }
-
-    @Test
-    void should_return_status_code_success_when_call_validate_fatca_flag_not_valid_given_fatca_flag_I() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("I", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
-    }
-
-    @Test
-    void should_return_status_code_success_when_call_validate_fatca_flag_not_valid_given_fatca_flag_U() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("U", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getMessage());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getDescription());
-    }
-
-    @Test
-    void should_return_status_code_2000018_when_call_validate_fatca_flag_not_valid_given_validate_fatca_flag_P_or_R() {
-        // Given
-        // When
-        TmbStatus actual = alternativeService.validateFatcaFlagNotValid("P", TmbStatusUtil.successStatus());
-
-        // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode(), actual.getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getMessage(), actual.getMessage());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getDescription(), actual.getDescription());
     }
 
     @Test

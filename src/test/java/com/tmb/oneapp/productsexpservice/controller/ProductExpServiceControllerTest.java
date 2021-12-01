@@ -9,14 +9,8 @@ import com.tmb.oneapp.productsexpservice.dto.fund.fundallocation.SuggestAllocati
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.*;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundlist.FundListRequest;
 import com.tmb.oneapp.productsexpservice.model.request.fundpayment.FundPaymentDetailRequest;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetData;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundFactSheetValidationResponse;
-import com.tmb.oneapp.productsexpservice.model.response.fundfactsheet.FundResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundlistinfo.FundClassListInfo;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentDetailResponse;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
@@ -31,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.exceptions.base.MockitoException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -194,7 +187,8 @@ public class ProductExpServiceControllerTest {
         initAccountDetailResponse();
         initFundRuleResponse();
 
-        FundAccountResponse fundAccountResponse = new FundAccountResponse();;
+        FundAccountResponse fundAccountResponse = new FundAccountResponse();
+        ;
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
 
         AccountDetailResponse accountDetailResponse = null;
@@ -267,7 +261,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundListException(){
+    public void getFundListException() {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -282,7 +276,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundListNotFound(){
+    public void getFundListNotFound() {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -300,7 +294,7 @@ public class ProductExpServiceControllerTest {
     }
 
     @Test
-    public void getFundList(){
+    public void getFundList() {
         List<String> unitStr = new ArrayList<>();
         unitStr.add("PT0000001111111");
         FundListRequest fundListRequest = new FundListRequest();
@@ -349,8 +343,8 @@ public class ProductExpServiceControllerTest {
         TmbOneServiceResponse<FundPaymentDetailResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         tmbOneServiceResponse.setStatus(status);
         tmbOneServiceResponse.setData(null);

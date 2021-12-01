@@ -172,8 +172,8 @@ public class AlternativeService {
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             if (UtilMap.isCASADormant(responseCustomerExp)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -201,8 +201,8 @@ public class AlternativeService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
             if (UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData())) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -231,8 +231,8 @@ public class AlternativeService {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "getCustomerProfile", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseData));
             if (UtilMap.isCustIdExpired(responseData)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -279,7 +279,7 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status) {
+    public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status, String process) {
         if (!StringUtils.isEmpty(fatcaFlag)) {
             switch (fatcaFlag) {
                 case "0":
@@ -303,9 +303,15 @@ public class AlternativeService {
                 case "u":
                     return status;
                 default:
-                    status.setCode(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode());
-                    status.setDescription(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getDescription());
-                    status.setMessage(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getMessage());
+                    if ("FIRST_TRADE".equals(process)) {
+                        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getCode());
+                        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getDescription());
+                        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getMessage());
+                    } else {
+                        status.setCode(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode());
+                        status.setDescription(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getDescription());
+                        status.setMessage(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getMessage());
+                    }
                     status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         }
@@ -364,21 +370,25 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status) {
-        boolean isAssuranceLevelValid = false;
-
+    public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status, String process) {
         if (ekycIdentifyAssuranceLevel != null && validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
-            isAssuranceLevelValid = true;
+            return status;
         }
 
-        if (!isAssuranceLevelValid) {
+        if ("FIRST_TRADE".equals(process)) {
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getMessage());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        } else {
             status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
             status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription());
             status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-            return status;
         }
+
         return status;
+
     }
 
     @LogAround
@@ -435,16 +445,16 @@ public class AlternativeService {
 
             if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
                     StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
-                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
 
         } catch (Exception ex) {
-            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
@@ -468,8 +478,8 @@ public class AlternativeService {
 
         } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
