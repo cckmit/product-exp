@@ -52,8 +52,8 @@ public class LoanCustomerService {
 
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
-    private static BigDecimal amountMin;
-    private static BigDecimal amountMax;
+    private static volatile BigDecimal amountMin;
+    private static volatile BigDecimal amountMax;
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
         getRequestAmount();
@@ -289,10 +289,8 @@ public class LoanCustomerService {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module");
         CommonData commonData = nodeTextResponse.getBody().getData().get(0);
         MaxMinLoanSubmission maxMinLoanSubmission = commonData.getMaxMinLoanday1Loansubmission().get(0);
-        BigDecimal min = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin()));
-        BigDecimal max = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
-        amountMin = min;
-        amountMax = max;
+        amountMin = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin()));
+        amountMax = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
     }
 
 }
