@@ -86,14 +86,14 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
 
     private TmbOneServiceResponse<String> handleFundOffShelf(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest, TmbOneServiceResponse<String> tmbOneServiceResponse, TmbStatus status) {
 
-        if(StringUtils.isEmpty(alternativeBuyRequest.getFundHouseCode()) ||
+        if (StringUtils.isEmpty(alternativeBuyRequest.getFundHouseCode()) ||
                 StringUtils.isEmpty(alternativeBuyRequest.getFundCode()) ||
-                StringUtils.isEmpty(alternativeBuyRequest.getTranType())){
+                StringUtils.isEmpty(alternativeBuyRequest.getTranType())) {
             return null;
         }
 
         tmbOneServiceResponse.setStatus(alternativeService.validateFundOffShelf(
-                correlationId, crmId,FundRuleRequestBody.builder()
+                correlationId, crmId, FundRuleRequestBody.builder()
                         .fundHouseCode(alternativeBuyRequest.getFundHouseCode())
                         .fundCode(alternativeBuyRequest.getFundCode())
                         .tranType(alternativeBuyRequest.getTranType())
