@@ -40,7 +40,7 @@ public class InformationService{
      * @return InformationDto
      */
     @LogAround
-    public InformationDto getFundInformation(String correlationId,String crmId, FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
+    public InformationDto getFundInformation(String correlationId,FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
         Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId,crmId);
         try {
             CompletableFuture<InformationBody> fetchFundInformation = investmentAsyncService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);

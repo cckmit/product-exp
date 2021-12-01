@@ -50,10 +50,10 @@ class InformationControllerTest {
                 .information(informationResponse.getData())
                 .dailyNav(dailyNavResponse.getData())
                 .build();
-        when(informationService.getFundInformation(correlationId,"crmId", fundCodeRequestBody)).thenReturn(informationDto);
+        when(informationService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(informationDto);
 
         //When
-        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, "crmId",fundCodeRequestBody);
+        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, fundCodeRequestBody);
 
         //Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
@@ -67,10 +67,10 @@ class InformationControllerTest {
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
                 .code("TMBCOF")
                 .build();
-        when(informationService.getFundInformation(correlationId,"crmId", fundCodeRequestBody)).thenReturn(null);
+        when(informationService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(null);
 
         //When
-        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, "crmId",fundCodeRequestBody);
+        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, fundCodeRequestBody);
 
         //Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
@@ -84,10 +84,10 @@ class InformationControllerTest {
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
                 .code("TMBCOF")
                 .build();
-        when(informationService.getFundInformation(correlationId,"crmId", fundCodeRequestBody)).thenReturn(null);
+        when(informationService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(null);
 
         //When
-        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId,"crmId", fundCodeRequestBody);
+        ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, fundCodeRequestBody);
 
         //Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
