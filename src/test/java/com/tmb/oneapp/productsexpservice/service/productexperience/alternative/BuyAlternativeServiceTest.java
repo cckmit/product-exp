@@ -78,7 +78,7 @@ public class BuyAlternativeServiceTest {
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(successStatus);
     }
 
     @Test

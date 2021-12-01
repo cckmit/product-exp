@@ -279,7 +279,7 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status) {
+    public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status, String process) {
         if (!StringUtils.isEmpty(fatcaFlag)) {
             switch (fatcaFlag) {
                 case "0":
@@ -303,9 +303,15 @@ public class AlternativeService {
                 case "u":
                     return status;
                 default:
-                    status.setCode(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode());
-                    status.setDescription(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getDescription());
-                    status.setMessage(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getMessage());
+                    if ("FIRST_TRADE".equals(process)) {
+                        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getCode());
+                        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getDescription());
+                        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getMessage());
+                    } else {
+                        status.setCode(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode());
+                        status.setDescription(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getDescription());
+                        status.setMessage(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getMessage());
+                    }
                     status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         }
@@ -364,21 +370,25 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status) {
-        boolean isAssuranceLevelValid = false;
-
+    public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status, String process) {
         if (ekycIdentifyAssuranceLevel != null && validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
-            isAssuranceLevelValid = true;
+            return status;
         }
 
-        if (!isAssuranceLevelValid) {
+        if ("FIRST_TRADE".equals(process)) {
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getMessage());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        } else {
             status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
             status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription());
             status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-            return status;
         }
+
         return status;
+
     }
 
     @LogAround

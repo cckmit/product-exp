@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,8 +84,8 @@ public class BuyFirstTradeAlternativeServiceTest {
 
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(successStatus);
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(successStatus);
         when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(successStatus);
     }
 
@@ -159,7 +160,7 @@ public class BuyFirstTradeAlternativeServiceTest {
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
 
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(status);
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(status);
 
         // when
         AlternativeBuyFirstTTradeRequest alternativeBuyRequest = AlternativeBuyFirstTTradeRequest.builder().build();

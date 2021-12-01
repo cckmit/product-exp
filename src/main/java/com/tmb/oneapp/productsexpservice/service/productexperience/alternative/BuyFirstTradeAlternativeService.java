@@ -52,8 +52,8 @@ public class BuyFirstTradeAlternativeService {
     /**
      * Generic Method to validate buy first trade flow
      *
-     * @param correlationId         the correlation id
-     * @param crmId                 the crm id
+     * @param correlationId                    the correlation id
+     * @param crmId                            the crm id
      * @param alternativeBuyFirstTTradeRequest the alternative buy request
      * @return TmbOneServiceResponse<String>
      */
@@ -65,26 +65,26 @@ public class BuyFirstTradeAlternativeService {
             tmbOneServiceResponse.setStatus(status);
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId, crmId);
 
-            TradeOccupationResponse tradeAndOccupationInquiry = getFirstTradeAndOccupationInquiry(correlationId,crmId,alternativeBuyFirstTTradeRequest.getPortfolioNumber(),alternativeBuyFirstTTradeRequest.getFundCode());
+            TradeOccupationResponse tradeAndOccupationInquiry = getFirstTradeAndOccupationInquiry(correlationId, crmId, alternativeBuyFirstTTradeRequest.getPortfolioNumber(), alternativeBuyFirstTTradeRequest.getFundCode());
 
-            if(StringUtils.isEmpty(tradeAndOccupationInquiry)){
+            if (StringUtils.isEmpty(tradeAndOccupationInquiry)) {
                 tmbOneServiceResponse.setStatus(null);
                 tmbOneServiceResponse.setData(null);
                 return tmbOneServiceResponse;
             }
 
             tmbOneServiceResponse.setData(tradeAndOccupationInquiry);
-            String isFirstTradeString = StringUtils.isEmpty(tradeAndOccupationInquiry.getFirstTradeFlag())?"Y":tradeAndOccupationInquiry.getFirstTradeFlag();
+            String isFirstTradeString = StringUtils.isEmpty(tradeAndOccupationInquiry.getFirstTradeFlag()) ? "Y" : tradeAndOccupationInquiry.getFirstTradeFlag();
             boolean isFirstTrade = isFirstTradeString.equals("Y");
-            if(isFirstTrade){
+            if (isFirstTrade) {
                 return tmbOneServiceResponse;
             }
 
             // validate customer risk level
             BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(true).isFirstTrade(isFirstTrade).build();
-            tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status,buyFlowFirstTrade));
+            tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, status, buyFlowFirstTrade));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SERVICE_NOT_READY)){
+                if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SERVICE_NOT_READY)) {
                     tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
                 }
                 return tmbOneServiceResponse;
@@ -96,21 +96,21 @@ public class BuyFirstTradeAlternativeService {
                 return tmbOneServiceResponse;
             }
 
-            // validate flatca flag not valid
-            tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
+            // validate fatca flag not valid
+            tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status, "FIRST_TRADE"));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }
 
-            // validate customer assurange level
-            tmbOneServiceResponse.setStatus(alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(), status));
+            // validate customer assurance level
+            tmbOneServiceResponse.setStatus(alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(), status, "FIRST_TRADE"));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 // use same error code with customer in risk C3 And B3
                 tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
                 return tmbOneServiceResponse;
             }
 
-            // validate customer not us and not restriced in 30 nationality
+            // validate customer not us and not restricted in 30 nationality
             tmbOneServiceResponse.setStatus(alternativeService.validateNationality(correlationId, customerInfo.getNationality(), customerInfo.getNationalitySecond(), status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
@@ -132,13 +132,13 @@ public class BuyFirstTradeAlternativeService {
     /**
      * Generic Method to check is process first trade
      *
-     * @param correlationId         the correlation id
-     * @param portfolioNumber      the unitHolderNumber
-     * @param fundCode              the fundCode
+     * @param correlationId   the correlation id
+     * @param portfolioNumber the unitHolderNumber
+     * @param fundCode        the fundCode
      * @return boolean
      */
     @LogAround
-    private TradeOccupationResponse getFirstTradeAndOccupationInquiry(String correlationId,String crmId, String portfolioNumber, String fundCode) throws TMBCommonException{
+    private TradeOccupationResponse getFirstTradeAndOccupationInquiry(String correlationId, String crmId, String portfolioNumber, String fundCode) throws TMBCommonException {
         TradeOccupationResponse tradeOccupationResponse = new TradeOccupationResponse();
         try {
             Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
@@ -151,8 +151,8 @@ public class BuyFirstTradeAlternativeService {
             FirstTradeResponseBody firstTradeResponseBody = firstTrade.get();
             OccupationInquiryResponseBody occupationInquiryResponseBody = occupationInquiry.get();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fisrtTrade", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(firstTradeResponseBody));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchOccupationInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fisrtTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(firstTradeResponseBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchOccupationInquiry", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(occupationInquiryResponseBody));
 
             tradeOccupationResponse.setFirstTradeFlag(firstTradeResponseBody.getFirstTradeFlag());
             tradeOccupationResponse.setRequirePosition(occupationInquiryResponseBody.getRequirePosition());
@@ -161,7 +161,7 @@ public class BuyFirstTradeAlternativeService {
             tradeOccupationResponse.setOccupationDescription(occupationInquiryResponseBody.getOccupationDescription());
             return tradeOccupationResponse;
         } catch (ExecutionException e) {
-            if(e.getCause() instanceof TMBCommonException){
+            if (e.getCause() instanceof TMBCommonException) {
                 throw (TMBCommonException) e.getCause();
             }
         } catch (Exception ex) {

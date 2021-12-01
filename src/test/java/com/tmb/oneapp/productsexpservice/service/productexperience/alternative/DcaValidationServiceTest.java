@@ -35,6 +35,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,7 +81,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(successStatus);
     }
 
     @Test
