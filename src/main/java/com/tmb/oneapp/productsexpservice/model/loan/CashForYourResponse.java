@@ -1,5 +1,7 @@
 package com.tmb.oneapp.productsexpservice.model.loan;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,10 +31,14 @@ public class CashForYourResponse {
 	private String feeCashTransfer;
 	@JsonProperty("vat_cash_transfer")
 	private String vatCashTransfer;
-	
+
 	@JsonProperty("fee_cash_chill_chill")
 	private String feeCashChillChill;
 	@JsonProperty("vat_cash_chill_chill")
 	private String vatCashChillChill;
-	
+	@JsonProperty("none_flash_month")
+	private String noneFlashMonth;
+	@JsonProperty("eff_rate_prducts")
+	private List<String> effRateProducts;
+
 }
