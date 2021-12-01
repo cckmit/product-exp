@@ -41,7 +41,7 @@ public class InformationService{
      */
     @LogAround
     public InformationDto getFundInformation(String correlationId,FundCodeRequestBody fundCodeRequestBody) throws TMBCommonException {
-        Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId,crmId);
+        Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
         try {
             CompletableFuture<InformationBody> fetchFundInformation = investmentAsyncService.fetchFundInformation(investmentRequestHeader, fundCodeRequestBody);
             CompletableFuture<DailyNavBody> fetchFundDailyNav = investmentAsyncService.fetchFundDailyNav(investmentRequestHeader, fundCodeRequestBody);
