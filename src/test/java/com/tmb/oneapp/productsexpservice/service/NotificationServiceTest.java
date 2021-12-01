@@ -243,6 +243,7 @@ public class NotificationServiceTest {
 		req.setExpiryDate("1478-04-01T17:17:56.000Z");
 		req.setMode("temporary");
 		req.setPreviousCreditLimit("50000");
+		
 		req.setReasonDescEn("à¸�à¸£à¸“à¸µà¸‰à¸¸à¸�à¹€à¸‰à¸´à¸™à¹€à¸¡à¸·à¹ˆà¸­à¸­à¸¢à¸¹à¹ˆà¸•à¹ˆà¸²à¸‡à¸›à¸£à¸°à¹€à¸—à¸¨");
 		req.setRequestReason("200");
 

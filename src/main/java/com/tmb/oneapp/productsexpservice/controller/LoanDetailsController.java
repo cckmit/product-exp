@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Strings;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
@@ -68,8 +69,8 @@ public class LoanDetailsController {
 	 */
 	@Autowired
 	public LoanDetailsController(AccountRequestClient accountRequestClient, CommonServiceClient commonServiceClient,
-			CustomerServiceClient customerServiceClient,
-			ApplyEStatementService applyEStatementService, InstantLoanService instantLoanService) {
+			CustomerServiceClient customerServiceClient, ApplyEStatementService applyEStatementService,
+			InstantLoanService instantLoanService) {
 		this.accountRequestClient = accountRequestClient;
 		this.commonServiceClient = commonServiceClient;
 		this.customerServiceClient = customerServiceClient;
@@ -109,8 +110,8 @@ public class LoanDetailsController {
 
 				if (loanResponse.getBody() != null && statusCodeValue == 200 && statusCode == HttpStatus.OK) {
 
-					return getTmbOneServiceResponseResponseEntity(responseHeaders,
-							oneServiceResponse, crmId, correlationId, loanResponse);
+					return getTmbOneServiceResponseResponseEntity(responseHeaders, oneServiceResponse, crmId,
+							correlationId, loanResponse);
 				} else {
 					return getFailedResponse(responseHeaders, oneServiceResponse);
 
@@ -154,7 +155,7 @@ public class LoanDetailsController {
 		}
 		processSetEStatementDetail(loanDetails, crmId, correlationId);
 		processSetAccountID(loanDetails);
-		
+
 		oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		oneServiceResponse.setData(loanDetails);
@@ -204,12 +205,15 @@ public class LoanDetailsController {
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<Object> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
-			log.info("== Create activate instance loan request "+TMBUtils.getObjectMapper().writeValueAsString(request));
-			Object objResult = instanceLoanService.createInstanceLoanApplication(reqHeaders, request);
-			oneServiceResponse.setData(objResult);
-			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
-					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
-			return ResponseEntity.ok(oneServiceResponse);
+			log.info("== Create activate instance loan request "
+					+ TMBUtils.getObjectMapper().writeValueAsString(request));
+			instanceLoanService.createInstanceLoanApplication(reqHeaders, request, oneServiceResponse);
+
+			if (ResponseCode.SUCESS.getCode().equals(oneServiceResponse.getStatus().getCode())) {
+				return ResponseEntity.ok(oneServiceResponse);
+			} else {
+				return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+			}
 		} catch (Exception e) {
 			log.error("Error while createInstantLoanApplication: {}", e);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),

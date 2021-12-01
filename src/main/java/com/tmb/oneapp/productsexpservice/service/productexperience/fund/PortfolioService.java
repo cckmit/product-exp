@@ -54,7 +54,7 @@ public class PortfolioService extends TmbErrorHandle {
     @LogAround
     public PortfolioResponse getPortfolioList(String correlationId, String crmId, String type) throws TMBCommonException {
         List<PortfolioByPort> portfolioByPortList;
-        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
+        Map<String, String> headerParameter = UtilMap.createHeaderWithCrmId(correlationId,crmId);
 
         try {
             List<String> ports = productsExpService.getPortList(headerParameter, crmId, false);

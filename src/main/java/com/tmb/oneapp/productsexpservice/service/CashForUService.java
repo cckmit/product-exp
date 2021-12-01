@@ -42,18 +42,23 @@ public class CashForUService {
 	public CashForYourResponse calculateInstallmentForCashForYou(InstallmentRateRequest rateRequest,
 			String correlationId, EnquiryInstallmentRequest requestBody) {
 		CashForYourResponse responseModelInfo = new CashForYourResponse();
+		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
+				.getCurrentCashForYouRate();
+		CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
+		
+		responseModelInfo.setNoneFlashMonth(rateCashForUInfo.getNoneFlashMonth());
+		responseModelInfo.setEffRateProducts(rateCashForUInfo.getEffRateProducts());
+		
 		if ("Y".equals(requestBody.getCashChillChillFlag()) && "Y".equals(requestBody.getCashTransferFlag())) {
 
 			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
 					.getInstallmentRate(correlationId, rateRequest);
 			InstallmentRateResponse installmentRateResponse = loanResponse.getBody().getData();
-			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
-					.getCurrentCashForYouRate();
-			CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
 
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
+
 			CardBalances cardBalances = fetchCardResponse.getBody().getCreditCard().getCardBalances();
 			String leadRate = fillterForRateCashTrasfer(installmentRateResponse);
 			responseModelInfo.setCashInterestRate(formateDigit(leadRate));
@@ -147,7 +152,9 @@ public class CashForUService {
 			EnquiryInstallmentRequest requestBody) {
 		ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 				requestBody.getAccountId());
+
 		CreditCardDetail cardDetail = fetchCardResponse.getBody().getCreditCard();
+
 		responseModelInfo.setMaximumTransferAmt(String.valueOf(cardDetail.getCardBalances().getAvailableCashAdvance()));
 
 		BigDecimal feeAmt = cardDetail.getCardCashAdvance().getCashAdvFeeRate().divide(new BigDecimal("100"))

@@ -58,12 +58,13 @@ public class FundFilterController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC,
                     defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody FundListBySuitScoreRequest fundListBySuitScoreRequest) {
         TmbOneServiceResponse<FundListBySuitScoreBody> oneServiceResponse = new TmbOneServiceResponse<>();
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        FundListBySuitScoreBody fundListResponse = fundFilterService.getFundListBySuitScore(correlationId, fundListBySuitScoreRequest);
+        FundListBySuitScoreBody fundListResponse = fundFilterService.getFundListBySuitScore(correlationId,crmId, fundListBySuitScoreRequest);
         boolean isFundListEmpty = fundListResponse.getFundClassList().isEmpty();
         if (!isFundListEmpty) {
             oneServiceResponse.setData(fundListResponse);

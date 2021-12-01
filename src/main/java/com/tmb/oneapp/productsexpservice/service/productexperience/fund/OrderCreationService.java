@@ -140,9 +140,9 @@ public class OrderCreationService extends TmbErrorHandle {
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
                         .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditcard request"), UtilMap.convertObjectToStringJson(request));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditCard request"), UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditcard response"), UtilMap.convertObjectToStringJson(response));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditCard response"), UtilMap.convertObjectToStringJson(response));
 
             } else {
                 // casa account
@@ -292,16 +292,17 @@ public class OrderCreationService extends TmbErrorHandle {
      * Set Account in request. Getting account value from common service
      * @param correlationId
      * @param bodyRequest
-     * @return
+     *
+     * @throws JsonProcessingException
      */
     private Account getAccount(String correlationId, OrderCreationPaymentRequestBody bodyRequest) throws TMBCommonException {
         try {
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_REQUEST), bodyRequest.getFundHouseCode());
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findByFundHouseCode", ProductsExpServiceConstant.LOGGING_REQUEST), bodyRequest.getFundHouseCode());
             ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
                     bodyRequest.getFundHouseCode());
             FundHouseBankData fundHouseResponseData = fundHouseResponse.getBody().getData();
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundHouseResponseData));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findByFundHouseCode", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundHouseResponseData));
 
             Account toAccount = new Account();
             Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData);

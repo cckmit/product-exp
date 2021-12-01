@@ -56,7 +56,7 @@ public class FundFilterServiceTest {
         when(investmentRequestClient.callInvestmentListFundInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundListBySuitScore));
 
         //When
-        FundListBySuitScoreBody actual = fundFilterService.getFundListBySuitScore(correlationId,rq);
+        FundListBySuitScoreBody actual = fundFilterService.getFundListBySuitScore(correlationId,"crmid",rq);
         Assertions.assertEquals(fundListBySuitScoreBody.getFundClassList(), actual.getFundClassList());
     }
 
@@ -78,7 +78,7 @@ public class FundFilterServiceTest {
         when(investmentRequestClient.callInvestmentListFundInfoService(any())).thenReturn(ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(tmbFundListBySuitScore));
 
         //When
-        FundListBySuitScoreBody actual = fundFilterService.getFundListBySuitScore(correlationId,rq);
+        FundListBySuitScoreBody actual = fundFilterService.getFundListBySuitScore(correlationId,"crmid",rq);
 
         //Then
         Assertions.assertEquals(fundListBySuitScoreBody.getFundClassList(), actual.getFundClassList());
