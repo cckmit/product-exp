@@ -4,7 +4,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,7 +114,7 @@ public class ApplyEStatementServiceTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
 
-		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
+		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}
 
@@ -160,7 +162,7 @@ public class ApplyEStatementServiceTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
 
-		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
+		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}
 
@@ -210,8 +212,7 @@ public class ApplyEStatementServiceTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
 		
-
-		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
+		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}
 
