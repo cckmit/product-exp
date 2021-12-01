@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -9,6 +10,8 @@ import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
+import com.tmb.common.model.loan.MaxMinLoanSubmission;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
@@ -47,13 +50,15 @@ public class LoanCustomerServiceTest {
     private LoanSubmissionGetDropdownListClient getDropdownListClient;
     @Mock
     private CustomerExpServiceClient customerExpServiceClient;
+    @Mock
+    private CommonServiceClient commonServiceClient;
 
     LoanCustomerService loanCustomerService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanCustomerService = new LoanCustomerService(getFacilityInfoClient, updateFacilityInfoClient, getDropdownListClient, customerExpServiceClient);
+        loanCustomerService = new LoanCustomerService(getFacilityInfoClient, updateFacilityInfoClient, getDropdownListClient, customerExpServiceClient, commonServiceClient);
     }
 
     @Test
@@ -76,6 +81,7 @@ public class LoanCustomerServiceTest {
         header1.setResponseCode("MSG_000");
         responseFacility.setHeader(header1);
 
+        when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(mockCommonList()));
         when(updateFacilityInfoClient.updateFacilityInfo(any())).thenReturn(responseFacility);
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(respFacility);
         when(getDropdownListClient.getDropdownList(any())).thenReturn(mockDropdownList());
@@ -109,6 +115,7 @@ public class LoanCustomerServiceTest {
         header1.setResponseCode("MSG_999");
         responseFacility.setHeader(header1);
 
+        when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(mockCommonList()));
         when(updateFacilityInfoClient.updateFacilityInfo(any())).thenReturn(responseFacility);
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(respFacility);
         when(getDropdownListClient.getDropdownList(any())).thenReturn(mockDropdownList());
@@ -145,6 +152,7 @@ public class LoanCustomerServiceTest {
         header1.setResponseCode("MSG_000");
         responseFacility.setHeader(header1);
 
+        when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(mockCommonList()));
         when(updateFacilityInfoClient.updateFacilityInfo(any())).thenReturn(responseFacility);
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(respFacility);
         when(getDropdownListClient.getDropdownList(any())).thenReturn(mockDropdownList());
@@ -157,6 +165,20 @@ public class LoanCustomerServiceTest {
         Assertions.assertNotNull(response);
     }
 
+    private TmbOneServiceResponse<List<CommonData>> mockCommonList() {
+        TmbOneServiceResponse<List<CommonData>> list = new TmbOneServiceResponse<List<CommonData>>();
+        List<CommonData> listDatas = new ArrayList<CommonData>();
+        CommonData cData = new CommonData();
+        List<MaxMinLoanSubmission> listMaxMin = new ArrayList<>();
+        MaxMinLoanSubmission maxMinLoanSubmission = new MaxMinLoanSubmission();
+        maxMinLoanSubmission.setMax("500");
+        maxMinLoanSubmission.setMin("200");
+        listMaxMin.add(maxMinLoanSubmission);
+        cData.setMaxMinLoanday1Loansubmission(listMaxMin);
+        listDatas.add(cData);
+        list.setData(listDatas);
+        return list;
+    }
 
     private Facility mockFacility() {
         Facility facility = new Facility();
