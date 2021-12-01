@@ -52,11 +52,8 @@ public class LoanCustomerService {
 
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
-    private static volatile BigDecimal amountMin;
-    private static volatile BigDecimal amountMax;
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
-        getRequestAmount();
         Facility facility = getFacility(request.getCaId());
         return parseLoanCustomerResponse(correlationId, facility, request.getCaId(), crmID);
     }
@@ -116,7 +113,7 @@ public class LoanCustomerService {
                 feature.setDisbAcctName("TTB MEEHAI");
                 feature.setDisbAcctNo("12345671");
                 feature.setDisbBankCode("011");
-                feature.setRequestAmount(amountMax);
+                feature.setRequestAmount(getRequestAmount("max"));
                 feature.setRequestPercent(BigDecimal.valueOf(7));
                 facility.setFeature(feature);
             }
@@ -274,7 +271,7 @@ public class LoanCustomerService {
         LoanCustomerFeature facilityFeature = new LoanCustomerFeature();
         facilityFeature.setId(facility.getId());
         facilityFeature.setFeatureType(facility.getFeatureType());
-        facilityFeature.setAmountMin(amountMin);
+        facilityFeature.setAmountMin(getRequestAmount("min"));
         facilityFeature.setAmountMax(facility.getLimitApplied());
         facilityFeature.setLimitAmount(facility.getLimitApplied());
         return facilityFeature;
@@ -285,12 +282,12 @@ public class LoanCustomerService {
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
-    private void getRequestAmount() {
+    private BigDecimal getRequestAmount(String value) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module");
         CommonData commonData = nodeTextResponse.getBody().getData().get(0);
         MaxMinLoanSubmission maxMinLoanSubmission = commonData.getMaxMinLoanday1Loansubmission().get(0);
-        amountMin = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin()));
-        amountMax = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
+        return value.equals("min") ? BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin())) :
+                BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
     }
 
 }
