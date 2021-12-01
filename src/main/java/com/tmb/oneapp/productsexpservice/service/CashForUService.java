@@ -50,7 +50,10 @@ public class CashForUService {
 			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
 					.getCurrentCashForYouRate();
 			CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
-
+			
+			responseModelInfo.setNoneFlashMonth(rateCashForUInfo.getNoneFlashMonth());
+			responseModelInfo.setEffRateProducts(rateCashForUInfo.getEffRateProducts());
+			
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
