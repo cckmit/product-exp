@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -9,7 +10,9 @@ import com.tmb.common.model.legacy.rsl.common.ob.feature.Feature;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
+import com.tmb.common.model.loan.MaxMinLoanSubmission;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.CustomerExpServiceClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.productsexpservice.feignclients.loansubmission.LoanSubmissionGetFacilityInfoClient;
@@ -30,6 +33,7 @@ import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -41,13 +45,13 @@ public class LoanCustomerService {
     private final LoanSubmissionUpdateFacilityInfoClient updateFacilityInfoClient;
     private final LoanSubmissionGetDropdownListClient getDropdownListClient;
     private final CustomerExpServiceClient customerExpServiceClient;
+    private final CommonServiceClient commonServiceClient;
     private static final String FEATURE_TYPE_S = "S";
     private static final String FEATURE_TYPE_C = "C";
     private static final String DROPDOWN_TENURE = "TENURE";
 
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
-    private static final BigDecimal AMOUNT_MIN = BigDecimal.valueOf(5000);
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = getFacility(request.getCaId());
@@ -109,7 +113,7 @@ public class LoanCustomerService {
                 feature.setDisbAcctName("TTB MEEHAI");
                 feature.setDisbAcctNo("12345671");
                 feature.setDisbBankCode("011");
-                feature.setRequestAmount(BigDecimal.valueOf(20000));
+                feature.setRequestAmount(getRequestAmount("max"));
                 feature.setRequestPercent(BigDecimal.valueOf(7));
                 facility.setFeature(feature);
             }
@@ -267,7 +271,7 @@ public class LoanCustomerService {
         LoanCustomerFeature facilityFeature = new LoanCustomerFeature();
         facilityFeature.setId(facility.getId());
         facilityFeature.setFeatureType(facility.getFeatureType());
-        facilityFeature.setAmountMin(AMOUNT_MIN);
+        facilityFeature.setAmountMin(getRequestAmount("min"));
         facilityFeature.setAmountMax(facility.getLimitApplied());
         facilityFeature.setLimitAmount(facility.getLimitApplied());
         return facilityFeature;
@@ -278,5 +282,12 @@ public class LoanCustomerService {
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
+    private BigDecimal getRequestAmount(String value) {
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module");
+        CommonData commonData = nodeTextResponse.getBody().getData().get(0);
+        MaxMinLoanSubmission maxMinLoanSubmission = commonData.getMaxMinLoanday1Loansubmission().get(0);
+        return value.equals("min") ? BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin())) :
+                BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
+    }
 
 }
