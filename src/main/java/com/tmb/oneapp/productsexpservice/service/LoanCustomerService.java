@@ -52,8 +52,8 @@ public class LoanCustomerService {
 
     private static final Double VAT = 0.07;
     private static final Double CHARGE = 0.1;
-    private static BigDecimal AMOUNT_MIN;
-    private static BigDecimal AMOUNT_MAX;
+    private static BigDecimal amountMin;
+    private static BigDecimal amountMax;
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
         getRequestAmount();
@@ -116,7 +116,7 @@ public class LoanCustomerService {
                 feature.setDisbAcctName("TTB MEEHAI");
                 feature.setDisbAcctNo("12345671");
                 feature.setDisbBankCode("011");
-                feature.setRequestAmount(AMOUNT_MAX);
+                feature.setRequestAmount(amountMax);
                 feature.setRequestPercent(BigDecimal.valueOf(7));
                 facility.setFeature(feature);
             }
@@ -274,7 +274,7 @@ public class LoanCustomerService {
         LoanCustomerFeature facilityFeature = new LoanCustomerFeature();
         facilityFeature.setId(facility.getId());
         facilityFeature.setFeatureType(facility.getFeatureType());
-        facilityFeature.setAmountMin(AMOUNT_MIN);
+        facilityFeature.setAmountMin(amountMin);
         facilityFeature.setAmountMax(facility.getLimitApplied());
         facilityFeature.setLimitAmount(facility.getLimitApplied());
         return facilityFeature;
@@ -289,8 +289,10 @@ public class LoanCustomerService {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module");
         CommonData commonData = nodeTextResponse.getBody().getData().get(0);
         MaxMinLoanSubmission maxMinLoanSubmission = commonData.getMaxMinLoanday1Loansubmission().get(0);
-        AMOUNT_MIN = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin()));
-        AMOUNT_MAX = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
+        BigDecimal min = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin()));
+        BigDecimal max = BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
+        amountMin = min;
+        amountMax = max;
     }
 
 }
