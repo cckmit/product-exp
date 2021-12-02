@@ -334,36 +334,15 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
     }
 
     public CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter, String correlationId, String key, ObjectMapper mapper) throws JsonProcessingException {
-        List<FundClassListInfo> fundClassLists;
-        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", ProductsExpServiceConstant.LOGGING_REQUEST), key);
-        ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
-        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseCache.getBody()));
 
-        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
-
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_REQUEST), "");
-            ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseResponseEntity.getBody().getData()));
-
-            fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
-            String fundClassStr = mapper.writeValueAsString(fundClassLists);
-            cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
-
-
-        } else {
-            fundClassLists = getFundClassListInfoList(mapper, responseCache);
-        }
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_REQUEST), "");
+        ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity = investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseResponseEntity.getBody().getData()));
+        List<FundClassListInfo>  fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
         return CompletableFuture.completedFuture(fundClassLists);
     }
 
-    public List<FundClassListInfo> getFundClassListInfoList(ObjectMapper mapper, ResponseEntity<TmbOneServiceResponse<String>> responseCache) throws JsonProcessingException {
-        List<FundClassListInfo> fundClassLists;
-        String fundStr = responseCache.getBody().getData();
-        TypeFactory typeFactory = mapper.getTypeFactory();
-        fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
-        return fundClassLists;
-    }
+
     /**
      * Method fetchProductHoldingService to get holding account details.
      *

@@ -465,9 +465,6 @@ public class ProductExpAsyncServiceTest {
         investmentResponse.setData(data);
         ResponseEntity<TmbOneServiceResponse<FundListBody>> resp = new ResponseEntity<>(investmentResponse, HttpStatus.OK);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
-        ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-        when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
-        productExpAsyncService.getFundClassListInfoList(mapper, cacheResponse);
 
         assertNotNull(response);
     }
