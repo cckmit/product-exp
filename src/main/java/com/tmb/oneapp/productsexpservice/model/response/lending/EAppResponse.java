@@ -23,7 +23,7 @@ public class EAppResponse {
     BigDecimal limitApplied;
     BigDecimal monthlyInstallment;
     BigDecimal tenure;
-    BigDecimal requestAmount;
+    String requestAmount;
     BigDecimal interest;
     String disburstAccountNo;
     String paymentPlan;
