@@ -43,13 +43,14 @@ public class FundFilterService {
      * Get Fund List By SuitScore Body Response
      *
      * @param correlationId              the correlation id
+     * @param crmId                      the crmid
      * @param fundListBySuitScoreRequest the fund list by suit score request
      * @return the  response
      */
 
-    public FundListBySuitScoreBody getFundListBySuitScore(String correlationId, FundListBySuitScoreRequest fundListBySuitScoreRequest) {
+    public FundListBySuitScoreBody getFundListBySuitScore(String correlationId,String crmId, FundListBySuitScoreRequest fundListBySuitScoreRequest) {
         FundListBySuitScoreBody response = new FundListBySuitScoreBody();
-        Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
+        Map<String, String> investmentHeaderRequest = UtilMap.createHeaderWithCrmId(correlationId,crmId);
 
         try {
             String suitScore = fundListBySuitScoreRequest.getSuitScore();

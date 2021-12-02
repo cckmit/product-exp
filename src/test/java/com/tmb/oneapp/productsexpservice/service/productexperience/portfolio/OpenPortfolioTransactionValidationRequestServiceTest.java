@@ -351,7 +351,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription()));
@@ -418,7 +418,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(),
                         AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(),
                         AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getDescription()));
@@ -500,11 +500,10 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateKycAndIdCardExpire(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
-
 }

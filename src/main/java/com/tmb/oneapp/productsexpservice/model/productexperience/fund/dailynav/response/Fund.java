@@ -22,4 +22,7 @@ public class Fund {
 
     @JsonProperty(value = "dailyNavList")
     private List<List<String>> dailyNavDto;
+
+    @JsonProperty(value="durationPills")
+    private List<String> durationPills;
 }

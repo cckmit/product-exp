@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Strings;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CashForUConfigInfo;
@@ -84,6 +85,9 @@ public class EligibleLeadController {
 				loanDetails = loanResponse.getBody().getData();
 				long endTime = System.currentTimeMillis();
 				logger.info("/loan/get-eligible-lead Execution Time : " + (endTime - startTime));
+				if(!loanResponse.getBody().getStatus().getCode().equals(ResponseCode.SUCESS.getCode())) {
+					throw new TMBCommonException("Fail from eligibke lead service");
+				}
 				
 				processSetDefaultMinimunMaximumAmounts(productId, loanDetails, responseConfig, true);
 				

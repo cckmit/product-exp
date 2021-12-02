@@ -159,7 +159,7 @@ public class ProductExpServiceTest {
         Assert.assertNotNull(fundAccountResponse);
         Assert.assertNotNull(accountDetailResponse);
         Assert.assertNotNull(fetchStatementResponse);
-        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         Assert.assertNotNull(result);
     }
 
@@ -280,7 +280,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         Assert.assertNull(result);
         UtilMap utilMap = new UtilMap();
         FundAccountDetail fundAccountDetailResponse = utilMap.mappingResponse(accountDetailResponse, fundRuleResponse, statementResponse);
@@ -311,12 +311,12 @@ public class ProductExpServiceTest {
                     ProductsExpServiceConstant.SUCCESS_MESSAGE,
                     ProductsExpServiceConstant.SERVICE_NAME, ProductsExpServiceConstant.SUCCESS_MESSAGE));
 
-            when(productsExpService.getFundAccountDetail(correlationId, fundAccountRequest)).thenReturn(null);
+            when(productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest)).thenReturn(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         Assert.assertNull(result);
     }
 
@@ -570,7 +570,7 @@ public class ProductExpServiceTest {
             ex.printStackTrace();
         }
 
-        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId, fundAccountRequest);
+        FundAccountResponse result = productsExpService.getFundAccountDetail(correlationId,"crmid", fundAccountRequest);
         Assert.assertNull(result);
     }
 
