@@ -374,7 +374,7 @@ public class ProductsExpService extends TmbErrorHandle {
             unitHolder.setUnitHolderNumber(unitHolderList);
 
             CompletableFuture<List<FundClassListInfo>> fetchFundListInfo =
-                    productExpAsyncService.fetchFundListInfo(headerParameter, correlationId, ProductsExpServiceConstant.INVESTMENT_CACHE_KEY);
+                    productExpAsyncService.fetchFundListInfo(headerParameter);
             CompletableFuture<FundSummaryBody> fetchFundSummary = productExpAsyncService.fetchFundSummary(headerParameter, unitHolder);
             CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(headerParameter, crmId);
 

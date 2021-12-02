@@ -2,7 +2,6 @@ package com.tmb.oneapp.productsexpservice.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -10,7 +9,10 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.*;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -236,16 +238,13 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
      * Method fetchFundListInfo to get fund list info
      *
      * @param invHeaderReqParameter
-     * @param correlationId
-     * @param key
      * @return CompletableFuture<List < FundClassListInfo>>
      */
     @LogAround
     @Async
-    public CompletableFuture<List<FundClassListInfo>> fetchFundListInfo(Map<String, String> invHeaderReqParameter, String correlationId, String key) throws TMBCommonException {
-        ObjectMapper mapper = new ObjectMapper();
+    public CompletableFuture<List<FundClassListInfo>> fetchFundListInfo(Map<String, String> invHeaderReqParameter) throws TMBCommonException {
         try {
-            return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
+            return getListCompletableFuture(invHeaderReqParameter);
         } catch (FeignException feignException) {
             handleFeignException(feignException);
             throw getTmbCommonException();
@@ -328,7 +327,7 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
         }
     }
 
-    public CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter, String correlationId, String key, ObjectMapper mapper) throws JsonProcessingException {
+    public CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter) throws JsonProcessingException {
 
         logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_REQUEST), "");
         ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity = investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);

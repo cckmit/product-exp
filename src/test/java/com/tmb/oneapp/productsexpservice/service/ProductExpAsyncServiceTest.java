@@ -415,7 +415,7 @@ public class ProductExpAsyncServiceTest {
         ResponseEntity<TmbOneServiceResponse<FundListBody>> resp = new ResponseEntity<>(investmentResponse, HttpStatus.OK);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
 
-        CompletableFuture<List<FundClassListInfo>> listCompletableFuture = productExpAsyncService.getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
+        CompletableFuture<List<FundClassListInfo>> listCompletableFuture = productExpAsyncService.getListCompletableFuture(invHeaderReqParameter);
 
         assertNotEquals(100, listCompletableFuture.getNumberOfDependents());
     }

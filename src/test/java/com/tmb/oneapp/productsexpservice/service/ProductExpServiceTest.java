@@ -628,7 +628,7 @@ public class ProductExpServiceTest {
             fundAccountRs.add(fundAccount);
             favoriteFundData.add(favoriteFundData1);
 
-            when(productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(fundAccountRs));
+            when(productExpAsyncService.fetchFundListInfo(any())).thenReturn(CompletableFuture.completedFuture(fundAccountRs));
             when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
             when(productExpAsyncService.fetchFundFavorite(any(), anyString())).thenReturn(CompletableFuture.completedFuture(favoriteFundData));
         } catch (Exception ex) {
@@ -636,7 +636,7 @@ public class ProductExpServiceTest {
         }
 
         List<FundClassListInfo> listFund;
-        CompletableFuture<List<FundClassListInfo>> fetchFundListInfo = productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString());
+        CompletableFuture<List<FundClassListInfo>> fetchFundListInfo = productExpAsyncService.fetchFundListInfo(any());
         CompletableFuture<FundSummaryBody> fetchFundSummary = productExpAsyncService.fetchFundSummary(any(), any());
         CompletableFuture<List<CustomerFavoriteFundData>> fetchFundFavorite = productExpAsyncService.fetchFundFavorite(any(), anyString());
         CompletableFuture.allOf(fetchFundListInfo, fetchFundSummary, fetchFundFavorite);
@@ -663,7 +663,7 @@ public class ProductExpServiceTest {
     @Test
     public void getFundListWithException(){
         try {
-            when(productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString())).thenReturn(null);
+            when(productExpAsyncService.fetchFundListInfo(any())).thenReturn(null);
             when(productExpAsyncService.fetchFundSummary(any(), any())).thenReturn(null);
             when(productExpAsyncService.fetchFundFavorite(any(), anyString())).thenReturn(null);
         } catch (Exception ex) {
