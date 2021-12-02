@@ -12,5 +12,6 @@ public class LoanCustomerDisburstAccount {
     private String accountNo;
     private String accountName;
     private String productCode;
+    private String productNickName;
 
 }
