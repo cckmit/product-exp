@@ -54,6 +54,7 @@ public class LoanSubmissionCustomerService {
                 account.setAccountNo(receiveAccount.getAccountNumber());
                 account.setAccountName(receiveAccount.getAccountName());
                 account.setProductCode(receiveAccount.getProductCode());
+                account.setProductNickName(receiveAccount.getProductNickname());
                 receiveAccountList.add(account);
             }
         }
@@ -63,6 +64,8 @@ public class LoanSubmissionCustomerService {
             if (paymentAccount.getAllowPayLoanDirectDebit().equals("1") && paymentAccount.getAccountStatus().equals("ACTIVE") && paymentAccount.getRelationshipCode().equals("PRIIND")) {
                 account.setAccountNo(paymentAccount.getAccountNumber());
                 account.setAccountName(paymentAccount.getAccountName());
+                account.setProductCode(paymentAccount.getProductCode());
+                account.setProductNickName(paymentAccount.getProductNickname());
                 paymentAccountList.add(account);
             }
         }
