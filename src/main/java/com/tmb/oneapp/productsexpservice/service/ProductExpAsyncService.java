@@ -3,7 +3,6 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -54,20 +53,16 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
 
     private final CommonServiceClient commonServiceClient;
 
-    private final CacheServiceClient cacheServiceClient;
-
     @Autowired
     public ProductExpAsyncService(InvestmentRequestClient investmentRequestClient,
                                   AccountRequestClient accountRequestClient,
                                   CustomerServiceClient customerServiceClient,
-                                  CommonServiceClient commonServiceClient,
-                                  CacheServiceClient cacheServiceClient) {
+                                  CommonServiceClient commonServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.customerServiceClient = customerServiceClient;
         this.accountRequestClient = accountRequestClient;
         this.commonServiceClient = commonServiceClient;
-        this.cacheServiceClient = cacheServiceClient;
     }
 
     /**
