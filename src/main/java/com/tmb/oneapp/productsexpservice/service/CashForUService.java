@@ -33,22 +33,22 @@ public class CashForUService {
 
 	/**
 	 * calculate cash for your model
-	 * 
+	 *
 	 * @param rateRequest
 	 * @param correlationId
 	 * @param requestBody
 	 * @return
 	 */
 	public CashForYourResponse calculateInstallmentForCashForYou(InstallmentRateRequest rateRequest,
-			String correlationId, EnquiryInstallmentRequest requestBody) {
+																 String correlationId, EnquiryInstallmentRequest requestBody) {
 		CashForYourResponse responseModelInfo = new CashForYourResponse();
 		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
 				.getCurrentCashForYouRate();
 		CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
-		
+
 		responseModelInfo.setNoneFlashMonth(rateCashForUInfo.getNoneFlashMonth());
 		responseModelInfo.setEffRateProducts(rateCashForUInfo.getEffRateProducts());
-		
+
 		if ("Y".equals(requestBody.getCashChillChillFlag()) && "Y".equals(requestBody.getCashTransferFlag())) {
 
 			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
@@ -78,10 +78,10 @@ public class CashForUService {
 			} else {
 				feeTransfer = new BigDecimal(
 						requestBody.getAmount() != null ? requestBody.getAmount() : BigDecimal.ZERO.toString())
-								.multiply(cashTransferFee);
+						.multiply(cashTransferFee);
 				feeChill = new BigDecimal(
 						requestBody.getAmount() != null ? requestBody.getAmount() : BigDecimal.ZERO.toString())
-								.multiply(cashChillFee);
+						.multiply(cashChillFee);
 				responseModelInfo.setCashFeeRate(formateDigit(feeTransfer.toString()));
 				responseModelInfo.setFeeCashTransfer(formateDigit(feeTransfer.toString()));
 				responseModelInfo.setFeeCashChillChill(formateDigit(feeChill.toString()));
@@ -106,7 +106,7 @@ public class CashForUService {
 
 	/**
 	 * Format with 2 digit
-	 * 
+	 *
 	 * @param cashTransferVat
 	 * @return
 	 */
@@ -120,7 +120,7 @@ public class CashForUService {
 
 	/**
 	 * Find rate for cash transfer amount
-	 * 
+	 *
 	 * @param installmentRateResponse
 	 * @return
 	 */
@@ -143,13 +143,13 @@ public class CashForUService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param responseModelInfo
 	 * @param correlationId
 	 * @param requestBody
 	 */
 	private void calcualteForCaseCashAdvance(CashForYourResponse responseModelInfo, String correlationId,
-			EnquiryInstallmentRequest requestBody) {
+											 EnquiryInstallmentRequest requestBody) {
 		ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 				requestBody.getAccountId());
 
@@ -182,7 +182,7 @@ public class CashForUService {
 
 	/**
 	 * Validate product for waive fee zero
-	 * 
+	 *
 	 * @param rateCashForUInfo
 	 * @param productId
 	 * @return
@@ -202,7 +202,7 @@ public class CashForUService {
 
 	/**
 	 * Validate product for waive vat zero
-	 * 
+	 *
 	 * @param rateCashForUInfo
 	 * @param productId
 	 * @return
@@ -222,7 +222,7 @@ public class CashForUService {
 
 	/**
 	 * Calculation vat total None lead
-	 * 
+	 *
 	 * @param responseModelInfo
 	 * @return
 	 */

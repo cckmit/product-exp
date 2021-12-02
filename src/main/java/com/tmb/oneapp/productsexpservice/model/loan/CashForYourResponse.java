@@ -32,7 +32,7 @@ public class CashForYourResponse {
 	private String feeCashTransfer;
 	@JsonProperty("vat_cash_transfer")
 	private String vatCashTransfer;
-	
+
 	@JsonProperty("fee_cash_chill_chill")
 	private String feeCashChillChill;
 	@JsonProperty("vat_cash_chill_chill")
@@ -41,5 +41,5 @@ public class CashForYourResponse {
 	private String noneFlashMonth;
 	@JsonProperty("eff_rate_prducts")
 	private List<String> effRateProducts;
-	
+
 }
