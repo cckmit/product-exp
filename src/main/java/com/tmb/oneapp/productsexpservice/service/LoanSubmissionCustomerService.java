@@ -55,6 +55,7 @@ public class LoanSubmissionCustomerService {
                 account.setAccountName(receiveAccount.getAccountName());
                 account.setProductCode(receiveAccount.getProductCode());
                 account.setProductNickName(receiveAccount.getProductNickname());
+                account.setProductName(receiveAccount.getProductNameTh());
                 receiveAccountList.add(account);
             }
         }
@@ -66,6 +67,7 @@ public class LoanSubmissionCustomerService {
                 account.setAccountName(paymentAccount.getAccountName());
                 account.setProductCode(paymentAccount.getProductCode());
                 account.setProductNickName(paymentAccount.getProductNickname());
+                account.setProductName(paymentAccount.getProductNameTh());
                 paymentAccountList.add(account);
             }
         }
