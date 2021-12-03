@@ -61,7 +61,7 @@ public class DcaInformationService extends TmbErrorHandle {
 
         TmbOneServiceResponse<DcaInformationDto> dcaInformationDto = new TmbOneServiceResponse<>();
         try {
-            Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
+            Map<String, String> headerParameter = UtilMap.createHeaderWithCrmId(correlationId,crmId);
             List<String> portList = productsExpService.getPortList(headerParameter, crmId, false);
             UnitHolder unitHolder = new UnitHolder();
             unitHolder.setUnitHolderNumber(portList.stream().collect(Collectors.joining(",")));

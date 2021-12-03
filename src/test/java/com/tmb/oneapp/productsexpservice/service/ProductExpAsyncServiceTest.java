@@ -54,8 +54,6 @@ public class ProductExpAsyncServiceTest {
 
     private ProductExpAsyncService productExpAsyncService;
 
-    private CacheServiceClient cacheServiceClient;
-
     private AccountDetailResponse accountDetailResponse = null;
 
     private FundRuleResponse fundRuleResponse = null;
@@ -70,8 +68,7 @@ public class ProductExpAsyncServiceTest {
         accountRequestClient = mock(AccountRequestClient.class);
         commonServiceClient = mock(CommonServiceClient.class);
         customerServiceClient = mock(CustomerServiceClient.class);
-        cacheServiceClient = mock(CacheServiceClient.class);
-        productExpAsyncService = new ProductExpAsyncService(investmentRequestClient, accountRequestClient, customerServiceClient, commonServiceClient, cacheServiceClient);
+        productExpAsyncService = new ProductExpAsyncService(investmentRequestClient, accountRequestClient, customerServiceClient, commonServiceClient);
     }
 
     @Test
@@ -307,16 +304,6 @@ public class ProductExpAsyncServiceTest {
         }
     }
 
-    @Test
-    public void fetchFundListInfoWithException() {
-        try {
-            when(cacheServiceClient.getCacheByKey(anyString(), anyString())).thenThrow(MockitoException.class);
-            CompletableFuture<List<FundClassListInfo>> response = productExpAsyncService.fetchFundListInfo(any(), anyString(), anyString());
-            Assert.assertNotNull(response);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
 
     @Test
     public void fetchFundSummary() throws Exception {
@@ -411,8 +398,6 @@ public class ProductExpAsyncServiceTest {
         tmbOneServiceResponse.setData("test");
         tmbOneServiceResponse.setStatus(tmbStatus);
 
-        ResponseEntity<TmbOneServiceResponse<String>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-        when(cacheServiceClient.getCacheByKey(any(), any())).thenReturn(response);
 
         FundClassListInfo fundClass = new FundClassListInfo();
         fundClass.setFundClassCode("1234");
@@ -430,10 +415,7 @@ public class ProductExpAsyncServiceTest {
         ResponseEntity<TmbOneServiceResponse<FundListBody>> resp = new ResponseEntity<>(investmentResponse, HttpStatus.OK);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
 
-        ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-        when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
-
-        CompletableFuture<List<FundClassListInfo>> listCompletableFuture = productExpAsyncService.getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
+        CompletableFuture<List<FundClassListInfo>> listCompletableFuture = productExpAsyncService.getListCompletableFuture(invHeaderReqParameter);
 
         assertNotEquals(100, listCompletableFuture.getNumberOfDependents());
     }
@@ -452,7 +434,6 @@ public class ProductExpAsyncServiceTest {
         tmbStatus.setService("products-exp-async-service");
         tmbOneServiceResponse.setStatus(tmbStatus);
         ResponseEntity<TmbOneServiceResponse<String>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-        when(cacheServiceClient.getCacheByKey(any(), any())).thenReturn(response);
         List<FundClassListInfo> fundClassLists = new ArrayList<>();
         FundClassListInfo fundClass = new FundClassListInfo();
         fundClass.setFundClassCode("1234");
@@ -465,9 +446,6 @@ public class ProductExpAsyncServiceTest {
         investmentResponse.setData(data);
         ResponseEntity<TmbOneServiceResponse<FundListBody>> resp = new ResponseEntity<>(investmentResponse, HttpStatus.OK);
         when(investmentRequestClient.callInvestmentFundListInfoService(any())).thenReturn(resp);
-        ResponseEntity<TmbOneServiceResponse<String>> cacheResponse = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-        when(cacheServiceClient.putCacheByKey(any(), any())).thenReturn(cacheResponse);
-        productExpAsyncService.getFundClassListInfoList(mapper, cacheResponse);
 
         assertNotNull(response);
     }
