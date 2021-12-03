@@ -115,4 +115,14 @@ public class Dropdowns {
         private BigDecimal max;
     }
 
+    @Getter
+    @Setter
+    @Builder
+    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+    public static class PaymentCriteria {
+        private String code;
+        private String name;
+        private String name2;
+    }
+
 }

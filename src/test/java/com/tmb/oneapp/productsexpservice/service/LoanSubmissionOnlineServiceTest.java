@@ -28,6 +28,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailR
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.Dropdowns;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionApplicationDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
 import org.junit.Assert;
@@ -132,6 +133,29 @@ class LoanSubmissionOnlineServiceTest {
         when(lendingServiceClient.getDropdownLoanSubmissionWorkingDetail(anyString(), anyString(), anyString())).thenReturn(ResponseEntity.ok(oneServiceResponse));
         assertThrows(Exception.class, () ->
                 loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId", "caId")
+        );
+    }
+
+
+    @Test
+    public void testGetDropdownsLoanSubmissionApplicationDetailSuccess() throws TMBCommonException {
+        DropdownsLoanSubmissionApplicationDetail dropdownsApplicationDetail = new DropdownsLoanSubmissionApplicationDetail();
+        dropdownsApplicationDetail.setPaymentCriteria(List.of(Dropdowns.PaymentCriteria.builder().build()));
+        TmbOneServiceResponse<DropdownsLoanSubmissionApplicationDetail> oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), "success", "lending-service"));
+        oneServiceResponse.setData(dropdownsApplicationDetail);
+        when(lendingServiceClient.getDropdownLoanSubmissionApplicationDetail(anyString())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        DropdownsLoanSubmissionApplicationDetail result = loanSubmissionOnlineService.getDropdownsLoanSubmissionApplicationDetail("CC");
+        assertEquals(dropdownsApplicationDetail.getPaymentCriteria(), result.getPaymentCriteria());
+    }
+
+    @Test
+    public void testGetDropdownsLoanSubmissionApplicationDetailFailed() {
+        TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+        when(lendingServiceClient.getDropdownLoanSubmissionApplicationDetail(anyString())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        assertThrows(Exception.class, () ->
+                loanSubmissionOnlineService.getDropdownsLoanSubmissionApplicationDetail("CC")
         );
     }
 
