@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum ActivityLogStatus {
+
     SUCCESS("completed"),
     FAILED("Failed");
 
@@ -13,5 +14,4 @@ public enum ActivityLogStatus {
     ActivityLogStatus(String status) {
         this.status = status;
     }
-
 }

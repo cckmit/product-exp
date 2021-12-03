@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,9 +67,7 @@ public class BuyFirstTradeAlternativeServiceTest {
     }
 
     private void byPassAllAlternative() throws TMBCommonException, IOException {
-        TmbStatus successStatus = TmbStatusUtil.successStatus();
-
-        // Given
+        // given
         ObjectMapper mapper = new ObjectMapper();
         FirstTradeResponseBody firstTradeResponseBody = mapper.readValue(Paths.get("src/test/resources/investment/fund/first_trade_body.json").toFile(),
                 FirstTradeResponseBody.class);
@@ -79,16 +78,15 @@ public class BuyFirstTradeAlternativeServiceTest {
                 OccupationInquiryResponseBody.class);
         when(investmentAsyncService.fetchOccupationInquiry(any(), any())).thenReturn(CompletableFuture.completedFuture(occupationInquiryResponseBody));
 
-
         ValidateServiceHourResponse statusWithTime = new ValidateServiceHourResponse();
+        TmbStatus successStatus = TmbStatusUtil.successStatus();
         BeanUtils.copyProperties(successStatus, statusWithTime);
 
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(successStatus);
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(successStatus);
-        when(alternativeService.validateNationality(any(), any(),any(),any())).thenReturn(successStatus);
-
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(successStatus);
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(successStatus);
+        when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(successStatus);
     }
 
     @Test
@@ -103,7 +101,6 @@ public class BuyFirstTradeAlternativeServiceTest {
         assertNull(actual.getData());
     }
 
-
     @Test
     public void should_return_failed_validate_customer_risk_level_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() throws TMBCommonException, IOException {
         // given
@@ -111,8 +108,8 @@ public class BuyFirstTradeAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
 
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(status);
@@ -124,7 +121,7 @@ public class BuyFirstTradeAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(),
                 actual.getStatus().getMessage());
     }
 
@@ -135,8 +132,8 @@ public class BuyFirstTradeAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
 
         when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(status);
@@ -148,32 +145,7 @@ public class BuyFirstTradeAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg(),
-                actual.getStatus().getMessage());
-    }
-
-
-    @Test
-    public void should_return_failed_validate_fatca_not_valid_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() throws TMBCommonException, IOException {
-        // given
-        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
-        byPassAllAlternative();
-        TmbStatus status = new TmbStatus();
-        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg());
-        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(status);
-
-        // when
-        AlternativeBuyFirstTTradeRequest alternativeBuyRequest = AlternativeBuyFirstTTradeRequest.builder().build();
-        TmbOneServiceResponse<TradeOccupationResponse> actual = buyFirstTradeAlternativeService.validationBuyFirstTrade(correlationId, crmId, alternativeBuyRequest);
-
-        // then
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
-                actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage(),
                 actual.getStatus().getMessage());
     }
 
@@ -184,11 +156,11 @@ public class BuyFirstTradeAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
 
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(status);
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(status);
 
         // when
         AlternativeBuyFirstTTradeRequest alternativeBuyRequest = AlternativeBuyFirstTTradeRequest.builder().build();
@@ -197,7 +169,7 @@ public class BuyFirstTradeAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(),
                 actual.getStatus().getMessage());
     }
 
@@ -208,8 +180,8 @@ public class BuyFirstTradeAlternativeServiceTest {
         byPassAllAlternative();
         TmbStatus status = new TmbStatus();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
-        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDesc());
-        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
 
         when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(status);
@@ -221,9 +193,7 @@ public class BuyFirstTradeAlternativeServiceTest {
         // then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
                 actual.getStatus().getCode());
-        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMsg(),
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(),
                 actual.getStatus().getMessage());
     }
-
-
 }

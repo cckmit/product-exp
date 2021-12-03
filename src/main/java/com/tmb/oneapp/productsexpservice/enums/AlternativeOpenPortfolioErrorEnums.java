@@ -11,7 +11,6 @@ public enum AlternativeOpenPortfolioErrorEnums {
     FAILED_VERIFY_KYC("2000022", "Failed Verify KYC Flag Or ID Card has expired", AlternativeOpenPortfolioErrorEnums.ERROR_DESC),
     CUSTOMER_IN_LEVEL_C3_AND_B3(AlternativeOpenPortfolioErrorEnums.ERROR_CODE_200018, "Customer is in risk level C3", AlternativeOpenPortfolioErrorEnums.ERROR_DESC),
     CUSTOMER_IDENTIFY_ASSURANCE_LEVEL(AlternativeOpenPortfolioErrorEnums.ERROR_CODE_200018, "If IAL level >= 210 and IAL <> Null then allow", AlternativeOpenPortfolioErrorEnums.ERROR_DESC),
-    CUSTOMER_IN_RESTRICTED_LIST(AlternativeOpenPortfolioErrorEnums.ERROR_CODE_200018, "Customer is in restricted list", AlternativeOpenPortfolioErrorEnums.ERROR_DESC),
     CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED(AlternativeOpenPortfolioErrorEnums.ERROR_CODE_200018, "Customer has U.S. nationality or other 30 restricted nationalities. Including non nationality.", AlternativeOpenPortfolioErrorEnums.ERROR_DESC),
     NOT_COMPLETED_FATCA_FORM("2000032", "Not completed the FATCA form", AlternativeOpenPortfolioErrorEnums.ERROR_DESC),
     DID_NOT_PASS_FATCA_FORM("2000034", "Did not pass FATCA form. Please contact our ttb branch", AlternativeOpenPortfolioErrorEnums.ERROR_DESC),
@@ -20,6 +19,7 @@ public enum AlternativeOpenPortfolioErrorEnums {
 
     private static final String ERROR_DESC = "error";
     private static final String ERROR_CODE_200018 = "2000018";
+
     private String code;
     private String message;
     private String description;
