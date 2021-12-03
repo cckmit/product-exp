@@ -11,6 +11,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreate
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionApplicationDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import org.junit.jupiter.api.Assertions;
@@ -112,6 +113,22 @@ class LoanSubmissionOnlineControllerTest {
     public void testGetDropdownLoanSubmissionWorkingDetailFail() throws TMBCommonException {
         when(loanSubmissionOnlineService.getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString(), anyString())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmid", "caId");
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+
+    @Test
+    public void testGetDropdownLoanSubmissionApplicationDetailSuccess() throws TMBCommonException {
+        DropdownsLoanSubmissionApplicationDetail dropdownApplicationDetail = new DropdownsLoanSubmissionApplicationDetail();
+        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionApplicationDetail(anyString())).thenReturn(dropdownApplicationDetail);
+        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionApplicationDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionApplicationDetail("CC");
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testGetDropdownLoanSubmissionApplicationDetailFail() throws TMBCommonException {
+        when(loanSubmissionOnlineService.getDropdownsLoanSubmissionApplicationDetail(anyString())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionApplicationDetail>> responseEntity = loanSubmissionOnlineController.getDropdownLoanSubmissionApplicationDetail("CC");
         assertTrue(responseEntity.getStatusCode().isError());
     }
 

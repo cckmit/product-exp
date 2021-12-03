@@ -18,6 +18,7 @@ import com.tmb.oneapp.productsexpservice.model.response.CodeEntry;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionApplicationDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.LendingRslStatusResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -166,6 +167,10 @@ public interface LendingServiceClient {
     ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> getDropdownLoanSubmissionWorkingDetail(
             @RequestHeader(HEADER_X_CORRELATION_ID) String correlationId, @RequestHeader(HEADER_X_CRM_ID) String crmId,
             @RequestParam(value = "caId") String caId);
+
+    @GetMapping(value = "/apis/lending-service/dropdown/loanSubmission/applicationDetail")
+    ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionApplicationDetail>> getDropdownLoanSubmissionApplicationDetail(
+            @RequestParam(value = "productType") String productType);
 
     @PutMapping(value = "/apis/lending-service/loanOnlineSubmission/updateWorkingDetail")
     ResponseEntity<TmbOneServiceResponse<ResponseApplication>> updateWorkingDetail(

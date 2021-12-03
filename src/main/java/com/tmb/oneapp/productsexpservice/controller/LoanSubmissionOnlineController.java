@@ -13,6 +13,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreate
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionApplicationDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.productsexpservice.service.LoanSubmissionOnlineService;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
@@ -49,6 +50,26 @@ public class LoanSubmissionOnlineController {
             logger.error("Error while get income info: {}", e);
             getIncomeInfoResp.setStatus(TmbStatusUtil.failedStatus());
             return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(getIncomeInfoResp);
+        }
+    }
+
+    @ApiOperation("Get DropdownsLoanSubmissionApplicationDetail Loan Submission Application Detail")
+    @GetMapping(value = "/dropdown/applicationDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionApplicationDetail>> getDropdownLoanSubmissionApplicationDetail(
+            @Valid @RequestParam(value = "productType") String productType) {
+        TmbOneServiceResponse<DropdownsLoanSubmissionApplicationDetail> dropdownApplicationDetailResp = new TmbOneServiceResponse<>();
+
+        try {
+            DropdownsLoanSubmissionApplicationDetail dropdownsLoanSubmissionApplicationDetail = loanSubmissionOnlineService.getDropdownsLoanSubmissionApplicationDetail(productType);
+            dropdownApplicationDetailResp.setData(dropdownsLoanSubmissionApplicationDetail);
+            dropdownApplicationDetailResp.setStatus(TmbStatusUtil.successStatus());
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(dropdownApplicationDetailResp);
+
+        } catch (Exception e) {
+            logger.error("Error while get dropdown loan submission online application detail : {}", e);
+            dropdownApplicationDetailResp.setStatus(TmbStatusUtil.failedStatus());
+            return ResponseEntity.badRequest().headers(TMBUtils.getResponseHeaders()).body(dropdownApplicationDetailResp);
         }
     }
 
