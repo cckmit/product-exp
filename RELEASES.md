@@ -26,6 +26,7 @@
 * [ONEAPP-26819](https://jira.tau2904.com/browse/ONEAPP-26819) filter credit card following product config
 * [ONEAPP-27207](https://jira.tau2904.com/browse/ONEAPP-27207) Card - Activate Card - System does not capture error code in the Activity Log
 * [ONEAPP-28170](https://jira.tau2904.com/browse/ONEAPP-28170) BE - Check channel on header for activity log
+* [ONEAPP-28347](https://jira.tau2904.com/browse/ONEAPP-28347) Card - Cash for You - System display unexpected error screen after enter Amount
 * [ONEAPP-13008](https://jira.tau2904.com/browse/ONEAPP-13008) (BE) Submit uploading
 * [ONEAPP-14375](https://jira.tau2904.com/browse/ONEAPP-14375) Add credit card for buy flow .
 * [ONEAPP-14532](https://jira.tau2904.com/browse/ONEAPP-14532) [Personal information]Incase of life time citizen id ,Expiry date of citizen card display incorrect
