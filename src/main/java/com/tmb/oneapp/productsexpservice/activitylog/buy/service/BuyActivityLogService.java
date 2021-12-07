@@ -77,8 +77,8 @@ public class BuyActivityLogService {
                 BuyActivityEnums.ENTER_PIN_IS_CORRECT.getActivityTypeId());
         activityData.setCrmId(UtilMap.fullCrmIdFormat(crmId));
         activityData.setActivityStatus(status);
-        activityData.setChannel("mb");
-        activityData.setAppVersion("1.0.0");
+        activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_CHANNEL);
+        activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
 
         activityData.setStatus(status);
         activityData.setOrderId(paymentResponseBody != null ? paymentResponseBody.getOrderId() : null);
