@@ -42,18 +42,19 @@ public class CashForUService {
 	public CashForYourResponse calculateInstallmentForCashForYou(InstallmentRateRequest rateRequest,
 			String correlationId, EnquiryInstallmentRequest requestBody) {
 		CashForYourResponse responseModelInfo = new CashForYourResponse();
+
+		ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
+				.getCurrentCashForYouRate();
+		CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
+
+		responseModelInfo.setNoneFlashMonth(rateCashForUInfo.getNoneFlashMonth());
+		responseModelInfo.setEffRateProducts(rateCashForUInfo.getEffRateProducts());
 		if ("Y".equals(requestBody.getCashChillChillFlag()) && "Y".equals(requestBody.getCashTransferFlag())) {
 
 			ResponseEntity<TmbOneServiceResponse<InstallmentRateResponse>> loanResponse = creditCardClient
 					.getInstallmentRate(correlationId, rateRequest);
 			InstallmentRateResponse installmentRateResponse = loanResponse.getBody().getData();
-			ResponseEntity<TmbOneServiceResponse<CashForUConfigInfo>> response = creditCardClient
-					.getCurrentCashForYouRate();
-			CashForUConfigInfo rateCashForUInfo = response.getBody().getData();
-			
-			responseModelInfo.setNoneFlashMonth(rateCashForUInfo.getNoneFlashMonth());
-			responseModelInfo.setEffRateProducts(rateCashForUInfo.getEffRateProducts());
-			
+
 			responseModelInfo.setInstallmentData(installmentRateResponse.getInstallmentData());
 			ResponseEntity<FetchCardResponse> fetchCardResponse = creditCardClient.getCreditCardDetails(correlationId,
 					requestBody.getAccountId());
