@@ -68,7 +68,6 @@ public class OrderCreationService extends TmbErrorHandle {
         this.creditCardClient = creditCardClient;
         this.commonServiceClient = commonServiceClient;
         this.financialServiceClient = financialServiceClient;
-
     }
 
     @LogAround
@@ -120,8 +119,9 @@ public class OrderCreationService extends TmbErrorHandle {
         return tmbOneServiceResponse;
     }
 
-    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
-
+    private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId,
+                                                                                                    Map<String, String> investmentRequestHeader,
+                                                                                                    OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
             Account toAccount = getAccount(correlationId, request);
@@ -168,12 +168,13 @@ public class OrderCreationService extends TmbErrorHandle {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch response"), UtilMap.convertObjectToStringJson(response));
 
         }
-
         return response;
     }
 
-    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
-        String activityLogStatus = "";
+    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader,
+                                          OrderCreationPaymentRequestBody request,
+                                          ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+        String activityLogStatus;
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
             activityLogStatus = ActivityLogStatus.COMPLETED.getStatus();
             String transactionDate = String.valueOf(Instant.now().toEpochMilli());
@@ -188,7 +189,9 @@ public class OrderCreationService extends TmbErrorHandle {
         }
     }
 
-    private void syncLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+    private void syncLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate,
+                                                 OrderCreationPaymentRequestBody request,
+                                                 ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
         try {
             OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
             OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
@@ -220,8 +223,9 @@ public class OrderCreationService extends TmbErrorHandle {
         }
     }
 
-    private void saveLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
-
+    private void saveLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate,
+                                                 OrderCreationPaymentRequestBody request,
+                                                 ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
         try {
             OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
             OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
@@ -244,12 +248,9 @@ public class OrderCreationService extends TmbErrorHandle {
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED + " financialServiceClient saveData", ex);
         }
-
     }
 
-    private void processFirstTrade(Map<String, String> investmentRequestHeader,
-                                   OrderCreationPaymentRequestBody request,
-                                   OrderCreationPaymentResponse response) {
+    private void processFirstTrade(Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, OrderCreationPaymentResponse response) {
         try {
             ProcessFirstTradeRequestBody processFirstTradeRequestBody = ProcessFirstTradeRequestBody.builder()
                     .portfolioNumber(request.getPortfolioNumber())
@@ -297,7 +298,6 @@ public class OrderCreationService extends TmbErrorHandle {
      */
     private Account getAccount(String correlationId, OrderCreationPaymentRequestBody bodyRequest) throws TMBCommonException {
         try {
-
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_REQUEST), bodyRequest.getFundHouseCode());
             ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
                     bodyRequest.getFundHouseCode());
@@ -349,24 +349,16 @@ public class OrderCreationService extends TmbErrorHandle {
      * @param refId
      * @param pinCacheData
      */
-    private boolean checkDuplicateTransaction(String correlationId,
-                                              String orderType,
-                                              String refId,
-                                              String pinCacheData) {
+    private boolean checkDuplicateTransaction(String correlationId, String orderType, String refId, String pinCacheData) {
 
-        boolean isDuplicateTransaction = false;
-        ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId,
-                orderType + refId);
-
+        ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, orderType + refId);
         String pinData = pinVerifyData.getBody().getData();
 
         if ((ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinCacheData))
                 && (!StringUtils.isEmpty(pinData))
                 && ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinData)) {
-
-            isDuplicateTransaction = true;
-            return isDuplicateTransaction;
+            return true;
         }
-        return isDuplicateTransaction;
+        return false;
     }
 }
