@@ -15,24 +15,26 @@ import com.tmb.oneapp.productsexpservice.activitylog.service.LogActivityService;
 
 @RunWith(JUnit4.class)
 public class LogActivityServiceTest {
-	
-	@Mock
-	KafkaProducerService kakfkaProducerService;
-	
-	private LogActivityService logctivityService;
-	
-	@BeforeEach
-	void setUp() {
-		MockitoAnnotations.initMocks(this);
-		logctivityService = new LogActivityService(kakfkaProducerService);
-	}
-	
-	@Test
-	public void testCreatedLog() {
-		BaseEvent baseEvent = new BaseEvent();
-		logctivityService.createLog(baseEvent);
-		assertTrue(true);
-	}
-	
 
+    @Mock
+    private KafkaProducerService kafkaProducerService;
+
+    private LogActivityService logActivityService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        logActivityService = new LogActivityService(kafkaProducerService);
+    }
+
+    @Test
+    public void should_call_create_log_once_when_call_create_log_given_base_event() {
+        // Given
+        // When
+        BaseEvent baseEvent = new BaseEvent();
+        logActivityService.createLog(baseEvent);
+
+        // Then
+        assertTrue(true);
+    }
 }
