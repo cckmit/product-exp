@@ -35,6 +35,7 @@ public class OrderCreationController {
      *
      * @param correlationId the correlation id
      * @param crmId         the crm id
+     * @param ipAddress     the ip address
      * @return return payment result
      */
     @ApiOperation(value = "Make order payment to MF Service")
@@ -43,10 +44,11 @@ public class OrderCreationController {
     public ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> orderCreationPayment(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody OrderCreationPaymentRequestBody request) throws TMBCommonException {
 
         TmbOneServiceResponse<OrderCreationPaymentResponse> oneServiceResponse =
-                orderCreationService.makeTransaction(correlationId, crmId, request);
+                orderCreationService.makeTransaction(correlationId, crmId, ipAddress, request);
 
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if (!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {

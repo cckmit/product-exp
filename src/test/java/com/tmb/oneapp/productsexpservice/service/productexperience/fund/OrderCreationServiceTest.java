@@ -63,8 +63,10 @@ public class OrderCreationServiceTest {
 
     private final String crmId = "001100000000000000000001184383";
 
+    private final String ipAddress = "0.0.0.0";
+
     @Test
-    void should_return_failed_INVESTMENT_PIN_INVALID_CODE_when_call_make_transaction_with_correlationId_and_crm_id_and_order_creation_request_body() throws TMBCommonException {
+    void should_return_failed_INVESTMENT_PIN_INVALID_CODE_when_call_make_transaction_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
         response.setStatus(TmbStatusUtil.successStatus());
@@ -73,7 +75,7 @@ public class OrderCreationServiceTest {
 
         // When
         TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
-                orderCreationService.makeTransaction(correlationId, crmId, OrderCreationPaymentRequestBody.builder().build());
+                orderCreationService.makeTransaction(correlationId, crmId, ipAddress, OrderCreationPaymentRequestBody.builder().build());
 
         // Then
         assertEquals(ProductsExpServiceConstant.INVESTMENT_PIN_INVALID_CODE, actual.getStatus().getCode());
@@ -81,7 +83,7 @@ public class OrderCreationServiceTest {
     }
 
     @Test
-    void should_return_failed_duplicate_transaction_when_call_make_transaction_with_correlationId_and_crm_id_and_order_creation_request_body() throws TMBCommonException {
+    void should_return_failed_duplicate_transaction_when_call_make_transaction_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
         response.setStatus(TmbStatusUtil.successStatus());
@@ -93,7 +95,7 @@ public class OrderCreationServiceTest {
         when(cacheServiceClient.getCacheByKey(any(), any())).thenReturn(ResponseEntity.ok(pinVerifyResponse));
         // When
         TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
-                orderCreationService.makeTransaction(correlationId, crmId, OrderCreationPaymentRequestBody.builder().build());
+                orderCreationService.makeTransaction(correlationId, crmId, ipAddress, OrderCreationPaymentRequestBody.builder().build());
 
         // Then
         assertEquals(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_CODE, actual.getStatus().getCode());
@@ -101,7 +103,7 @@ public class OrderCreationServiceTest {
     }
 
     @Test
-    void buy_flow_saving_account_should_return_success_when_call_make_transaction_with_correlationId_and_crm_id_and_order_creation_request_body() throws TMBCommonException {
+    void buy_flow_saving_account_should_return_success_when_call_make_transaction_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
         response.setStatus(TmbStatusUtil.successStatus());
@@ -141,7 +143,7 @@ public class OrderCreationServiceTest {
         OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
                 .orderType("P").creditCard(false).build();
         TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
-                orderCreationService.makeTransaction(correlationId, crmId, request);
+                orderCreationService.makeTransaction(correlationId, crmId, ipAddress, request);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getStatus().getCode());
@@ -156,7 +158,7 @@ public class OrderCreationServiceTest {
     }
 
     @Test
-    void buy_flow_credit_card_should_return_success_when_call_make_transaction_with_correlationId_and_crm_id_and_order_creation_request_body() throws TMBCommonException {
+    void buy_flow_credit_card_should_return_success_when_call_make_transaction_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
         response.setStatus(TmbStatusUtil.successStatus());
@@ -207,7 +209,7 @@ public class OrderCreationServiceTest {
                 .fromAccount(Account.builder().accountId("accid").build())
                 .build();
         TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
-                orderCreationService.makeTransaction(correlationId, crmId, request);
+                orderCreationService.makeTransaction(correlationId, crmId, ipAddress, request);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getStatus().getCode());
@@ -223,7 +225,7 @@ public class OrderCreationServiceTest {
     }
 
     @Test
-    void sell_or_switch_flow_credit_card_should_return_success_when_call_make_transaction_with_correlationId_and_crm_id_and_order_creation_request_body() throws TMBCommonException {
+    void sell_or_switch_flow_credit_card_should_return_success_when_call_make_transaction_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
         response.setStatus(TmbStatusUtil.successStatus());
@@ -254,7 +256,7 @@ public class OrderCreationServiceTest {
                 .fromAccount(Account.builder().accountId("accid").build())
                 .build();
         TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
-                orderCreationService.makeTransaction(correlationId, crmId, request);
+                orderCreationService.makeTransaction(correlationId, crmId, ipAddress, request);
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getStatus().getCode());
@@ -267,7 +269,7 @@ public class OrderCreationServiceTest {
     }
 
     @Test
-    void should_return_tmb_common_exception_bad_request_when_call_make_transaction_with_correlationId_and_crm_id_and_order_creation_request_body() {
+    void should_return_tmb_common_exception_bad_request_when_call_make_transaction_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() {
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
 
@@ -294,7 +296,7 @@ public class OrderCreationServiceTest {
             OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
                     .orderType("P").creditCard(false).build();
             TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
-                    orderCreationService.makeTransaction(correlationId, crmId, request);
+                    orderCreationService.makeTransaction(correlationId, crmId, ipAddress, request);
 
         } catch (TMBCommonException ex) {
             assertEquals(errorCode, ex.getErrorCode());
@@ -303,7 +305,7 @@ public class OrderCreationServiceTest {
     }
 
     @Test
-    void should_return_tmb_common_exception_data_not_found_when_call_make_transaction_with_correlationId_and_crm_id_and_order_creation_request_body() {
+    void should_return_tmb_common_exception_data_not_found_when_call_make_transaction_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() {
         String errorCode = "2000009";
         String errorMessage = "Data not found";
 
@@ -330,7 +332,7 @@ public class OrderCreationServiceTest {
             OrderCreationPaymentRequestBody request = OrderCreationPaymentRequestBody.builder()
                     .orderType("P").creditCard(false).build();
             TmbOneServiceResponse<OrderCreationPaymentResponse> actual =
-                    orderCreationService.makeTransaction(correlationId, crmId, request);
+                    orderCreationService.makeTransaction(correlationId, crmId, ipAddress, request);
 
         } catch (TMBCommonException ex) {
             assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ex.getErrorCode());

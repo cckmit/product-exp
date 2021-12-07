@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,16 +33,18 @@ public class OrderCreationControllerTest {
 
     private final String crmId = "001100000000000000000001184383";
 
+    private final String ipAddress = "0.0.0.0";
+
     @Test
-    void should_return_success_when_call_order_creation_payment_with_correlationId_and_crm_id_and_order_creation_request_body() throws TMBCommonException {
+    void should_return_success_when_call_order_creation_payment_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse<>();
         response.setStatus(TmbStatusUtil.successStatus());
-        when(orderCreationService.makeTransaction(any(), any(), any())).thenReturn(response);
+        when(orderCreationService.makeTransaction(anyString(), anyString(), anyString(), any())).thenReturn(response);
 
         // When
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> actual =
-                orderCreationController.orderCreationPayment(correlationId, crmId, OrderCreationPaymentRequestBody.builder().build());
+                orderCreationController.orderCreationPayment(correlationId, crmId, ipAddress, OrderCreationPaymentRequestBody.builder().build());
 
         // Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
@@ -49,15 +52,15 @@ public class OrderCreationControllerTest {
     }
 
     @Test
-    void should_return_not_found_status_when_call_order_creation_payment_with_correlationId_and_crm_id_and_order_creation_request_body() throws TMBCommonException {
+    void should_return_not_found_status_when_call_order_creation_payment_with_correlation_id_and_crm_id_and_ip_address_and_order_creation_request_body() throws TMBCommonException {
         // Given
         TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse<>();
         response.setStatus(null);
-        when(orderCreationService.makeTransaction(any(), any(), any())).thenReturn(response);
+        when(orderCreationService.makeTransaction(anyString(), anyString(), anyString(), any())).thenReturn(response);
 
         // When
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> actual =
-                orderCreationController.orderCreationPayment(correlationId, crmId, OrderCreationPaymentRequestBody.builder().build());
+                orderCreationController.orderCreationPayment(correlationId, crmId, ipAddress, OrderCreationPaymentRequestBody.builder().build());
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
