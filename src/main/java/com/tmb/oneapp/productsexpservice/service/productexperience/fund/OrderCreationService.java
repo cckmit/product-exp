@@ -174,7 +174,7 @@ public class OrderCreationService extends TmbErrorHandle {
     private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
         String activityLogStatus = "";
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
-            activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
+            activityLogStatus = ActivityLogStatus.COMPLETED.getStatus();
             String transactionDate = String.valueOf(Instant.now().toEpochMilli());
             syncLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);
             saveLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);

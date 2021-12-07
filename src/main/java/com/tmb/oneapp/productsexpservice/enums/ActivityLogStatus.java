@@ -1,12 +1,11 @@
 package com.tmb.oneapp.productsexpservice.enums;
 
-import lombok.Data;
 import lombok.Getter;
 
 @Getter
 public enum ActivityLogStatus {
 
-    SUCCESS("completed"),
+    COMPLETED("Completed"),
     FAILED("Failed");
 
     String status;
