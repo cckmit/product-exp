@@ -28,22 +28,26 @@ class BuyActivityLogServiceTest {
     private BuyActivityLogService buyActivityLogService;
 
     @Test
-    void should_call_create_log_when_call_click_purchase_button_at_fund_fact_sheet_screen_given_correlation_id_and_crm_id_and_alternative_buy_request_success_and_reason() {
+    void should_call_create_log_when_call_click_purchase_button_at_fund_fact_sheet_screen_given_correlation_id_and_crm_id_and_ip_address_and_alternative_buy_request_and_response_success() {
         // Given
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder()
                 .unitHolderNumber("unit holder number")
                 .processFlag("Y")
                 .build();
 
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+
+        when(logActivityService.buildCommonData("00000018592884", "0.0.0.0", response)).thenReturn(buildSuccessStatus("00000018592884", "0.0.0.0"));
+
         // When
-        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", alternativeBuyRequest, "reason");
+        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", "0.0.0.0", alternativeBuyRequest, response);
 
         // Then
         verify(logActivityService).createLog(any());
     }
 
     @Test
-    void should_call_create_log_when_call_click_purchase_button_at_fund_fact_sheet_screen_given_correlation_id_and_crm_id_and_alternative_buy_request_fail_and_reason() {
+    void should_call_create_log_when_call_click_purchase_button_at_fund_fact_sheet_screen_given_correlation_id_and_crm_id_and_ip_address_and_alternative_buy_request_and_response_failed() {
         // Given
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest.builder()
                 .fundEnglishClassName("english")
@@ -52,16 +56,19 @@ class BuyActivityLogServiceTest {
                 .fundEnglishClassName("english")
                 .build();
 
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+
+        when(logActivityService.buildCommonData("00000018592884", "0.0.0.0", response)).thenReturn(buildFailedStatus("00000018592884", "0.0.0.0"));
+
         // When
-        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", alternativeBuyRequest, "reason");
+        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen("1234567890", "00000018592884", "0.0.0.0", alternativeBuyRequest, response);
 
         // Then
         verify(logActivityService).createLog(any());
     }
 
     @Test
-    void should_call_create_log_when_call_enter_pin_is_correct_given_correlation_id_and_crm_id_and_status_and_ip_address__creation_request_body_and_creation_response_not_null() {
-
+    void should_call_create_log_when_call_enter_pin_is_correct_given_correlation_id_and_crm_id_and_status_and_ip_address_creation_request_body_and_creation_response_not_null() {
         // Given
         Account account = new Account();
         account.setAccountId("accountId");
