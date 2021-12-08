@@ -1,10 +1,13 @@
 package com.tmb.oneapp.productsexpservice.activitylog.buy.service;
 
 import com.tmb.common.logger.LogAround;
+import com.tmb.common.model.BaseEvent;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.buy.enums.BuyActivityEnums;
 import com.tmb.oneapp.productsexpservice.activitylog.buy.request.BuyActivityLog;
 import com.tmb.oneapp.productsexpservice.activitylog.service.LogActivityService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
@@ -61,33 +64,40 @@ public class BuyActivityLogService {
     /**
      * Generic Method to save activity log when enter pin is correct
      *
-     * @param correlationId       the correlation id
-     * @param crmId               the crm id
-     * @param paymentRequestBody  the order creation payment request body
-     * @param paymentResponseBody the order creation payment response body
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @param ipAddress     the ip address
+     * @param requestBody   the order creation payment request body
+     * @param response      the order creation payment response
      * @return
      */
     @LogAround
-    public void enterEnterPinIsCorrect(String correlationId, String crmId, String status,
-                                       OrderCreationPaymentRequestBody paymentRequestBody,
-                                       OrderCreationPaymentResponse paymentResponseBody) {
-
+    public void enterEnterPinIsCorrect(String correlationId, String crmId, String ipAddress,
+                                       OrderCreationPaymentRequestBody requestBody,
+                                       TmbOneServiceResponse<OrderCreationPaymentResponse> response) {
         BuyActivityLog activityData = new BuyActivityLog(
                 correlationId, String.valueOf(System.currentTimeMillis()),
                 BuyActivityEnums.ENTER_PIN_IS_CORRECT.getActivityTypeId());
-        activityData.setCrmId(UtilMap.fullCrmIdFormat(crmId));
-        activityData.setActivityStatus(status);
-        activityData.setChannel("mb");
-        activityData.setAppVersion("1.0.0");
+        BaseEvent baseEvent = logActivityService.buildCommonData(crmId, ipAddress, response);
 
-        activityData.setStatus(status);
-        activityData.setOrderId(paymentResponseBody != null ? paymentResponseBody.getOrderId() : null);
-        activityData.setFundName(paymentRequestBody.getFundName());
-        activityData.setFundClass(!StringUtils.isEmpty(paymentRequestBody.getFundThaiClassName()) ? paymentRequestBody.getFundThaiClassName() : paymentRequestBody.getFundEnglishClassName());
-        activityData.setAmount(paymentRequestBody.getOrderAmount());
-        activityData.setFromBankAccount(paymentRequestBody.getFromAccount().getAccountId());
+        activityData.setCrmId(baseEvent.getCrmId());
+        activityData.setChannel(baseEvent.getChannel());
+        activityData.setAppVersion(baseEvent.getAppVersion());
+        activityData.setIpAddress(baseEvent.getIpAddress());
+        activityData.setActivityStatus(baseEvent.getActivityStatus());
+        activityData.setFailReason(baseEvent.getFailReason());
 
         activityData.setActivityType(BuyActivityEnums.ENTER_PIN_IS_CORRECT.getEvent());
+
+        activityData.setStatus(ProductsExpServiceConstant.SUCCESS.equalsIgnoreCase(baseEvent.getActivityStatus()) ?
+                ActivityLogStatus.COMPLETED.getStatus() : ActivityLogStatus.FAILED.getStatus());
+        activityData.setUnitHolder(requestBody.getPortfolioNumber());
+        activityData.setOrderId(response.getData() != null ? response.getData().getOrderId() : null);
+        activityData.setFundName(requestBody.getFundName());
+        activityData.setFundClass(!StringUtils.isEmpty(requestBody.getFundThaiClassName()) ? requestBody.getFundThaiClassName() : requestBody.getFundEnglishClassName());
+        activityData.setAmount(requestBody.getOrderAmount());
+        activityData.setFromBankAccount(requestBody.getFromAccount().getAccountId());
+
         logActivityService.createLog(activityData);
     }
 }

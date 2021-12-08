@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.activitylog.transaction.service;
 
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.buy.service.BuyActivityLogService;
 import com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.service.SellActivityLogService;
 import com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.service.SwitchActivityLogService;
@@ -34,11 +35,12 @@ class EnterPinIsCorrectActivityLogServiceTest {
     @Test
     void should_call_buy_activity_log_service_when_call_save_given_order_type_p() {
         // Given
-        OrderCreationPaymentRequestBody paymentRequestBody = new OrderCreationPaymentRequestBody();
-        OrderCreationPaymentResponse paymentResponseBody = new OrderCreationPaymentResponse();
+        OrderCreationPaymentRequestBody requestBody = new OrderCreationPaymentRequestBody();
+        requestBody.setOrderType("P");
+        TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse<>();
 
         // When
-        enterPinIsCorrectActivityLogService.save("correlationId", "crmId", paymentRequestBody, "completed", paymentResponseBody, "P");
+        enterPinIsCorrectActivityLogService.save("correlationId", "crmId", "0.0.0.0", requestBody, response);
 
         // Then
         verify(buyActivityLogService, times(1)).enterEnterPinIsCorrect(anyString(), anyString(), anyString(), any(), any());
@@ -47,11 +49,12 @@ class EnterPinIsCorrectActivityLogServiceTest {
     @Test
     void should_call_sell_activity_log_service_when_call_save_given_order_type_r() {
         // Given
-        OrderCreationPaymentRequestBody paymentRequestBody = new OrderCreationPaymentRequestBody();
-        OrderCreationPaymentResponse paymentResponseBody = new OrderCreationPaymentResponse();
+        OrderCreationPaymentRequestBody requestBody = new OrderCreationPaymentRequestBody();
+        requestBody.setOrderType("R");
+        TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse<>();
 
         // When
-        enterPinIsCorrectActivityLogService.save("correlationId", "crmId", paymentRequestBody, "completed", paymentResponseBody, "R");
+        enterPinIsCorrectActivityLogService.save("correlationId", "crmId", "0.0.0.0", requestBody, response);
 
         // Then
         verify(sellActivityLogService, times(1)).enterEnterPinIsCorrect(anyString(), anyString(), anyString(), any(), any());
@@ -60,11 +63,12 @@ class EnterPinIsCorrectActivityLogServiceTest {
     @Test
     void should_call_switch_activity_log_service_when_call_save_given_order_type_s() {
         // Given
-        OrderCreationPaymentRequestBody paymentRequestBody = new OrderCreationPaymentRequestBody();
-        OrderCreationPaymentResponse paymentResponseBody = new OrderCreationPaymentResponse();
+        OrderCreationPaymentRequestBody requestBody = new OrderCreationPaymentRequestBody();
+        requestBody.setOrderType("S");
+        TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse<>();
 
         // When
-        enterPinIsCorrectActivityLogService.save("correlationId", "crmId", paymentRequestBody, "completed", paymentResponseBody, "S");
+        enterPinIsCorrectActivityLogService.save("correlationId", "crmId", "0.0.0.0", requestBody, response);
 
         // Then
         verify(switchActivityLogService, times(1)).enterEnterPinIsCorrect(anyString(), anyString(), anyString(), any(), any());

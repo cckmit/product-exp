@@ -11,11 +11,13 @@
 * [ONEAPP-22539](https://jira.tau2904.com/browse/ONEAPP-22539) [BE] Change logic supported e-statment to seperate for loan action
 * [ONEAPP-22863](https://jira.tau2904.com/browse/ONEAPP-22863) Loan: Product Landing - Adjust interest field format
 * [ONEAPP-22914](https://jira.tau2904.com/browse/ONEAPP-22914) [BE] - Modify creditcard-group service
+* [ONEAPP-23085](https://jira.tau2904.com/browse/ONEAPP-23085) Loan - product landing: Benefit loan, system does not displayed 'Payment method' field
 * [ONEAPP-23184](https://jira.tau2904.com/browse/ONEAPP-23184) FiID
 * [ONEAPP-23187](https://jira.tau2904.com/browse/ONEAPP-23187) Edit transaction fee for selling from frontEndFee to BackEndFee
 * [ONEAPP-23546](https://jira.tau2904.com/browse/ONEAPP-23546) [Apply so good] Act log apply so good fail case display incorrect
 * [ONEAPP-24201](https://jira.tau2904.com/browse/ONEAPP-24201) Write user activity to ONEAPP Calendar
 * [ONEAPP-24397](https://jira.tau2904.com/browse/ONEAPP-24397) [Apply e Statement] Cant do Apply e statement
+* [ONEAPP-24548](https://jira.tau2904.com/browse/ONEAPP-24548) Create and Delete Redis Cache
 * [ONEAPP-25240](https://jira.tau2904.com/browse/ONEAPP-25240) [Apply eStatement] When do apply for e statement only Credit card or Flash card, Apply e-statement for c2g should not update too
 * [ONEAPP-25246](https://jira.tau2904.com/browse/ONEAPP-25246) BE - Store config in mongoDB and bundle in /get-eligible-lead
 * [ONEAPP-25576](https://jira.tau2904.com/browse/ONEAPP-25576) BE - Modify /get-installment-rate add model type for calculate fee & vat
@@ -25,6 +27,8 @@
 * [ONEAPP-26818](https://jira.tau2904.com/browse/ONEAPP-26818) Set DCA by credit card
 * [ONEAPP-26819](https://jira.tau2904.com/browse/ONEAPP-26819) filter credit card following product config
 * [ONEAPP-27207](https://jira.tau2904.com/browse/ONEAPP-27207) Card - Activate Card - System does not capture error code in the Activity Log
+* [ONEAPP-28170](https://jira.tau2904.com/browse/ONEAPP-28170) BE - Check channel on header for activity log
+* [ONEAPP-28347](https://jira.tau2904.com/browse/ONEAPP-28347) Card - Cash for You - System display unexpected error screen after enter Amount
 * [ONEAPP-13008](https://jira.tau2904.com/browse/ONEAPP-13008) (BE) Submit uploading
 * [ONEAPP-14375](https://jira.tau2904.com/browse/ONEAPP-14375) Add credit card for buy flow .
 * [ONEAPP-14532](https://jira.tau2904.com/browse/ONEAPP-14532) [Personal information]Incase of life time citizen id ,Expiry date of citizen card display incorrect
