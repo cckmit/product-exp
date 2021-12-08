@@ -50,11 +50,11 @@ public class LogActivityServiceTest {
     @Test
     void should_return_base_event_success_when_call_build_common_data_given_crm_id_and_ip_address_and_creation_response() {
         // Given
-        TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse();
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse();
         TmbStatus status = new TmbStatus();
         status.setCode(ProductsExpServiceConstant.SUCCESS_CODE);
         response.setStatus(status);
-        response.setData(OrderCreationPaymentResponse.builder().build());
+        response.setData("");
 
         // When
         BaseEvent actual = logActivityService.buildCommonData(crmId, ipAddress, response);
@@ -80,12 +80,12 @@ public class LogActivityServiceTest {
     @Test
     void should_return_base_event_failure_when_call_build_common_data_given_crm_id_and_ip_address_and_creation_response() {
         // Given
-        TmbOneServiceResponse<OrderCreationPaymentResponse> response = new TmbOneServiceResponse();
+        TmbOneServiceResponse<String> response = new TmbOneServiceResponse();
         TmbStatus status = new TmbStatus();
         status.setDescription(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE);
         status.setCode(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE);
         response.setStatus(status);
-        response.setData(OrderCreationPaymentResponse.builder().build());
+        response.setData("");
 
         // When
         BaseEvent actual = logActivityService.buildCommonData(crmId, ipAddress, response);
