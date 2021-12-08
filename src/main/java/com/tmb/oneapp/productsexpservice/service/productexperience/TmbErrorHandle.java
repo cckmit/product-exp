@@ -51,6 +51,20 @@ public class TmbErrorHandle {
         }
     }
 
+    protected TmbStatus buildFeignException(FeignException feignException) throws TMBCommonException {
+        if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
+            try {
+                TmbOneServiceResponse<String> response = getResponsesFromBadRequest(feignException);
+                return response.getStatus();
+            } catch (JsonProcessingException e) {
+                logger.info("cant parse json : {}", e);
+            }
+        } else if (feignException.status() == HttpStatus.NOT_FOUND.value()) {
+            return TmbStatusUtil.notFoundStatus();
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     <T> TmbOneServiceResponse<T> getResponsesFromBadRequest(final FeignException ex) throws JsonProcessingException {
 

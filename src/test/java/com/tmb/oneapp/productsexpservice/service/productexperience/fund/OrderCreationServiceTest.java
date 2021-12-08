@@ -301,6 +301,7 @@ public class OrderCreationServiceTest {
         } catch (TMBCommonException ex) {
             assertEquals(errorCode, ex.getErrorCode());
             assertEquals(errorMessage, ex.getErrorMessage());
+            verify(enterPinIsCorrectActivityLogService, times(1)).save(anyString(), anyString(), anyString(), any(), any());
         }
     }
 
@@ -337,6 +338,7 @@ public class OrderCreationServiceTest {
         } catch (TMBCommonException ex) {
             assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ex.getErrorCode());
             assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ex.getErrorMessage());
+            verify(enterPinIsCorrectActivityLogService, times(1)).save(anyString(), anyString(), anyString(), any(), any());
         }
     }
 

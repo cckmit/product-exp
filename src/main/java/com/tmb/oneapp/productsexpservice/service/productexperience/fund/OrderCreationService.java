@@ -5,6 +5,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPinIsCorrectActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
@@ -117,6 +118,14 @@ public class OrderCreationService extends TmbErrorHandle {
             tmbOneServiceResponse.setData(response.getBody().getData());
 
         } catch (FeignException feignException) {
+            TmbStatus tmbStatus = buildFeignException(feignException);
+            if (tmbStatus != null) {
+                TmbOneServiceResponse<OrderCreationPaymentResponse> oneServiceResponse = new TmbOneServiceResponse();
+                oneServiceResponse.setStatus(tmbStatus);
+                oneServiceResponse.setData(OrderCreationPaymentResponse.builder().build());
+                enterPinIsCorrectActivityLogService.save(correlationId, crmId, ipAddress, requestBody, oneServiceResponse);
+            }
+
             handleFeignException(feignException);
         } catch (Exception ex) {
             tmbOneServiceResponse.setStatus(null);
