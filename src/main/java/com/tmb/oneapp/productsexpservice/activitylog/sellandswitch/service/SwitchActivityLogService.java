@@ -1,10 +1,13 @@
 package com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.service;
 
 import com.tmb.common.logger.LogAround;
+import com.tmb.common.model.BaseEvent;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.enums.SwitchActivityEnums;
 import com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.request.SwitchActivityLog;
 import com.tmb.oneapp.productsexpservice.activitylog.service.LogActivityService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
+import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
 import com.tmb.oneapp.productsexpservice.util.UtilMap;
@@ -17,55 +20,62 @@ import org.springframework.stereotype.Service;
 @Service
 public class SwitchActivityLogService {
 
-    private final LogActivityService logActivity;
+    private final LogActivityService logActivityService;
 
     @Autowired
-    public SwitchActivityLogService(LogActivityService logActivity) {
-        this.logActivity = logActivity;
+    public SwitchActivityLogService(LogActivityService logActivityService) {
+        this.logActivityService = logActivityService;
     }
 
     /**
      * Generic Method to save activity log when enter pin is correct
      *
-     * @param correlationId       the correlation id
-     * @param crmId               the crm id
-     * @param paymentRequestBody  the order creation payment request body
-     * @param paymentResponseBody the order creation payment response body
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @param ipAddress     the ip address
+     * @param requestBody   the order creation payment request body
+     * @param response      the order creation payment response
      * @return
      */
     @LogAround
-    public void enterEnterPinIsCorrect(String correlationId, String crmId, String status,
-                                       OrderCreationPaymentRequestBody paymentRequestBody,
-                                       OrderCreationPaymentResponse paymentResponseBody) {
+    public void enterEnterPinIsCorrect(String correlationId, String crmId, String ipAddress,
+                                       OrderCreationPaymentRequestBody requestBody,
+                                       TmbOneServiceResponse<OrderCreationPaymentResponse> response) {
 
         SwitchActivityLog activityData = new SwitchActivityLog(correlationId, String.valueOf(System.currentTimeMillis()),
                 SwitchActivityEnums.ENTER_PIN_IS_CORRECT.getActivityTypeId());
-        activityData.setCrmId(UtilMap.fullCrmIdFormat(crmId));
-        activityData.setActivityStatus(status);
-        activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_CHANNEL);
-        activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
-        activityData.setFailReason("");
+        BaseEvent baseEvent = logActivityService.buildCommonData(crmId, ipAddress, response);
 
-        activityData.setStatus(status);
-        activityData.setOrderId(paymentResponseBody != null ? paymentResponseBody.getOrderId() : null);
-        activityData.setUnitHolder(paymentRequestBody.getPortfolioNumber());
-        activityData.setSourceFundName(paymentRequestBody.getFundCode());
-        activityData.setSourceFundClassName(paymentRequestBody.getSourceFundClassName());
-        activityData.setTargetFundName(paymentRequestBody.getSwitchFundCode());
-        activityData.setTargetFundClassName(paymentRequestBody.getTargetFundClassName());
+        activityData.setCrmId(baseEvent.getCrmId());
+        activityData.setChannel(baseEvent.getChannel());
+        activityData.setAppVersion(baseEvent.getAppVersion());
+        activityData.setIpAddress(baseEvent.getIpAddress());
+        activityData.setActivityStatus(baseEvent.getActivityStatus());
+        activityData.setFailReason(baseEvent.getFailReason());
 
-        if (ProductsExpServiceConstant.REVERSE_FLAG_Y.equalsIgnoreCase(paymentRequestBody.getFullRedemption())) {
+        activityData.setActivityType(SwitchActivityEnums.ENTER_PIN_IS_CORRECT.getEvent());
+
+        activityData.setStatus(ProductsExpServiceConstant.SUCCESS.equalsIgnoreCase(baseEvent.getActivityStatus()) ?
+                ActivityLogStatus.COMPLETED.getStatus() : ActivityLogStatus.FAILED.getStatus());
+        activityData.setOrderId(response.getData() != null ? response.getData().getOrderId() : null);
+        activityData.setUnitHolder(requestBody.getPortfolioNumber());
+        activityData.setSourceFundName(requestBody.getFundCode());
+        activityData.setSourceFundClassName(requestBody.getSourceFundClassName());
+        activityData.setTargetFundName(requestBody.getSwitchFundCode());
+        activityData.setTargetFundClassName(requestBody.getTargetFundClassName());
+
+        if (ProductsExpServiceConstant.REVERSE_FLAG_Y.equalsIgnoreCase(requestBody.getFullRedemption())) {
             activityData.setTypeOfSwitching(ProductsExpServiceConstant.ACTIVITY_LOG_UNIT);
         } else {
-            activityData.setTypeOfSwitching(UtilMap.getTypeOfTransaction(paymentRequestBody.getRedeemType().toLowerCase()));
+            activityData.setTypeOfSwitching(UtilMap.getTypeOfTransaction(requestBody.getRedeemType().toLowerCase()));
         }
 
         if (ProductsExpServiceConstant.ACTIVITY_LOG_AMOUNT.equalsIgnoreCase(activityData.getTypeOfSwitching())) {
-            activityData.setAmount(paymentRequestBody.getOrderAmount());
+            activityData.setAmount(requestBody.getOrderAmount());
         } else {
-            activityData.setAmount(paymentRequestBody.getOrderUnit());
+            activityData.setAmount(requestBody.getOrderUnit());
         }
-        activityData.setActivityType(SwitchActivityEnums.ENTER_PIN_IS_CORRECT.getEvent());
-        logActivity.createLog(activityData);
+
+        logActivityService.createLog(activityData);
     }
 }

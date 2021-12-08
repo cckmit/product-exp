@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.activitylog.transaction.service;
 
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.buy.service.BuyActivityLogService;
 import com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.service.SellActivityLogService;
 import com.tmb.oneapp.productsexpservice.activitylog.sellandswitch.service.SwitchActivityLogService;
@@ -37,31 +38,30 @@ public class EnterPinIsCorrectActivityLogService {
     /**
      * Generic Method to check type of order, then calling buy, sell or switch to save activity log when enter pin is correct for customer care system
      *
-     * @param correlationId       the correlation id
-     * @param crmId               the crm id
-     * @param paymentRequestBody  the order creation payment request body
-     * @param paymentResponseBody the order creation payment response body
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @param ipAddress     the ip address
+     * @param requestBody   the order creation payment request body
+     * @param response      the order creation payment response
      * @return
      */
     @LogAround
-    public void save(String correlationId, String crmId,
-                     OrderCreationPaymentRequestBody paymentRequestBody,
-                     String status,
-                     OrderCreationPaymentResponse paymentResponseBody,
-                     String orderType) {
+    public void save(String correlationId, String crmId, String ipAddress,
+                     OrderCreationPaymentRequestBody requestBody,
+                     TmbOneServiceResponse<OrderCreationPaymentResponse> response) {
 
-        switch (orderType) {
+        switch (requestBody.getOrderType()) {
 
             case ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE:
-                buyActivityLogService.enterEnterPinIsCorrect(correlationId, crmId, status, paymentRequestBody, paymentResponseBody);
+                buyActivityLogService.enterEnterPinIsCorrect(correlationId, crmId, ipAddress, requestBody, response);
                 break;
 
             case ProductsExpServiceConstant.REDEEM_TRANSACTION_LETTER_TYPE:
-                sellActivityLogService.enterEnterPinIsCorrect(correlationId, crmId, status, paymentRequestBody, paymentResponseBody);
+                sellActivityLogService.enterEnterPinIsCorrect(correlationId, crmId, ipAddress, requestBody, response);
                 break;
 
             case ProductsExpServiceConstant.SWITCH_TRANSACTION_LETTER_TYPE:
-                switchActivityLogService.enterEnterPinIsCorrect(correlationId, crmId, status, paymentRequestBody, paymentResponseBody);
+                switchActivityLogService.enterEnterPinIsCorrect(correlationId, crmId, ipAddress, requestBody, response);
                 break;
 
             default:

@@ -11,6 +11,9 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BuyActivityLog extends BaseEvent {
 
+    @JsonProperty("unit_holder")
+    private String unitHolder;
+
     @JsonProperty("fund_name")
     private String fundName;
 
