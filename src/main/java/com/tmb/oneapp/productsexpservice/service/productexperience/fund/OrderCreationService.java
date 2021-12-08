@@ -106,7 +106,7 @@ public class OrderCreationService extends TmbErrorHandle {
             pushDataToRedis(correlationId, request.getOrderType(), request.getRefId());
             ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response =
                     processOrderPayment(correlationId, investmentRequestHeader, request);
-            postOrderActivityPayment(correlationId, crmId, investmentRequestHeader, request, response);
+            postOrderActivityPayment(correlationId, crmId, ipAddress, investmentRequestHeader, request, response);
             tmbOneServiceResponse.setData(response.getBody().getData());
 
         } catch (FeignException feignException) {
@@ -171,22 +171,18 @@ public class OrderCreationService extends TmbErrorHandle {
         return response;
     }
 
-    private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader,
+    private void postOrderActivityPayment(String correlationId, String crmId, String ipAddress,
+                                          Map<String, String> investmentRequestHeader,
                                           OrderCreationPaymentRequestBody request,
                                           ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
-        String activityLogStatus;
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
-            activityLogStatus = ActivityLogStatus.COMPLETED.getStatus();
             String transactionDate = String.valueOf(Instant.now().toEpochMilli());
             syncLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);
             saveLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);
             saveOrderPayment(investmentRequestHeader, response.getBody(), request);
             processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
-            enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
-        } else {
-            activityLogStatus = ActivityLogStatus.FAILED.getStatus();
-            enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, null, request.getOrderType());
         }
+        enterPinIsCorrectActivityLogService.save(correlationId, crmId, ipAddress, request, response.getBody());
     }
 
     private void syncLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate,

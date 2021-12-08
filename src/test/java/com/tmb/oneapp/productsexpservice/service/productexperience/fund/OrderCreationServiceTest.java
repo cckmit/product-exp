@@ -154,7 +154,7 @@ public class OrderCreationServiceTest {
         verify(financialServiceClient, times(1)).saveActivity(any(), any());
         verify(investmentRequestClient, times(1)).saveOrderPayment(any(), any());
         verify(investmentRequestClient, times(1)).processFirstTrade(any(), any());
-        verify(enterPinIsCorrectActivityLogService, times(1)).save(any(), any(), any(), any(), any(), any());
+        verify(enterPinIsCorrectActivityLogService, times(1)).save(anyString(), anyString(), anyString(), any(), any());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class OrderCreationServiceTest {
         verify(financialServiceClient, times(1)).saveActivity(any(), any());
         verify(investmentRequestClient, times(1)).saveOrderPayment(any(), any());
         verify(investmentRequestClient, times(1)).processFirstTrade(any(), any());
-        verify(enterPinIsCorrectActivityLogService, times(1)).save(any(), any(), any(), any(), any(), any());
+        verify(enterPinIsCorrectActivityLogService, times(1)).save(anyString(), anyString(), anyString(), any(), any());
     }
 
     @Test
@@ -265,7 +265,7 @@ public class OrderCreationServiceTest {
         // After Payment
         verify(investmentRequestClient, times(1)).saveOrderPayment(any(), any());
         verify(investmentRequestClient, times(1)).processFirstTrade(any(), any());
-        verify(enterPinIsCorrectActivityLogService, times(1)).save(any(), any(), any(), any(), any(), any());
+        verify(enterPinIsCorrectActivityLogService, times(1)).save(anyString(), anyString(), anyString(), any(), any());
     }
 
     @Test

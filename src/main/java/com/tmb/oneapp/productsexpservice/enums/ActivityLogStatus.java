@@ -5,6 +5,8 @@ import lombok.Getter;
 @Getter
 public enum ActivityLogStatus {
 
+    FAILURE("Failure"),
+    SUCCESS("Success"),
     COMPLETED("Completed"),
     FAILED("Failed");
 
