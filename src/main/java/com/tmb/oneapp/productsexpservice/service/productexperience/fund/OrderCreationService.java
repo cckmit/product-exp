@@ -8,7 +8,6 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.activitylog.transaction.service.EnterPinIsCorrectActivityLogService;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
-import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
 import com.tmb.oneapp.productsexpservice.feignclients.*;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.CreditCardDetail;
 import com.tmb.oneapp.productsexpservice.model.activatecreditcard.FetchCardResponse;
@@ -70,17 +69,25 @@ public class OrderCreationService extends TmbErrorHandle {
         this.financialServiceClient = financialServiceClient;
     }
 
+    /***
+     * Generic method to make transaction for order creation payment
+     * @param correlationId
+     * @param crmId
+     * @param ipAddress
+     * @param requestBody
+     * @return OrderCreationPaymentResponse
+     */
     @LogAround
     public TmbOneServiceResponse<OrderCreationPaymentResponse> makeTransaction(String correlationId,
                                                                                String crmId,
                                                                                String ipAddress,
-                                                                               OrderCreationPaymentRequestBody request) throws TMBCommonException {
+                                                                               OrderCreationPaymentRequestBody requestBody) throws TMBCommonException {
         TmbOneServiceResponse<OrderCreationPaymentResponse> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
 
         try {
             Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId, crmId);
-            String pin = ProductsExpServiceConstant.INVESTMENT_VERIFY_PIN_REF_ID + request.getRefId();
+            String pin = ProductsExpServiceConstant.INVESTMENT_VERIFY_PIN_REF_ID + requestBody.getRefId();
             ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, pin);
             String pinCacheData = pinVerifyData.getBody().getData();
 
@@ -95,7 +102,7 @@ public class OrderCreationService extends TmbErrorHandle {
                 return tmbOneServiceResponse;
             }
 
-            if (checkDuplicateTransaction(correlationId, request.getOrderType(), request.getRefId(), pinCacheData)) {
+            if (checkDuplicateTransaction(correlationId, requestBody.getOrderType(), requestBody.getRefId(), pinCacheData)) {
                 tmbOneServiceResponse.getStatus().setCode(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_CODE);
                 tmbOneServiceResponse.getStatus().setDescription(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MESSAGE);
                 tmbOneServiceResponse.getStatus().setMessage(ProductsExpServiceConstant.PIN_DUPLICATE_ERROR_MESSAGE);
@@ -103,10 +110,10 @@ public class OrderCreationService extends TmbErrorHandle {
                 return tmbOneServiceResponse;
             }
 
-            pushDataToRedis(correlationId, request.getOrderType(), request.getRefId());
+            pushDataToRedis(correlationId, requestBody.getOrderType(), requestBody.getRefId());
             ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response =
-                    processOrderPayment(correlationId, investmentRequestHeader, request);
-            postOrderActivityPayment(correlationId, crmId, ipAddress, investmentRequestHeader, request, response);
+                    processOrderPayment(correlationId, investmentRequestHeader, requestBody);
+            postOrderActivityPayment(correlationId, crmId, ipAddress, investmentRequestHeader, requestBody, response);
             tmbOneServiceResponse.setData(response.getBody().getData());
 
         } catch (FeignException feignException) {
@@ -119,19 +126,67 @@ public class OrderCreationService extends TmbErrorHandle {
         return tmbOneServiceResponse;
     }
 
+    /***
+     * Method to check duplicated of transaction
+     * @param correlationId
+     * @param orderType
+     * @param refId
+     * @param pinCacheData
+     * @return Boolean
+     */
+    @LogAround
+    private boolean checkDuplicateTransaction(String correlationId, String orderType, String refId, String pinCacheData) {
+
+        ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, orderType + refId);
+        String pinData = pinVerifyData.getBody().getData();
+
+        if ((ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinCacheData))
+                && (!StringUtils.isEmpty(pinData))
+                && ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinData)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to push data into redis in order to check duplicated of transaction
+     *
+     * @param correlationId
+     * @param orderType
+     * @param refId
+     * @return
+     */
+    @LogAround
+    private void pushDataToRedis(String correlationId, String orderType, String refId) {
+        CacheModel redisRequest = new CacheModel();
+        redisRequest.setKey(orderType + refId);
+        redisRequest.setTtl(ProductsExpServiceConstant.TTL_REDIS);
+        redisRequest.setValue(ProductsExpServiceConstant.TRUE);
+        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
+        cacheServiceClient.putCacheByKey(headerParameter, redisRequest);
+    }
+
+    /***
+     * Method to precess order payment
+     * @param correlationId
+     * @param investmentRequestHeader
+     * @param requestBody
+     * @return Boolean
+     */
+    @LogAround
     private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId,
                                                                                                     Map<String, String> investmentRequestHeader,
-                                                                                                    OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
+                                                                                                    OrderCreationPaymentRequestBody requestBody) throws TMBCommonException, JsonProcessingException {
         ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response;
-        if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
-            Account toAccount = getAccount(correlationId, request);
-            request.setToAccount(toAccount);
+        if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(requestBody.getOrderType())) {
+            Account toAccount = getAccount(correlationId, requestBody);
+            requestBody.setToAccount(toAccount);
             // buy flow
-            if (request.isCreditCard()) {
+            if (requestBody.isCreditCard()) {
                 // credit card
-                ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, request.getFromAccount().getAccountId());
+                ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, requestBody.getFromAccount().getAccountId());
                 CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
-                request.setCard(Card.builder()
+                requestBody.setCard(Card.builder()
                         .cardId(creditCard.getCardId())
                         .cardExpiry(creditCard.getCardInfo().getExpiredBy())
                         .cardEmbossingName(creditCard.getCardInfo().getCardEmbossingName1())
@@ -139,164 +194,50 @@ public class OrderCreationService extends TmbErrorHandle {
                         .productGroupId(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_GROUP_ID)
                         .build());
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
-                        .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
-                request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditcard request"), UtilMap.convertObjectToStringJson(request));
-                response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+                        .equals(requestBody.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
+                requestBody.setMerchant(Merchant.builder().merchantId(merchantId).build());
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditcard requestBody"), UtilMap.convertObjectToStringJson(requestBody));
+                response = investmentRequestClient.createOrderPayment(investmentRequestHeader, requestBody);
                 logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditcard response"), UtilMap.convertObjectToStringJson(response));
 
             } else {
                 // casa account
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa request"), UtilMap.convertObjectToStringJson(request));
-                response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa requestBody"), UtilMap.convertObjectToStringJson(requestBody));
+                response = investmentRequestClient.createOrderPayment(investmentRequestHeader, requestBody);
                 logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa response"), UtilMap.convertObjectToStringJson(response));
 
             }
 
         } else {
             // sell or switch flow
-            if (ProductsExpServiceConstant.FULL_REDEEM.equalsIgnoreCase(request.getRedeemType())) {
-                request.setFullRedemption(ProductsExpServiceConstant.REVERSE_FLAG_Y);
+            if (ProductsExpServiceConstant.FULL_REDEEM.equalsIgnoreCase(requestBody.getRedeemType())) {
+                requestBody.setFullRedemption(ProductsExpServiceConstant.REVERSE_FLAG_Y);
             }
 
-            if (ProductsExpServiceConstant.AMOUNT_TYPE_IN_PARTIAL_SERVICE.equalsIgnoreCase(request.getRedeemType())) {
-                request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
+            if (ProductsExpServiceConstant.AMOUNT_TYPE_IN_PARTIAL_SERVICE.equalsIgnoreCase(requestBody.getRedeemType())) {
+                requestBody.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
             }
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch request"), UtilMap.convertObjectToStringJson(request));
-            response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch requestBody"), UtilMap.convertObjectToStringJson(requestBody));
+            response = investmentRequestClient.createOrderPayment(investmentRequestHeader, requestBody);
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch response"), UtilMap.convertObjectToStringJson(response));
 
         }
         return response;
     }
 
-    private void postOrderActivityPayment(String correlationId, String crmId, String ipAddress,
-                                          Map<String, String> investmentRequestHeader,
-                                          OrderCreationPaymentRequestBody request,
-                                          ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
-        if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
-            String transactionDate = String.valueOf(Instant.now().toEpochMilli());
-            syncLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);
-            saveLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);
-            saveOrderPayment(investmentRequestHeader, response.getBody(), request);
-            processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
-        }
-        enterPinIsCorrectActivityLogService.save(correlationId, crmId, ipAddress, request, response.getBody());
-    }
-
-    private void syncLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate,
-                                                 OrderCreationPaymentRequestBody request,
-                                                 ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
-        try {
-            OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
-            OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
-            FinancalSyncRequest financalSyncRequest = FinancalSyncRequest.builder()
-                    .referenceId(orderConfirmPayment.getPaymentId())
-                    .crmId(UtilMap.fullCrmIdFormat(crmId))
-                    .transactionDate(transactionDate)
-                    .fromAccountNo(orderConfirmPayment.getFromAccount().getAccountId())
-                    .fromAccountName(request.getAccountName())
-                    .toAccountNo(orderConfirmPayment.getToAccount().getAccountId())
-                    .toAccountName(request.getFundHouseCode())
-                    .bankcode("11")
-                    .transactionAmount(request.getOrderAmount())
-                    .transactionFee(orderConfirmPayment.getFee().getPaymentFee())
-                    .activityTypeId("024")
-                    .fromAccountType(orderConfirmPayment.getFromAccount().getAccountType())
-                    .toAccountType(orderConfirmPayment.getToAccount().getAccountType())
-                    .channelId(orderConfirmPayment.getPaymentChannel())
-                    .transactionBalance(orderConfirmPayment.getAccount().getLedgerBal())
-                    .transactionStatus("success")
-                    .activityTypeIdNew("101000105")
-                    .errorCd("0000")
-                    .activityRefId(orderConfirmPayment.getRequestId())
-                    .txnType("001")
-                    .build();
-            financialServiceClient.syncData(correlationId, financalSyncRequest);
-        } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED + " financialServiceClient syncData", ex);
-        }
-    }
-
-    private void saveLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate,
-                                                 OrderCreationPaymentRequestBody request,
-                                                 ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
-        try {
-            OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
-            OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
-            SaveActivityRequest saveActivityRequest = SaveActivityRequest.builder()
-                    .referenceActivityTypeId("000")
-                    .activityTypeId("024")
-                    .crmId(UtilMap.fullCrmIdFormat(crmId))
-                    .channelId(orderConfirmPayment.getPaymentChannel())
-                    .transactionStatus("success")
-                    .transactionDate(transactionDate)
-                    .fromAccountNo(orderConfirmPayment.getFromAccount().getAccountId())
-                    .toAccountNo(orderConfirmPayment.getToAccount().getAccountId())
-                    .toAccountNickname(String.format("%s%s", request.getFundHouseCode(), request.getFundCode()))
-                    .toAccountName(request.getFundHouseCode())
-                    .financialTranferAmount(request.getOrderAmount())
-                    .financialTranferCrDr("2")
-                    .financialTranferRefId(orderConfirmPayment.getPaymentId())
-                    .build();
-            financialServiceClient.saveActivity(correlationId, saveActivityRequest);
-        } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED + " financialServiceClient saveData", ex);
-        }
-    }
-
-    private void processFirstTrade(Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, OrderCreationPaymentResponse response) {
-        try {
-            ProcessFirstTradeRequestBody processFirstTradeRequestBody = ProcessFirstTradeRequestBody.builder()
-                    .portfolioNumber(request.getPortfolioNumber())
-                    .fundHouseCode(request.getFundHouseCode())
-                    .fundCode(request.getFundCode())
-                    .orderId(response.getOrderId())
-                    .effectiveDate(response.getEffectiveDate())
-                    .build();
-
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "processFirstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(processFirstTradeRequestBody));
-            ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader, processFirstTradeRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "processFirstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(processFirstTradeResponse));
-
-        } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-        }
-    }
-
-    private void saveOrderPayment(Map<String, String> investmentRequestHeader, TmbOneServiceResponse<OrderCreationPaymentResponse> body, OrderCreationPaymentRequestBody paymentRequestBody) {
-        try {
-            OrderCreationPaymentResponse orderCreationPaymentResponse = body.getData();
-
-            SaveOrderCreationRequestBody request = SaveOrderCreationRequestBody.builder()
-                    .fundCode(paymentRequestBody.getFundCode())
-                    .portfolioNumber(paymentRequestBody.getPortfolioNumber())
-                    .orderAmount(paymentRequestBody.getOrderAmount())
-                    .orderId(orderCreationPaymentResponse.getOrderId())
-                    .paymentObject(orderCreationPaymentResponse.getPaymentObject())
-                    .build();
-
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "saveOrderPayment", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
-            ResponseEntity<TmbOneServiceResponse<String>> response = investmentRequestClient.saveOrderPayment(investmentRequestHeader, request);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "saveOrderPayment", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response));
-
-        } catch (Exception ex) {
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-        }
-    }
-
     /***
-     * Set Account in request. Getting account value from common service
+     * Method to set an account in request, then get the account value from common service
      * @param correlationId
-     * @param bodyRequest
-     * @return
+     * @param requestBody
+     * @return Account
      */
-    private Account getAccount(String correlationId, OrderCreationPaymentRequestBody bodyRequest) throws TMBCommonException {
+    @LogAround
+    private Account getAccount(String correlationId, OrderCreationPaymentRequestBody requestBody) throws TMBCommonException {
         try {
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_REQUEST), bodyRequest.getFundHouseCode());
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_REQUEST), requestBody.getFundHouseCode());
             ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
-                    bodyRequest.getFundHouseCode());
+                    requestBody.getFundHouseCode());
             FundHouseBankData fundHouseResponseData = fundHouseResponse.getBody().getData();
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundHouseResponseData));
 
@@ -322,39 +263,165 @@ public class OrderCreationService extends TmbErrorHandle {
         }
     }
 
-    /**
-     * Push data to radis in order to check duplicate transaction
-     *
+    /***
+     * Method to post order activity payment
      * @param correlationId
-     * @param orderType
-     * @param refId
+     * @param crmId
+     * @param ipAddress
+     * @param investmentRequestHeader
+     * @param requestBody
+     * @param response
+     * @return
      */
-    private void pushDataToRedis(String correlationId, String orderType, String refId) {
-        CacheModel redisRequest = new CacheModel();
-        redisRequest.setKey(orderType + refId);
-        redisRequest.setTtl(ProductsExpServiceConstant.TTL_REDIS);
-        redisRequest.setValue(ProductsExpServiceConstant.TRUE);
-        Map<String, String> headerParameter = UtilMap.createHeader(correlationId);
-        cacheServiceClient.putCacheByKey(headerParameter, redisRequest);
+    @LogAround
+    private void postOrderActivityPayment(String correlationId, String crmId, String ipAddress,
+                                          Map<String, String> investmentRequestHeader,
+                                          OrderCreationPaymentRequestBody requestBody,
+                                          ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+        if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
+            String transactionDate = String.valueOf(Instant.now().toEpochMilli());
+            syncLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, requestBody, response);
+            saveLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, requestBody, response);
+            saveOrderPayment(investmentRequestHeader, response.getBody(), requestBody);
+            processFirstTrade(investmentRequestHeader, requestBody, response.getBody().getData());
+        }
+        enterPinIsCorrectActivityLogService.save(correlationId, crmId, ipAddress, requestBody, response.getBody());
     }
 
     /***
-     * Check duplicate transaction
+     * Method to sync application log to OneApp calendar
      * @param correlationId
-     * @param orderType
-     * @param refId
-     * @param pinCacheData
+     * @param crmId
+     * @param requestBody
+     * @param response
+     * @return
      */
-    private boolean checkDuplicateTransaction(String correlationId, String orderType, String refId, String pinCacheData) {
-
-        ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, orderType + refId);
-        String pinData = pinVerifyData.getBody().getData();
-
-        if ((ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinCacheData))
-                && (!StringUtils.isEmpty(pinData))
-                && ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinData)) {
-            return true;
+    @LogAround
+    private void syncLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate,
+                                                 OrderCreationPaymentRequestBody requestBody,
+                                                 ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+        try {
+            OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
+            OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
+            FinancalSyncRequest financalSyncRequest = FinancalSyncRequest.builder()
+                    .referenceId(orderConfirmPayment.getPaymentId())
+                    .crmId(UtilMap.fullCrmIdFormat(crmId))
+                    .transactionDate(transactionDate)
+                    .fromAccountNo(orderConfirmPayment.getFromAccount().getAccountId())
+                    .fromAccountName(requestBody.getAccountName())
+                    .toAccountNo(orderConfirmPayment.getToAccount().getAccountId())
+                    .toAccountName(requestBody.getFundHouseCode())
+                    .bankcode("11")
+                    .transactionAmount(requestBody.getOrderAmount())
+                    .transactionFee(orderConfirmPayment.getFee().getPaymentFee())
+                    .activityTypeId("024")
+                    .fromAccountType(orderConfirmPayment.getFromAccount().getAccountType())
+                    .toAccountType(orderConfirmPayment.getToAccount().getAccountType())
+                    .channelId(orderConfirmPayment.getPaymentChannel())
+                    .transactionBalance(orderConfirmPayment.getAccount().getLedgerBal())
+                    .transactionStatus("success")
+                    .activityTypeIdNew("101000105")
+                    .errorCd("0000")
+                    .activityRefId(orderConfirmPayment.getRequestId())
+                    .txnType("001")
+                    .build();
+            financialServiceClient.syncData(correlationId, financalSyncRequest);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED + " financialServiceClient syncData", ex);
         }
-        return false;
+    }
+
+    /***
+     * Method to save application log to OneApp calendar
+     * @param correlationId
+     * @param crmId
+     * @param requestBody
+     * @param response
+     * @return
+     */
+    @LogAround
+    private void saveLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate,
+                                                 OrderCreationPaymentRequestBody requestBody,
+                                                 ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+        try {
+            OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
+            OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
+            SaveActivityRequest saveActivityRequest = SaveActivityRequest.builder()
+                    .referenceActivityTypeId("000")
+                    .activityTypeId("024")
+                    .crmId(UtilMap.fullCrmIdFormat(crmId))
+                    .channelId(orderConfirmPayment.getPaymentChannel())
+                    .transactionStatus("success")
+                    .transactionDate(transactionDate)
+                    .fromAccountNo(orderConfirmPayment.getFromAccount().getAccountId())
+                    .toAccountNo(orderConfirmPayment.getToAccount().getAccountId())
+                    .toAccountNickname(String.format("%s%s", requestBody.getFundHouseCode(), requestBody.getFundCode()))
+                    .toAccountName(requestBody.getFundHouseCode())
+                    .financialTranferAmount(requestBody.getOrderAmount())
+                    .financialTranferCrDr("2")
+                    .financialTranferRefId(orderConfirmPayment.getPaymentId())
+                    .build();
+            financialServiceClient.saveActivity(correlationId, saveActivityRequest);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED + " financialServiceClient saveData", ex);
+        }
+    }
+
+    /***
+     * Method to save order payment to MF service
+     * @param investmentRequestHeader
+     * @param serviceResponse
+     * @param requestBody
+     * @return
+     */
+    @LogAround
+    private void saveOrderPayment(Map<String, String> investmentRequestHeader,
+                                  TmbOneServiceResponse<OrderCreationPaymentResponse> serviceResponse,
+                                  OrderCreationPaymentRequestBody requestBody) {
+        try {
+            OrderCreationPaymentResponse orderCreationPaymentResponse = serviceResponse.getData();
+
+            SaveOrderCreationRequestBody request = SaveOrderCreationRequestBody.builder()
+                    .fundCode(requestBody.getFundCode())
+                    .portfolioNumber(requestBody.getPortfolioNumber())
+                    .orderAmount(requestBody.getOrderAmount())
+                    .orderId(orderCreationPaymentResponse.getOrderId())
+                    .paymentObject(orderCreationPaymentResponse.getPaymentObject())
+                    .build();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "saveOrderPayment", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
+            ResponseEntity<TmbOneServiceResponse<String>> response = investmentRequestClient.saveOrderPayment(investmentRequestHeader, request);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "saveOrderPayment", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response));
+
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
+        }
+    }
+
+    /***
+     * Method to process order first trade
+     * @param investmentRequestHeader
+     * @param requestBody
+     * @param response
+     * @return
+     */
+    @LogAround
+    private void processFirstTrade(Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody requestBody, OrderCreationPaymentResponse response) {
+        try {
+            ProcessFirstTradeRequestBody processFirstTradeRequestBody = ProcessFirstTradeRequestBody.builder()
+                    .portfolioNumber(requestBody.getPortfolioNumber())
+                    .fundHouseCode(requestBody.getFundHouseCode())
+                    .fundCode(requestBody.getFundCode())
+                    .orderId(response.getOrderId())
+                    .effectiveDate(response.getEffectiveDate())
+                    .build();
+
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "processFirstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(processFirstTradeRequestBody));
+            ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader, processFirstTradeRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "processFirstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(processFirstTradeResponse));
+
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
+        }
     }
 }
