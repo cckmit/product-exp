@@ -46,6 +46,15 @@ public class LogActivityService {
         }
     }
 
+    /**
+     * Method to build common data for saving activity log
+     *
+     * @param crmId
+     * @param ipAddress
+     * @param response
+     * @return BaseEvent
+     */
+    @LogAround
     public <T> BaseEvent buildCommonData(String crmId, String ipAddress, TmbOneServiceResponse<T> response) {
         BaseEvent baseEvent = new BaseEvent();
         baseEvent.setCrmId(UtilMap.fullCrmIdFormat(crmId));
