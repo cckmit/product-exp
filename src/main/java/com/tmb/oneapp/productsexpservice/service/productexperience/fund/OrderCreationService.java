@@ -149,12 +149,9 @@ public class OrderCreationService extends TmbErrorHandle {
         ResponseEntity<TmbOneServiceResponse<String>> pinVerifyData = cacheServiceClient.getCacheByKey(correlationId, orderType + refId);
         String pinData = pinVerifyData.getBody().getData();
 
-        if ((ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinCacheData))
+        return (ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinCacheData))
                 && (!StringUtils.isEmpty(pinData))
-                && ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinData)) {
-            return true;
-        }
-        return false;
+                && ProductsExpServiceConstant.TRUE.equalsIgnoreCase(pinData);
     }
 
     /**
