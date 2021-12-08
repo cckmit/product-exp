@@ -51,7 +51,7 @@ public class TmbErrorHandle {
         }
     }
 
-    protected TmbStatus buildFeignException(FeignException feignException) throws TMBCommonException {
+    protected TmbStatus buildFeignException(FeignException feignException) {
         if (feignException.status() == HttpStatus.BAD_REQUEST.value()) {
             try {
                 TmbOneServiceResponse<String> response = getResponsesFromBadRequest(feignException);
