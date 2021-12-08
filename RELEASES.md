@@ -11,11 +11,13 @@
 * [ONEAPP-22539](https://jira.tau2904.com/browse/ONEAPP-22539) [BE] Change logic supported e-statment to seperate for loan action
 * [ONEAPP-22863](https://jira.tau2904.com/browse/ONEAPP-22863) Loan: Product Landing - Adjust interest field format
 * [ONEAPP-22914](https://jira.tau2904.com/browse/ONEAPP-22914) [BE] - Modify creditcard-group service
+* [ONEAPP-23085](https://jira.tau2904.com/browse/ONEAPP-23085) Loan - product landing: Benefit loan, system does not displayed 'Payment method' field
 * [ONEAPP-23184](https://jira.tau2904.com/browse/ONEAPP-23184) FiID
 * [ONEAPP-23187](https://jira.tau2904.com/browse/ONEAPP-23187) Edit transaction fee for selling from frontEndFee to BackEndFee
 * [ONEAPP-23546](https://jira.tau2904.com/browse/ONEAPP-23546) [Apply so good] Act log apply so good fail case display incorrect
 * [ONEAPP-24201](https://jira.tau2904.com/browse/ONEAPP-24201) Write user activity to ONEAPP Calendar
 * [ONEAPP-24397](https://jira.tau2904.com/browse/ONEAPP-24397) [Apply e Statement] Cant do Apply e statement
+* [ONEAPP-24548](https://jira.tau2904.com/browse/ONEAPP-24548) Create and Delete Redis Cache
 * [ONEAPP-25240](https://jira.tau2904.com/browse/ONEAPP-25240) [Apply eStatement] When do apply for e statement only Credit card or Flash card, Apply e-statement for c2g should not update too
 * [ONEAPP-25246](https://jira.tau2904.com/browse/ONEAPP-25246) BE - Store config in mongoDB and bundle in /get-eligible-lead
 * [ONEAPP-25576](https://jira.tau2904.com/browse/ONEAPP-25576) BE - Modify /get-installment-rate add model type for calculate fee & vat
