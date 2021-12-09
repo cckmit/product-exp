@@ -104,11 +104,11 @@ public class LoanSubmissionCustomerService {
         response.setInterestRateList(interestRateList);
         response.setReceiveAccounts(receiveAccountList);
         response.setPaymentAccounts(paymentAccountList);
-        response.setAllowApplySoSmart(checkIsHasNoFixedAcc(correlationId, receiveAccountList));
+        response.setAllowApplySoSmart(checkIsHasNoFixedAcc(correlationId, loanCustomerResponse));
         return response;
     }
 
-    private boolean checkIsHasNoFixedAcc(String correlationId, List<LoanCustomerDisburstAccount> accList) throws TMBCommonException {
+    private boolean checkIsHasNoFixedAcc(String correlationId, List<DepositAccount> accList) throws TMBCommonException {
         List<String> noFixedCodes = getCodeNoFixedAccCodes(correlationId);
         if (Objects.isNull(noFixedCodes)) {
             return false;
