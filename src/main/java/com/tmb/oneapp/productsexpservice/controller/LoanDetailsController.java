@@ -145,6 +145,7 @@ public class LoanDetailsController {
 				.getProductConfig(correlationId);
 
 		List<ProductConfig> list = fetchProductConfigList.getBody().getData();
+		log.info("Product list "+list);
 		Iterator<ProductConfig> iterator = list.iterator();
 		while (iterator.hasNext()) {
 			ProductConfig productConfig = iterator.next();
