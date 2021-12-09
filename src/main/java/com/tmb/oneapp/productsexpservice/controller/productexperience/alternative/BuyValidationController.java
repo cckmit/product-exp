@@ -32,8 +32,9 @@ public class BuyValidationController {
     /**
      * Description:- method for handle alternative buy
      *
-     * @param correlationId            the correlation id
-     * @param crmId                    the crm id
+     * @param correlationId         the correlation id
+     * @param crmId                 the crm id
+     * @param ipAddress             the ip address
      * @param alternativeBuyRequest the fund fact sheet request body
      * @return return valid status code
      */
@@ -43,20 +44,19 @@ public class BuyValidationController {
     public ResponseEntity<TmbOneServiceResponse<String>> validationBuy(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody AlternativeBuyRequest alternativeBuyRequest) {
 
-        TmbOneServiceResponse<String> oneServiceResponse = buyAlternativeService.validationBuy(correlationId,crmId, alternativeBuyRequest);
+        TmbOneServiceResponse<String> oneServiceResponse = buyAlternativeService.validationBuy(correlationId, crmId, ipAddress, alternativeBuyRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
-            if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
-               return ResponseEntity.ok(oneServiceResponse);
-            }else{
-               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(oneServiceResponse);
+            if (ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())) {
+                return ResponseEntity.ok(oneServiceResponse);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(oneServiceResponse);
             }
         } else {
             oneServiceResponse.setStatus(notFoundStatus());
             return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
-
     }
-
 }

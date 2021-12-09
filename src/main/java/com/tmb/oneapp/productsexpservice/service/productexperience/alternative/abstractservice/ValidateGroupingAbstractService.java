@@ -22,27 +22,21 @@ public class ValidateGroupingAbstractService {
     protected TmbOneServiceResponse<String> validateSuitabilityExpired(String correlationId,
                                                                        String crmId,
                                                                        TmbOneServiceResponse<String> tmbOneServiceResponse,
-                                                                       TmbStatus status){
+                                                                       TmbStatus status) {
         // validate suitability expired
         tmbOneServiceResponse.setStatus(alternativeService.validateSuitabilityExpired(correlationId, crmId, status));
-        if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            return tmbOneServiceResponse;
-        }
-
         return tmbOneServiceResponse;
-
     }
 
-    protected TmbOneServiceResponse<String> validateGroupingService(
-                                                                    String correlationId,
+    protected TmbOneServiceResponse<String> validateGroupingService(String correlationId,
                                                                     CustomerSearchResponse customerInfo,
                                                                     TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                                     TmbStatus status,
-                                                                    BuyFlowFirstTrade buyFlowFirstTrade){
+                                                                    BuyFlowFirstTrade buyFlowFirstTrade) {
 
         // validate service hour
         ValidateServiceHourResponse validateServiceHourResponse = alternativeService.validateServiceHour(correlationId, status);
-        BeanUtils.copyProperties(validateServiceHourResponse,tmbOneServiceResponse.getStatus());
+        BeanUtils.copyProperties(validateServiceHourResponse, tmbOneServiceResponse.getStatus());
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
             tmbOneServiceResponse.setData(String.format("%s-%s", validateServiceHourResponse.getStartTime(), validateServiceHourResponse.getEndTime()));
@@ -57,16 +51,14 @@ public class ValidateGroupingAbstractService {
         }
 
         // validate customer risk level
-        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId,customerInfo, status,buyFlowFirstTrade));
+        tmbOneServiceResponse.setStatus(alternativeService.validateCustomerRiskLevel(correlationId, customerInfo, status, buyFlowFirstTrade));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SERVICE_NOT_READY)){
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SERVICE_NOT_READY)) {
                 tmbOneServiceResponse.getStatus().setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode());
             }
             return tmbOneServiceResponse;
         }
 
         return tmbOneServiceResponse;
-
     }
-
 }

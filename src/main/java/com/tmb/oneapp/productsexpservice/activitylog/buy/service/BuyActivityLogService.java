@@ -11,7 +11,6 @@ import com.tmb.oneapp.productsexpservice.enums.ActivityLogStatus;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.request.OrderCreationPaymentRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.ordercreation.response.OrderCreationPaymentResponse;
-import com.tmb.oneapp.productsexpservice.util.UtilMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -34,30 +33,34 @@ public class BuyActivityLogService {
      *
      * @param correlationId         the correlation id
      * @param crmId                 the crm id
+     * @param ipAddress             the ip address
      * @param alternativeBuyRequest the alternative buy request
+     * @param tmbOneServiceResponse the TMB OneApp response
      * @return
      */
     @LogAround
-    public void clickPurchaseButtonAtFundFactSheetScreen(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest, String reason) {
+    public void clickPurchaseButtonAtFundFactSheetScreen(String correlationId, String crmId, String ipAddress,
+                                                         AlternativeBuyRequest alternativeBuyRequest,
+                                                         TmbOneServiceResponse<String> tmbOneServiceResponse) {
         BuyActivityLog activityData = new BuyActivityLog(
                 correlationId, String.valueOf(System.currentTimeMillis()),
                 BuyActivityEnums.CLICK_PURCHASE_BUTTON_AT_FUND_FACT_SHEET_SCREEN.getActivityTypeId());
+        BaseEvent baseEvent = logActivityService.buildCommonData(crmId, ipAddress, tmbOneServiceResponse);
 
-        String status = alternativeBuyRequest.getProcessFlag().equals(ProductsExpServiceConstant.PROCESS_FLAG_Y) ?
-                ProductsExpServiceConstant.SUCCESS_MESSAGE : ProductsExpServiceConstant.FAILED_MESSAGE;
+        activityData.setCrmId(baseEvent.getCrmId());
+        activityData.setChannel(baseEvent.getChannel());
+        activityData.setAppVersion(baseEvent.getAppVersion());
+        activityData.setIpAddress(baseEvent.getIpAddress());
+        activityData.setActivityStatus(baseEvent.getActivityStatus());
+        activityData.setFailReason(baseEvent.getFailReason());
 
-        activityData.setCrmId(UtilMap.fullCrmIdFormat(crmId));
-        activityData.setActivityStatus(status);
-        activityData.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_CHANNEL);
-        activityData.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_APP_VERSION);
-        activityData.setFailReason(reason);
+        activityData.setActivityType(BuyActivityEnums.CLICK_PURCHASE_BUTTON_AT_FUND_FACT_SHEET_SCREEN.getEvent());
 
         activityData.setFundName(alternativeBuyRequest.getFundName());
         activityData.setVerifyFlag(alternativeBuyRequest.getProcessFlag());
-        activityData.setReason(reason);
+        activityData.setReason(baseEvent.getFailReason());
         activityData.setFundClass(alternativeBuyRequest.getFundEnglishClassName());
 
-        activityData.setActivityType(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_STATUS_TRACKING);
         logActivityService.createLog(activityData);
     }
 
