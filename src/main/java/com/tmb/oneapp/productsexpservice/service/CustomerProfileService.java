@@ -415,6 +415,7 @@ public class CustomerProfileService {
 			int maxAmount = Integer.parseInt(entry.getEntryCode());
 			if (maxAmount >= Integer.parseInt(incomeBaseSalary)) {
 				returnEntry = entry;
+				return returnEntry;
 			}
 		}
 		return returnEntry;
