@@ -46,7 +46,7 @@ class CacheServiceTest {
 
 		cacheService.removeCacheAfterSuccessCreditCard("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884");
 
-		verify(cacheServiceClient, times(1)).deleteCacheByKey(anyString(), anyString());
+		verify(cacheServiceClient, times(3)).deleteCacheByKey(anyString(), anyString());
 	}
 
 	@Test
