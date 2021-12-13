@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -16,5 +18,5 @@ public class RangeIncome {
     private int minAmount;
     private int maxAmount;
     private String statusWorking;
-    private long revenueMultiple;
+    private BigDecimal revenueMultiple;
 }
