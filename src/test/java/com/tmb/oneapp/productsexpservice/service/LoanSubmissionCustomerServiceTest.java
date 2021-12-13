@@ -89,7 +89,7 @@ public class LoanSubmissionCustomerServiceTest {
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> oneServiceResponse = new TmbOneServiceResponse<>();
         List<LoanOnlineRangeIncome> rangeIncomeList = new ArrayList<>();
         LoanOnlineRangeIncome rangeIncome = new LoanOnlineRangeIncome();
-        rangeIncome.setRevenueMultiple(5);
+        rangeIncome.setRevenueMultiple(BigDecimal.valueOf(5));
         rangeIncome.setProductCode("RC01");
         rangeIncome.setEmploymentStatus("salary");
         rangeIncome.setRangeIncomeMaz(99999);
