@@ -35,13 +35,13 @@ public class LoanSubmissionCustomerService {
         TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
 
-        return parseResponse(disburstAccounts, interestRateAll.getData(), rangeIncomeAll.getData(), correlationId);
+        return parseResponse(disburstAccounts, interestRateAll.getData(), rangeIncomeAll.getData());
 
     }
 
     private LoanSubmissionResponse parseResponse(List<DepositAccount> loanCustomerResponse,
                                                  List<LoanOnlineInterestRate> interestRateAll,
-                                                 List<LoanOnlineRangeIncome> rangeIncomeAll, String correlationId) throws TMBCommonException {
+                                                 List<LoanOnlineRangeIncome> rangeIncomeAll) {
         LoanSubmissionResponse response = new LoanSubmissionResponse();
         List<LoanCustomerDisburstAccount> receiveAccountList = new ArrayList<>();
         List<LoanCustomerDisburstAccount> paymentAccountList = new ArrayList<>();
@@ -104,7 +104,7 @@ public class LoanSubmissionCustomerService {
         response.setInterestRateList(interestRateList);
         response.setReceiveAccounts(receiveAccountList);
         response.setPaymentAccounts(paymentAccountList);
-        response.setAllowApplySoSmart(checkIsHasNoFixedAcc(correlationId, loanCustomerResponse));
+        response.setAllowApplySoSmart(true);
         return response;
     }
 
