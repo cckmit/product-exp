@@ -89,9 +89,8 @@ public class LoanSubmissionCustomerService {
             if (depositAccount.getAccountStatus().equals("ACTIVE") && depositAccount.getRelationshipCode().equals("PRIIND")) {
                 if (!isPaymentAccount && depositAccount.getAllowReceiveLoanFund().equals("1")) {
                     accounts.add(mapAccount(depositAccount));
-                } else if (isPaymentAccount && depositAccount.getAllowPayLoanDirectDebit().equals("1")) {
+                } else if (isPaymentAccount && depositAccount.getAllowPayLoanDirectDebit().equals("1"))
                     accounts.add(mapAccount(depositAccount));
-                }
             }
         }
         return accounts;
