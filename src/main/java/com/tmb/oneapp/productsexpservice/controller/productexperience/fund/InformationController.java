@@ -41,7 +41,7 @@ public class InformationController {
     }
 
     /**
-     * Description:- Inquiry MF Service
+     * Description:- Inquiry fund information from MF Service
      *
      * @param correlationId       the correlation id
      * @param fundCodeRequestBody the information request body
@@ -59,13 +59,12 @@ public class InformationController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
-        InformationDto fundInformation = informationService.getFundInformation(correlationId,fundCodeRequestBody);
+        InformationDto fundInformation = informationService.getFundInformation(correlationId, fundCodeRequestBody);
         if (!StringUtils.isEmpty(fundInformation)) {
             return getTmbOneServiceResponseEntity(oneServiceResponse, fundInformation, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
         } else {
             return getTmbOneServiceResponseEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
         }
-
     }
 
     private ResponseEntity<TmbOneServiceResponse<InformationDto>> getTmbOneServiceResponseEntity(TmbOneServiceResponse<InformationDto> oneServiceResponse, InformationDto informationDto, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {

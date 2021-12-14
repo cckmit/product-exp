@@ -20,6 +20,13 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
         super(alternativeService, customerService);
     }
 
+    /**
+     * Description:- method for handle alternative sell
+     *
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @return TmbOneServiceResponse<String>
+     */
     @LogAround
     public TmbOneServiceResponse<String> validationSell(String correlationId, String crmId) {
         TmbOneServiceResponse<String> tmbOneServicesResponse = new TmbOneServiceResponse();
@@ -34,7 +41,7 @@ public class SellAlternativeService extends SellAndSwitchAbstractService {
                 return tmbOneServicesResponse;
             }
 
-            tmbOneServicesResponse.setStatus(alternativeService.validateAccountRedeemtion(correlationId,crmId, status));
+            tmbOneServicesResponse.setStatus(alternativeService.validateAccountRedemption(correlationId, crmId, status));
             if (!tmbOneServicesResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServicesResponse;
             }

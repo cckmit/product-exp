@@ -26,9 +26,6 @@ import static org.mockito.Mockito.when;
 class PortfolioControllerTest {
 
     @Mock
-    private TMBLogger<PortfolioController> logger = new TMBLogger<>(PortfolioController.class);
-
-    @Mock
     private PortfolioService portfolioService;
 
     @InjectMocks
@@ -40,7 +37,7 @@ class PortfolioControllerTest {
 
     @Test
     void should_return_portfolio_response_when_call_get_portfolio_list_given_correlation_id_and_crm_id_and_type() throws IOException, TMBCommonException {
-        //Given
+        // Given
         ObjectMapper mapper = new ObjectMapper();
 
         PortfolioResponse portfolioResponse = mapper.readValue(Paths.get("src/test/resources/investment/fund/portfolio/portfolio_normal_port.json").toFile(),
@@ -48,22 +45,22 @@ class PortfolioControllerTest {
 
         when(portfolioService.getPortfolioList(correlationId, crmId, "a")).thenReturn(portfolioResponse);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = portfolioController.getPortfolioList(correlationId, crmId, "a");
 
-        //Then
+        // Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(portfolioResponse, actual.getBody().getData());
     }
 
     @Test
     void should_return_not_found_when_call_get_portfolio_list_given_return_null_from_service() throws TMBCommonException {
-        //Given
+        // Given
         when(portfolioService.getPortfolioList(correlationId, crmId, "a")).thenReturn(null);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = portfolioController.getPortfolioList(correlationId, crmId, "a");
-        //Then
+        // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(TmbStatusUtil.notFoundStatus().getCode(), actual.getBody().getStatus().getCode());
         assertNull(actual.getBody().getData());
@@ -71,12 +68,12 @@ class PortfolioControllerTest {
 
     @Test
     void should_return_not_found_when_call_get_portfolio_list_given_throw_exception_from_service() throws TMBCommonException {
-        //Given
+        // Given
         when(portfolioService.getPortfolioList(correlationId, crmId, "a")).thenReturn(null);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = portfolioController.getPortfolioList(correlationId, crmId, "a");
-        //Then
+        // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(TmbStatusUtil.notFoundStatus().getCode(), actual.getBody().getStatus().getCode());
         assertNull(actual.getBody().getData());

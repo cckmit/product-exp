@@ -34,29 +34,29 @@ public class CustomerService {
     }
 
     /**
-     * Method to getPortFolioMutualFund
+     * Method to get port fund from MF
      *
-     * @param correlationId
-     * @param crmId
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
      * @return String
      */
-    public String getAccountSaving(String correlationId, String crmId){
+    public String getAccountSaving(String correlationId, String crmId) {
         try {
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"accounts/saving", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.fullCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "accounts/saving", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.fullCrmIdFormat(crmId));
             String response = customerExpServiceClient.getAccountSaving(correlationId, UtilMap.fullCrmIdFormat(crmId));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"accounts/saving", ProductsExpServiceConstant.LOGGING_RESPONSE), response);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "accounts/saving", ProductsExpServiceConstant.LOGGING_RESPONSE), response);
             return response;
-        }catch (Exception ex){
-            logger.error("customerExpServiceClient getAccountSaving error: {}",ex);
+        } catch (Exception ex) {
+            logger.error("customerExpServiceClient getAccountSaving error: {}", ex);
         }
         return "";
     }
 
     /**
-     * Method to getCustomerInfo
+     * Method to get customer information
      *
-     * @param correlationId
-     * @param crmId
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
      * @return CustomerSearchResponse
      */
     @LogAround
@@ -67,13 +67,13 @@ public class CustomerService {
                     .searchValue(UtilMap.fullCrmIdFormat(crmId))
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"ecprofile", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "ecprofile", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
             ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> response =
                     customerServiceClient.customerSearch(correlationId, crmId, request);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"ecprofile", ProductsExpServiceConstant.LOGGING_RESPONSE), response.getBody());
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "ecprofile", ProductsExpServiceConstant.LOGGING_RESPONSE), response.getBody());
             return response.getBody().getData().get(0);
-        }catch (Exception ex){
-            logger.error("error fetch customerSearch : {}",ex);
+        } catch (Exception ex) {
+            logger.error("error fetch customerSearch : {}", ex);
         }
         return null;
     }

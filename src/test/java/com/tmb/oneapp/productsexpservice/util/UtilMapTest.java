@@ -7,8 +7,6 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
@@ -41,12 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class UtilMapTest {
 
     @BeforeEach
-    public void setUp() {
+    private void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testValidateTMBResponse() {
+    void testValidateTMBResponse() {
         /* accountDetailResponse  */
         FundDetail fundDetail = new FundDetail();
         fundDetail.setFundHouseCode("1234");
@@ -84,7 +82,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingResponse() {
+    void testMappingResponse() {
         /* accountDetailResponse */
         FundDetail fundDetail = new FundDetail();
         fundDetail.setFundHouseCode("1234");
@@ -122,7 +120,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingPaymentResponse() {
+    void testMappingPaymentResponse() {
         FundRuleResponse fundRuleResponse = new FundRuleResponse();
         List<FundRuleInfoList> fundRuleList = new ArrayList<>();
         for (FundRuleInfoList ruleInfoList : fundRuleList) {
@@ -153,7 +151,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingAccount() {
+    void testMappingAccount() {
         CommonData data = new CommonData();
         data.setChannel("1234");
         FundRuleInfoList list = new FundRuleInfoList();
@@ -167,19 +165,19 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testConvertAccountType() {
+    void testConvertAccountType() {
         String result = UtilMap.convertAccountType("productType");
         Assert.assertEquals("", result);
     }
 
     @Test
-    public void testIsBusinessClose() {
+    void testIsBusinessClose() {
         boolean result = UtilMap.isBusinessClose("startTime", "endTime");
         Assert.assertEquals(false, result);
     }
 
     @Test
-    public void testCreateHeader2() {
+    void testCreateHeader2() {
         String correlationId = "1234";
         Map<String, String> result = UtilMap.createHeader(correlationId);
         HashMap<String, String> hashMap = new HashMap<>();
@@ -188,7 +186,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testIsSuitabilityExpire() {
+    void testIsSuitabilityExpire() {
         SuitabilityInfo suitabilityInfo = new SuitabilityInfo();
         suitabilityInfo.setFxFlag("1234");
         suitabilityInfo.setSuitValidation("1");
@@ -197,25 +195,25 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testIsCustIDExpired() {
+    void testIsCustIDExpired() {
         boolean result = UtilMap.isCustIdExpired(null);
         Assert.assertEquals(false, result);
     }
 
     @Test
-    public void testIsCASADormant() {
+    void testIsCASADormant() {
         boolean result = UtilMap.isCASADormant("responseCustomerExp");
         Assert.assertEquals(false, result);
     }
 
     @Test
-    public void testDeleteColonDateFormat() {
+    void testDeleteColonDateFormat() {
         String result = UtilMap.deleteColonDateFormat("timeHHmm");
         Assert.assertEquals("timeHHmm", result);
     }
 
     @Test
-    public void testMappingFundListData() {
+    void testMappingFundListData() {
         FundClass fundClass = new FundClass();
         fundClass.setFundClassCode("1234");
         List<FundClass> result = UtilMap.mappingFundListData(Arrays.asList(fundClass));
@@ -223,7 +221,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingFundSearchListData() {
+    void testMappingFundSearchListData() {
         FundClass fundClass = new FundClass();
         fundClass.setFundClassCode("1234");
         List<FundSearch> result = UtilMap.mappingFundSearchListData(Arrays.asList(fundClass));
@@ -233,17 +231,17 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingRequestFundAcc() {
+    void testMappingRequestFundAcc() {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("1234");
-        FundAccountRequestBody result = UtilMap.mappingRequestFundAcc(fundAccountRequest);
+        FundAccountRequestBody result = UtilMap.mappingRequestFundAccount(fundAccountRequest);
         FundAccountRequestBody requestBody = new FundAccountRequestBody();
         requestBody.setFundCode("1234");
         Assert.assertEquals(requestBody.getFundCode(), result.getFundCode());
     }
 
     @Test
-    public void testMappingRequestFundRule() {
+    void testMappingRequestFundRule() {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("1234");
         FundRuleRequestBody result = UtilMap.mappingRequestFundRule(fundAccountRequest);
@@ -253,7 +251,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMappingRequestStmtByPort() {
+    void testMappingRequestStmtByPort() {
         FundAccountRequest fundAccountRequest = new FundAccountRequest();
         fundAccountRequest.setFundCode("1234");
         OrderStmtByPortRequest result = UtilMap.mappingRequestStmtByPort(fundAccountRequest, "startPage", "endPage");
@@ -263,7 +261,7 @@ public class UtilMapTest {
     }
 
     @Test
-    public void testMapTmbOneServiceResponse() {
+    void testMapTmbOneServiceResponse() {
         TmbOneServiceResponse result = UtilMap.mapTmbOneServiceResponse(null);
         Assert.assertEquals(null, result);
     }

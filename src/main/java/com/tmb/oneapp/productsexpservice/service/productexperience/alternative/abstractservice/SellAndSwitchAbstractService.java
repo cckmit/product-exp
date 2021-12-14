@@ -12,19 +12,18 @@ public abstract class SellAndSwitchAbstractService extends ValidateGroupingAbstr
     protected final CustomerService customerService;
 
     protected SellAndSwitchAbstractService(AlternativeService alternativeService,
-                                        CustomerService customerService) {
+                                           CustomerService customerService) {
         super(alternativeService);
         this.customerService = customerService;
     }
 
-    protected TmbOneServiceResponse<String> validateSellAndSwitch(
-                                                                  String correlationId,
+    protected TmbOneServiceResponse<String> validateSellAndSwitch(String correlationId,
                                                                   CustomerSearchResponse customerInfo,
                                                                   TmbOneServiceResponse<String> tmbOneServiceResponse,
-                                                                  TmbStatus status){
-        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(false).build();
-        return validateGroupingService(correlationId,customerInfo,tmbOneServiceResponse,
-                status,buyFlowFirstTrade);
-    }
+                                                                  TmbStatus status) {
 
+        BuyFlowFirstTrade buyFlowFirstTrade = BuyFlowFirstTrade.builder().isBuyFlow(false).isFirstTrade(false).build();
+        return validateGroupingService(correlationId, customerInfo, tmbOneServiceResponse,
+                status, buyFlowFirstTrade);
+    }
 }

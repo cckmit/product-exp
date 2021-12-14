@@ -53,7 +53,7 @@ public class UtilMap {
     private static final TMBLogger<UtilMap> logger = new TMBLogger<>(UtilMap.class);
 
     /**
-     * Generic Method to validateTMBResponse
+     * Generic Method to validate TMB response
      *
      * @param accountDetailResponse
      * @param fundRuleResponse
@@ -76,7 +76,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingResponse
+     * Generic Method to map response for fund account detail
      *
      * @param accountDetailResponse
      * @param fundRuleResponse
@@ -108,7 +108,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingResponse
+     * Generic Method to map response for fund payment details
      *
      * @param fundRuleResponse
      * @param fundHolidayBody
@@ -155,24 +155,26 @@ public class UtilMap {
         }
     }
 
+    @LogAround
     private void filterResponseGetFinancialId(ProductHoldingsResp productHoldingResponse, List<DepositAccount> depositAccountList) {
         try {
             List<SavingAccount> savingAccountList = productHoldingResponse.getSavingAccounts();
             List<CurrentAccount> currentAccountLst = productHoldingResponse.getCurrentAccounts();
-            for (DepositAccount depositAccount: depositAccountList) {
+            for (DepositAccount depositAccount : depositAccountList) {
                 mappingFieldFinancialIdToResponse(savingAccountList, currentAccountLst, depositAccount);
             }
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
 
     }
 
+    @LogAround
     private void mappingFieldFinancialIdToResponse(List<SavingAccount> savingAccountList, List<CurrentAccount> currentAccountLst, DepositAccount depositAccount) {
         boolean notFoundThatInSavingAccount = true;
-        for (SavingAccount savingAccount: savingAccountList) {
+        for (SavingAccount savingAccount : savingAccountList) {
             String savingAccountNumber = getAccountNumberTenDigit(savingAccount.getAcctNbr());
-            if(savingAccountNumber.equals(depositAccount.getAccountNumber())){
+            if (savingAccountNumber.equals(depositAccount.getAccountNumber())) {
                 String fidConcat = savingAccount.getAcctCtrl1() + savingAccount.getAcctCtrl2()
                         + savingAccount.getAcctCtrl3() + savingAccount.getAcctCtrl4();
                 depositAccount.setFiId(fidConcat);
@@ -180,7 +182,7 @@ public class UtilMap {
             }
         }
 
-        if(notFoundThatInSavingAccount) {
+        if (notFoundThatInSavingAccount) {
             for (CurrentAccount currentAccount : currentAccountLst) {
                 String currentAccountNumber = getAccountNumberTenDigit(currentAccount.getAcctNbr());
                 if (currentAccountNumber.equals(depositAccount.getAccountNumber())) {
@@ -192,13 +194,14 @@ public class UtilMap {
         }
     }
 
-    private String getAccountNumberTenDigit(String accountNo){
+    @LogAround
+    private String getAccountNumberTenDigit(String accountNo) {
         return accountNo.length() > 10 ? accountNo.substring(accountNo.length() - 10) :
                 accountNo;
     }
 
     /**
-     * Generic Method to mappingAccount
+     * Generic Method to map response for deposit account
      *
      * @param responseCommon
      * @param responseCustomerExp
@@ -244,8 +247,8 @@ public class UtilMap {
                         depositAccount.setAvailableBalance(balance);
                         String accStatusCode = itr.get("account_status_code").textValue();
                         depositAccount.setAccountStatusCode(accStatusCode);
-                        
-                        if(ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)){
+
+                        if (ProductsExpServiceConstant.DORMANT_STATUS_CODE.equals(accStatusCode)) {
                             countDormantAccount++;
                         }
 
@@ -254,7 +257,7 @@ public class UtilMap {
                 }
             }
 
-            if(countDormantAccount == accountSize){
+            if (countDormantAccount == accountSize) {
                 depositAccountList = new ArrayList<>();
                 return depositAccountList;
             }
@@ -267,7 +270,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to convert Account Type form 3 digits to 1 digit
+     * Generic Method to convert account type form 3 digits to 1 digit
      *
      * @param productType
      * @return account type string
@@ -289,7 +292,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to Get Current Date with Format
+     * Generic Method to check datetime is on business time
      *
      * @param startTime the start time
      * @param endTime   the end time
@@ -314,7 +317,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to create HTTP Header
+     * Generic Method to create HTTP header
      *
      * @param correlationId
      * @return Map
@@ -327,13 +330,13 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to create HTTP Header
+     * Generic Method to create HTTP header with crm id
      *
      * @param correlationId
      * @param crmId
      * @return Map
      */
-    public static Map<String, String> createHeaderWithCrmId(String correlationId,String crmId) {
+    public static Map<String, String> createHeaderWithCrmId(String correlationId, String crmId) {
         Map<String, String> investmentHeader = new HashMap<>();
         investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
         investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
@@ -341,7 +344,7 @@ public class UtilMap {
     }
 
     /**
-     * Method to check suitability is expire from MF service
+     * Method to check suitability is expire from MF service.
      *
      * @param suitabilityInfo
      * @return boolean
@@ -361,7 +364,7 @@ public class UtilMap {
     }
 
     /**
-     * Method to check citizen id expire with current date
+     * Method to check citizen id expired with current date
      *
      * @param customerProfileResponseData
      * @return boolean
@@ -382,7 +385,7 @@ public class UtilMap {
     }
 
     /**
-     * Method to check account status is dormant and acc balance is not 0
+     * Method to check account status is dormant and account balance is not 0
      *
      * @param responseCustomerExp
      * @return boolean
@@ -425,7 +428,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to delete Colon from time
+     * Generic Method to delete colon from time
      *
      * @param timeHHmm
      * @return String
@@ -440,7 +443,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingFundListData
+     * Generic Method to map response for fund list
      *
      * @param fundClass
      * @return List<FundClass>
@@ -465,7 +468,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingFundSearchListData
+     * Generic Method to map response for fund search
      *
      * @param fundClass
      * @return List<FundSearch>
@@ -474,7 +477,7 @@ public class UtilMap {
     public static List<FundSearch> mappingFundSearchListData(List<FundClass> fundClass) {
         FundSearch fundSearch;
         List<FundSearch> searchList = new ArrayList<>();
-        List<FundSearch> fundListDistinctByFundCode = new ArrayList<>();
+        List<FundSearch> fundListDistinctByFundCode;
         try {
             for (FundClass fundClassLoop : fundClass) {
                 List<FundHouse> fundHouseList = fundClassLoop.getFundHouseList();
@@ -507,13 +510,13 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingRequestFundAcc
+     * Generic Method to map request for fund account
      *
      * @param fundAccountRequest
      * @return FundAccountRequestBody
      */
     @LogAround
-    public static FundAccountRequestBody mappingRequestFundAcc(FundAccountRequest fundAccountRequest) {
+    public static FundAccountRequestBody mappingRequestFundAccount(FundAccountRequest fundAccountRequest) {
         FundAccountRequestBody fundAccountRequestBody = new FundAccountRequestBody();
         fundAccountRequestBody.setFundCode(fundAccountRequest.getFundCode());
         fundAccountRequestBody.setPortfolioNumber(fundAccountRequest.getPortfolioNumber());
@@ -521,7 +524,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingRequestFundRule
+     * Generic Method to map request for fund rule
      *
      * @param fundAccountRequest
      * @return FundRuleRequestBody
@@ -544,7 +547,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingRequestStmtByPort
+     * Generic Method to map request for order STMT by port
      *
      * @param fundAccountRequest
      * @param startPage
@@ -562,7 +565,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mapTmbOneServiceResponse
+     * Generic Method to map TMB one service response
      *
      * @param optionalResponse
      * @return TmbOneServiceResponse
@@ -583,7 +586,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingCache
+     * Generic Method to map cache key with json string
      *
      * @param jsonString
      * @param key
@@ -599,7 +602,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingFollowingFlag
+     * Generic Method to map response for following flag
      *
      * @param fundClassList
      * @param customerFavoriteFundDataList
@@ -618,7 +621,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingBoughtFlag
+     * Generic Method to map response for bought flag
      *
      * @param fundClassList
      * @param fundSummaryResponse
@@ -640,7 +643,7 @@ public class UtilMap {
     }
 
     /**
-     * Generic Method to mappingBoughtFlagWithFundHouse
+     * Generic Method to map response for bought flag with fund house
      *
      * @param fundClass
      * @param fundHouseList
@@ -665,6 +668,8 @@ public class UtilMap {
     }
 
     /**
+     * Generic Method to return full format of crm id
+     *
      * @param crmId
      * @return full digit of crmId
      */
@@ -678,6 +683,8 @@ public class UtilMap {
     }
 
     /**
+     * Generic Method to return half format of crm id
+     *
      * @param crmId
      * @return half digit of crmId
      */
@@ -689,6 +696,12 @@ public class UtilMap {
         return crmId.substring(crmId.length() - ProductsExpServiceConstant.DIGIT_OF_CRM_ID);
     }
 
+    /**
+     * Generic Method to return account type from account number
+     *
+     * @param accountNumber
+     * @return account type
+     */
     @LogAround
     public static String getAccountTypeFromAccountNumber(String accountNumber) {
         int accLength = accountNumber.length();
@@ -716,11 +729,12 @@ public class UtilMap {
     }
 
     /**
-     * Return tpye of transaction
+     * Generic Method to return type of transaction
      *
      * @param redeemType
-     * @return
+     * @return type
      */
+    @LogAround
     public static String getTypeOfTransaction(String redeemType) {
         String typeOfSelling;
         switch (redeemType) {
@@ -755,19 +769,32 @@ public class UtilMap {
         return typeOfSelling;
     }
 
+    /**
+     * Generic Method to convert object class to string json
+     *
+     * @param object
+     * @return String
+     */
+    @LogAround
     @SuppressWarnings("resource")
-    public static String convertObjectToStringJson(Object obj) throws JsonProcessingException {
+    public static String convertObjectToStringJson(Object object) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        return (mapper.writeValueAsString(obj)) != null ?
-                (mapper.writeValueAsString(obj)).replaceAll("\\s+"," ")
+        return (mapper.writeValueAsString(object)) != null ?
+                (mapper.writeValueAsString(object)).replaceAll("\\s+", " ")
                 : null;
     }
 
-
-    public static String mfLoggingMessage(String system,String method,String msg) {
-        return String.format("ProductMF call to %s:%s %s : {}",system,method,msg);
+    /**
+     * Generic Method to return logging message
+     *
+     * @param system
+     * @param method
+     * @param message
+     * @return String
+     */
+    @LogAround
+    public static String mfLoggingMessage(String system, String method, String message) {
+        return String.format("ProductMF call to %s:%s %s : {}", system, method, message);
     }
-
-
 }

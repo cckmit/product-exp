@@ -79,7 +79,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateServiceHour method  validate working hour for customer
+     * Method validateServiceHour method to validate working hour for customer
      *
      * @param correlationId
      * @param status
@@ -124,7 +124,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateDateNotOverTwentyYearOld method vaidate age of customer
+     * Method validateDateNotOverTwentyYearOld method to validate age of customer
      *
      * @param birthDate
      * @param status
@@ -158,7 +158,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method isCASADormant get Customer account and check dormant status
+     * Method isCASADormant to get Customer account and check dormant status
      *
      * @param correlationId
      * @param crmId
@@ -187,7 +187,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method isSuitabilityExpired Call MF service to check suitability is expire.
+     * Method isSuitabilityExpired call MF service to check suitability is expired.
      *
      * @param correlationId
      * @param crmId
@@ -216,7 +216,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateCustomerIdExpired call to customer-info and get id_expire_date to verify with current date
+     * Method validateCustomerIdExpired to call customer-info, then get id_expire_date to verify with current date
      *
      * @param crmId
      * @return TmbStatus
@@ -245,7 +245,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateCasaAccountActiveOnce method validate customer active casa account
+     * Method validateCasaAccountActiveOnce method to validate customer active casa account
      *
      * @param depositAccountList
      * @param status
@@ -272,7 +272,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateFatcaFlagNotValid method validate customer fatcaFlag
+     * Method validateFatcaFlagNotValid method to validate customer fatcaFlag
      *
      * @param fatcaFlag
      * @param status
@@ -319,7 +319,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateKycAndIdCardExpire method validate ekyc and cardid expired
+     * Method validateKycAndIdCardExpire method to validate ekyc and card id expired
      *
      * @param kycLimitFlag
      * @param documentType
@@ -363,7 +363,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateIdentityAssuranceLevel method validate customer assurance level
+     * Method validateIdentityAssuranceLevel method to validate customer assurance level
      *
      * @param ekycIdentifyAssuranceLevel
      * @param status
@@ -403,7 +403,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateNationality method validate customer nationality
+     * Method validateNationality method to validate customer nationality
      *
      * @param correlationId
      * @param mainNationality
@@ -428,7 +428,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateAccountRedeemtion method validate customer have an account
+     * Method validateAccountRedemption method to validate account redemption of customer
      *
      * @param correlationId
      * @param crmId
@@ -436,15 +436,15 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateAccountRedeemtion(String correlationId, String crmId, TmbStatus status) {
+    public TmbStatus validateAccountRedemption(String correlationId, String crmId, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.halfCrmIdFormat(crmId));
-            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedeemtionResponse = investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(accountRedeemtionResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchAccountRedemption", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.halfCrmIdFormat(crmId));
+            ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedemptionResponse = investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchAccountRedemption", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(accountRedemptionResponse.getBody()));
 
-            if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
-                    StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
+            if (StringUtils.isEmpty(accountRedemptionResponse.getBody().getData()) ||
+                    StringUtils.isEmpty(accountRedemptionResponse.getBody().getData().getAccountRedeem())) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
                 status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
@@ -461,7 +461,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateAccountRedeemtion method validate customer have an account
+     * Method validateAccountRedemption method to validate fund off shelf
      *
      * @param correlationId
      * @param crmId
@@ -486,7 +486,7 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateCustomerRiskLevel method validate customer risk level
+     * Method validateCustomerRiskLevel method to validate customer risk level
      *
      * @param correlationId
      * @param customerInfo
@@ -528,13 +528,14 @@ public class AlternativeService {
         return status;
     }
 
+    @LogAround
     private String getMaxRiskRM(String correlationId, CustomerSearchResponse customerInfo) {
         String maxRiskRm = "";
         try {
 
             CommonData commonData = getInvestmentConfig(correlationId);
             if (ProductsExpServiceConstant.INVESTMENT_ENABLE_CALRISK.equals(commonData.getEnableCalRisk())) {
-                EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId, customerInfo);
+                EkycRiskCalculateResponse customerRiskLevel = fetchApiCalculateRiskLevel(correlationId, customerInfo);
                 if (customerRiskLevel != null) {
                     maxRiskRm = customerRiskLevel.getMaxRiskRM();
                 }
@@ -550,7 +551,7 @@ public class AlternativeService {
     }
 
     @LogAround
-    private EkycRiskCalculateResponse fetchApiculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
+    private EkycRiskCalculateResponse fetchApiCalculateRiskLevel(String correlationId, CustomerSearchResponse customerInfo) {
         try {
             EkycRiskCalculateRequest ekycRiskCalculateRequest = mappingFieldToRequestEkycRiskCalculate(customerInfo);
             ResponseEntity<TmbServiceResponse<EkycRiskCalculateResponse>> customerRiskResponse = customerServiceClient.customerEkycRiskCalculate(correlationId, ekycRiskCalculateRequest);
@@ -572,8 +573,9 @@ public class AlternativeService {
         return null;
     }
 
+    @LogAround
     @SuppressWarnings("unchecked")
-    <T> TmbServiceResponse<T> getResponseFromBadRequest(final FeignException ex)
+    private <T> TmbServiceResponse<T> getResponseFromBadRequest(final FeignException ex)
             throws JsonProcessingException {
         TmbServiceResponse<T> response = new TmbServiceResponse<>();
         Optional<ByteBuffer> responseBody = ex.responseBody();
@@ -587,6 +589,7 @@ public class AlternativeService {
         return response;
     }
 
+    @LogAround
     private EkycRiskCalculateRequest mappingFieldToRequestEkycRiskCalculate(CustomerSearchResponse customerInfo) {
         EkycRiskCalculateRequest ekycRiskCalculateRequest = EkycRiskCalculateRequest.builder()
                 .businessCode(customerInfo.getBusinessTypeCode())
@@ -658,6 +661,7 @@ public class AlternativeService {
         return ekycRiskCalculateRequest;
     }
 
+    @LogAround
     private CommonData getInvestmentConfig(String correlationId) {
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> commonConfig =
                 commonServiceClient.getCommonConfig(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);

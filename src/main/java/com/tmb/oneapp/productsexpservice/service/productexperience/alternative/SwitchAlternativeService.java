@@ -19,15 +19,22 @@ public class SwitchAlternativeService extends SellAndSwitchAbstractService {
 
     private static final TMBLogger<SwitchAlternativeService> logger = new TMBLogger<>(SwitchAlternativeService.class);
 
+    /**
+     * Description:- method for handle alternative switch
+     *
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @return TmbOneServiceResponse<String>
+     */
     @LogAround
     public TmbOneServiceResponse<String> validationSwitch(String correlationId, String crmId) {
 
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
-            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
+            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId, crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-            return validateSellAndSwitch(correlationId,customerInfo,tmbOneServiceResponse,status);
+            return validateSellAndSwitch(correlationId, customerInfo, tmbOneServiceResponse, status);
 
         } catch (Exception ex) {
             logger.error("error : {}", ex);
@@ -36,5 +43,4 @@ public class SwitchAlternativeService extends SellAndSwitchAbstractService {
             return tmbOneServiceResponse;
         }
     }
-
 }

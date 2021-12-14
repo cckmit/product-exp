@@ -34,7 +34,7 @@ class InformationControllerTest {
 
     @Test
     void should_return_information_dto_when_call_get_fund_information_given_correlation_id_and_fund_code_request_body() throws IOException, TMBCommonException {
-        //Given
+        // Given
         ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
@@ -52,44 +52,44 @@ class InformationControllerTest {
                 .build();
         when(informationService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(informationDto);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, fundCodeRequestBody);
 
-        //Then
+        // Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(informationDto, actual.getBody().getData());
     }
 
     @Test
     void should_return_information_dto_null_when_call_get_fund_information_given_information_dto_empty_from_service() throws TMBCommonException {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
                 .code("TMBCOF")
                 .build();
         when(informationService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(null);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, fundCodeRequestBody);
 
-        //Then
+        // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertNull(actual.getBody().getData());
     }
 
     @Test
     void should_return_information_dto_null_when_call_get_fund_information_given_throw_exception_from_service() throws TMBCommonException {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         FundCodeRequestBody fundCodeRequestBody = FundCodeRequestBody.builder()
                 .code("TMBCOF")
                 .build();
         when(informationService.getFundInformation(correlationId, fundCodeRequestBody)).thenReturn(null);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<InformationDto>> actual = informationController.getFundInformation(correlationId, fundCodeRequestBody);
 
-        //Then
+        // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertNull(actual.getBody().getData());
     }

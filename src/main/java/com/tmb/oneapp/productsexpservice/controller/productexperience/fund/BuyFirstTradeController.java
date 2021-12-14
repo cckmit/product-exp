@@ -32,10 +32,10 @@ public class BuyFirstTradeController {
     }
 
     /**
-     * Description:- method for handle alternative dca
+     * Description:- Method for handle alternative dca
      *
-     * @param correlationId            the correlation id
-     * @param crmId                    the crm id
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
      * @return return valid status code
      */
     @ApiOperation(value = "Validation alternative case")
@@ -47,14 +47,12 @@ public class BuyFirstTradeController {
             @Valid @RequestBody TradeOccupationRequest tradeOccupationRequest) throws TMBCommonException {
 
         TmbOneServiceResponse<TradeOccupationResponse> oneServiceResponse =
-                buyFirstTradeService.tradeOuccupationInquiry(correlationId,crmId,tradeOccupationRequest);
+                buyFirstTradeService.tradeOuccupationInquiry(correlationId, crmId, tradeOccupationRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             return ResponseEntity.ok(oneServiceResponse);
         } else {
             oneServiceResponse.setStatus(notFoundStatus());
             return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
-
     }
-
 }

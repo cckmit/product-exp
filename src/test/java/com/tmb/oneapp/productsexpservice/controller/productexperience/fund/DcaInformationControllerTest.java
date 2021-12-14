@@ -22,17 +22,17 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class DcaInformationControllerTest {
-
-    @InjectMocks
-    public DcaInformationController dcaInformationController;
+class DcaInformationControllerTest {
 
     @Mock
-    public DcaInformationService dcaInformationService;
+    private DcaInformationService dcaInformationService;
+
+    @InjectMocks
+    private DcaInformationController dcaInformationController;
 
     @Test
     void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() throws IOException, TMBCommonException {
-        //Given
+        // Give
         ObjectMapper mapper = new ObjectMapper();
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
@@ -45,17 +45,17 @@ public class DcaInformationControllerTest {
 
         when(dcaInformationService.getDcaInformation(correlationId, crmId)).thenReturn(tmbOneServiceResponse);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<DcaInformationDto>> actual =
                 dcaInformationController.getDcaInformation(correlationId, crmId);
-        //Then
+        // Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(dcaInformationDto, actual.getBody().getData());
     }
 
     @Test
     void should_return_not_found_when_call_get_dca_information_given_correlation_id_and_crm_id() throws TMBCommonException {
-        //Given
+        // Give
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
@@ -65,10 +65,10 @@ public class DcaInformationControllerTest {
 
         when(dcaInformationService.getDcaInformation(correlationId, crmId)).thenReturn(tmbOneServiceResponse);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<DcaInformationDto>> actual =
                 dcaInformationController.getDcaInformation(correlationId, crmId);
-        //Then
+        // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(TmbStatusUtil.notFoundStatus().getCode(), actual.getBody().getStatus().getCode());
         assertNull(actual.getBody().getData());
