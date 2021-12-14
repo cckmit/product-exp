@@ -277,7 +277,7 @@ public class AlternativeServiceTest {
         when(commonServiceClient.getCommonConfig(any(), any())).thenReturn(ResponseEntity.ok(commonResponse));
 
         TmbServiceResponse<EkycRiskCalculateResponse> response = new TmbServiceResponse<>();
-        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("B3").build());
+        response.setData(EkycRiskCalculateResponse.builder().maxRisk("B3").maxRiskRM("A3").build());
         when(customerServiceClient.customerEkycRiskCalculate(any(), any())).thenReturn(ResponseEntity.ok(response));
 
         // When
@@ -311,7 +311,7 @@ public class AlternativeServiceTest {
         // When
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse
                 .builder()
-                .customerRiskLevel("B3")
+                .customerRiskLevel("A3")
                 .businessTypeCode("22")
                 .officeAddressData(AddressWithPhone.builder().build())
                 .registeredAddressData(AddressWithPhone.builder().build())
