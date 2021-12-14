@@ -195,6 +195,9 @@ public class LoanSubmissionCustomerServiceTest {
         depositAccountList.add(depositAccount);
         accountSaving.setDepositAccountLists(depositAccountList);
         tmbResponse.setData(accountSaving);
+        TmbStatus status = new TmbStatus();
+        status.setCode("0000");
+        tmbResponse.setStatus(status);
         return ResponseEntity.ok().body(tmbResponse);
     }
 }

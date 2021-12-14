@@ -64,7 +64,7 @@ public class LoanSubmissionCustomerController {
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
 
         } catch (Exception e) {
-            logger.error("Error while getIncomeInfo: {}", e);
+            logger.error("Error while getDataIncomeInfo: {}", e);
             oneTmbOneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                     ResponseCode.FAILED.getService()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
