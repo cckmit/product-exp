@@ -35,13 +35,13 @@ public class LoanSubmissionCustomerService {
         TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
         TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
 
-        return parseResponse(disburstAccounts, interestRateAll.getData(), rangeIncomeAll.getData(), correlationId);
+        return parseResponse(disburstAccounts, interestRateAll.getData(), rangeIncomeAll.getData());
 
     }
 
     private LoanSubmissionResponse parseResponse(List<DepositAccount> loanCustomerResponse,
                                                  List<LoanOnlineInterestRate> interestRateAll,
-                                                 List<LoanOnlineRangeIncome> rangeIncomeAll, String correlationId) throws TMBCommonException {
+                                                 List<LoanOnlineRangeIncome> rangeIncomeAll) {
         LoanSubmissionResponse response = new LoanSubmissionResponse();
         List<LoanCustomerDisburstAccount> receiveAccountList = new ArrayList<>();
         List<LoanCustomerDisburstAccount> paymentAccountList = new ArrayList<>();
@@ -104,11 +104,11 @@ public class LoanSubmissionCustomerService {
         response.setInterestRateList(interestRateList);
         response.setReceiveAccounts(receiveAccountList);
         response.setPaymentAccounts(paymentAccountList);
-        response.setAllowApplySoSmart(checkIsHasNoFixedAcc(correlationId, receiveAccountList));
+        response.setAllowApplySoSmart(true);
         return response;
     }
 
-    private boolean checkIsHasNoFixedAcc(String correlationId, List<LoanCustomerDisburstAccount> accList) throws TMBCommonException {
+    private boolean checkIsHasNoFixedAcc(String correlationId, List<DepositAccount> accList) throws TMBCommonException {
         List<String> noFixedCodes = getCodeNoFixedAccCodes(correlationId);
         if (Objects.isNull(noFixedCodes)) {
             return false;

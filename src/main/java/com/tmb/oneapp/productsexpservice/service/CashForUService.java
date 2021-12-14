@@ -168,11 +168,11 @@ public class CashForUService {
 		} else {
 			responseModelInfo.setCashFeeRate(formateDigit(String.valueOf(feeAmt)));
 		}
-
 		responseModelInfo
 				.setCashInterestRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvIntRate())));
-		responseModelInfo
-				.setCashVatRate(formateDigit(String.valueOf(cardDetail.getCardCashAdvance().getCashAdvFeeVATRate())));
+		BigDecimal vatAmt = cardDetail.getCardCashAdvance().getCashAdvFeeVATRate().divide(new BigDecimal("100"))
+				.multiply(new BigDecimal(responseModelInfo.getCashFeeRate()));
+		responseModelInfo.setCashVatRate(formateDigit(String.valueOf(vatAmt)));
 		responseModelInfo.setCashVatTotal(calculationVatTotalNoneLead(responseModelInfo));
 
 	}
