@@ -43,7 +43,7 @@ public class CustomerInformationMapper {
                     .customerLastNameEn(customerResponse.getCustomerEnglishLastName())
                     .customerLastNameTh(customerResponse.getCustomerThaiLastName())
                     .customerRiskLevel(customerResponse.getCustomerRiskLevel())
-                    .registerAddress(customerResponse.getRegisterAddress())
+                    .registeredAddress(customerResponse.getRegisterAddress())
                     .contactAddress(customerResponse.getContactAddress())
                     .officeAddress(customerResponse.getOfficeAddress())
                     .nationality(customerResponse.getNationality())

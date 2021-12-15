@@ -38,4 +38,6 @@ public class DepositAccount {
 
     private String fiId;
 
+    private String prefAddress;
+
 }
