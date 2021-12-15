@@ -22,6 +22,9 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
+/**
+ * AipService class will create aip order by calling MF service
+ */
 @Service
 public class AipService extends TmbErrorHandle {
 
@@ -38,35 +41,39 @@ public class AipService extends TmbErrorHandle {
     }
 
     /**
-     * Method createAipOrder
+     * Generic Method to create aip order
      *
-     * @param correlationId
-     * @param crmId
-     * @param orderAIPRequestBody
+     * @param correlationId       the correlation id
+     * @param crmId               the crm id
+     * @param ipAddress           the ip address
+     * @param orderAIPRequestBody the order aip request
+     * @return OrderAIPResponseBody
      */
     @LogAround
-    public TmbOneServiceResponse<OrderAIPResponseBody> createAipOrder(String correlationId, String crmId, OrderAIPRequestBody orderAIPRequestBody) throws TMBCommonException {
+    public TmbOneServiceResponse<OrderAIPResponseBody> createAipOrder(String correlationId, String crmId, String ipAddress,
+                                                                      OrderAIPRequestBody orderAIPRequestBody) throws TMBCommonException {
         TmbOneServiceResponse<OrderAIPResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-        try {
 
+        try {
             // credit card replace expiry date
-            if("C".equals(orderAIPRequestBody.getBankAccountType())){
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CREDIT_CARD,"getCreditCardDetails", ProductsExpServiceConstant.LOGGING_REQUEST),  orderAIPRequestBody.getBankAccountId());
+            if ("C".equals(orderAIPRequestBody.getBankAccountType())) {
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CREDIT_CARD, "getCreditCardDetails", ProductsExpServiceConstant.LOGGING_REQUEST), orderAIPRequestBody.getBankAccountId());
                 ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, orderAIPRequestBody.getBankAccountId());
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CREDIT_CARD,"getCreditCardDetails", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(cardResponse.getBody()));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CREDIT_CARD, "getCreditCardDetails", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(cardResponse.getBody()));
 
                 CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
                 String creditCardExpiry = creditCard.getCardInfo().getExpiredBy();
-                if(StringUtils.isEmpty(creditCardExpiry))
+                if (StringUtils.isEmpty(creditCardExpiry)) {
                     throw new TMBCommonException("creditCardExpiry is empty");
+                }
                 orderAIPRequestBody.setCreditCardExpiry(creditCardExpiry);
             }
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId, crmId);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"createAipOrder", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.convertObjectToStringJson(orderAIPRequestBody));
-            ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> oneServiceResponseResponseEntity = investmentRequestClient.createAipOrder(investmentRequestHeader,orderAIPRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"createAipOrder", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(oneServiceResponseResponseEntity.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "createAipOrder", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(orderAIPRequestBody));
+            ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> oneServiceResponseResponseEntity = investmentRequestClient.createAipOrder(investmentRequestHeader, orderAIPRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "createAipOrder", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(oneServiceResponseResponseEntity.getBody()));
 
             tmbOneServiceResponse.setData(oneServiceResponseResponseEntity.getBody().getData());
 
@@ -79,5 +86,4 @@ public class AipService extends TmbErrorHandle {
         }
         return tmbOneServiceResponse;
     }
-
 }
