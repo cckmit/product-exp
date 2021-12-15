@@ -31,14 +31,14 @@ public class DcaValidationController {
     }
 
     /**
-     * Description:- method get fund fact sheet data
+     * Description:- method to get fund fact sheet data
      *
-     * @headerParam correlationId        the correlation id
-     * @headerParam crmif                the unique id for customer
-     * @bodyParam dcaRuleRequest  the user crmid
+     * @param correlationId        the correlation id
+     * @param crmId                the crm id
+     * @param dcaValidationRequest the dca validation request
      * @return return dca list
      */
-    @ApiOperation(value = "Get fund factsheet to frontend")
+    @ApiOperation(value = "Get fund fact sheet to frontend")
     @LogAround
     @PostMapping(value = "/dca/rule")
     public ResponseEntity<TmbOneServiceResponse<DcaValidationDto>> getFundFactSheetWithValidation(
@@ -46,7 +46,7 @@ public class DcaValidationController {
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
             @Valid @RequestBody DcaValidationRequest dcaValidationRequest) {
-        TmbOneServiceResponse<DcaValidationDto> oneServiceResponse = dcaValidationService.dcaValidation(correlationId, crmId,dcaValidationRequest);
+        TmbOneServiceResponse<DcaValidationDto> oneServiceResponse = dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if (!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return ResponseEntity.badRequest().body(oneServiceResponse);
@@ -61,8 +61,10 @@ public class DcaValidationController {
     /**
      * Description:- method for handle alternative dca
      *
-     * @param correlationId            the correlation id
-     * @param crmId                    the crm id
+     * @param correlationId         the correlation id
+     * @param crmId                 the crm id
+     * @param ipAddress             the ip address
+     * @param alternativeDcaRequest the alternative dca request
      * @return return valid status code
      */
     @ApiOperation(value = "Validation alternative case")
@@ -71,20 +73,19 @@ public class DcaValidationController {
     public ResponseEntity<TmbOneServiceResponse<String>> validationDca(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody AlternativeDcaRequest alternativeDcaRequest) {
 
-        TmbOneServiceResponse<String> oneServiceResponse = dcaValidationService.validationAlternativeDca(correlationId,crmId,alternativeDcaRequest.getProcessFlag());
+        TmbOneServiceResponse<String> oneServiceResponse = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, alternativeDcaRequest.getProcessFlag());
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
-            if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
+            if (ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())) {
                 return ResponseEntity.ok(oneServiceResponse);
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(oneServiceResponse);
             }
         } else {
             oneServiceResponse.setStatus(notFoundStatus());
             return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
-
     }
-
 }

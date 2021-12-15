@@ -20,25 +20,27 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DcaValidationControllerTest {
 
     @Mock
-    public DcaValidationService dcaValidationService;
+    private DcaValidationService dcaValidationService;
 
     @InjectMocks
-    public DcaValidationController dcaValidationController;
+    private DcaValidationController dcaValidationController;
 
-    public static final String correlationId = "correlationID";
+    private static final String correlationId = "correlationID";
 
-    public static final String crmId = "crmId";
+    private static final String crmId = "crmId";
+
+    private static final String ipAddress = "0.0.0.0";
 
     @Test
     void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
@@ -55,17 +57,17 @@ public class DcaValidationControllerTest {
                 .build();
         when(dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest)).thenReturn(tmbOneServiceResponse);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<DcaValidationDto>> actual =
                 dcaValidationController.getFundFactSheetWithValidation(correlationId, crmId, dcaValidationRequest);
-        //Then
+        // Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(dcaValidationDto, actual.getBody().getData());
     }
 
     @Test
     void should_return_not_found_when_call_get_dca_information_given_correlation_id_and_crm_id() {
-        //Given
+        // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
 
@@ -81,71 +83,62 @@ public class DcaValidationControllerTest {
                 .build();
         when(dcaValidationService.dcaValidation(correlationId, crmId, dcaValidationRequest)).thenReturn(tmbOneServiceResponse);
 
-        //When
+        // When
         ResponseEntity<TmbOneServiceResponse<DcaValidationDto>> actual =
                 dcaValidationController.getFundFactSheetWithValidation(correlationId, crmId, dcaValidationRequest);
-        //Then
+        // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(TmbStatusUtil.notFoundStatus().getCode(), actual.getBody().getStatus().getCode());
         assertNull(actual.getBody().getData());
     }
 
     @Test
-    public void should_return_success_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    void should_return_success_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-        when(dcaValidationService.validationAlternativeDca(any(),any(),any())).thenReturn(tmbOneServiceResponse);
+        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
 
-        // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId,crmId, AlternativeDcaRequest.builder().processFlag("Y").build());
+        // When
+        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, ipAddress, AlternativeDcaRequest.builder().processFlag("Y").build());
 
-        // then
-        assertEquals(HttpStatus.OK,actual.getStatusCode());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getBody().getStatus().getCode());
-
+        // Then
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getBody().getStatus().getCode());
     }
 
     @Test
-    public void should_return_bad_request_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    void should_return_bad_request_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
         tmbOneServiceResponse.setStatus(tmbStatus);
-        when(dcaValidationService.validationAlternativeDca(any(),any(),any())).thenReturn(tmbOneServiceResponse);
+        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
 
-        // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId,crmId,AlternativeDcaRequest.builder().processFlag("Y").build());
+        // When
+        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, ipAddress, AlternativeDcaRequest.builder().processFlag("Y").build());
 
-        // then
-        assertEquals(HttpStatus.BAD_REQUEST,actual.getStatusCode());
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
                 actual.getBody().getStatus().getCode());
-
     }
 
     @Test
-    public void should_return_not_found_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request(){
-
-        // given
+    void should_return_not_found_status_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() {
+        // Given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(null);
         tmbOneServiceResponse.setData(null);
-        when(dcaValidationService.validationAlternativeDca(any(),any(),any())).thenReturn(tmbOneServiceResponse);
+        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
 
-        // when
-        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId,crmId,AlternativeDcaRequest.builder().processFlag("Y").build());
+        // When
+        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, ipAddress, AlternativeDcaRequest.builder().processFlag("Y").build());
 
-        // then
-        assertEquals(HttpStatus.NOT_FOUND,actual.getStatusCode());
+        // Then
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
         assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,
                 actual.getBody().getStatus().getCode());
-
     }
-
-
-
 }
