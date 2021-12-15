@@ -145,6 +145,7 @@ public class OpenPortfolioService extends TmbErrorHandle {
         AccountRedeemResponseBody accountRedeem = fetchAccountRedeem.getBody().getData();
         String accountNumber = accountRedeem.getAccountRedeem();
         String accountType = UtilMap.getAccountTypeFromAccountNumber(accountNumber);
+        String prefAddressType= accountRedeem.getPrefAddressType();
 
         AccountDetailRequest accountDetailRequest = AccountDetailRequest.builder()
                 .accountNo(accountNumber)
@@ -178,6 +179,7 @@ public class OpenPortfolioService extends TmbErrorHandle {
         return DepositAccount.builder()
                 .accountNumber(accountNumber)
                 .accountType(accountType)
+                .prefAddress(prefAddressType)
                 .accountStatus(accountStatus)
                 .availableBalance(StringUtils.isEmpty(accountBalance) ? null : new BigDecimal(accountBalance))
                 .productNickname(accountNickName)
