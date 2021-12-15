@@ -55,6 +55,8 @@ public class OpenPortfolioController {
      * Description:- method validation to handle cases of open portfolio validation
      *
      * @param correlationId        the correlation id
+     * @param crmId                the crm id
+     * @param ipAddress            the ip address
      * @param openPortfolioRequest the open portfolio request
      * @return return term and condition with status
      */
@@ -65,9 +67,12 @@ public class OpenPortfolioController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest) {
 
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, openPortfolioRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse =
+                openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, ipAddress, openPortfolioRequest);
+
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if (!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return ResponseEntity.badRequest().body(oneServiceResponse);

@@ -59,7 +59,7 @@ class OpenPortfolioControllerTest {
     private final String ipAddress = "0.0.0.0";
 
     @Test
-    void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException {
+    void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_crm_id_and_ip_address_and_open_portfolio_request() throws IOException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -78,18 +78,18 @@ class OpenPortfolioControllerTest {
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
+        when(openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, ipAddress, request))
                 .thenReturn(responseService);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request);
+        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio(correlationId, crmId, ipAddress, request);
 
         // Then
         assertNotNull(actual.getBody());
     }
 
     @Test
-    void should_return_error_code_with_null_body_when_call_validate_open_portfolio_given_correlation_id_and_and_crm_id_open_portfolio_request() throws IOException {
+    void should_return_error_code_with_null_body_when_call_validate_open_portfolio_given_correlation_id_and_and_crm_id_and_ip_address_open_portfolio_request() throws IOException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -111,11 +111,11 @@ class OpenPortfolioControllerTest {
 
         OpenPortfolioValidationRequest request = OpenPortfolioValidationRequest.builder().build();
         request.setExistingCustomer(true);
-        when(openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request))
+        when(openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, ipAddress, request))
                 .thenReturn(responseService);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", request);
+        ResponseEntity<TmbOneServiceResponse<ValidateOpenPortfolioResponse>> actual = openPortfolioController.validateOpenPortfolio(correlationId, crmId, ipAddress, request);
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());

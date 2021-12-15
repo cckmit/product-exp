@@ -70,13 +70,18 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
     }
 
     /**
-     * Method validateOpenPortfolio
+     * Generic Method to validate data for open portfolio
      *
-     * @param correlationId
+     * @param correlationId                the correlation id
+     * @param crmId                        the crm id
+     * @param ipAddress                    the ip address
      * @param openPortfolioValidateRequest
+     * @return ValidateOpenPortfolioResponse
      */
     @LogAround
-    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, String crmId, OpenPortfolioValidationRequest openPortfolioValidateRequest) {
+    public TmbOneServiceResponse<ValidateOpenPortfolioResponse> validateOpenPortfolioService(String correlationId, String crmId, String ipAddress,
+                                                                                             OpenPortfolioValidationRequest openPortfolioValidateRequest) {
+
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
             ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerInfoResponse =
