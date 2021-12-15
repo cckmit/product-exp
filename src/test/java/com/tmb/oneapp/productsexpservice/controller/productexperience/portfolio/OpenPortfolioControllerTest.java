@@ -52,7 +52,11 @@ class OpenPortfolioControllerTest {
     @Mock
     private OpenPortfolioValidationService openPortfolioValidationService;
 
-    private final String crmId = "23423423423423";
+    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+
+    private final String crmId = "00000018592884";
+
+    private final String ipAddress = "0.0.0.0";
 
     @Test
     void should_return_term_and_condition_body_not_null_when_call_validate_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException {
@@ -122,7 +126,7 @@ class OpenPortfolioControllerTest {
     }
 
     @Test
-    void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_crm_id_and_customer_request() throws IOException, TMBCommonException {
+    void should_return_open_portfolio_validation_response_when_call_create_customer_given_correlation_id_and_crm_id_and_ip_address_and_customer_request() throws IOException, TMBCommonException {
         // Given
         CustomerRequest customerRequest = CustomerRequest.builder()
                 .wealthCrmId("D0000000988")
@@ -154,10 +158,10 @@ class OpenPortfolioControllerTest {
                 .depositAccount(depositAccount)
                 .build();
 
-        when(openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest)).thenReturn(openPortfolioValidationResponse);
+        when(openPortfolioService.createCustomer(correlationId, crmId, ipAddress, customerRequest)).thenReturn(openPortfolioValidationResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> actual = openPortfolioController.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
+        ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> actual = openPortfolioController.createCustomer(correlationId, crmId, crmId, customerRequest);
 
         // Then
         assertNotNull(actual.getBody());

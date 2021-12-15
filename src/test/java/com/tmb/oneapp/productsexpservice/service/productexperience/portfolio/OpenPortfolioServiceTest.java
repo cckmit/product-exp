@@ -26,7 +26,6 @@ import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupa
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.request.CustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.response.CustomerResponseBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.fund.information.request.FundCodeRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponse;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.nickname.response.PortfolioNicknameResponseBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.portfolio.request.OpenPortfolioRequestBody;
@@ -80,8 +79,14 @@ class OpenPortfolioServiceTest {
     @InjectMocks
     private OpenPortfolioService openPortfolioService;
 
+    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+
+    private final String crmId = "00000018592884";
+
+    private final String ipAddress = "0.0.0.0";
+
     @Test
-    void should_return_status_0000_and_body_not_null_when_call_create_existing_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
+    void should_return_status_0000_and_body_not_null_when_call_create_existing_customer_given_correlation_id_and_crm_id_and_ip_address_and_customer_request() throws Exception {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         CustomerResponse customerResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/create_customer.json").toFile(),
@@ -145,14 +150,15 @@ class OpenPortfolioServiceTest {
         when(customerExpServiceClient.getAccountDetail(any(), any())).thenReturn(depositAccountReponse);
 
         // When
-        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
+        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer(correlationId, crmId, ipAddress, customerRequest);
 
+        // Then
         assertNotNull(actual);
         verify(openPortfolioActivityLogService).acceptTermAndCondition(anyString(), anyString(), anyString());
     }
 
     @Test
-    void should_return_status_0000_and_body_not_null_when_call_create_new_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
+    void should_return_status_0000_and_body_not_null_when_call_create_new_customer_given_correlation_id_and_crm_id_and_ip_address_and_customer_request() throws Exception {
         // Given
         ObjectMapper mapper = new ObjectMapper();
         CustomerResponse customerResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/create_customer.json").toFile(),
@@ -213,7 +219,7 @@ class OpenPortfolioServiceTest {
                 .build();
 
         // When
-        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
+        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer(correlationId, crmId, ipAddress, customerRequest);
 
         // Then
         OpenPortfolioValidationResponse expected = OpenPortfolioValidationResponse.builder()
@@ -228,38 +234,34 @@ class OpenPortfolioServiceTest {
     }
 
     @Test
-    void should_throw_common_exception_with_error_and_message_when_call_create_new_customer_given_correlation_id_and_crm_id_and_customer_request() throws Exception {
+    void should_throw_common_exception_with_error_and_message_when_call_create_new_customer_given_correlation_id_and_crm_id_and_ip_address_and_customer_request() throws Exception {
         // Given
-
-
         TmbOneServiceResponse<CustomerResponseBody> oneServiceCustomerResponse = new TmbOneServiceResponse<>();
         oneServiceCustomerResponse.setStatus(TmbStatusUtil.successStatus());
         when(investmentRequestClient.createCustomer(any(), anyString(), any())).thenReturn(ResponseEntity.status(HttpStatus.OK).headers(TMBUtils.getResponseHeaders()).body(oneServiceCustomerResponse));
 
         String errorCode = "2000005";
         String errorMessage = "Bad Request";
-        when(investmentAsyncService.fetchAccountPurpose(any())).thenThrow(getMockCommonException(errorCode,errorMessage));
+        when(investmentAsyncService.fetchAccountPurpose(any())).thenThrow(getMockCommonException(errorCode, errorMessage));
 
-
-        // when
+        // When
         try {
             CustomerRequest customerRequest = CustomerRequest.builder().build();
-            OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
-        }catch (TMBCommonException e){
+            OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer(correlationId, crmId, ipAddress, customerRequest);
+        } catch (TMBCommonException e) {
 
-            // then
-            assertEquals(errorCode,e.getErrorCode());
-            assertEquals(errorMessage,e.getErrorMessage());
-
+            // Then
+            assertEquals(errorCode, e.getErrorCode());
+            assertEquals(errorMessage, e.getErrorMessage());
         }
     }
 
-    private TMBCommonException getMockCommonException(String errorCode, String errorMessage){
+    private TMBCommonException getMockCommonException(String errorCode, String errorMessage) {
         return new TMBCommonException(
                 errorCode,
                 errorMessage,
                 ProductsExpServiceConstant.SERVICE_NAME,
-                HttpStatus.BAD_REQUEST,null);
+                HttpStatus.BAD_REQUEST, null);
     }
 
     @Test
@@ -290,7 +292,7 @@ class OpenPortfolioServiceTest {
                 .build();
 
         // When
-        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", customerRequest);
+        OpenPortfolioValidationResponse actual = openPortfolioService.createCustomer(correlationId, crmId, ipAddress, customerRequest);
 
         // Then
         assertNull(actual);
@@ -430,11 +432,11 @@ class OpenPortfolioServiceTest {
 
     @Test
     void should_throw_tmb_common_exception__when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
-
+        // Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
         TmbOneServiceResponse<RelationshipResponseBody> oneServiceRelationshipResponse = new TmbOneServiceResponse<>();
-        oneServiceRelationshipResponse.setStatus(getMockBadRequest(errorCode,errorMessage));
+        oneServiceRelationshipResponse.setStatus(getMockBadRequest(errorCode, errorMessage));
         when(investmentAsyncService.updateClientRelationship(any(), anyString(), any())).thenReturn(CompletableFuture.completedFuture(oneServiceRelationshipResponse.getData()));
 
         // When
@@ -455,18 +457,16 @@ class OpenPortfolioServiceTest {
                     .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
                     .portfolioNickName("อนาคตเพื่อการศึกษ")
                     .build();
-           openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
-        }catch (TMBCommonException ex){
+            openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
+        } catch (TMBCommonException ex) {
 
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
-
     }
 
-    private TmbStatus getMockBadRequest(String errorCode,String errorMessage){
-        return new TmbStatus(errorCode,errorMessage,"investment-service",errorMessage);
+    private TmbStatus getMockBadRequest(String errorCode, String errorMessage) {
+        return new TmbStatus(errorCode, errorMessage, "investment-service", errorMessage);
     }
-
 }
