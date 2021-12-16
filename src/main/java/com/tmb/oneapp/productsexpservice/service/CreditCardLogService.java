@@ -1,10 +1,11 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -188,18 +189,8 @@ public class CreditCardLogService {
 			List<CardInstallmentResponse> data) {
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			List<CardInstallmentResponse> sucessResponse = data.stream()
-					.filter(e -> "0".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
-			List<CardInstallmentResponse> failResponse = data.stream()
-					.filter(e -> "1".equals(e.getStatus().getStatusCode())).collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(sucessResponse) && CollectionUtils.isNotEmpty(failResponse)) {
-				constructCardEvent(correlationId, reqHeader, sucessResponse.get(0));
-			} else {
-				if (CollectionUtils.isNotEmpty(sucessResponse)) {
-					constructCardEvent(correlationId, reqHeader, sucessResponse.get(0));
-				} else {
-					constructCardEvent(correlationId, reqHeader, failResponse.get(0));
-				}
+			for (CardInstallmentResponse response : data) {
+				constructCardEvent(correlationId, reqHeader, response);
 			}
 		}
 
@@ -222,7 +213,8 @@ public class CreditCardLogService {
 
 		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
 		creditCardEvent.setPlan(converPlan(cardInstallment, correlationId));
-		creditCardEvent.setTransactionDescription(cardInstallment.getTransactionDescription());
+		creditCardEvent.setTransactionDescription(e.getCreditCard().getCardInstallment().getTransactionDescription());
+		creditCardEvent.setTransactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		creditCardEvent.setInitailVector(e.getInitialVector());
 
 		Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
@@ -244,6 +236,9 @@ public class CreditCardLogService {
 		} else {
 			creditCardEvent.setResult(ProductsExpServiceConstant.FAILED);
 			creditCardEvent.setActivityStatus(ProductsExpServiceConstant.FAILURE_ACT_LOG);
+			if (!e.getStatus().getErrorStatus().isEmpty()) {
+				creditCardEvent.setFailReason(e.getStatus().getErrorStatus().get(0).getDescription());
+			}
 		}
 		logActivity(creditCardEvent);
 
@@ -464,7 +459,16 @@ public class CreditCardLogService {
 				.getProductConfig(correlationId);
 
 		List<ProductConfig> productConfigs = response.getBody().getData();
-		if (CollectionUtils.isNotEmpty(productConfigs)) {
+		if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
+			ResponseEntity<FetchCardResponse> fetchCardRes = creditCardClient.getCreditCardDetails(correlationId,
+					updateEstatementReq.getAccountId());
+			String productCode = fetchCardRes.getBody().getCreditCard().getProductId();
+			for (ProductConfig productInfo : productConfigs) {
+				if (StringUtils.isNoneBlank(productCode) && productCode.equals(productInfo.getProductCode())) {
+					productCodeName = "(" + productInfo.getProductCode() + ")  " + productInfo.getProductNameEN();
+				}
+			}
+		} else {
 			for (ProductConfig productInfo : productConfigs) {
 				if (CollectionUtils.isNotEmpty(updateEstatementReq.getProductType())
 						&& updateEstatementReq.getProductType().get(0).equals(productInfo.getProductCode())) {
