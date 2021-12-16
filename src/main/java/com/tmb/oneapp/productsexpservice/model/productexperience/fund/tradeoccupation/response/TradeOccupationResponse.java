@@ -21,4 +21,6 @@ public class TradeOccupationResponse {
 
     private String occupationDescription;
 
+    private String positionDescription;
+
 }
