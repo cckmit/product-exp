@@ -161,14 +161,14 @@ class OpenPortfolioControllerTest {
         when(openPortfolioService.createCustomer(correlationId, crmId, ipAddress, customerRequest)).thenReturn(openPortfolioValidationResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> actual = openPortfolioController.createCustomer(correlationId, crmId, crmId, customerRequest);
+        ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> actual = openPortfolioController.createCustomer(correlationId, crmId, ipAddress, customerRequest);
 
         // Then
         assertNotNull(actual.getBody());
     }
 
     @Test
-    void should_return_portfolio_response_when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
+    void should_return_portfolio_response_when_call_open_portfolio_given_correlation_id_and_crm_id_and_ip_address_and_open_portfolio_request() throws IOException, TMBCommonException {
         // Given
         OpenPortfolioRequestBody openPortfolioRequestBody = OpenPortfolioRequestBody.builder()
                 .jointType("Single")
@@ -208,10 +208,10 @@ class OpenPortfolioControllerTest {
                 .occupationResponse(occupationResponse.getData())
                 .build();
 
-        when(openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody)).thenReturn(portfolioResponse);
+        when(openPortfolioService.openPortfolio(correlationId, crmId, ipAddress, openPortfolioRequestBody)).thenReturn(portfolioResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
+        ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> actual = openPortfolioController.openPortfolio(correlationId, crmId, ipAddress, openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual.getBody());

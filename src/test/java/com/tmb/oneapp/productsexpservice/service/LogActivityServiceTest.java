@@ -48,6 +48,30 @@ public class LogActivityServiceTest {
     }
 
     @Test
+    void should_return_base_event_success_only_when_call_build_common_data_given_crm_id_and_ip_address() {
+        // Given
+        // When
+        BaseEvent actual = logActivityService.buildCommonData(crmId, ipAddress);
+
+        // Then
+        BaseEvent expected = new BaseEvent();
+        expected.setCrmId(crmId);
+        expected.setChannel("mb");
+        expected.setAppVersion("1.0.0");
+        expected.setIpAddress(ipAddress);
+        expected.setActivityStatus("Success");
+
+        assertAll("Should return base event data",
+                () -> assertEquals(expected.getCrmId(), actual.getCrmId()),
+                () -> assertEquals(expected.getChannel(), actual.getChannel()),
+                () -> assertEquals(expected.getAppVersion(), actual.getAppVersion()),
+                () -> assertEquals(expected.getIpAddress(), actual.getIpAddress()),
+                () -> assertEquals(expected.getActivityStatus(), actual.getActivityStatus()),
+                () -> assertEquals(expected.getFailReason(), actual.getFailReason())
+        );
+    }
+
+    @Test
     void should_return_base_event_success_when_call_build_common_data_given_crm_id_and_ip_address_and_creation_response() {
         // Given
         TmbOneServiceResponse<String> response = new TmbOneServiceResponse();

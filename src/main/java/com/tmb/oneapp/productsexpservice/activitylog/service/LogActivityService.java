@@ -47,6 +47,20 @@ public class LogActivityService {
     }
 
     /**
+     * Method to build common data with success status only for saving activity log
+     *
+     * @param crmId
+     * @param ipAddress
+     * @return BaseEvent
+     */
+    @LogAround
+    public BaseEvent buildCommonData(String crmId, String ipAddress) {
+        BaseEvent baseEvent = getCommonBaseEvent(crmId, ipAddress);
+        baseEvent.setActivityStatus(ActivityLogStatus.SUCCESS.getStatus());
+        return baseEvent;
+    }
+
+    /**
      * Method to build common data for saving activity log
      *
      * @param crmId
@@ -56,11 +70,7 @@ public class LogActivityService {
      */
     @LogAround
     public <T> BaseEvent buildCommonData(String crmId, String ipAddress, TmbOneServiceResponse<T> response) {
-        BaseEvent baseEvent = new BaseEvent();
-        baseEvent.setCrmId(UtilMap.fullCrmIdFormat(crmId));
-        baseEvent.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_CHANNEL);
-        baseEvent.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
-        baseEvent.setIpAddress(ipAddress);
+        BaseEvent baseEvent = getCommonBaseEvent(crmId, ipAddress);
 
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getStatus().getCode())) {
             baseEvent.setActivityStatus(ActivityLogStatus.SUCCESS.getStatus());
@@ -69,6 +79,16 @@ public class LogActivityService {
             baseEvent.setFailReason(response.getStatus().getDescription());
         }
 
+        return baseEvent;
+    }
+
+    @LogAround
+    private BaseEvent getCommonBaseEvent(String crmId, String ipAddress) {
+        BaseEvent baseEvent = new BaseEvent();
+        baseEvent.setCrmId(UtilMap.fullCrmIdFormat(crmId));
+        baseEvent.setChannel(ProductsExpServiceConstant.ACTIVITY_LOG_CHANNEL);
+        baseEvent.setAppVersion(ProductsExpServiceConstant.ACTIVITY_LOG_APP_VERSION);
+        baseEvent.setIpAddress(ipAddress);
         return baseEvent;
     }
 }

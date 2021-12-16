@@ -139,12 +139,11 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
      *
      * @param correlationId the correlation id
      * @param crmId         the crm id
-     * @param ipAddress     the ip address
      * @param processFlag   the process flag
      * @return TmbOneServiceResponse<String>
      */
     @LogAround
-    public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId, String ipAddress, String processFlag) {
+    public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId, String processFlag) {
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId, crmId);

@@ -94,7 +94,7 @@ public class OpenPortfolioService extends TmbErrorHandle {
     @LogAround
     public OpenPortfolioValidationResponse createCustomer(String correlationId, String crmId, String ipAddress, CustomerRequest customerRequest) throws TMBCommonException {
         try {
-            openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
+            openPortfolioActivityLogService.acceptTermAndCondition(correlationId, crmId, ipAddress);
 
             Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
 
@@ -194,11 +194,13 @@ public class OpenPortfolioService extends TmbErrorHandle {
      *
      * @param correlationId            the correlation id
      * @param crmId                    the crm id
+     * @param ipAddress                the ip address
      * @param openPortfolioRequestBody the open portfolio request
      * @return PortfolioResponse
      */
     @LogAround
-    public PortfolioResponse openPortfolio(String correlationId, String crmId, OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
+    public PortfolioResponse openPortfolio(String correlationId, String crmId, String ipAddress,
+                                           OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
         OccupationResponseBody occupationResponseBody = null;
         Map<String, String> investmentRequestHeader = UtilMap.createHeader(correlationId);
 
@@ -221,7 +223,7 @@ public class OpenPortfolioService extends TmbErrorHandle {
                 logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "updateOccupation", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(occupationResponseBody));
             }
 
-            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
+            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ipAddress, ProductsExpServiceConstant.SUCCESS, openPortfolio.get().getPortfolioNumber(), openPortfolioRequestBody.getPortfolioNickName());
 
             OpenPortfolioResponseBody openPortfolioResponseBody = openPortfolio.get();
             RelationshipResponseBody relationshipResponseBody = relationship.get();
@@ -252,7 +254,7 @@ public class OpenPortfolioService extends TmbErrorHandle {
             }
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
-            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
+            openPortfolioActivityLogService.enterPinIsCorrect(correlationId, crmId, ipAddress, ProductsExpServiceConstant.FAILED, "", openPortfolioRequestBody.getPortfolioNickName());
         }
         return null;
     }

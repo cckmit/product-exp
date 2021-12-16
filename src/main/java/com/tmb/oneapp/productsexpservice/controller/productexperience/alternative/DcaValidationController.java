@@ -63,7 +63,6 @@ public class DcaValidationController {
      *
      * @param correlationId         the correlation id
      * @param crmId                 the crm id
-     * @param ipAddress             the ip address
      * @param alternativeDcaRequest the alternative dca request
      * @return return valid status code
      */
@@ -73,10 +72,9 @@ public class DcaValidationController {
     public ResponseEntity<TmbOneServiceResponse<String>> validationDca(
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
-            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody AlternativeDcaRequest alternativeDcaRequest) {
 
-        TmbOneServiceResponse<String> oneServiceResponse = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, alternativeDcaRequest.getProcessFlag());
+        TmbOneServiceResponse<String> oneServiceResponse = dcaValidationService.validationAlternativeDca(correlationId, crmId, alternativeDcaRequest.getProcessFlag());
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if (ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())) {
                 return ResponseEntity.ok(oneServiceResponse);

@@ -42,6 +42,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -176,7 +177,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         assertNotNull(actual.getData().getCustomerInformation());
         assertNotNull(actual.getData().getTermsConditions());
         assertNotNull(actual.getData().getDepositAccountList());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -206,7 +207,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInformation());
         assertNotNull(actual.getData().getTermsConditions());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -229,7 +230,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_IN_SERVICE_HOUR.getCode(), actual.getStatus().getCode());
         assertEquals("19:00-20:00", actual.getData().getServiceHour());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -248,7 +249,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.AGE_NOT_OVER_TWENTY.getCode(), actual.getStatus().getCode());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     private ValidateServiceHourResponse mockTmbStatusWithTimeSuccess(String code, String message, String description) {
@@ -294,7 +295,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode(), actual.getStatus().getCode());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -327,7 +328,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getMessage(), actual.getStatus().getMessage());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -359,7 +360,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage(), actual.getStatus().getMessage());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -392,7 +393,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMessage(), actual.getStatus().getMessage());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -425,7 +426,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(), actual.getStatus().getMessage());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -456,7 +457,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getStatus().getMessage());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -487,7 +488,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         // Then
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getStatus().getCode());
         assertEquals(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getStatus().getMessage());
-        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     private void mockSuccessAllAlternative() {

@@ -36,8 +36,6 @@ public class DcaValidationControllerTest {
 
     private static final String crmId = "crmId";
 
-    private static final String ipAddress = "0.0.0.0";
-
     @Test
     void should_return_dca_information_dto_when_call_get_dca_information_given_correlation_id_and_crm_id() {
         // Given
@@ -97,10 +95,10 @@ public class DcaValidationControllerTest {
         // Given
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
+        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, ipAddress, AlternativeDcaRequest.builder().processFlag("Y").build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, AlternativeDcaRequest.builder().processFlag("Y").build());
 
         // Then
         assertEquals(HttpStatus.OK, actual.getStatusCode());
@@ -114,10 +112,10 @@ public class DcaValidationControllerTest {
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode());
         tmbOneServiceResponse.setStatus(tmbStatus);
-        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
+        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, ipAddress, AlternativeDcaRequest.builder().processFlag("Y").build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, AlternativeDcaRequest.builder().processFlag("Y").build());
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
@@ -131,10 +129,10 @@ public class DcaValidationControllerTest {
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(null);
         tmbOneServiceResponse.setData(null);
-        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
+        when(dcaValidationService.validationAlternativeDca(anyString(), anyString(), anyString())).thenReturn(tmbOneServiceResponse);
 
         // When
-        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, ipAddress, AlternativeDcaRequest.builder().processFlag("Y").build());
+        ResponseEntity<TmbOneServiceResponse<String>> actual = dcaValidationController.validationDca(correlationId, crmId, AlternativeDcaRequest.builder().processFlag("Y").build());
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());

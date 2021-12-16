@@ -300,7 +300,7 @@ class OpenPortfolioServiceTest {
     }
 
     @Test
-    void should_return_status_0000_and_body_and_occupation_not_null_when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
+    void should_return_status_0000_and_body_and_occupation_not_null_when_call_open_portfolio_given_correlation_id_and_crm_id_and_ip_address_and_open_portfolio_request() throws IOException, TMBCommonException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -362,17 +362,17 @@ class OpenPortfolioServiceTest {
                 .build();
 
         // When
-        PortfolioResponse actual = openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
+        PortfolioResponse actual = openPortfolioService.openPortfolio(correlationId, crmId, ipAddress, openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual);
         assertNotNull(actual.getOccupationResponse());
-        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
         verify(cacheServiceClient, times(2)).deleteCacheByKey(anyString(), anyString());
     }
 
     @Test
-    void should_return_status_0000_and_body_not_null_and_occupation_null_when_call_open_portfolio_given_correlation_id_and_crm_id_and_occupation_request_null() throws IOException, TMBCommonException {
+    void should_return_status_0000_and_body_not_null_and_occupation_null_when_call_open_portfolio_given_correlation_id_and_crm_id_and_ip_address_and_occupation_request_null() throws IOException, TMBCommonException {
         // Given
         ObjectMapper mapper = new ObjectMapper();
 
@@ -421,17 +421,17 @@ class OpenPortfolioServiceTest {
                 .build();
 
         // When
-        PortfolioResponse actual = openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
+        PortfolioResponse actual = openPortfolioService.openPortfolio(correlationId, crmId, ipAddress, openPortfolioRequestBody);
 
         // Then
         assertNotNull(actual);
         assertNull(actual.getOccupationResponse());
-        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(openPortfolioActivityLogService).enterPinIsCorrect(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
         verify(cacheServiceClient, times(2)).deleteCacheByKey(anyString(), anyString());
     }
 
     @Test
-    void should_throw_tmb_common_exception__when_call_open_portfolio_given_correlation_id_and_crm_id_and_open_portfolio_request() throws IOException, TMBCommonException {
+    void should_throw_tmb_common_exception__when_call_open_portfolio_given_correlation_id_and_crm_id_and_ip_address_and_open_portfolio_request() throws TMBCommonException {
         // Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
@@ -457,7 +457,7 @@ class OpenPortfolioServiceTest {
                     .purposeTypeCode("TMB_PTFPURPOSE_10_RETIREMENT")
                     .portfolioNickName("อนาคตเพื่อการศึกษ")
                     .build();
-            openPortfolioService.openPortfolio("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592884", openPortfolioRequestBody);
+            openPortfolioService.openPortfolio(correlationId, crmId, ipAddress, openPortfolioRequestBody);
         } catch (TMBCommonException ex) {
 
             // Then

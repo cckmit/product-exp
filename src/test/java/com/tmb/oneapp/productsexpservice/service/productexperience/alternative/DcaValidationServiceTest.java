@@ -61,8 +61,6 @@ public class DcaValidationServiceTest {
 
     private static final String crmId = "crmId";
 
-    private static final String ipAddress = "0.0.0.0";
-
     private void mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums alternativeEnums) {
         // Given
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse.builder().build();
@@ -87,10 +85,10 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_status_null_when_call_validation_dca_given_correlation_id_and_crm_id_and_ip_address_and_alternative_request() {
+    void should_return_status_null_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // When
         when(customerService.getCustomerInfo(any(), any())).thenThrow(MockitoException.class);
-        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, "Y");
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
         // Then
         assertNull(actual.getStatus());
@@ -98,9 +96,9 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_failed_cant_buy_fund_when_call_validation_dca_given_correlation_id_and_crm_id_and_ip_address_and_alternative_request() {
+    void should_return_failed_cant_buy_fund_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // When
-        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, "N");
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "N");
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CAN_NOT_BUY_FUND.getCode(),
@@ -255,7 +253,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_ip_address_and_alternative_request() {
+    void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
@@ -267,7 +265,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(status);
 
         // When
-        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, "Y");
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode(),
@@ -278,7 +276,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_failed_validate_age_not_over_twenty_when_call_validation_dca_given_correlation_id_and_crm_id_and_ip_address_and_alternative_request() {
+    void should_return_failed_validate_age_not_over_twenty_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
@@ -290,7 +288,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(status);
 
         // When
-        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, "Y");
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY.getCode(),
@@ -300,7 +298,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_failed_customer_risk_level_when_call_validation_dca_given_correlation_id_and_crm_id_and_ip_address_and_alternative_request() {
+    void should_return_failed_customer_risk_level_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
@@ -312,7 +310,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(status);
 
         // When
-        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, "Y");
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_IN_LEVEL_C3_AND_B3.getCode(),
@@ -322,7 +320,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_failed_casa_dormant_when_call_validation_dca_given_correlation_id_and_crm_id_ip_address_and_alternative_request() {
+    void should_return_failed_casa_dormant_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT);
         byPassAllAlternative();
@@ -334,7 +332,7 @@ public class DcaValidationServiceTest {
         when(alternativeService.validateCASADormant(any(), any(), any())).thenReturn(status);
 
         // When
-        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, ipAddress, "Y");
+        TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode(),
