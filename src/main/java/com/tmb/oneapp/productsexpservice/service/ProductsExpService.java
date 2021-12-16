@@ -64,6 +64,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant.INVESTMENT_JOINT_FLAG_INDIVIDUAL;
 
@@ -283,7 +284,7 @@ public class ProductsExpService extends TmbErrorHandle {
                 result.setIsJointPortOnly(!individualAccountExist);
             }
 
-            List<String> ptPorts = ports.stream().filter(port -> port.startsWith("PT")).collect(Collectors.toList());
+            List<String> ptPorts = ports.stream().filter(port -> Stream.of("PT0", "PT1").anyMatch(port::startsWith)).collect(Collectors.toList());
             if (!ptPorts.isEmpty()) {
                 result.setIsPt(Boolean.TRUE);
             }

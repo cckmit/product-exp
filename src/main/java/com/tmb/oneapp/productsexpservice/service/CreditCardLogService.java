@@ -189,7 +189,7 @@ public class CreditCardLogService {
 			List<CardInstallmentResponse> data) {
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			for (CardInstallmentResponse response : data) {
+			for(CardInstallmentResponse response: data) {
 				constructCardEvent(correlationId, reqHeader, response);
 			}
 		}
@@ -208,13 +208,13 @@ public class CreditCardLogService {
 				ProductsExpServiceConstant.APPLY_SO_GOOD_ON_CLICK_CONFIRM_BUTTON);
 
 		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
-
+		creditCardEvent.setTransactionDescription(e.getCreditCard().getCardInstallment().getTransactionDescription());
+		creditCardEvent.setTransactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
 		creditCardEvent.setPlan(converPlan(cardInstallment, correlationId));
-		creditCardEvent.setTransactionDescription(e.getCreditCard().getCardInstallment().getTransactionDescription());
-		creditCardEvent.setTransactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		creditCardEvent.setTransactionDescription(cardInstallment.getTransactionDescription());
 		creditCardEvent.setInitailVector(e.getInitialVector());
 
 		Double amountInDouble = ConversionUtil.stringToDouble(cardInstallment.getAmounts());
@@ -455,20 +455,22 @@ public class CreditCardLogService {
 	private String constructProductNameInfomation(String correlationId, UpdateEStatmentRequest updateEstatementReq) {
 
 		String productCodeName = "";
+		
 		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
 				.getProductConfig(correlationId);
 
 		List<ProductConfig> productConfigs = response.getBody().getData();
-		if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-			ResponseEntity<FetchCardResponse> fetchCardRes = creditCardClient.getCreditCardDetails(correlationId,
-					updateEstatementReq.getAccountId());
+		
+		if(StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
+			ResponseEntity<FetchCardResponse>  fetchCardRes = creditCardClient.getCreditCardDetails(correlationId, updateEstatementReq.getAccountId());
 			String productCode = fetchCardRes.getBody().getCreditCard().getProductId();
 			for (ProductConfig productInfo : productConfigs) {
-				if (StringUtils.isNoneBlank(productCode) && productCode.equals(productInfo.getProductCode())) {
+				if (StringUtils.isNoneBlank(productCode)
+						&& productCode.equals(productInfo.getProductCode())) {
 					productCodeName = "(" + productInfo.getProductCode() + ")  " + productInfo.getProductNameEN();
 				}
 			}
-		} else {
+		}else {
 			for (ProductConfig productInfo : productConfigs) {
 				if (CollectionUtils.isNotEmpty(updateEstatementReq.getProductType())
 						&& updateEstatementReq.getProductType().get(0).equals(productInfo.getProductCode())) {
@@ -477,6 +479,7 @@ public class CreditCardLogService {
 				}
 			}
 		}
+		
 		return productCodeName;
 
 	}

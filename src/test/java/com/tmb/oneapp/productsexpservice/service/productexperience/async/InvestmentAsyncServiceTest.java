@@ -201,51 +201,6 @@ class InvestmentAsyncServiceTest {
     }
 
     @Test
-    void should_return_account_redeem_body_when_call_fetch_account_redeem_given_header_and_crm_id() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
-        //Given
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> investmentRequestHeader = Map.of("test", "test");
-        AccountRedeemResponse accountPurposeResponse = mapper.readValue(Paths.get("src/test/resources/investment/customer/account_redeem.json").toFile(),
-                AccountRedeemResponse.class);
-        TmbOneServiceResponse<AccountRedeemResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
-        tmbOneServiceResponse.setData(accountPurposeResponse.getData());
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setService("products-exp-async-service");
-        tmbOneServiceResponse.setStatus(tmbStatus);
-        ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> response = new ResponseEntity<>(tmbOneServiceResponse, HttpStatus.OK);
-
-        when(investmentRequestClient.getCustomerAccountRedeem(investmentRequestHeader, "00000007924129")).thenReturn(response);
-
-        //When
-        CompletableFuture<AccountRedeemResponseBody> actual = investmentAsyncService.fetchAccountRedeem(investmentRequestHeader, "00000007924129");
-
-        //Then
-        CompletableFuture<AccountRedeemResponseBody> expected = CompletableFuture.completedFuture(accountPurposeResponse.getData());
-        assertEquals(expected.get(), actual.get());
-    }
-
-    @Test
-    void should_return_null_when_call_fetch_account_redeem_given_throw_exception_from_api() {
-        //Given
-        when(investmentRequestClient.getCustomerAccountRedeem(any(), anyString())).thenThrow(RuntimeException.class);
-
-        //When
-        TMBCommonException actual = assertThrows(TMBCommonException.class, () -> {
-            investmentAsyncService.fetchAccountRedeem(any(), anyString());
-        });
-
-        //Then
-        TMBCommonException expected = new TMBCommonException(
-                ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),
-                HttpStatus.OK,
-                null);
-
-        assertEquals(expected.getClass(), actual.getClass());
-    }
-
-    @Test
     void should_return_occupation_inquiry_body_when_call_fetch_occupation_inquiry_given_header_and_crm_id() throws TMBCommonException, IOException, ExecutionException, InterruptedException {
         //Given
         ObjectMapper mapper = new ObjectMapper();
@@ -455,15 +410,15 @@ class InvestmentAsyncServiceTest {
         //Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.getFundInformation(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.getFundInformation(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
         //When
-        try{
+        try {
             investmentAsyncService.fetchFundInformation(any(), any());
-        }catch (TMBCommonException ex){
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
 
     }
@@ -473,15 +428,15 @@ class InvestmentAsyncServiceTest {
         //Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.getFundDailyNav(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.getFundDailyNav(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
         //When
-        try{
+        try {
             investmentAsyncService.fetchFundDailyNav(any(), any());
-        }catch (TMBCommonException ex){
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
 
     }
@@ -491,33 +446,15 @@ class InvestmentAsyncServiceTest {
         //Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.getCustomerAccountPurpose( any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.getCustomerAccountPurpose(any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
         //When
-        try{
+        try {
             investmentAsyncService.fetchAccountPurpose(any());
-        }catch (TMBCommonException ex){
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
-        }
-
-    }
-
-    @Test
-    void should_throw_common_exception_when_call_fetch_account_redeem() {
-        //Given
-        String errorCode = "2000009";
-        String errorMessage = "Bad Request";
-        when(investmentRequestClient.getCustomerAccountRedeem( any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
-
-        //When
-        try{
-            investmentAsyncService.fetchAccountRedeem(any(),any());
-        }catch (TMBCommonException ex){
-            // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
 
     }
@@ -527,15 +464,15 @@ class InvestmentAsyncServiceTest {
         //Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.getCustomerOccupationInquiry( any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.getCustomerOccupationInquiry(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
         //When
-        try{
-            investmentAsyncService.fetchOccupationInquiry(any(),any());
-        }catch (TMBCommonException ex){
+        try {
+            investmentAsyncService.fetchOccupationInquiry(any(), any());
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
 
     }
@@ -545,15 +482,15 @@ class InvestmentAsyncServiceTest {
         //Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.getFirstTrade( any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.getFirstTrade(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
         //When
-        try{
-            investmentAsyncService.getFirstTrade(any(),any());
-        }catch (TMBCommonException ex){
+        try {
+            investmentAsyncService.getFirstTrade(any(), any());
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
 
     }
@@ -563,15 +500,15 @@ class InvestmentAsyncServiceTest {
         //Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.updateClientRelationship( any(),any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.updateClientRelationship(any(), any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
         //When
-        try{
-            investmentAsyncService.updateClientRelationship(any(),any(),any());
-        }catch (TMBCommonException ex){
+        try {
+            investmentAsyncService.updateClientRelationship(any(), any(), any());
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
 
     }
@@ -581,27 +518,27 @@ class InvestmentAsyncServiceTest {
         //Given
         String errorCode = "2000009";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.openPortfolio( any(),any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.openPortfolio(any(), any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
         //When
-        try{
-            investmentAsyncService.openPortfolio(any(),any(),any());
-        }catch (TMBCommonException ex){
+        try {
+            investmentAsyncService.openPortfolio(any(), any(), any());
+        } catch (TMBCommonException ex) {
             // Then
-            assertEquals(errorCode,ex.getErrorCode());
-            assertEquals(errorMessage,ex.getErrorMessage());
+            assertEquals(errorCode, ex.getErrorCode());
+            assertEquals(errorMessage, ex.getErrorMessage());
         }
 
     }
 
-    private FeignException mockFeignExceptionBadRequest(String errorCode,String errorMessage){
+    private FeignException mockFeignExceptionBadRequest(String errorCode, String errorMessage) {
         Request.Body body = Request.Body.create("".getBytes(StandardCharsets.UTF_8));
         RequestTemplate template = new RequestTemplate();
         Map<String, Collection<String>> headers = new HashMap<>();
         String errorBody = "{\n" +
                 "    \"status\": {\n" +
-                "        \"code\": \""+errorCode+"\",\n" +
-                "        \"message\": \""+errorMessage+"\",\n" +
+                "        \"code\": \"" + errorCode + "\",\n" +
+                "        \"message\": \"" + errorMessage + "\",\n" +
                 "        \"service\": null,\n" +
                 "        \"description\": \"Please enter PIN\"\n" +
                 "    },\n" +

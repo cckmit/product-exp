@@ -36,8 +36,8 @@ public class InstantLoanServiceTest {
 		TmbOneServiceResponse<Object> serviceResponse = new TmbOneServiceResponse<Object>();
 		when(lendingServiceClient.createInstanceLoanApplication(any(), any(), any()))
 				.thenReturn(ResponseEntity.ok().body(serviceResponse));
-		Object obj = instanceLoanSevice.createInstanceLoanApplication(new HashMap<String, String>(), null);
-		assertNull(obj);
+		instanceLoanSevice.createInstanceLoanApplication(new HashMap<String, String>(), null, serviceResponse);
+		assertNull(serviceResponse.getData());
 	}
 
 }

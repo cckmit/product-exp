@@ -14,7 +14,7 @@ public enum AlternativeBuySellSwitchDcaErrorEnums {
     ID_CARD_EXPIRED("2000022", "Your ID card has expired. Can not do the transaction.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     NO_ACCOUNT_REDEMPTION("2000013", "Cannot proceed because your receiving account is not found. Please contact ttb branch.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     FUND_OFF_SHELF("2000005", "This fund is not allow to purchase.", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
-    NOT_ALLOW_PROCESS_TO_BE_PROCEEDED("2000002", "Not allow FATACA to be proceeded via application", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
+    NOT_ALLOW_PROCESS_TO_BE_PROCEEDED("2000002", "Not allow FATCA to be proceeded via application", AlternativeBuySellSwitchDcaErrorEnums.ERROR_DESC),
     ;
 
     private static final String ERROR_DESC = "error";

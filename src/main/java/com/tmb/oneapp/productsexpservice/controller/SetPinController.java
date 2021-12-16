@@ -39,6 +39,7 @@ import com.tmb.oneapp.productsexpservice.model.setpin.SetPinReqParameter;
 import com.tmb.oneapp.productsexpservice.model.setpin.TranslatePinRes;
 import com.tmb.oneapp.productsexpservice.service.CreditCardLogService;
 import com.tmb.oneapp.productsexpservice.service.NotificationService;
+import com.tmb.oneapp.productsexpservice.util.InternalRespUtil;
 
 import feign.FeignException;
 import io.swagger.annotations.Api;
@@ -81,6 +82,7 @@ public class SetPinController {
 	 * @param requestHeadersParameter
 	 * @return set pin api response
 	 */
+	@SuppressWarnings("unchecked")
 	@LogAround
 	@ApiOperation(value = "Set Pin Api")
 	@PostMapping(value = "/credit-card/set-pin", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -123,12 +125,11 @@ public class SetPinController {
 				} else {
 					List<SilverlakeErrorStatus> errorStatus = setPinResponse.getStatus().getErrorStatus();
 					String code = errorStatus.get(0).getErrorCode();
-					String desc = errorStatus.get(0).getDescription();
 					creditCardLogService.finishSetPinActivityLog(ProductsExpServiceConstant.FAILURE_ACT_LOG,
 							correlationId, accountId, code, requestHeadersParameter, setPinResponse.getInitialVector());
-					oneServiceResponse.setStatus(new TmbStatus(code, ResponseCode.FAILED.getMessage(),
-							ResponseCode.FAILED.getService(), desc));
-					return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+
+					return (ResponseEntity<TmbOneServiceResponse<SetPinResponse>>) InternalRespUtil
+							.generatedResponseFromSilverLake(responseHeaders, oneServiceResponse, errorStatus);
 				}
 
 			} else {

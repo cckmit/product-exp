@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,6 @@ import com.tmb.common.model.creditcard.CreditCardDetail;
 import com.tmb.common.model.creditcard.GetCardsBalancesResponse;
 import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.common.model.customer.UpdateEStatmentRequest;
-import com.tmb.common.model.legacy.rsl.common.ob.account.Account;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
@@ -113,7 +111,7 @@ public class ApplyEStatementServiceTest {
 		updateServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
-
+		
 		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}
@@ -212,6 +210,7 @@ public class ApplyEStatementServiceTest {
 				ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));
 		when(customerServiceClient.updateEStatement(any(), any())).thenReturn(ResponseEntity.ok(updateServiceResponse));
 		
+
 		applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq,new HashMap());
 		Assert.assertNotNull(ResponseEntity.ok(oneServiceResponse));
 	}

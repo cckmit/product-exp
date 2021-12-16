@@ -24,7 +24,7 @@ public class CustomerInformation extends CustomerModel {
 
     private String contactAddress;
 
-    private String registerAddress;
+    private String registeredAddress;
 
     private String officeAddress;
 }

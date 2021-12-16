@@ -29,7 +29,12 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
     private static final TMBLogger<BuyAlternativeService> logger = new TMBLogger<>(BuyAlternativeService.class);
 
     @Autowired
-    public BuyAlternativeService(AlternativeService alternativeService, CustomerService customerService, ProductsExpService productsExpService, InvestmentRequestClient investmentRequestClient, BuyActivityLogService buyActivityLogService) {
+    public BuyAlternativeService(AlternativeService alternativeService,
+                                 CustomerService customerService,
+                                 ProductsExpService productsExpService,
+                                 InvestmentRequestClient investmentRequestClient,
+                                 BuyActivityLogService buyActivityLogService) {
+
         super(alternativeService, customerService, productsExpService, investmentRequestClient);
         this.buyActivityLogService = buyActivityLogService;
     }
@@ -39,11 +44,12 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
      *
      * @param correlationId         the correlation id
      * @param crmId                 the crm id
+     * @param ipAddress             the ip address
      * @param alternativeBuyRequest the alternative buy request
      * @return TmbOneServiceResponse<String>
      */
     @LogAround
-    public TmbOneServiceResponse<String> validationBuy(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest) {
+    public TmbOneServiceResponse<String> validationBuy(String correlationId, String crmId, String ipAddress, AlternativeBuyRequest alternativeBuyRequest) {
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
             String processFlag = alternativeBuyRequest.getProcessFlag();
@@ -53,14 +59,12 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
 
             tmbOneServiceResponse = validateProcessFlag(processFlag, tmbOneServiceResponse, status);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                String reason = tmbOneServiceResponse.getStatus().getDescription();
-                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+                return returnResponseAfterSavingActivityLog(correlationId, crmId, ipAddress, alternativeBuyRequest, tmbOneServiceResponse);
             }
 
             tmbOneServiceResponse = validateBuyAndDca(correlationId, crmId, customerInfo, tmbOneServiceResponse, status, true, false);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                String reason = tmbOneServiceResponse.getStatus().getDescription();
-                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+                return returnResponseAfterSavingActivityLog(correlationId, crmId, ipAddress, alternativeBuyRequest, tmbOneServiceResponse);
             }
 
             // validate fund off shelf
@@ -70,11 +74,10 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             // validate suitability expired
             tmbOneServiceResponse = validateSuitabilityExpired(correlationId, crmId, tmbOneServiceResponse, status);
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-                String reason = tmbOneServiceResponse.getStatus().getDescription();
-                return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+                return returnResponseAfterSavingActivityLog(correlationId, crmId, ipAddress, alternativeBuyRequest, tmbOneServiceResponse);
             }
 
-            return returnResponseAfterSavingActivityLog(correlationId, crmId, "", alternativeBuyRequest, tmbOneServiceResponse);
+            return returnResponseAfterSavingActivityLog(correlationId, crmId, ipAddress, alternativeBuyRequest, tmbOneServiceResponse);
 
         } catch (Exception ex) {
             logger.error("error : {}", ex);
@@ -84,7 +87,21 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
         }
     }
 
-    private TmbOneServiceResponse<String> handleFundOffShelf(String correlationId, String crmId, AlternativeBuyRequest alternativeBuyRequest, TmbOneServiceResponse<String> tmbOneServiceResponse, TmbStatus status) {
+    /**
+     * Generic Method to handle case fund off shelf
+     *
+     * @param correlationId         the correlation id
+     * @param crmId                 the crm id
+     * @param alternativeBuyRequest the alternative buy request
+     * @param tmbOneServiceResponse the TMB response
+     * @param status                the TMB status
+     * @return TmbOneServiceResponse<String>
+     */
+    @LogAround
+    private TmbOneServiceResponse<String> handleFundOffShelf(String correlationId, String crmId,
+                                                             AlternativeBuyRequest alternativeBuyRequest,
+                                                             TmbOneServiceResponse<String> tmbOneServiceResponse,
+                                                             TmbStatus status) {
 
         if (StringUtils.isEmpty(alternativeBuyRequest.getFundHouseCode()) ||
                 StringUtils.isEmpty(alternativeBuyRequest.getFundCode()) ||
@@ -106,10 +123,22 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
         return null;
     }
 
-    private TmbOneServiceResponse<String> returnResponseAfterSavingActivityLog(String correlationId, String crmId, String reason,
+    /**
+     * Generic Method to save activity log, then return the values back
+     *
+     * @param correlationId         the correlation id
+     * @param crmId                 the crm id
+     * @param ipAddress             the ip address
+     * @param alternativeBuyRequest the alternative buy request
+     * @param tmbOneServiceResponse the TMB response
+     * @return TmbOneServiceResponse<String>
+     */
+    @LogAround
+    private TmbOneServiceResponse<String> returnResponseAfterSavingActivityLog(String correlationId, String crmId, String ipAddress,
                                                                                AlternativeBuyRequest alternativeBuyRequest,
                                                                                TmbOneServiceResponse<String> tmbOneServiceResponse) {
-        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen(correlationId, crmId, alternativeBuyRequest, reason);
+
+        buyActivityLogService.clickPurchaseButtonAtFundFactSheetScreen(correlationId, crmId, ipAddress, alternativeBuyRequest, tmbOneServiceResponse);
         return tmbOneServiceResponse;
     }
 }
