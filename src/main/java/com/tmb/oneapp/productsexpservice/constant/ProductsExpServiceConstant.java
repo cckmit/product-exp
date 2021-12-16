@@ -82,7 +82,7 @@ public class ProductsExpServiceConstant {
 	public static final String ID_EXPIRED_DESC = "Error";
 
 	/* CONNECTION FAIL */
-	public static final String SERVICE_NOT_READY = "MSG999";
+	public static final String SERVICE_NOT_READY = "999";
 	public static final String SERVICE_NOT_READY_MESSAGE = "INTERNET CONNECTION FAIL";
 	public static final String SERVICE_NOT_READY_DESC = "SOMETHING WENT WRONG, TRY AGAIN";
 	public static final String SERVICE_NOT_READY_DESC_MESSAGE = "SOMETHING WENT WRONG :%s, TRY AGAIN";
@@ -304,6 +304,7 @@ public class ProductsExpServiceConstant {
 	public static final String SYSTEM_CUSTOMER = "CUSTOMER-SERVICE";
 	public static final String SYSTEM_ACCOUNT = "ACCOUNT-SERVICE";
 	public static final String SYSTEM_CACHE = "CACHE-SERVICE";
+	public static final String SYSTEM_CREDIT_CARD = "CREDIT_CARD_SERVICE";
 
 	public static final String C2G = "c2g";
 	public static final String RC = "rc";

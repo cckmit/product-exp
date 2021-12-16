@@ -204,7 +204,6 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         assertEquals("0000", actual.getStatus().getCode());
         assertNotNull(actual.getData().getCustomerInformation());
         assertNotNull(actual.getData().getTermsConditions());
-        assertNull(actual.getData().getDepositAccountList());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -352,7 +351,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage(),
                         AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription()));
@@ -405,7 +404,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         ObjectMapper mapper = new ObjectMapper();
         OpenPortfolioValidationRequest openPortfolioValidationRequest = OpenPortfolioValidationRequest.builder().existingCustomer(false).build();
         mockCommonConfig();
-        mockCustomerResponse(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM);
+        mockCustomerResponse(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM);
 
         DepositAccount depositAccount = new DepositAccount();
         depositAccount.setProductNameTH("บัญชีออลล์ฟรี");
@@ -419,17 +418,17 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(
-                mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(),
-                        AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDescription()));
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(
+                mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(),
+                        AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(),
+                        AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getDescription()));
 
         // When
         TmbOneServiceResponse<ValidateOpenPortfolioResponse> actual = openPortfolioValidationService.validateOpenPortfolioService("32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", "00000018592885", openPortfolioValidationRequest);
 
         // Then
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode(), actual.getStatus().getCode());
-        assertEquals(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage(), actual.getStatus().getMessage());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode(), actual.getStatus().getCode());
+        assertEquals(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage(), actual.getStatus().getMessage());
         verify(openPortfolioActivityLogService).openPortfolio(anyString(), anyString(), anyString(), anyString());
     }
 
@@ -451,7 +450,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         depositAccount.setAvailableBalance(new BigDecimal("1033583777.38"));
 
         mockSuccessAllAlternative();
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription()));
@@ -484,7 +483,7 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
 
         when(eligibleDepositAccountService.getEligibleDepositAccounts(any(), any(), anyBoolean())).thenReturn(newArrayList(depositAccount));
         mockSuccessAllAlternative();
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any(), any())).thenReturn(
                 mockTmbStatusError(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage(),
                         AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription()));
@@ -501,11 +500,10 @@ class OpenPortfolioTransactionValidationRequestServiceTest {
         when(alternativeService.validateServiceHour(any(), any())).thenReturn(mockTmbStatusWithTimeSuccess(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateDateNotOverTwentyYearOld(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCasaAccountActiveOnce(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateFatcaFlagNotValid(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
-        when(alternativeService.validateIdentityAssuranceLevel(any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateKycAndIdCardExpire(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
+        when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
         when(alternativeService.validateCustomerRiskLevel(any(), any(), any(), any())).thenReturn(mockTmbStatusError(ProductsExpServiceConstant.SUCCESS_CODE, null, null));
     }
-
 }

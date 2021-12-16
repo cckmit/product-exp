@@ -2,8 +2,6 @@ package com.tmb.oneapp.productsexpservice.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -11,7 +9,10 @@ import com.tmb.common.model.CommonData;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
-import com.tmb.oneapp.productsexpservice.feignclients.*;
+import com.tmb.oneapp.productsexpservice.feignclients.AccountRequestClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CommonServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.CustomerServiceClient;
+import com.tmb.oneapp.productsexpservice.feignclients.InvestmentRequestClient;
 import com.tmb.oneapp.productsexpservice.model.ProductHoldingsResp;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.request.UnitHolder;
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSummaryBody;
@@ -54,20 +55,16 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
 
     private final CommonServiceClient commonServiceClient;
 
-    private final CacheServiceClient cacheServiceClient;
-
     @Autowired
     public ProductExpAsyncService(InvestmentRequestClient investmentRequestClient,
                                   AccountRequestClient accountRequestClient,
                                   CustomerServiceClient customerServiceClient,
-                                  CommonServiceClient commonServiceClient,
-                                  CacheServiceClient cacheServiceClient) {
+                                  CommonServiceClient commonServiceClient) {
 
         this.investmentRequestClient = investmentRequestClient;
         this.customerServiceClient = customerServiceClient;
         this.accountRequestClient = accountRequestClient;
         this.commonServiceClient = commonServiceClient;
-        this.cacheServiceClient = cacheServiceClient;
     }
 
     /**
@@ -241,16 +238,13 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
      * Method fetchFundListInfo to get fund list info
      *
      * @param invHeaderReqParameter
-     * @param correlationId
-     * @param key
      * @return CompletableFuture<List < FundClassListInfo>>
      */
     @LogAround
     @Async
-    public CompletableFuture<List<FundClassListInfo>> fetchFundListInfo(Map<String, String> invHeaderReqParameter, String correlationId, String key) throws TMBCommonException {
-        ObjectMapper mapper = new ObjectMapper();
+    public CompletableFuture<List<FundClassListInfo>> fetchFundListInfo(Map<String, String> invHeaderReqParameter) throws TMBCommonException {
         try {
-            return getListCompletableFuture(invHeaderReqParameter, correlationId, key, mapper);
+            return getListCompletableFuture(invHeaderReqParameter);
         } catch (FeignException feignException) {
             handleFeignException(feignException);
             throw getTmbCommonException();
@@ -333,37 +327,16 @@ public class ProductExpAsyncService extends AbstactAsyncHandleBadRequest {
         }
     }
 
-    public CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter, String correlationId, String key, ObjectMapper mapper) throws JsonProcessingException {
-        List<FundClassListInfo> fundClassLists;
-        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", ProductsExpServiceConstant.LOGGING_REQUEST), key);
-        ResponseEntity<TmbOneServiceResponse<String>> responseCache = cacheServiceClient.getCacheByKey(correlationId, key);
-        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CACHE,"getCacheByKey", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseCache.getBody()));
+    public CompletableFuture<List<FundClassListInfo>> getListCompletableFuture(Map<String, String> invHeaderReqParameter) throws JsonProcessingException {
 
-        if (!ProductsExpServiceConstant.SUCCESS_CODE.equals(responseCache.getBody().getStatus().getCode())) {
-
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_REQUEST), "");
-            ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity =
-                    investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseResponseEntity.getBody().getData()));
-
-            fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
-            String fundClassStr = mapper.writeValueAsString(fundClassLists);
-            cacheServiceClient.putCacheByKey(invHeaderReqParameter, UtilMap.mappingCache(fundClassStr, key));
-
-
-        } else {
-            fundClassLists = getFundClassListInfoList(mapper, responseCache);
-        }
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_REQUEST), "");
+        ResponseEntity<TmbOneServiceResponse<FundListBody>> responseResponseEntity = investmentRequestClient.callInvestmentFundListInfoService(invHeaderReqParameter);
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundList", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseResponseEntity.getBody().getData()));
+        List<FundClassListInfo>  fundClassLists = responseResponseEntity.getBody().getData().getFundClassList();
         return CompletableFuture.completedFuture(fundClassLists);
     }
 
-    public List<FundClassListInfo> getFundClassListInfoList(ObjectMapper mapper, ResponseEntity<TmbOneServiceResponse<String>> responseCache) throws JsonProcessingException {
-        List<FundClassListInfo> fundClassLists;
-        String fundStr = responseCache.getBody().getData();
-        TypeFactory typeFactory = mapper.getTypeFactory();
-        fundClassLists = mapper.readValue(fundStr, typeFactory.constructCollectionType(List.class, FundClassListInfo.class));
-        return fundClassLists;
-    }
+
     /**
      * Method fetchProductHoldingService to get holding account details.
      *

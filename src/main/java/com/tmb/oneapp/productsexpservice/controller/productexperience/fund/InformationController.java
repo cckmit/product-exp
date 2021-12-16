@@ -59,7 +59,7 @@ public class InformationController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
-        InformationDto fundInformation = informationService.getFundInformation(correlationId, fundCodeRequestBody);
+        InformationDto fundInformation = informationService.getFundInformation(correlationId,fundCodeRequestBody);
         if (!StringUtils.isEmpty(fundInformation)) {
             return getTmbOneServiceResponseEntity(oneServiceResponse, fundInformation, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
         } else {

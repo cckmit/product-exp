@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.base.Strings;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -96,12 +97,15 @@ public class ApplyEStatementController {
 			@RequestBody UpdateEStatmentRequest updateEstatementReq) {
 		String correlationId = headers.get(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID);
 		String crmId = headers.get(ProductsExpServiceConstant.X_CRMID);
+		if (Strings.isNullOrEmpty(headers.get(ProductsExpServiceConstant.CHANNEL))) {
+			headers.put(ProductsExpServiceConstant.CHANNEL, ProductsExpServiceConstant.CHANNEL_MOBILE_BANKING);
+		}
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 		TmbOneServiceResponse<UpdateEStatmentResp> oneServiceResponse = new TmbOneServiceResponse<>();
 		try {
 			logger.info("Enable ApplyEStatementResponse for : {}", crmId);
-			UpdateEStatmentResp estatementResponse = applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq);
+			UpdateEStatmentResp estatementResponse = applyEStatementService.updateEstatement(crmId, correlationId, updateEstatementReq, headers);
 			oneServiceResponse.setData(estatementResponse);
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCESS.getCode(), ResponseCode.SUCESS.getMessage(),
 					ResponseCode.SUCESS.getService(), ResponseCode.SUCESS.getDesc()));

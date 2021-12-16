@@ -39,7 +39,6 @@ import com.tmb.oneapp.productsexpservice.model.activatecreditcard.ProductConfig;
 import com.tmb.oneapp.productsexpservice.model.loan.AccountId;
 import com.tmb.oneapp.productsexpservice.model.loan.HomeLoanFullInfoResponse;
 import com.tmb.oneapp.productsexpservice.model.loan.Payment;
-import com.tmb.oneapp.productsexpservice.model.loan.Rates;
 import com.tmb.oneapp.productsexpservice.service.ApplyEStatementService;
 import com.tmb.oneapp.productsexpservice.service.InstantLoanService;
 import com.tmb.oneapp.productsexpservice.util.ConversionUtil;
@@ -135,9 +134,6 @@ public class LoanDetailsController {
 			ResponseEntity<TmbOneServiceResponse<HomeLoanFullInfoResponse>> loanResponse) {
 		HomeLoanFullInfoResponse loanDetails = loanResponse.getBody().getData();
 		String productId = loanResponse.getBody().getData().getAccount().getProductId();
-		Rates rates = loanResponse.getBody().getData().getAccount().getRates();
-		Double currentInterestRate = ConversionUtil.stringToDouble(rates.getCurrentInterestRate());
-		Double originalInterestRate = ConversionUtil.stringToDouble(rates.getOriginalInterestRate());
 		String monthlyPaymentAmount = loanDetails.getAccount().getPayment().getMonthlyPaymentAmount();
 		Double monthlyPayment = ConversionUtil.stringToDouble(monthlyPaymentAmount);
 		DecimalFormat df = new DecimalFormat("#,###,##0.00");
@@ -145,17 +141,11 @@ public class LoanDetailsController {
 
 		String formattedPayment = df.format(monthlyPayment);
 		payment.setMonthlyPaymentAmount(formattedPayment);
-		DecimalFormat threeDecimalPlaces = new DecimalFormat("#.00");
-		String currentInterest = threeDecimalPlaces.format(currentInterestRate);
-		String originalInterest = threeDecimalPlaces.format(originalInterestRate);
-		String currentInterestRateInPercent = currentInterest.concat(" %");
-		String originalInterestRateInPercent = originalInterest.concat(" %");
-		rates.setCurrentInterestRate(currentInterestRateInPercent);
-		rates.setOriginalInterestRate(originalInterestRateInPercent);
 		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> fetchProductConfigList = commonServiceClient
 				.getProductConfig(correlationId);
 
 		List<ProductConfig> list = fetchProductConfigList.getBody().getData();
+		log.info("Product list "+list);
 		Iterator<ProductConfig> iterator = list.iterator();
 		while (iterator.hasNext()) {
 			ProductConfig productConfig = iterator.next();

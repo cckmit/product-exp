@@ -84,11 +84,7 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
             validateCustomerService(customerInfoResponse);
             CustomerSearchResponse customerInfo = customerInfoResponse.getBody().getData().get(0);
 
-            List<DepositAccount> depositAccountList = null;
-            if (!openPortfolioValidateRequest.isExistingCustomer()) {
-                depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId, false);
-            }
-
+            List<DepositAccount> depositAccountList = eligibleDepositAccountService.getEligibleDepositAccounts(correlationId, crmId, false);
             validateAlternativeCase(correlationId, crmId, customerInfo, depositAccountList, tmbOneServiceResponse);
 
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
@@ -101,6 +97,9 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
                 throwTmbException("========== failed get termandcondition service ==========");
             }
 
+            if (openPortfolioValidateRequest.isExistingCustomer()) {
+                depositAccountList = null;
+            }
             mappingOpenPortFolioValidationResponse(tmbOneServiceResponse, customerInfo, termAndCondition.getBody().getData(), depositAccountList);
             return tmbOneServiceResponse;
         } catch (Exception ex) {
@@ -145,28 +144,28 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
             return tmbOneServiceResponse;
         }
 
-        // validate complete flatca form
-        tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status));
+        // validate complete fatca form
+        tmbOneServiceResponse.setStatus(alternativeService.validateFatcaFlagNotValid(customerInfo.getFatcaFlag(), status, "OPEN_PORTFOLIO"));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, tmbOneServiceResponse.getStatus().getMessage());
             return tmbOneServiceResponse;
         }
 
         // validate customer pass kyc (U,Blank) allow  and id card has not expired
-        tmbOneServiceResponse.setStatus(alternativeService.validateKycAndIdCardExpire(customerInfo.getKycLimitedFlag(), customerInfo.getExpiryDate(), status));
+        tmbOneServiceResponse.setStatus(alternativeService.validateKycAndIdCardExpire(customerInfo.getKycLimitedFlag(), customerInfo.getIdType(), customerInfo.getExpiryDate(), status));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage());
             return tmbOneServiceResponse;
         }
 
-        // validate customer assurange level
-        tmbOneServiceResponse.setStatus(alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(), status));
+        // validate customer assurance level
+        tmbOneServiceResponse.setStatus(alternativeService.validateIdentityAssuranceLevel(customerInfo.getEkycIdentifyAssuranceLevel(), status, "OPEN_PORTFOLIO"));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage());
             return tmbOneServiceResponse;
         }
 
-        // validate customer not us and not restriced in 30 nationality
+        // validate customer not us and not restricted in 30 nationality
         tmbOneServiceResponse.setStatus(alternativeService.validateNationality(correlationId, customerInfo.getNationality(), customerInfo.getNationalitySecond(), status));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
             openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO, AlternativeOpenPortfolioErrorEnums.CUSTOMER_HAS_US_NATIONALITY_OR_OTHER_THIRTY_RESTRICTED.getMessage());

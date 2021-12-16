@@ -32,42 +32,41 @@ public class LoanSubmissionCustomerService {
 
     public LoanSubmissionResponse getCustomerInfo(String correlationId, String crmId) throws TMBCommonException {
         List<DepositAccount> disburstAccounts = getLoanCustomerDisburstAccount(correlationId, crmId);
-        TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
-        TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
-
-        return parseResponse(disburstAccounts, interestRateAll.getData(), rangeIncomeAll.getData(), correlationId);
+        return parseResponse(disburstAccounts);
 
     }
 
-    private LoanSubmissionResponse parseResponse(List<DepositAccount> loanCustomerResponse,
-                                                 List<LoanOnlineInterestRate> interestRateAll,
-                                                 List<LoanOnlineRangeIncome> rangeIncomeAll, String correlationId) throws TMBCommonException {
+    private LoanSubmissionResponse parseResponse(List<DepositAccount> loanCustomerResponse) {
         LoanSubmissionResponse response = new LoanSubmissionResponse();
-        List<LoanCustomerDisburstAccount> receiveAccountList = new ArrayList<>();
-        List<LoanCustomerDisburstAccount> paymentAccountList = new ArrayList<>();
-        List<RangeIncome> rangeIncomeList = new ArrayList<>();
+        response.setRangeIncomeList(prepareRangeIncomes());
+        response.setInterestRateList(prepareInterestRates());
+        response.setReceiveAccounts(prepareAccounts(loanCustomerResponse, false));
+        response.setPaymentAccounts(prepareAccounts(loanCustomerResponse, true));
+        response.setAllowApplySoSmart(true);
+        return response;
+    }
+
+    private List<InterestRate> prepareInterestRates() {
+        TmbOneServiceResponse<List<LoanOnlineInterestRate>> interestRateAll = getInterestRateAll();
         List<InterestRate> interestRateList = new ArrayList<>();
-
-        for (var receiveAccount : loanCustomerResponse) {
-            LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
-            if (receiveAccount.getAllowReceiveLoanFund().equals("1") && receiveAccount.getAccountStatus().equals("ACTIVE") && receiveAccount.getRelationshipCode().equals("PRIIND")) {
-                account.setAccountNo(receiveAccount.getAccountNumber());
-                account.setAccountName(receiveAccount.getAccountName());
-                account.setProductCode(receiveAccount.getProductCode());
-                receiveAccountList.add(account);
+        for (var itemInterestRate : interestRateAll.getData()) {
+            InterestRate interestRate = new InterestRate();
+            if (Objects.nonNull(itemInterestRate.getInterestRate())) {
+                interestRate.setInterestRate(itemInterestRate.getInterestRate());
             }
+            interestRate.setProductCode(itemInterestRate.getProductCode());
+            interestRate.setMaxAmount(itemInterestRate.getRangeIncomeMax());
+            interestRate.setMinAmount(itemInterestRate.getRangeIncomeMin());
+            interestRate.setStatusWorking(itemInterestRate.getEmploymentStatus());
+            interestRateList.add(interestRate);
         }
+        return interestRateList;
+    }
 
-        for (var paymentAccount : loanCustomerResponse) {
-            LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
-            if (paymentAccount.getAllowPayLoanDirectDebit().equals("1") && paymentAccount.getAccountStatus().equals("ACTIVE") && paymentAccount.getRelationshipCode().equals("PRIIND")) {
-                account.setAccountNo(paymentAccount.getAccountNumber());
-                account.setAccountName(paymentAccount.getAccountName());
-                paymentAccountList.add(account);
-            }
-        }
-
-        for (var itemRangeIncome : rangeIncomeAll) {
+    private List<RangeIncome> prepareRangeIncomes() {
+        TmbOneServiceResponse<List<LoanOnlineRangeIncome>> rangeIncomeAll = getRangeIncomeAll();
+        List<RangeIncome> rangeIncomeList = new ArrayList<>();
+        for (var itemRangeIncome : rangeIncomeAll.getData()) {
             RangeIncome rangeIncome = new RangeIncome();
             rangeIncome.setProductCode(itemRangeIncome.getProductCode());
             rangeIncome.setMaxAmount(itemRangeIncome.getRangeIncomeMaz());
@@ -75,35 +74,73 @@ public class LoanSubmissionCustomerService {
             rangeIncome.setStatusWorking(itemRangeIncome.getEmploymentStatus());
             rangeIncome.setProductNameEng(itemRangeIncome.getProductNameEng());
             rangeIncome.setProductNameTh(itemRangeIncome.getProductNameTh());
-            if (!itemRangeIncome.getProductCode().equals(RC01) && itemRangeIncome.getRevenueMultiple() != null) {
+            if (!itemRangeIncome.getProductCode().equals(RC01) && Objects.nonNull(itemRangeIncome.getRevenueMultiple())) {
                 rangeIncome.setMaxLimit(itemRangeIncome.getMaxLimit());
                 rangeIncome.setRevenueMultiple(itemRangeIncome.getRevenueMultiple());
             }
             rangeIncomeList.add(rangeIncome);
         }
-
-        for (var itemInterestRate : interestRateAll) {
-            InterestRate interestRate = new InterestRate();
-            if (itemInterestRate.getInterestRate() != null) {
-                interestRate.setInterestRate(itemInterestRate.getInterestRate());
-            }
-
-            interestRate.setProductCode(itemInterestRate.getProductCode());
-            interestRate.setMaxAmount(itemInterestRate.getRangeIncomeMax());
-            interestRate.setMinAmount(itemInterestRate.getRangeIncomeMin());
-            interestRate.setStatusWorking(itemInterestRate.getEmploymentStatus());
-            interestRateList.add(interestRate);
-        }
-
-        response.setRangeIncomeList(rangeIncomeList);
-        response.setInterestRateList(interestRateList);
-        response.setReceiveAccounts(receiveAccountList);
-        response.setPaymentAccounts(paymentAccountList);
-        response.setAllowApplySoSmart(checkIsHasNoFixedAcc(correlationId, receiveAccountList));
-        return response;
+        return rangeIncomeList;
     }
 
-    private boolean checkIsHasNoFixedAcc(String correlationId, List<LoanCustomerDisburstAccount> accList) throws TMBCommonException {
+    private List<LoanCustomerDisburstAccount> prepareAccounts(List<DepositAccount> depositAccounts, boolean isPaymentAccount) {
+        List<LoanCustomerDisburstAccount> accounts = new ArrayList<>();
+        for (var depositAccount : depositAccounts) {
+            if (depositAccount.getAccountStatus().equals("ACTIVE") && depositAccount.getRelationshipCode().equals("PRIIND")) {
+                if (!isPaymentAccount && depositAccount.getAllowReceiveLoanFund().equals("1")) {
+                    accounts.add(mapAccount(depositAccount));
+                } else if (isPaymentAccount && depositAccount.getAllowPayLoanDirectDebit().equals("1"))
+                    accounts.add(mapAccount(depositAccount));
+            }
+        }
+        return accounts;
+    }
+
+    private LoanCustomerDisburstAccount mapAccount(DepositAccount depositAccount) {
+        LoanCustomerDisburstAccount account = new LoanCustomerDisburstAccount();
+        account.setAccountNo(depositAccount.getAccountNumber());
+        account.setAccountName(depositAccount.getAccountName());
+        account.setProductCode(depositAccount.getProductCode());
+        account.setProductNickName(depositAccount.getProductNickname());
+        account.setProductName(depositAccount.getProductNameTh());
+        return account;
+    }
+
+    private List<DepositAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId) throws TMBCommonException {
+        try {
+            ResponseEntity<TmbOneServiceResponse<AccountSaving>> accountSavingResponse = customerExpServiceClient.getCustomerAccountSaving(correlationId, crmId);
+            if (accountSavingResponse.getBody().getStatus().getCode().equals("0000")) {
+                TmbOneServiceResponse<AccountSaving> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+                oneTmbOneServiceResponse.setData(accountSavingResponse.getBody().getData());
+                return oneTmbOneServiceResponse.getData().getDepositAccountLists();
+            }
+            throw new TMBCommonException(accountSavingResponse.getBody().getStatus().getCode(),
+                    ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+
+        } catch (Exception e) {
+            logger.error("get account saving fail: ", e);
+            throw e;
+        }
+    }
+
+    public TmbOneServiceResponse<List<LoanOnlineInterestRate>> getInterestRateAll() {
+        TmbOneServiceResponse<List<LoanOnlineInterestRate>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        ResponseEntity<TmbOneServiceResponse<List<LoanOnlineInterestRate>>> nodeTextResponse = commonServiceClient.getInterestRateAll();
+        oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
+        return oneTmbOneServiceResponse;
+
+    }
+
+    public TmbOneServiceResponse<List<LoanOnlineRangeIncome>> getRangeIncomeAll() {
+        TmbOneServiceResponse<List<LoanOnlineRangeIncome>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> nodeTextResponse = commonServiceClient.getRangeIncomeAll();
+        oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
+        return oneTmbOneServiceResponse;
+
+    }
+
+    //use for check permission to apply so smart , can set in field AllowApplySoSmart
+    private boolean checkIsHasNoFixedAcc(String correlationId, List<DepositAccount> accList) throws TMBCommonException {
         List<String> noFixedCodes = getCodeNoFixedAccCodes(correlationId);
         if (Objects.isNull(noFixedCodes)) {
             return false;
@@ -118,46 +155,7 @@ public class LoanSubmissionCustomerService {
         return false;
     }
 
-
-    private List<DepositAccount> getLoanCustomerDisburstAccount(String correlationId, String crmId) throws TMBCommonException {
-        TmbOneServiceResponse<AccountSaving> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-
-        try {
-            ResponseEntity<TmbOneServiceResponse<AccountSaving>> accountSavingResponse = customerExpServiceClient.getCustomerAccountSaving(correlationId, crmId);
-            oneTmbOneServiceResponse.setData(accountSavingResponse.getBody().getData());
-
-            if (oneTmbOneServiceResponse.getData().getDepositAccountLists() == null) {
-                throw new TMBCommonException(oneTmbOneServiceResponse.getStatus().getCode(),
-                        ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-            }
-            return oneTmbOneServiceResponse.getData().getDepositAccountLists();
-
-        } catch (Exception e) {
-            logger.error("get account saving fail: ", e);
-            throw e;
-        }
-    }
-
-    public TmbOneServiceResponse<List<LoanOnlineInterestRate>> getInterestRateAll() {
-        TmbOneServiceResponse<List<LoanOnlineInterestRate>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-
-        ResponseEntity<TmbOneServiceResponse<List<LoanOnlineInterestRate>>> nodeTextResponse = commonServiceClient.getInterestRateAll();
-        oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
-        return oneTmbOneServiceResponse;
-
-    }
-
-    public TmbOneServiceResponse<List<LoanOnlineRangeIncome>> getRangeIncomeAll() {
-        TmbOneServiceResponse<List<LoanOnlineRangeIncome>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
-
-        ResponseEntity<TmbOneServiceResponse<List<LoanOnlineRangeIncome>>> nodeTextResponse = commonServiceClient.getRangeIncomeAll();
-        oneTmbOneServiceResponse.setData(nodeTextResponse.getBody().getData());
-        return oneTmbOneServiceResponse;
-
-    }
-
     private List<String> getCodeNoFixedAccCodes(String correlationId) throws TMBCommonException {
-
         ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfigByModule(correlationId, ProductsExpServiceConstant.LENDING_MODULE);
         if (Objects.isNull(nodeTextResponse.getBody())) {
             throw new TMBCommonException(nodeTextResponse.getBody().getStatus().getCode(),
@@ -167,7 +165,6 @@ public class LoanSubmissionCustomerService {
             return nodeTextResponse.getBody().getData().get(0).getNofixedAccount();
         }
         return Collections.emptyList();
-
     }
 }
 

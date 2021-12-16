@@ -17,6 +17,7 @@ import com.tmb.oneapp.productsexpservice.model.request.loan.LoanSubmissionCreate
 import com.tmb.oneapp.productsexpservice.model.request.loan.UpdateWorkingDetailReq;
 import com.tmb.oneapp.productsexpservice.model.response.IncomeInfo;
 import com.tmb.oneapp.productsexpservice.model.response.lending.*;
+import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionApplicationDetail;
 import com.tmb.oneapp.productsexpservice.model.response.lending.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,6 +60,21 @@ public class LoanSubmissionOnlineService {
                     ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("getCustomerAge got exception:{}", e);
+            throw e;
+        }
+    }
+
+    public DropdownsLoanSubmissionApplicationDetail getDropdownsLoanSubmissionApplicationDetail(String productType) throws TMBCommonException {
+        try {
+            TmbOneServiceResponse<DropdownsLoanSubmissionApplicationDetail> responseEntity = lendingServiceClient.getDropdownLoanSubmissionApplicationDetail(productType).getBody();
+            if (ResponseCode.SUCESS.getCode().equals(responseEntity.getStatus().getCode())) {
+                return responseEntity.getData();
+            }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+        } catch (Exception e) {
+            logger.error("getDropdownLoanSubmissionApplicationDetail got exception:{}", e);
             throw e;
         }
     }

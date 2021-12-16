@@ -76,6 +76,4 @@ public class CreditCard {
     @JsonAlias("product_code")
     private String productCode;
 
-    private String eligibleForPurchasingMutualfund;
-
 }

@@ -121,13 +121,13 @@ public class OrderCreationService extends TmbErrorHandle {
 
     private ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> processOrderPayment(String correlationId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request) throws TMBCommonException, JsonProcessingException {
 
-        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response = null;
+        ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response;
         if (ProductsExpServiceConstant.PURCHASE_TRANSACTION_LETTER_TYPE.equals(request.getOrderType())) {
-            Account toAccount = getAccount(correlationId,request);
+            Account toAccount = getAccount(correlationId, request);
             request.setToAccount(toAccount);
             // buy flow
             if (request.isCreditCard()) {
-                // creditcard
+                // credit card
                 ResponseEntity<FetchCardResponse> cardResponse = creditCardClient.getCreditCardDetails(correlationId, request.getFromAccount().getAccountId());
                 CreditCardDetail creditCard = cardResponse.getBody().getCreditCard();
                 request.setCard(Card.builder()
@@ -140,15 +140,15 @@ public class OrderCreationService extends TmbErrorHandle {
                 String merchantId = ProductsExpServiceConstant.INVESTMENT_FUND_CLASS_CODE_LTF_MERCHANT
                         .equals(request.getFundClassCode()) ? toAccount.getLtfMerchantId() : toAccount.getRmfMerchantId();
                 request.setMerchant(Merchant.builder().merchantId(merchantId).build());
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API,"buy flow creditcard request"), UtilMap.convertObjectToStringJson(request));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditcard request"), UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API,"buy flow creditcard response"), UtilMap.convertObjectToStringJson(response));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow creditcard response"), UtilMap.convertObjectToStringJson(response));
 
             } else {
                 // casa account
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa request"), UtilMap.convertObjectToStringJson(request));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa request"), UtilMap.convertObjectToStringJson(request));
                 response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa response"), UtilMap.convertObjectToStringJson(response));
+                logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "buy flow casa response"), UtilMap.convertObjectToStringJson(response));
 
             }
 
@@ -162,14 +162,13 @@ public class OrderCreationService extends TmbErrorHandle {
                 request.setRedeemType(ProductsExpServiceConstant.AMOUNT_TYPE_IN_ORDER_SERVICE);
             }
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch request"), UtilMap.convertObjectToStringJson(request));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch request"), UtilMap.convertObjectToStringJson(request));
             response = investmentRequestClient.createOrderPayment(investmentRequestHeader, request);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch response"), UtilMap.convertObjectToStringJson(response));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, ProductsExpServiceConstant.INVESTMENT_ORDER_CREATION_API, "sell or switch response"), UtilMap.convertObjectToStringJson(response));
 
         }
 
         return response;
-
     }
 
     private void postOrderActivityPayment(String correlationId, String crmId, Map<String, String> investmentRequestHeader, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
@@ -177,9 +176,9 @@ public class OrderCreationService extends TmbErrorHandle {
         if (ProductsExpServiceConstant.SUCCESS_CODE.equalsIgnoreCase(response.getBody().getStatus().getCode())) {
             activityLogStatus = ActivityLogStatus.SUCCESS.getStatus();
             String transactionDate = String.valueOf(Instant.now().toEpochMilli());
-            syncLogActivityToOneAppCalendar(correlationId,crmId,transactionDate,request,response);
-            saveLogActivityToOneAppCalendar(correlationId,crmId,transactionDate,request,response);
-            saveOrderPayment(investmentRequestHeader, response.getBody(), request.getOrderAmount());
+            syncLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);
+            saveLogActivityToOneAppCalendar(correlationId, crmId, transactionDate, request, response);
+            saveOrderPayment(investmentRequestHeader, response.getBody(), request);
             processFirstTrade(investmentRequestHeader, request, response.getBody().getData());
             enterPinIsCorrectActivityLogService.save(correlationId, crmId, request, activityLogStatus, response.getBody().getData(), request.getOrderType());
         } else {
@@ -188,8 +187,8 @@ public class OrderCreationService extends TmbErrorHandle {
         }
     }
 
-    private void syncLogActivityToOneAppCalendar(String correlationId, String crmId,String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
-        try{
+    private void syncLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+        try {
             OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
             OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
             FinancalSyncRequest financalSyncRequest = FinancalSyncRequest.builder()
@@ -214,15 +213,15 @@ public class OrderCreationService extends TmbErrorHandle {
                     .activityRefId(orderConfirmPayment.getRequestId())
                     .txnType("001")
                     .build();
-            financialServiceClient.syncData(correlationId,financalSyncRequest);
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED+ " financialServiceClient syncData", ex);
+            financialServiceClient.syncData(correlationId, financalSyncRequest);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED + " financialServiceClient syncData", ex);
         }
     }
 
-    private void saveLogActivityToOneAppCalendar(String correlationId, String crmId,String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
+    private void saveLogActivityToOneAppCalendar(String correlationId, String crmId, String transactionDate, OrderCreationPaymentRequestBody request, ResponseEntity<TmbOneServiceResponse<OrderCreationPaymentResponse>> response) {
 
-        try{
+        try {
             OrderCreationPaymentResponse orderCreationPaymentResponse = response.getBody().getData();
             OrderConfirmPayment orderConfirmPayment = orderCreationPaymentResponse.getPaymentObject();
             SaveActivityRequest saveActivityRequest = SaveActivityRequest.builder()
@@ -234,15 +233,15 @@ public class OrderCreationService extends TmbErrorHandle {
                     .transactionDate(transactionDate)
                     .fromAccountNo(orderConfirmPayment.getFromAccount().getAccountId())
                     .toAccountNo(orderConfirmPayment.getToAccount().getAccountId())
-                    .toAccountNickname(String.format("%s%s",request.getFundHouseCode(),request.getFundCode()))
+                    .toAccountNickname(String.format("%s%s", request.getFundHouseCode(), request.getFundCode()))
                     .toAccountName(request.getFundHouseCode())
                     .financialTranferAmount(request.getOrderAmount())
                     .financialTranferCrDr("2")
                     .financialTranferRefId(orderConfirmPayment.getPaymentId())
                     .build();
-            financialServiceClient.saveActivity(correlationId,saveActivityRequest);
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED+ " financialServiceClient saveData", ex);
+            financialServiceClient.saveActivity(correlationId, saveActivityRequest);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED + " financialServiceClient saveData", ex);
         }
 
     }
@@ -259,31 +258,30 @@ public class OrderCreationService extends TmbErrorHandle {
                     .effectiveDate(response.getEffectiveDate())
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"processFirstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(processFirstTradeRequestBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "processFirstTrade", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(processFirstTradeRequestBody));
             ResponseEntity<TmbOneServiceResponse<String>> processFirstTradeResponse = investmentRequestClient.processFirstTrade(investmentRequestHeader, processFirstTradeRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"processFirstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(processFirstTradeResponse));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "processFirstTrade", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(processFirstTradeResponse));
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
     }
 
-    private void saveOrderPayment(Map<String, String> investmentRequestHeader, TmbOneServiceResponse<OrderCreationPaymentResponse> body, String orderAmount) {
+    private void saveOrderPayment(Map<String, String> investmentRequestHeader, TmbOneServiceResponse<OrderCreationPaymentResponse> body, OrderCreationPaymentRequestBody paymentRequestBody) {
         try {
             OrderCreationPaymentResponse orderCreationPaymentResponse = body.getData();
 
             SaveOrderCreationRequestBody request = SaveOrderCreationRequestBody.builder()
+                    .fundCode(paymentRequestBody.getFundCode())
+                    .portfolioNumber(paymentRequestBody.getPortfolioNumber())
+                    .orderAmount(paymentRequestBody.getOrderAmount())
                     .orderId(orderCreationPaymentResponse.getOrderId())
-                    .effectiveDate(orderCreationPaymentResponse.getEffectiveDate())
-                    .orderDateTime(orderCreationPaymentResponse.getOrderDateTime())
-                    .workingHour(orderCreationPaymentResponse.getWorkingHour())
-                    .orderAmount(orderAmount)
                     .paymentObject(orderCreationPaymentResponse.getPaymentObject())
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"saveOrderPayment", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "saveOrderPayment", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(request));
             ResponseEntity<TmbOneServiceResponse<String>> response = investmentRequestClient.saveOrderPayment(investmentRequestHeader, request);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"saveOrderPayment", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "saveOrderPayment", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response));
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -295,16 +293,15 @@ public class OrderCreationService extends TmbErrorHandle {
      * @param correlationId
      * @param bodyRequest
      * @return
-     * @throws JsonProcessingException
      */
-    private Account getAccount(String correlationId,OrderCreationPaymentRequestBody bodyRequest) throws JsonProcessingException, TMBCommonException {
+    private Account getAccount(String correlationId, OrderCreationPaymentRequestBody bodyRequest) throws TMBCommonException {
         try {
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"findbyfundhousecode", ProductsExpServiceConstant.LOGGING_REQUEST), bodyRequest.getFundHouseCode());
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_REQUEST), bodyRequest.getFundHouseCode());
             ResponseEntity<TmbOneServiceResponse<FundHouseBankData>> fundHouseResponse = commonServiceClient.fetchBankInfoByFundHouse(correlationId,
                     bodyRequest.getFundHouseCode());
             FundHouseBankData fundHouseResponseData = fundHouseResponse.getBody().getData();
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"findbyfundhousecode", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundHouseResponseData));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "findbyfundhousecode", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundHouseResponseData));
 
             Account toAccount = new Account();
             Optional<FundHouseBankData> fundHouseBankData = Optional.ofNullable(fundHouseResponseData);

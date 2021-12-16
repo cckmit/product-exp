@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@ToString
 public class ProductConfig {
     private String productCode;
     private String productNameEN;
@@ -20,7 +22,9 @@ public class ProductConfig {
         return openEkyc;
     }
 
-    private String eligibleForPurchasingMf;
+    private String allowToPurchaseMf;
     private String accountType;
+    private String accountTypeDescTh;
+    private String accountTypeDescEn;
     
 }

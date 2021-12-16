@@ -43,6 +43,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /**
  * AlternativeService class will handle all of alternative of investment
@@ -93,7 +94,7 @@ public class AlternativeService {
             ResponseEntity<TmbOneServiceResponse<List<CommonData>>> responseCommon = commonServiceClient
                     .getCommonConfigByModule(correlationId, ProductsExpServiceConstant.INVESTMENT_MODULE_VALUE);
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_COMMON,"commonConfig", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseCommon.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_COMMON, "commonConfig", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseCommon.getBody()));
 
             if (!StringUtils.isEmpty(responseCommon)) {
                 List<CommonData> commonDataList = responseCommon.getBody().getData();
@@ -171,8 +172,8 @@ public class AlternativeService {
             logger.info(ProductsExpServiceConstant.CUSTOMER_EXP_SERVICE_RESPONSE, responseCustomerExp);
             if (UtilMap.isCASADormant(responseCustomerExp)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -200,8 +201,8 @@ public class AlternativeService {
             logger.info(ProductsExpServiceConstant.INVESTMENT_SERVICE_RESPONSE, responseResponseEntity);
             if (UtilMap.isSuitabilityExpire(responseResponseEntity.getBody().getData())) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -227,11 +228,11 @@ public class AlternativeService {
             responseResponseEntity = productExpAsyncService.fetchCustomerProfile(UtilMap.halfCrmIdFormat(crmId));
             CompletableFuture.allOf(responseResponseEntity);
             CustGeneralProfileResponse responseData = responseResponseEntity.get();
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER,"getCustomerProfile", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseData));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "getCustomerProfile", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseData));
             if (UtilMap.isCustIdExpired(responseData)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMsg());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
@@ -252,22 +253,21 @@ public class AlternativeService {
      */
     @LogAround
     public TmbStatus validateCasaAccountActiveOnce(List<DepositAccount> depositAccountList, TmbStatus status) {
-        if (depositAccountList != null) {
-            boolean isAccountActiveOnce = false;
-            for (DepositAccount depositAccount :
-                    depositAccountList) {
-                if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
-                    isAccountActiveOnce = true;
-                }
-            }
-            if (!isAccountActiveOnce || depositAccountList.isEmpty()) {
-                status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
-                status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDescription());
-                status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMessage());
-                status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-                return status;
+        boolean isAccountActiveOnce = false;
+        for (DepositAccount depositAccount :
+                depositAccountList) {
+            if (depositAccount.getAccountStatusCode().equals(ProductsExpServiceConstant.ACTIVE_STATUS_CODE)) {
+                isAccountActiveOnce = true;
             }
         }
+        if (!isAccountActiveOnce || depositAccountList.isEmpty()) {
+            status.setCode(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getCode());
+            status.setDescription(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getDescription());
+            status.setMessage(AlternativeOpenPortfolioErrorEnums.NO_ACTIVE_CASA_ACCOUNT.getMessage());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            return status;
+        }
+
         return status;
     }
 
@@ -279,24 +279,40 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status) {
+    public TmbStatus validateFatcaFlagNotValid(String fatcaFlag, TmbStatus status, String process) {
         if (!StringUtils.isEmpty(fatcaFlag)) {
             switch (fatcaFlag) {
                 case "0":
-                    status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getCode());
-                    status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getDescription());
-                    status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_NOT_FILL_FATCA_FORM.getMessage());
+                    status.setCode(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getCode());
+                    status.setDescription(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getDescription());
+                    status.setMessage(AlternativeOpenPortfolioErrorEnums.NOT_COMPLETED_FATCA_FORM.getMessage());
                     status.setService(ProductsExpServiceConstant.SERVICE_NAME);
                     break;
                 case "8":
                 case "9":
-                    status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getCode());
-                    status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getDescription());
-                    status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_FATCA_NOT_VERIFY.getMessage());
+                    status.setCode(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getCode());
+                    status.setDescription(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getDescription());
+                    status.setMessage(AlternativeOpenPortfolioErrorEnums.DID_NOT_PASS_FATCA_FORM.getMessage());
                     status.setService(ProductsExpServiceConstant.SERVICE_NAME);
                     break;
-                default:
+                case "N":
+                case "n":
+                case "I":
+                case "i":
+                case "U":
+                case "u":
                     return status;
+                default:
+                    if ("FIRST_TRADE".equals(process)) {
+                        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getCode());
+                        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getDescription());
+                        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getMessage());
+                    } else {
+                        status.setCode(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getCode());
+                        status.setDescription(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getDescription());
+                        status.setMessage(AlternativeOpenPortfolioErrorEnums.CAN_NOT_OPEN_ACCOUNT_FOR_FATCA.getMessage());
+                    }
+                    status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         }
         return status;
@@ -306,16 +322,18 @@ public class AlternativeService {
      * Method validateKycAndIdCardExpire method validate ekyc and cardid expired
      *
      * @param kycLimitFlag
+     * @param documentType
      * @param expireDate
      * @param status
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String expireDate, TmbStatus status) {
+    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String documentType, String expireDate, TmbStatus status) {
+        // document type id != ci kick
         boolean isKycAndIdCardExpiredValid = false;
-        if ((kycLimitFlag != null && expireDate != null) &&
-                (kycLimitFlag.equalsIgnoreCase("U") ||
-                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate)) {
+        if (documentType.equals("CI") && ((kycLimitFlag != null && expireDate != null) &&
+                (Stream.of("U", "S", "T").anyMatch(kycLimitFlag::equalsIgnoreCase) ||
+                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate))) {
             isKycAndIdCardExpiredValid = true;
         }
 
@@ -352,21 +370,25 @@ public class AlternativeService {
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status) {
-        boolean isAssuranceLevelValid = false;
-
+    public TmbStatus validateIdentityAssuranceLevel(String ekycIdentifyAssuranceLevel, TmbStatus status, String process) {
         if (ekycIdentifyAssuranceLevel != null && validateAssuranceLevel(ekycIdentifyAssuranceLevel)) {
-            isAssuranceLevelValid = true;
+            return status;
         }
 
-        if (!isAssuranceLevelValid) {
+        if ("FIRST_TRADE".equals(process)) {
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NOT_ALLOW_PROCESS_TO_BE_PROCEEDED.getMessage());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        } else {
             status.setCode(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getCode());
             status.setDescription(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getDescription());
             status.setMessage(AlternativeOpenPortfolioErrorEnums.CUSTOMER_IDENTIFY_ASSURANCE_LEVEL.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-            return status;
         }
+
         return status;
+
     }
 
     @LogAround
@@ -417,22 +439,22 @@ public class AlternativeService {
     public TmbStatus validateAccountRedeemtion(String correlationId, String crmId, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.halfCrmIdFormat(crmId));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.halfCrmIdFormat(crmId));
             ResponseEntity<TmbOneServiceResponse<AccountRedeemResponseBody>> accountRedeemtionResponse = investmentRequestClient.getCustomerAccountRedeem(investmentHeaderRequest, UtilMap.halfCrmIdFormat(crmId));
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_RESPONSE),  UtilMap.convertObjectToStringJson(accountRedeemtionResponse.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fetchAccountRedeem", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(accountRedeemtionResponse.getBody()));
 
             if (StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData()) ||
                     StringUtils.isEmpty(accountRedeemtionResponse.getBody().getData().getAccountRedeem())) {
-                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+                status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
+                status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
+                status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
 
         } catch (Exception ex) {
-            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEEMTION.getMsg());
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
@@ -450,14 +472,14 @@ public class AlternativeService {
     public TmbStatus validateFundOffShelf(String correlationId, String crmId, FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", ProductsExpServiceConstant.LOGGING_REQUEST), fundRuleRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundRule", ProductsExpServiceConstant.LOGGING_REQUEST), fundRuleRequestBody);
             ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> response = investmentRequestClient.callInvestmentFundRuleService(investmentHeaderRequest, fundRuleRequestBody);
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(response.getBody()));
 
         } catch (Exception ex) {
             status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode());
-            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDesc());
-            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMsg());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         }
         return status;
@@ -511,17 +533,17 @@ public class AlternativeService {
         try {
 
             CommonData commonData = getInvestmentConfig(correlationId);
-            if(ProductsExpServiceConstant.INVESTMENT_ENABLE_CALRISK.equals(commonData.getEnableCalRisk())){
+            if (ProductsExpServiceConstant.INVESTMENT_ENABLE_CALRISK.equals(commonData.getEnableCalRisk())) {
                 EkycRiskCalculateResponse customerRiskLevel = fetchApiculateRiskLevel(correlationId, customerInfo);
-                if(customerRiskLevel != null){
+                if (customerRiskLevel != null) {
                     maxRiskRm = customerRiskLevel.getMaxRiskRM();
                 }
-            }else{
+            } else {
                 maxRiskRm = customerInfo.getCustomerRiskLevel();
             }
 
-        }catch (Exception ex){
-            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED,ex);
+        } catch (Exception ex) {
+            logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
         }
 
         return maxRiskRm;

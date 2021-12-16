@@ -20,5 +20,4 @@ public class Card {
     private String productId;
 
     private String productGroupId;
-
 }
