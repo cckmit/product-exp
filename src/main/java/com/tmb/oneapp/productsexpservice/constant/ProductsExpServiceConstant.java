@@ -294,7 +294,10 @@ public class ProductsExpServiceConstant {
     /* INVESTMENT CREDIT CARD FLAG */
     public static final String INVESTMENT_CREDIT_CARD_ACTIVE_STATUS = "active";
     public static final String INVESTMENT_CREDIT_CARD_SUP_TYPE = "sup";
+	public static final String INVESTMENT_CREDIT_CARD_PRI_TYPE = "PRI";
+	public static final String INVESTMENT_CREDIT_CARD_SSC_TYPE = "SSC";
     public static final String INVESTMENT_CREDIT_CARD_ELIGIBLE_PURCHASE_MUTUAL_FUND = "Y";
+	public static final String INVESTMENT_CREDIT_CARD_SPENDING_FLAG_ACTIVE = "Y";
     public static final String INVESTMENT_CREDIT_CARD_NON_ELIGIBLE_PURCHASE_MUTUAL_FUND = "N";
     public static final String INVESTMENT_CREDIT_CARD_GROUP_ID = "1";
 
