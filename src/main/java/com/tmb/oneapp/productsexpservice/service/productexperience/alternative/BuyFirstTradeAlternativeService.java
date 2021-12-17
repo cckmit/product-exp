@@ -159,6 +159,7 @@ public class BuyFirstTradeAlternativeService {
             tradeOccupationResponse.setRequireUpdate(occupationInquiryResponseBody.getRequireUpdate());
             tradeOccupationResponse.setOccupationCode(occupationInquiryResponseBody.getOccupationCode());
             tradeOccupationResponse.setOccupationDescription(occupationInquiryResponseBody.getOccupationDescription());
+            tradeOccupationResponse.setPositionDescription(occupationInquiryResponseBody.getPositionDescription());
             return tradeOccupationResponse;
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TMBCommonException) {

@@ -502,7 +502,8 @@ public class AlternativeService {
         if (!StringUtils.isEmpty(maxRiskRm)) {
             String[] values = new String[2];
             values[0] = "C3";
-            if (buyFlowFirstTrade.isBuyFlow() && buyFlowFirstTrade.isFirstTrade()) {
+
+            if (!buyFlowFirstTrade.isBuyFlow() || (buyFlowFirstTrade.isBuyFlow() && buyFlowFirstTrade.isFirstTrade())) {
                 values[1] = "B3";
             }
 

@@ -29,6 +29,10 @@
 * [ONEAPP-27207](https://jira.tau2904.com/browse/ONEAPP-27207) Card - Activate Card - System does not capture error code in the Activity Log
 * [ONEAPP-28170](https://jira.tau2904.com/browse/ONEAPP-28170) BE - Check channel on header for activity log
 * [ONEAPP-28347](https://jira.tau2904.com/browse/ONEAPP-28347) Card - Cash for You - System display unexpected error screen after enter Amount
+* [ONEAPP-28748](https://jira.tau2904.com/browse/ONEAPP-28748) Card - Apply so goood - Incorrect Activity Log
+* [ONEAPP-28841](https://jira.tau2904.com/browse/ONEAPP-28841) Clear Redis key = {CRM_ID}_creditcards_accounts_summary_res (Align as {RM}_creditcard) on all card features (based on new API - SCS)
+* [ONEAPP-28872](https://jira.tau2904.com/browse/ONEAPP-28872) Card - Cash for You - VAT calculated incorrectly, SCS service will return percentage so need the calculation on our side
+* [ONEAPP-28977](https://jira.tau2904.com/browse/ONEAPP-28977) BE - Fix return wrong IncomdeDependency.value
 * [ONEAPP-13008](https://jira.tau2904.com/browse/ONEAPP-13008) (BE) Submit uploading
 * [ONEAPP-14375](https://jira.tau2904.com/browse/ONEAPP-14375) Add credit card for buy flow .
 * [ONEAPP-14532](https://jira.tau2904.com/browse/ONEAPP-14532) [Personal information]Incase of life time citizen id ,Expiry date of citizen card display incorrect
