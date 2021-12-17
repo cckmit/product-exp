@@ -44,11 +44,11 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
     }
 
     /**
-     * Method dcaValidation to call MF Service account saving and fund rule and fund fact sheet
+     * Generic Method to call MF Service account saving and fund rule and fund fact sheet
      *
-     * @param correlationId
-     * @param crmId
-     * @param dcaValidationRequest
+     * @param correlationId        the correlation id
+     * @param crmId                the crm id
+     * @param dcaValidationRequest the dca validation request
      * @return TmbOneServiceResponse<DcaInformationDto>
      */
     @LogAround
@@ -72,9 +72,9 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
                     .tranType(dcaValidationRequest.getTranType())
                     .build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", ProductsExpServiceConstant.LOGGING_REQUEST), fundRuleRequestBody);
-            ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter,fundRuleRequestBody );
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundRule.getBody()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundRule", ProductsExpServiceConstant.LOGGING_REQUEST), fundRuleRequestBody);
+            ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> fundRule = investmentRequestClient.callInvestmentFundRuleService(invHeaderReqParameter, fundRuleRequestBody);
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundRule", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundRule.getBody()));
 
             tmbStatus = validateAllowAipFlag(fundRule, dcaValidationDtoTmbOneServiceResponse.getStatus());
             if (!tmbStatus.getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
@@ -83,9 +83,9 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
 
             FundFactSheetRequestBody fundFactSheetRequestBody = FundFactSheetRequestBody.builder().fundCode(dcaValidationRequest.getFundCode()).language(dcaValidationRequest.getLanguage()).build();
 
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFactSheet", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(fundFactSheetRequestBody));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundFactSheet", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(fundFactSheetRequestBody));
             ResponseEntity<TmbOneServiceResponse<FundFactSheetData>> fundFactSheet = investmentRequestClient.callInvestmentFundFactSheetService(invHeaderReqParameter, FundFactSheetRequestBody.builder().fundCode(dcaValidationRequest.getFundCode()).language(dcaValidationRequest.getLanguage()).build());
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"fundFactSheet", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundFactSheet.getBody().getStatus()));
+            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundFactSheet", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(fundFactSheet.getBody().getStatus()));
 
             dcaValidationDtoTmbOneServiceResponse.setData(DcaValidationDto.builder().factSheetData(fundFactSheet.getBody().getData().getFactSheetData()).build());
             return dcaValidationDtoTmbOneServiceResponse;
@@ -97,6 +97,7 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
         }
     }
 
+    @LogAround
     private TmbStatus validateAllowAipFlag(ResponseEntity<TmbOneServiceResponse<FundRuleResponse>> fundRule, TmbStatus tmbStatus) throws TMBCommonException {
         if (!fundRule.getStatusCode().equals(HttpStatus.OK)) {
             throw new TMBCommonException("failed fetch fund rule");
@@ -111,11 +112,12 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
         return tmbStatus;
     }
 
+    @LogAround
     private TmbStatus validatePtesPort(String crmId, DcaValidationRequest dcaValidationRequest, Map<String, String> invHeaderReqParameter, TmbStatus tmbStatus) throws JsonProcessingException {
 
-        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", ProductsExpServiceConstant.LOGGING_REQUEST),  UtilMap.halfCrmIdFormat(crmId));
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "getPtesPort", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.halfCrmIdFormat(crmId));
         ResponseEntity<TmbOneServiceResponse<List<PtesDetail>>> ptesPort = investmentRequestClient.getPtesPort(invHeaderReqParameter, UtilMap.halfCrmIdFormat(crmId));
-        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT,"getPtesPort", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(ptesPort.getBody()));
+        logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "getPtesPort", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(ptesPort.getBody()));
 
         List<PtesDetail> ptesPortList = ptesPort.getBody().getData();
         Optional<PtesDetail> ptesPortOptional = ptesPortList.stream()
@@ -132,20 +134,28 @@ public class DcaValidationService extends BuyAndDcaAbstractService {
         return tmbStatus;
     }
 
-    public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId,String processFlag) {
+    /**
+     * Generic Method to validate alternative cases of dca
+     *
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @param processFlag   the process flag
+     * @return TmbOneServiceResponse<String>
+     */
+    @LogAround
+    public TmbOneServiceResponse<String> validationAlternativeDca(String correlationId, String crmId, String processFlag) {
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
-            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
+            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId, crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
 
-            tmbOneServiceResponse = validateProcessFlag(processFlag,tmbOneServiceResponse,status);
-            if(!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)){
+            tmbOneServiceResponse = validateProcessFlag(processFlag, tmbOneServiceResponse, status);
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }
 
-            return validateBuyAndDca(correlationId,crmId,customerInfo,tmbOneServiceResponse,status,false,false);
-
+            return validateBuyAndDca(correlationId, crmId, customerInfo, tmbOneServiceResponse, status, false, false);
         } catch (Exception ex) {
             logger.error("error : {}", ex);
             tmbOneServiceResponse.setStatus(null);

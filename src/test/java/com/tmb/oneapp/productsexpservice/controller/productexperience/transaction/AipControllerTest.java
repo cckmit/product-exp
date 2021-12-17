@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,43 +29,42 @@ class AipControllerTest {
     @Mock
     private AipService aipService;
 
+    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     private final String crmId = "001100000000000000000012035644";
 
-    private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
+    private final String ipAddress = "0.0.0.0";
 
     @Test
-    public void should_return_success_status_when_call_create_aip_order_given_correlation_id_and_crmid_and_order_aip_request() throws TMBCommonException {
-
-        // given
+    void should_return_success_status_when_call_create_aip_order_given_correlation_id_and_crm_id_and_ip_address_and_order_aip_request() throws TMBCommonException {
+        // Given
         TmbOneServiceResponse<OrderAIPResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(TmbStatusUtil.successStatus());
-        when(aipService.createAipOrder(any(), any(), any())).thenReturn(tmbOneServiceResponse);
-        // when
-        ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> actual =
-                aipController.createAPIOrder(correlationId, crmId, OrderAIPRequestBody.builder().build());
+        when(aipService.createAipOrder(anyString(), anyString(), anyString(), any())).thenReturn(tmbOneServiceResponse);
 
-        // then
-        assertEquals(HttpStatus.OK,actual.getStatusCode());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getBody().getStatus().getCode());
+        // When
+        ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> actual =
+                aipController.createAPIOrder(correlationId, crmId, ipAddress, OrderAIPRequestBody.builder().build());
+
+        // Then
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getBody().getStatus().getCode());
     }
 
     @Test
-    public void should_return_not_found_status_when_call_create_aip_order_given_correlation_id_and_crmid_and_order_aip_request() throws TMBCommonException {
-
-        // given
+    void should_return_not_found_status_when_call_create_aip_order_given_correlation_id_and_crm_id_and_ip_address_and_order_aip_request() throws TMBCommonException {
+        // Given
         TmbOneServiceResponse<OrderAIPResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
         tmbOneServiceResponse.setStatus(null);
         tmbOneServiceResponse.setData(null);
-        when(aipService.createAipOrder(any(), any(), any())).thenReturn(tmbOneServiceResponse);
+        when(aipService.createAipOrder(anyString(), anyString(), anyString(), any())).thenReturn(tmbOneServiceResponse);
 
-        // when
+        // When
         ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> actual =
-                aipController.createAPIOrder(correlationId, crmId, OrderAIPRequestBody.builder().build());
+                aipController.createAPIOrder(correlationId, crmId, ipAddress, OrderAIPRequestBody.builder().build());
 
-        // then
-        assertEquals(HttpStatus.NOT_FOUND,actual.getStatusCode());
-        assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE,actual.getBody().getStatus().getCode());
+        // Then
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
+        assertEquals(ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, actual.getBody().getStatus().getCode());
     }
-
 }

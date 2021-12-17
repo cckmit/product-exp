@@ -55,6 +55,8 @@ public class OpenPortfolioController {
      * Description:- method validation to handle cases of open portfolio validation
      *
      * @param correlationId        the correlation id
+     * @param crmId                the crm id
+     * @param ipAddress            the ip address
      * @param openPortfolioRequest the open portfolio request
      * @return return term and condition with status
      */
@@ -65,9 +67,12 @@ public class OpenPortfolioController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody OpenPortfolioValidationRequest openPortfolioRequest) {
 
-        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse = openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, openPortfolioRequest);
+        TmbOneServiceResponse<ValidateOpenPortfolioResponse> oneServiceResponse =
+                openPortfolioValidationService.validateOpenPortfolioService(correlationId, crmId, ipAddress, openPortfolioRequest);
+
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if (!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return ResponseEntity.badRequest().body(oneServiceResponse);
@@ -80,9 +85,11 @@ public class OpenPortfolioController {
     }
 
     /**
-     * Description:- method call to MF service to create customer for open portfolio
+     * Description:- Method call to MF service to create customer for open portfolio
      *
      * @param correlationId   the correlation id
+     * @param crmId           the crm id
+     * @param ipAddress       the ip address
      * @param customerRequest the customer request
      * @return return status of open portfolio
      */
@@ -93,23 +100,25 @@ public class OpenPortfolioController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody CustomerRequest customerRequest) throws TMBCommonException {
 
         TmbOneServiceResponse<OpenPortfolioValidationResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
-        OpenPortfolioValidationResponse openPortfolioValidationResponse = openPortfolioService.createCustomer(correlationId, crmId, customerRequest);
+        OpenPortfolioValidationResponse openPortfolioValidationResponse = openPortfolioService.createCustomer(correlationId, crmId, ipAddress, customerRequest);
         if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
             return getTmbOneServiceResponseValidationEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
         } else {
             return getTmbOneServiceResponseValidationEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
         }
-
     }
 
     /**
-     * Description:- method call to MF service to open portfolio
+     * Description:- Method call to MF service to open portfolio
      *
      * @param correlationId            the correlation id
+     * @param crmId                    the crm id
+     * @param ipAddress                the ip address
      * @param openPortfolioRequestBody the open portfolio request
      * @return return open portfolio data and portfolio nickname
      */
@@ -120,25 +129,27 @@ public class OpenPortfolioController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody OpenPortfolioRequestBody openPortfolioRequestBody) throws TMBCommonException {
 
         TmbOneServiceResponse<PortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
-        PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, crmId, openPortfolioRequestBody);
+        PortfolioResponse openPortfolioValidationResponse = openPortfolioService.openPortfolio(correlationId, crmId, ipAddress, openPortfolioRequestBody);
         if (!StringUtils.isEmpty(openPortfolioValidationResponse)) {
             return getTmbOneServiceResponseEntity(oneServiceResponse, openPortfolioValidationResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());
         } else {
             return getTmbOneServiceResponseEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
         }
-
     }
 
+    @LogAround
     private ResponseEntity<TmbOneServiceResponse<OpenPortfolioValidationResponse>> getTmbOneServiceResponseValidationEntity(TmbOneServiceResponse<OpenPortfolioValidationResponse> oneServiceResponse, OpenPortfolioValidationResponse openPortfolioValidationResponse, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {
         oneServiceResponse.setData(openPortfolioValidationResponse);
         oneServiceResponse.setStatus(new TmbStatus(statusCode, statusMessage, ProductsExpServiceConstant.SERVICE_NAME, statusMessage));
         return status.headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 
+    @LogAround
     private ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> getTmbOneServiceResponseEntity(TmbOneServiceResponse<PortfolioResponse> oneServiceResponse, PortfolioResponse portfolioResponse, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {
         oneServiceResponse.setData(portfolioResponse);
         oneServiceResponse.setStatus(new TmbStatus(statusCode, statusMessage, ProductsExpServiceConstant.SERVICE_NAME, statusMessage));

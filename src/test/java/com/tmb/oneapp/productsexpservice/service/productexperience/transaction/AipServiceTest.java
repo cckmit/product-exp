@@ -36,21 +36,22 @@ import static org.mockito.Mockito.when;
 public class AipServiceTest {
 
     @Mock
-    public InvestmentRequestClient investmentRequestClient;
+    private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    public CreditCardClient creditCardClient;
+    private CreditCardClient creditCardClient;
 
     @InjectMocks
     public AipService aipService;
 
-    private final String crmId = "001100000000000000000012035644";
-
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
-    @Test
-    void should_return_status_0000_and_body_not_null_when_call_create_aip_order_give_correlation_id_and_crm_id_and_order_aip_request_body() throws Exception {
+    private final String crmId = "001100000000000000000012035644";
 
+    private final String ipAddress = "0.0.0.0";
+
+    @Test
+    void should_return_status_0000_and_body_not_null_when_call_create_aip_order_give_correlation_id_and_crm_id_and_ip_address_and_order_aip_request_body() throws Exception {
         // Given
         FetchCardResponse cardResponse = new FetchCardResponse();
         CreditCardDetail creditCardDetail = new CreditCardDetail();
@@ -62,50 +63,43 @@ public class AipServiceTest {
 
         TmbOneServiceResponse<OrderAIPResponseBody> orderAIPResponse = new TmbOneServiceResponse<>();
         orderAIPResponse.setStatus(TmbStatusUtil.successStatus());
-        when(investmentRequestClient.createAipOrder(any(),any())).thenReturn(ResponseEntity.ok(orderAIPResponse));
+        when(investmentRequestClient.createAipOrder(any(), any())).thenReturn(ResponseEntity.ok(orderAIPResponse));
 
-        // when
-        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId,crmId, OrderAIPRequestBody.builder().bankAccountType("C").build());
+        // When
+        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId, crmId, ipAddress, OrderAIPRequestBody.builder().bankAccountType("C").build());
 
-        // then
-        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE,actual.getStatus().getCode());
-        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE,actual.getStatus().getMessage());
-
+        // Then
+        assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getStatus().getCode());
+        assertEquals(ProductsExpServiceConstant.SUCCESS_MESSAGE, actual.getStatus().getMessage());
     }
 
     @Test
-    void should_return_null_when_call_create_aip_order_give_correlation_id_and_crm_id_and_order_aip_request_body() throws Exception {
-
+    void should_return_null_when_call_create_aip_order_give_correlation_id_and_crm_id_and_ip_address_and_order_aip_request_body() throws Exception {
         // Given
         when(creditCardClient.getCreditCardDetails(any(), any())).thenThrow(MockitoException.class);
 
-        // when
-        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId,crmId, OrderAIPRequestBody.builder().bankAccountType("C").build());
+        // When
+        TmbOneServiceResponse<OrderAIPResponseBody> actual = aipService.createAipOrder(correlationId, crmId, ipAddress, OrderAIPRequestBody.builder().bankAccountType("C").build());
 
-        // then
+        // Then
         assertNull(actual.getStatus());
         assertNull(actual.getData());
-
     }
 
-
     @Test
-    void should_throw_tmb_common_exception_when_call_create_aip_order_give_correlation_id_and_crm_id_and_order_aip_request_body() {
-
+    void should_throw_tmb_common_exception_when_call_create_aip_order_give_correlation_id_and_crm_id_and_ip_address_and_order_aip_request_body() {
         // Given
         String errorCode = "2000005";
         String errorMessage = "Bad Request";
-        when(investmentRequestClient.createAipOrder(any(),any())).thenThrow(mockFeignExceptionBadRequest(errorCode,errorMessage));
+        when(investmentRequestClient.createAipOrder(any(), any())).thenThrow(mockFeignExceptionBadRequest(errorCode, errorMessage));
 
-        // when
+        // When
         try {
-            aipService.createAipOrder(correlationId,crmId, OrderAIPRequestBody.builder().build());
-        }catch (TMBCommonException e){
-
-            // then
-            assertEquals(errorCode,e.getErrorCode());
-            assertEquals(errorMessage,e.getErrorMessage());
-
+            aipService.createAipOrder(correlationId, crmId, ipAddress, OrderAIPRequestBody.builder().build());
+        } catch (TMBCommonException e) {
+            // Then
+            assertEquals(errorCode, e.getErrorCode());
+            assertEquals(errorMessage, e.getErrorMessage());
         }
     }
 
@@ -126,8 +120,4 @@ public class AipServiceTest {
         FeignException.BadRequest e = new FeignException.BadRequest("", request, errorBody.getBytes(StandardCharsets.UTF_8));
         return e;
     }
-
-
-
-
 }

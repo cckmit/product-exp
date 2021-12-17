@@ -46,20 +46,20 @@ public class DcaValidationServiceTest {
     private TMBLogger<DcaValidationService> logger;
 
     @Mock
-    public InvestmentRequestClient investmentRequestClient;
+    private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    public AlternativeService alternativeService;
+    private AlternativeService alternativeService;
 
     @Mock
-    public CustomerService customerService;
+    private CustomerService customerService;
 
     @InjectMocks
-    public DcaValidationService dcaValidationService;
+    private DcaValidationService dcaValidationService;
 
-    public static final String correlationId = "correlationID";
+    private static final String correlationId = "correlationID";
 
-    public static final String crmId = "crmId";
+    private static final String crmId = "crmId";
 
     private void mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums alternativeEnums) {
         // Given
@@ -85,7 +85,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    public void should_return_status_null_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_status_null_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // When
         when(customerService.getCustomerInfo(any(), any())).thenThrow(MockitoException.class);
         TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "Y");
@@ -96,7 +96,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    public void should_return_failed_cant_buy_fund_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_cant_buy_fund_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // When
         TmbOneServiceResponse<String> actual = dcaValidationService.validationAlternativeDca(correlationId, crmId, "N");
 
@@ -108,7 +108,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_dca_validation_dto_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
+    void should_return_dca_validation_dto_when_call_dca_validation_given_correlation_id_and_crm_id_dca_validation_request() {
         // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
@@ -155,7 +155,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_error_2000036_ptes_port_is_not_allow_for_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
+    void should_return_error_2000036_ptes_port_is_not_allow_for_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dca_validation_request() {
         // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
@@ -189,7 +189,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_error_2000037_fund_not_allow_set_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
+    void should_return_error_2000037_fund_not_allow_set_dca_when_call_dca_validation_given_correlation_id_and_crm_id_dca_validation_request() {
         // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
@@ -230,7 +230,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    void should_return_null_when_call_dca_validation_given_correlation_id_and_crm_id_dcaValidation_request() {
+    void should_return_null_when_call_dca_validation_given_correlation_id_and_crm_id_dca_validation_request() {
         // Given
         String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
         String crmId = "001100000000000000000001184383";
@@ -253,7 +253,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_validate_service_hour_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
@@ -276,7 +276,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_validate_age_not_over_twenty_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
@@ -298,7 +298,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    public void should_return_failed_customer_risk_level_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_customer_risk_level_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
@@ -320,7 +320,7 @@ public class DcaValidationServiceTest {
     }
 
     @Test
-    public void should_return_failed_casa_dormant_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_casa_dormant_when_call_validation_dca_given_correlation_id_and_crm_id_and_alternative_request() {
         // Given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT);
         byPassAllAlternative();
@@ -340,5 +340,4 @@ public class DcaValidationServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CASA_DORMANT.getMessage(),
                 actual.getStatus().getMessage());
     }
-
 }
