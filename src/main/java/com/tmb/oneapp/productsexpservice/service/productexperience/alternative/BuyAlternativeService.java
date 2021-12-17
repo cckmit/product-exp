@@ -68,7 +68,7 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
             }
 
             // validate fund off shelf
-            TmbOneServiceResponse<String> fundOffShelf = handleFundOffShelf(correlationId, crmId, alternativeBuyRequest, tmbOneServiceResponse, status);
+            TmbOneServiceResponse<String> fundOffShelf = handleFundOffShelf(correlationId, crmId, ipAddress, alternativeBuyRequest, tmbOneServiceResponse, status);
             if (fundOffShelf != null) return fundOffShelf;
 
             // validate suitability expired
@@ -92,13 +92,14 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
      *
      * @param correlationId         the correlation id
      * @param crmId                 the crm id
+     * @param ipAddress             the ip address
      * @param alternativeBuyRequest the alternative buy request
      * @param tmbOneServiceResponse the TMB response
      * @param status                the TMB status
      * @return TmbOneServiceResponse<String>
      */
     @LogAround
-    private TmbOneServiceResponse<String> handleFundOffShelf(String correlationId, String crmId,
+    private TmbOneServiceResponse<String> handleFundOffShelf(String correlationId, String crmId, String ipAddress,
                                                              AlternativeBuyRequest alternativeBuyRequest,
                                                              TmbOneServiceResponse<String> tmbOneServiceResponse,
                                                              TmbStatus status) {
@@ -110,14 +111,13 @@ public class BuyAlternativeService extends BuyAndDcaAbstractService {
         }
 
         tmbOneServiceResponse.setStatus(alternativeService.validateFundOffShelf(
-                correlationId, crmId, FundRuleRequestBody.builder()
+                correlationId, FundRuleRequestBody.builder()
                         .fundHouseCode(alternativeBuyRequest.getFundHouseCode())
                         .fundCode(alternativeBuyRequest.getFundCode())
                         .tranType(alternativeBuyRequest.getTranType())
                         .build(), status));
         if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
-            String reason = tmbOneServiceResponse.getStatus().getDescription();
-            return returnResponseAfterSavingActivityLog(correlationId, crmId, reason, alternativeBuyRequest, tmbOneServiceResponse);
+            return returnResponseAfterSavingActivityLog(correlationId, crmId, ipAddress, alternativeBuyRequest, tmbOneServiceResponse);
         }
 
         return null;
