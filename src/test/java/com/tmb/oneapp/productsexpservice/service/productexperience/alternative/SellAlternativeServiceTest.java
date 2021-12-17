@@ -28,19 +28,19 @@ import static org.mockito.Mockito.*;
 public class SellAlternativeServiceTest {
 
     @Mock
-    public AlternativeService alternativeService;
+    private AlternativeService alternativeService;
 
     @Mock
-    public CustomerService customerService;
+    private CustomerService customerService;
 
     @InjectMocks
-    public SellAlternativeService sellAlternativeService;
+    private SellAlternativeService sellAlternativeService;
 
-    public static final String correlationId = "correlationID";
+    private static final String correlationId = "correlationID";
 
-    public static final String crmId = "crmId";
+    private static final String crmId = "crmId";
 
-    private void mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums alternativeEnums) {
+    void mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums alternativeEnums) {
         // given
         CustomerSearchResponse customerSearchResponse = CustomerSearchResponse.builder().build();
         if (alternativeEnums.equals(
@@ -51,7 +51,7 @@ public class SellAlternativeServiceTest {
         when(customerService.getCustomerInfo(any(), any())).thenReturn(customerSearchResponse);
     }
 
-    private void byPassAllAlternative() {
+    void byPassAllAlternative() {
         TmbStatus successStatus = TmbStatusUtil.successStatus();
         ValidateServiceHourResponse validateServiceHourResponse = new ValidateServiceHourResponse();
         BeanUtils.copyProperties(successStatus, validateServiceHourResponse);
@@ -64,7 +64,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_status_null_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_status_null_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
         // given
         // when
         when(customerService.getCustomerInfo(any(), any())).thenThrow(MockitoException.class);
@@ -76,7 +76,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_service_hour_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_validate_service_hour_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
         // given
         ValidateServiceHourResponse status = new ValidateServiceHourResponse();
         status.setCode(AlternativeBuySellSwitchDcaErrorEnums.NOT_IN_SERVICE_HOUR.getCode());
@@ -99,7 +99,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_validate_age_not_over_twenty_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_validate_age_not_over_twenty_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
@@ -121,7 +121,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_customer_risk_level_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
+    void should_return_failed_customer_risk_level_when_call_validation_sell_given_correlation_id_and_crm_id_and_alternative_request() {
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
@@ -143,7 +143,7 @@ public class SellAlternativeServiceTest {
     }
 
     @Test
-    public void should_return_failed_account_redeemtion_when_call_validation_validate_account_redeeemtion_with_correlation_crm_id_and_status() {
+    void should_return_failed_account_redemption_when_call_validation_validate_account_redemption_with_correlation_crm_id_and_status() {
         // given
         mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
         byPassAllAlternative();
@@ -152,7 +152,7 @@ public class SellAlternativeServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getDescription());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateAccountRedeemtion(any(), any(), any())).thenReturn(status);
+        when(alternativeService.validateAccountRedemption(any(), any(), any())).thenReturn(status);
 
         // when
         TmbOneServiceResponse<String> actual = sellAlternativeService.validationSell(correlationId, crmId);
@@ -163,5 +163,4 @@ public class SellAlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getMessage(),
                 actual.getStatus().getMessage());
     }
-
 }

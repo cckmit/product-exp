@@ -31,10 +31,9 @@ class OpenPortfolioActivityControllerTest {
                 .build();
         // When
 
-
-        openPortfolioActivityController.clickConfirm("1234567890", "00000018592884", openPortfolioActivityLogRequest);
+        openPortfolioActivityController.clickConfirm("1234567890", "00000018592884", "0.0.0.0", openPortfolioActivityLogRequest);
 
         // Then
-        verify(openPortfolioActivityLogService).clickConfirm("1234567890", "00000018592884", openPortfolioActivityLogRequest);
+        verify(openPortfolioActivityLogService).clickConfirm("1234567890", "00000018592884", "0.0.0.0", openPortfolioActivityLogRequest);
     }
 }

@@ -35,10 +35,10 @@ public class DcaInformationController {
     }
 
     /**
-     * Description:- method get dca list
+     * Description:- Inquiry dca list from MF Service
      *
-     * @headerparam correlationId        the correlation id
-     * @headerparam crmId  the user crmid
+     * @headerparam correlationId the correlation id
+     * @headerparam crmId the user crm id
      * @return return dca list
      */
     @ApiOperation(value = "Get dca allow aip flag list to frontend")

@@ -34,8 +34,8 @@ public class SellValidationController {
     /**
      * Description:- method for handle alternative sell
      *
-     * @param correlationId            the correlation id
-     * @param crmId                    the crm id
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
      * @return return valid status code
      */
     @ApiOperation(value = "Validation alternative case, then return fund sheet")
@@ -45,18 +45,16 @@ public class SellValidationController {
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId) {
 
-        TmbOneServiceResponse<String> oneServiceResponse = sellAlternativeService.validationSell(correlationId,crmId);
+        TmbOneServiceResponse<String> oneServiceResponse = sellAlternativeService.validationSell(correlationId, crmId);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
-            if(ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())){
+            if (ProductsExpServiceConstant.SUCCESS_CODE.equals(oneServiceResponse.getStatus().getCode())) {
                 return ResponseEntity.ok(oneServiceResponse);
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(oneServiceResponse);
             }
         } else {
             oneServiceResponse.setStatus(notFoundStatus());
             return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
-
     }
-
 }

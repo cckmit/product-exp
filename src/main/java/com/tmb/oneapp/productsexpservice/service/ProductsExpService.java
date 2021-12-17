@@ -102,21 +102,22 @@ public class ProductsExpService extends TmbErrorHandle {
     }
 
     /**
-     * Generic Method to call MF Service getFundAccDetail
+     * Generic Method to get fund account detail from MF service.
      *
-     * @param fundAccountRequest
-     * @param correlationId
-     * @return
+     * @param correlationId      the correlation id
+     * @param crmId              the crm id
+     * @param fundAccountRequest the fund account request
+     * @return FundAccountResponse
      */
     @LogAround
     public FundAccountResponse getFundAccountDetail(String correlationId, String crmId, FundAccountRequest fundAccountRequest) throws TMBCommonException {
         FundAccountResponse fundAccountResponse = null;
-        FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAcc(fundAccountRequest);
+        FundAccountRequestBody fundAccountRequestBody = UtilMap.mappingRequestFundAccount(fundAccountRequest);
         FundRuleRequestBody fundRuleRequestBody = UtilMap.mappingRequestFundRule(fundAccountRequest);
         OrderStmtByPortRequest orderStmtByPortRequest = UtilMap.mappingRequestStmtByPort(fundAccountRequest,
                 ProductsExpServiceConstant.FIXED_START_PAGE, ProductsExpServiceConstant.FIXED_END_PAGE);
 
-        Map<String, String> header = UtilMap.createHeaderWithCrmId(correlationId,crmId);
+        Map<String, String> header = UtilMap.createHeaderWithCrmId(correlationId, crmId);
         try {
             CompletableFuture<AccountDetailResponse> fetchFundAccountDetail = productExpAsyncService.fetchFundAccountDetail(header, fundAccountRequestBody);
             CompletableFuture<FundRuleResponse> fetchFundRule = productExpAsyncService.fetchFundRule(header, fundRuleRequestBody);
@@ -143,13 +144,12 @@ public class ProductsExpService extends TmbErrorHandle {
         return fundAccountResponse;
     }
 
-
     /**
-     * Get fund summary fund summary response.
+     * Generic Method to get fund summary.
      *
      * @param correlationId the correlation id
      * @param crmId         the crm id
-     * @return the fund summary response
+     * @return FundSummaryBody
      */
     @LogAround
     public FundSummaryBody getFundSummary(String correlationId, String crmId) throws TMBCommonException {
@@ -157,7 +157,7 @@ public class ProductsExpService extends TmbErrorHandle {
 
         try {
             UnitHolder unitHolder = new UnitHolder();
-            Map<String, String> header = UtilMap.createHeaderWithCrmId(correlationId,crmId);
+            Map<String, String> header = UtilMap.createHeaderWithCrmId(correlationId, crmId);
             List<String> ports = getPortList(header, crmId, true);
             result.setPortsUnitHolder(ports);
             unitHolder.setUnitHolderNumber(ports.stream().map(String::valueOf).collect(Collectors.joining(",")));
@@ -194,12 +194,12 @@ public class ProductsExpService extends TmbErrorHandle {
     }
 
     /**
-     * Get port list response.
+     * Generic Method to get port list.
      *
      * @param header                 the header
      * @param crmId                  the crm id
      * @param isIncludePtesPortfolio the status to include ptes portfolio
-     * @return the port list
+     * @return List<String>
      */
     @LogAround
     public List<String> getPortList(Map<String, String> header, String crmId, boolean isIncludePtesPortfolio) throws JsonProcessingException {
@@ -235,12 +235,7 @@ public class ProductsExpService extends TmbErrorHandle {
         return ports;
     }
 
-    /***
-     * Set The FundSummaryBody
-     * @param result
-     * @param fundSummary
-     * @param fundSummaryByPort
-     */
+    @LogAround
     private void setFundSummaryBody(FundSummaryBody result, List<String> ports,
                                     TmbOneServiceResponse<FundSummaryBody> fundSummary,
                                     TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
@@ -297,11 +292,11 @@ public class ProductsExpService extends TmbErrorHandle {
     }
 
     /**
-     * Generic Method to call MF Service getFundAccDetail
+     * Generic Method to get fund pre payment detail
      *
-     * @param correlationId
-     * @param crmId
-     * @param fundPaymentDetailRequest
+     * @param correlationId            the correlation id
+     * @param crmId                    the crm id
+     * @param fundPaymentDetailRequest the fund payment details request
      * @return FundPaymentDetailResponse
      */
     @LogAround
@@ -328,7 +323,6 @@ public class ProductsExpService extends TmbErrorHandle {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundHoliday", ProductsExpServiceConstant.LOGGING_RESPONSE), fundHolidayBody);
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT, "accountList", ProductsExpServiceConstant.LOGGING_RESPONSE), accountList);
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_ACCOUNT, "getProductHoldings", ProductsExpServiceConstant.LOGGING_RESPONSE), productHoldingResponse);
-
 
             UtilMap map = new UtilMap();
             fundPaymentDetailResponse = map.mappingPaymentResponse(fundRuleResponse, fundHolidayBody, commonDataList, accountList, productHoldingResponse);
@@ -358,16 +352,16 @@ public class ProductsExpService extends TmbErrorHandle {
     }
 
     /**
-     * Generic Method to call MF Service getFundList
+     * Generic Method to get fund list
      *
-     * @param correlationId
-     * @param crmId
-     * @param fundListRequest
+     * @param correlationId   the correlation id
+     * @param crmId           the crm id
+     * @param fundListRequest the fund list request
      * @return List<FundClassListInfo>
      */
     @LogAround
     public List<FundClassListInfo> getFundList(String correlationId, String crmId, FundListRequest fundListRequest) {
-        Map<String, String> headerParameter = UtilMap.createHeaderWithCrmId(correlationId,crmId);
+        Map<String, String> headerParameter = UtilMap.createHeaderWithCrmId(correlationId, crmId);
         List<FundClassListInfo> listFund = new ArrayList<>();
         try {
             UnitHolder unitHolder = new UnitHolder();
@@ -398,16 +392,16 @@ public class ProductsExpService extends TmbErrorHandle {
     }
 
     /**
-     * Generic Method to call MF Service getFundList
+     * Generic Method to get suggested allocation
      *
-     * @param correlationId
-     * @param crmId
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
      * @return SuggestAllocationDTO
      */
     @LogAround
     public SuggestAllocationDTO getSuggestAllocation(String correlationId, String crmId) throws TMBCommonException {
         UnitHolder unitHolder = new UnitHolder();
-        Map<String, String> investmentHeaderRequest = UtilMap.createHeaderWithCrmId(correlationId,crmId);
+        Map<String, String> investmentHeaderRequest = UtilMap.createHeaderWithCrmId(correlationId, crmId);
         try {
             List<String> portList = getPortListForFundSummary(investmentHeaderRequest, crmId);
             unitHolder.setUnitHolderNumber(portList.stream().map(String::valueOf).collect(Collectors.joining(",")));
@@ -445,6 +439,7 @@ public class ProductsExpService extends TmbErrorHandle {
         return null;
     }
 
+    @LogAround
     private List<String> getPortListForFundSummary(Map<String, String> investmentHeaderRequest, String crmId) throws JsonProcessingException {
         List<String> portList = new ArrayList<>();
         String portListStr = accountRequestClient.getPortList(investmentHeaderRequest, crmId);
@@ -461,6 +456,7 @@ public class ProductsExpService extends TmbErrorHandle {
         return portList;
     }
 
+    @LogAround
     private SuggestAllocationDTO mappingSuggestAllocationDto(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocations = mergeMutualFundWithSuggestAllocation(fundClass, fundAllocationResponse);
         return SuggestAllocationDTO.builder()
@@ -491,6 +487,7 @@ public class ProductsExpService extends TmbErrorHandle {
                 .build();
     }
 
+    @LogAround
     private List<MutualFundWithFundSuggestedAllocation> mergeMutualFundWithSuggestAllocation(List<FundClass> fundClass, FundAllocationResponse fundAllocationResponse) {
         List<MutualFundWithFundSuggestedAllocation> mutualFundWithFundSuggestedAllocationList = new ArrayList<>();
         ArrayList<String> matchClassCode = new ArrayList<>();
@@ -554,11 +551,13 @@ public class ProductsExpService extends TmbErrorHandle {
         return mutualFundWithFundSuggestedAllocationList;
     }
 
+    @LogAround
     private boolean isPortfolioListEmpty(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
         return fundSummaryByPort == null || fundSummaryByPort.getData() == null
                 || fundSummaryByPort.getData().getPortfolioList().isEmpty();
     }
 
+    @LogAround
     private boolean isIndividualAccountExist(TmbOneServiceResponse<FundSummaryByPortBody> fundSummaryByPort) {
         List<PortfolioByPort> portfolioList = fundSummaryByPort.getData().getPortfolioList();
         return portfolioList.stream()

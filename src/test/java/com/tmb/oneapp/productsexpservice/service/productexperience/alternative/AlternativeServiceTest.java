@@ -53,25 +53,25 @@ import static org.mockito.Mockito.when;
 public class AlternativeServiceTest {
 
     @Mock
-    public ProductsExpService productsExpService;
+    private ProductsExpService productsExpService;
 
     @Mock
-    public CommonServiceClient commonServiceClient;
+    private CommonServiceClient commonServiceClient;
 
     @Mock
-    public CustomerServiceClient customerServiceClient;
+    private CustomerServiceClient customerServiceClient;
 
     @Mock
-    public AccountRequestClient accountRequestClient;
+    private AccountRequestClient accountRequestClient;
 
     @Mock
-    public InvestmentRequestClient investmentRequestClient;
+    private InvestmentRequestClient investmentRequestClient;
 
     @Mock
-    public ProductExpAsyncService productExpAsyncService;
+    private ProductExpAsyncService productExpAsyncService;
 
     @InjectMocks
-    public AlternativeService alternativeService;
+    private AlternativeService alternativeService;
 
     private final String correlationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
@@ -450,13 +450,13 @@ public class AlternativeServiceTest {
 
 
     @Test
-    void should_return_status_code_2000013_when_call_validateAccountRedeemtion() throws Exception {
+    void should_return_status_code_2000013_when_call_validateAccountRedemption() throws Exception {
         // Given
         mockCommonConfig();
         when(investmentRequestClient.getCustomerAccountRedeem(any(), any())).thenThrow(MockitoException.class);
 
         // When
-        TmbStatus actual = alternativeService.validateAccountRedeemtion(correlationId, "crmid", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateAccountRedemption(correlationId, "crmid", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.NO_ACCOUNT_REDEMPTION.getCode(), actual.getCode());
@@ -465,7 +465,7 @@ public class AlternativeServiceTest {
     }
 
     @Test
-    void should_return_status_code_0000_when_call_validateAccountRedeemtion() throws Exception {
+    void should_return_status_code_0000_when_call_validateAccountRedemption() throws Exception {
         // Given
         mockCommonConfig();
         TmbOneServiceResponse<AccountRedeemResponseBody> tmbOneServiceResponse = new TmbOneServiceResponse<>();
@@ -475,7 +475,7 @@ public class AlternativeServiceTest {
         when(investmentRequestClient.getCustomerAccountRedeem(any(), any())).thenReturn(ResponseEntity.ok(tmbOneServiceResponse));
 
         // When
-        TmbStatus actual = alternativeService.validateAccountRedeemtion(correlationId, "crmid", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateAccountRedemption(correlationId, "crmid", TmbStatusUtil.successStatus());
 
         // Then
         assertEquals(ProductsExpServiceConstant.SUCCESS_CODE, actual.getCode());
@@ -509,7 +509,6 @@ public class AlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getCode(), actual.getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage(), actual.getMessage());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription(), actual.getDescription());
-
     }
 
     @Test

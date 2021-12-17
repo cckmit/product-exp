@@ -24,7 +24,6 @@ import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatu
 @RestController
 public class AipController {
 
-
     private final AipService aipService;
 
     @Autowired
@@ -33,10 +32,11 @@ public class AipController {
     }
 
     /**
-     * Description:- Inquiry MF Service
+     * Description:- method call MF service to create aip order
      *
-     * @param correlationId correlationId
-     * @param crmId         crmId
+     * @param correlationId the correlation id
+     * @param crmId         the crm id
+     * @param ipAddress     the ip address
      * @return return order AIP created
      */
     @LogAround
@@ -45,9 +45,10 @@ public class AipController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody OrderAIPRequestBody orderAIPRequestBody) throws TMBCommonException {
 
-        TmbOneServiceResponse<OrderAIPResponseBody> oneServiceResponse = aipService.createAipOrder(correlationId, crmId, orderAIPRequestBody);
+        TmbOneServiceResponse<OrderAIPResponseBody> oneServiceResponse = aipService.createAipOrder(correlationId, crmId, ipAddress, orderAIPRequestBody);
         if (!StringUtils.isEmpty(oneServiceResponse.getStatus())) {
             if (!oneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return ResponseEntity.badRequest().body(oneServiceResponse);
@@ -58,5 +59,4 @@ public class AipController {
             return new ResponseEntity(oneServiceResponse, HttpStatus.NOT_FOUND);
         }
     }
-
 }

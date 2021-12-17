@@ -1,5 +1,6 @@
 package com.tmb.oneapp.productsexpservice.activitylog.portfolio.controller;
 
+import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
@@ -28,10 +29,11 @@ public class OpenPortfolioActivityController {
     }
 
     /**
-     * Description:- Inquiry activity service
+     * Description:- method to save activity service when click confirm button
      *
      * @param correlationId                   the correlation id
-     * @param correlationId                   the crm id
+     * @param crmId                           the crm id
+     * @param ipAddress                       the ip address
      * @param openPortfolioActivityLogRequest the open portfolio activity log request
      * @return return success status
      */
@@ -41,15 +43,17 @@ public class OpenPortfolioActivityController {
             @ApiParam(value = ProductsExpServiceConstant.HEADER_CORRELATION_ID_DESC, defaultValue = ProductsExpServiceConstant.X_COR_ID_DEFAULT, required = true)
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId,
             @Valid @RequestHeader(ProductsExpServiceConstant.HEADER_X_CRM_ID) String crmId,
+            @Valid @RequestHeader(ProductsExpServiceConstant.X_FORWARD_FOR) String ipAddress,
             @Valid @RequestBody OpenPortfolioActivityLogRequest openPortfolioActivityLogRequest) {
         TmbOneServiceResponse<String> oneServiceResponse = new TmbOneServiceResponse<>();
 
-        openPortfolioActivityLogService.clickConfirm(correlationId, crmId, openPortfolioActivityLogRequest);
+        openPortfolioActivityLogService.clickConfirm(correlationId, crmId, ipAddress, openPortfolioActivityLogRequest);
         oneServiceResponse.setStatus(buildStatusResponse(ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE));
         oneServiceResponse.setData("Update activity log is successfully");
         return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneServiceResponse);
     }
 
+    @LogAround
     private TmbStatus buildStatusResponse(String successCode, String successMessage) {
         return new TmbStatus(successCode, successMessage, ProductsExpServiceConstant.SERVICE_NAME, successMessage);
     }

@@ -40,7 +40,7 @@ public class PortfolioController {
     }
 
     /**
-     * Description:- Inquiry MF Service
+     * Description:- Inquiry portfolio from MF Service
      *
      * @param correlationId the correlation id
      * @param crmId         the crm id
@@ -67,7 +67,6 @@ public class PortfolioController {
         } else {
             return getTmbOneServiceResponseEntity(oneServiceResponse, null, ProductsExpServiceConstant.DATA_NOT_FOUND_CODE, ProductsExpServiceConstant.DATA_NOT_FOUND_MESSAGE, ResponseEntity.status(HttpStatus.NOT_FOUND));
         }
-
     }
 
     private ResponseEntity<TmbOneServiceResponse<PortfolioResponse>> getTmbOneServiceResponseEntity(TmbOneServiceResponse<PortfolioResponse> oneServiceResponse, PortfolioResponse portfolioResponse, String statusCode, String statusMessage, ResponseEntity.BodyBuilder status) {
