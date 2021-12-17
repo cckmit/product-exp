@@ -9,4 +9,9 @@ import java.util.List;
 public class FundSummaryByPortBody {
 
     private List<PortfolioByPort> portfolioList;
+
+    private String summaryMarketValuePT;
+
+    private String summaryMarketValuePTES;
+
 }
