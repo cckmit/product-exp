@@ -113,7 +113,8 @@ public class CreditCardInformationService {
         List<CreditCard> creditCardWithFilterStatusAndType = creditCards.stream()
                 .filter(t -> t.getAccountStatus()
                         .equalsIgnoreCase(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ACTIVE_STATUS) &&
-                        (t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_PRI_TYPE) || t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_SSC_TYPE))
+                        (t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_PRI_TYPE) || t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_SSC_TYPE)) &&
+                        t.getSpendingFlag().equalsIgnoreCase(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_SPENDING_FLAG_ACTIVE)
                 )
                 .collect(Collectors.toList());
 
