@@ -274,6 +274,8 @@ public class ProductsExpService extends TmbErrorHandle {
 
             if (!isPortfolioListEmpty(fundSummaryByPort)) {
                 result.setSummaryByPort(fundSummaryByPort.getData().getPortfolioList());
+                result.setSummaryMarketValuePT(fundSummaryByPort.getData().getSummaryMarketValuePT());
+                result.setSummaryMarketValuePTES(fundSummaryByPort.getData().getSummaryMarketValuePTES());
 
                 boolean individualAccountExist = isIndividualAccountExist(fundSummaryByPort);
                 result.setIsJointPortOnly(!individualAccountExist);
