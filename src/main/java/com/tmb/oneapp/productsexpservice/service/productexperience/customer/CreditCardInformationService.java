@@ -55,14 +55,14 @@ public class CreditCardInformationService {
     public TmbOneServiceResponse<CreditCardInformationResponse> getCreditCardInformation(String correlationId, String crmId) {
         TmbOneServiceResponse<CreditCardInformationResponse> response = new TmbOneServiceResponse<>();
         try {
-            CompletableFuture<List<ProductConfig>> fetchProductConfigs = fetchAyncProductConfig(correlationId);
-            CompletableFuture<CreditCardInformationResponse> creditCardInformation = fetchAyncCustomerCreditCard(correlationId,UtilMap.fullCrmIdFormat(crmId));
+            CompletableFuture<List<ProductConfig>> fetchProductConfigs = fetchAsyncProductConfig(correlationId);
+            CompletableFuture<CreditCardInformationResponse> creditCardInformation = fetchAsyncCustomerCreditCard(correlationId, UtilMap.fullCrmIdFormat(crmId));
             CompletableFuture.allOf(fetchProductConfigs, creditCardInformation);
 
             CreditCardInformationResponse creditCardInformationResponse = creditCardInformation.get();
             List<ProductConfig> productConfigs = fetchProductConfigs.get();
             List<CreditCard> creditCards = creditCardInformationResponse.getCreditCards();
-            return filterCreditCardWithStatusAndType(productConfigs,creditCards, response);
+            return filterCreditCardWithStatusAndType(productConfigs, creditCards, response);
 
         } catch (Exception ex) {
             logger.error(ProductsExpServiceConstant.EXCEPTION_OCCURRED, ex);
@@ -74,10 +74,9 @@ public class CreditCardInformationService {
 
     @Async
     @LogAround
-    public CompletableFuture<CreditCardInformationResponse> fetchAyncCustomerCreditCard(String correlationId,String crmId) throws TMBCommonException {
+    private CompletableFuture<CreditCardInformationResponse> fetchAsyncCustomerCreditCard(String correlationId, String crmId) throws TMBCommonException {
         try {
-            ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> response =
-                    customerExpServiceClient.getCustomerCreditCard(correlationId, crmId);
+            ResponseEntity<TmbOneServiceResponse<CreditCardInformationResponse>> response = customerExpServiceClient.getCustomerCreditCard(correlationId, crmId);
             return CompletableFuture.completedFuture(response.getBody().getData());
         } catch (Exception e) {
             logger.error("Error getCustomerCreditCard", e);
@@ -92,7 +91,7 @@ public class CreditCardInformationService {
 
     @Async
     @LogAround
-    public CompletableFuture<List<ProductConfig>> fetchAyncProductConfig(String correlationId) throws TMBCommonException {
+    private CompletableFuture<List<ProductConfig>> fetchAsyncProductConfig(String correlationId) throws TMBCommonException {
         try {
             ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceFeignClient.getProductConfig(correlationId);
             return CompletableFuture.completedFuture(response.getBody().getData());
@@ -117,7 +116,7 @@ public class CreditCardInformationService {
                 .collect(Collectors.toList());
 
         List<CreditCard> creditCardEligiblePurchaseMutualFund =
-                filterAllowPurchaseMfAndAccountTypeIsCCA(productConfigList,creditCardWithFilterStatusAndType);
+                filterAllowPurchaseMfAndAccountTypeIsCCA(productConfigList, creditCardWithFilterStatusAndType);
         creditcardInformationResponse.setCreditCards(creditCardEligiblePurchaseMutualFund);
 
         response.setStatus(TmbStatusUtil.successStatus());
@@ -128,18 +127,17 @@ public class CreditCardInformationService {
     @LogAround
     private List<CreditCard> filterAllowPurchaseMfAndAccountTypeIsCCA(List<ProductConfig> productConfigList, List<CreditCard> creditCardWithFilterStatusAndType) {
         List<CreditCard> filterCreditCardResult = new ArrayList<>();
-        for (CreditCard creditCard: creditCardWithFilterStatusAndType) {
+        for (CreditCard creditCard : creditCardWithFilterStatusAndType) {
             Optional<ProductConfig> productConfigOptional = productConfigList.stream()
                     .filter(pc -> "1".equals(pc.getAllowToPurchaseMf()) &&
                             ProductsExpServiceConstant.ACC_TYPE_CCA.equals(pc.getAccountType()) &&
                             pc.getProductCode().equals(creditCard.getProductCode()))
                     .findFirst();
-            if(productConfigOptional.isPresent()){
+            if (productConfigOptional.isPresent()) {
                 creditCard.setAccountType(productConfigOptional.get().getAccountType());
                 filterCreditCardResult.add(creditCard);
             }
         }
         return filterCreditCardResult;
     }
-
 }
