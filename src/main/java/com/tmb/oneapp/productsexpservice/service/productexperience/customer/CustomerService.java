@@ -74,7 +74,7 @@ public class CustomerService {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "ecprofile", ProductsExpServiceConstant.LOGGING_RESPONSE), response.getBody());
             return response.getBody().getData().get(0);
         } catch (Exception ex) {
-            logger.error("error fetch customerSearch : {}", ex);
+            logger.error("error fetch customer search : {}", ex);
         }
         return null;
     }

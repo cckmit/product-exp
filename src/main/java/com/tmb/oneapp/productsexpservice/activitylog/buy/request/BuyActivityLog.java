@@ -43,6 +43,4 @@ public class BuyActivityLog extends BaseEvent {
     public BuyActivityLog(String correlationId, String activityDate, String activityTypeId) {
         super(correlationId, activityDate, activityTypeId);
     }
-
-
 }
