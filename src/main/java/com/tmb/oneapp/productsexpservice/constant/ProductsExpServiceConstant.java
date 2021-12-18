@@ -214,9 +214,8 @@ public class ProductsExpServiceConstant {
 	public static final String ACTIVITY_LOG_INVESTMENT_APP_VERSION = "1.0.0";
 	public static final String ACTIVITY_LOG_INVESTMENT_FAILURE = "Off business hour";
 	public static final String ACTIVITY_LOG_INVESTMENT_UNIT_HOLDER = "PT000000000000587870";
-	public static final String ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_YES = "Yes";
 	public static final String ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_NO = "No";
-	public static final String ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION = "Yes";
+	public static final String ACTIVITY_LOG_INVESTMENT_YES = "Yes";
 
 	/* CRM Format */
 	public static final String CRM_ID_PREFIX = "0011000000000000";

@@ -32,7 +32,6 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class BuyFirstTradeAlternativeService {
 
-
     private static final TMBLogger<BuyFirstTradeAlternativeService> logger = new TMBLogger<>(BuyFirstTradeAlternativeService.class);
 
     private final CustomerService customerService;
