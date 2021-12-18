@@ -29,6 +29,10 @@ public class FundSummaryBody extends FundClassList {
 
     private List<PortfolioByPort> summaryByPort;
 
+    private String summaryMarketValuePT;
+
+    private String summaryMarketValuePTES;
+
     private String unrealizedProfitPercent;
 
     private String summaryMarketValue;
