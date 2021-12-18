@@ -7,12 +7,12 @@ import com.tmb.common.model.TmbServiceResponse;
 import com.tmb.common.model.creditcard.UpdateEStatmentResp;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.CustomerFirstUsage;
+import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.response.EkycRiskCalculateResponse;
+import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CrmSearchBody;
 import com.tmb.oneapp.productsexpservice.model.request.crm.CustomerCaseSubmitBody;
-import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.model.response.statustracking.CaseStatusCase;
-import com.tmb.oneapp.productsexpservice.model.customer.calculaterisk.request.EkycRiskCalculateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +25,12 @@ import java.util.Map;
 public interface CustomerServiceClient {
 
     /**
-     * Get first time usage status of customer for specified service.
+     * Get submit to get first time status usage of customer for specified service.
      *
-     * @param crmId         customer ID
-     * @param deviceId      device ID
-     * @param serviceTypeId service type ID
-     * @return data() in form of json but return null if customer has never used this service.
+     * @param crmId         the crm id
+     * @param deviceId      the device id
+     * @param serviceTypeId the service type id
+     * @return CustomerFirstUsage => data() in form of json but return null if customer has never used this service.
      */
     @GetMapping(value = "/apis/customers/firstTimeUsage")
     ResponseEntity<TmbOneServiceResponse<CustomerFirstUsage>> getFirstTimeUsage(
@@ -40,12 +40,12 @@ public interface CustomerServiceClient {
     );
 
     /**
-     * Post first time usage status of customer for specified service.
+     * Post submit to create first time of status usage of customer for specified service.
      *
-     * @param crmId         customer ID
-     * @param deviceId      device ID
-     * @param serviceTypeId service type ID
-     * @return String of insert first time usage status
+     * @param crmId         the crm id
+     * @param deviceId      the device id
+     * @param serviceTypeId the service type id
+     * @return String of insert first time status usage
      */
     @PostMapping(value = "/apis/customers/firstTimeUsage")
     ResponseEntity<TmbOneServiceResponse<String>> postFirstTimeUsage(
@@ -55,12 +55,12 @@ public interface CustomerServiceClient {
     );
 
     /**
-     * Put first time usage status of customer for specified service.
+     * Put submit to update first time of status usage of customer for specified service.
      *
-     * @param crmId         customer ID
-     * @param deviceId      device ID
-     * @param serviceTypeId service type ID
-     * @return String of update first time usage status
+     * @param crmId         the crm id
+     * @param deviceId      the device id
+     * @param serviceTypeId the service type id
+     * @return String of updated first time status usage
      */
     @PutMapping(value = "/apis/customers/firstTimeUsage")
     ResponseEntity<TmbOneServiceResponse<String>> putFirstTimeUsage(
@@ -70,10 +70,10 @@ public interface CustomerServiceClient {
     );
 
     /**
-     * Get all case statuses for customer
+     * Get submit to get all case status of customer
      *
-     * @param crmId customer ID
-     * @return data() in form of json but return null if customer has never used this service.
+     * @param crmId the customer id
+     * @return CaseStatusCase => data() in form of json but return null if customer has never used this service.
      */
     @GetMapping(value = "/apis/customers/case/status/{CRM_ID}")
     ResponseEntity<TmbOneServiceResponse<List<CaseStatusCase>>> getCaseStatus(
@@ -82,18 +82,22 @@ public interface CustomerServiceClient {
     );
 
     /**
-     * @param crmId getCustDetails method consume crmId from
-     *              customers-service
+     * Get submit to get customer profile
+     *
+     * @param crmId the crm id
+     * @return CustGeneralProfileResponse
      */
     @GetMapping(value = "/apis/customers", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getCustomerProfile(@RequestHeader(name = ProductsExpServiceConstant.X_CRMID) String crmId);
+    ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> getCustomerProfile(
+            @RequestHeader(name = ProductsExpServiceConstant.X_CRMID) String crmId
+    );
 
     /**
-     * Post submit NCB customer case
+     * Post submit of NCB customer case
      *
-     * @param crmId         customer ID
-     * @param correlationId correlationId
-     * @param requestBody   CustomerCaseSubmitBody
+     * @param crmId         the customer id
+     * @param correlationId the correlation id
+     * @param requestBody   the customer case submit body
      * @return Map<String, String>
      */
     @PostMapping(value = "/apis/customers/case/submit")
@@ -104,12 +108,12 @@ public interface CustomerServiceClient {
     );
 
     /**
-     * Post submit NCB customer case
+     * Post submit to search customer
      *
-     * @param crmId         customer ID
-     * @param correlationId correlationId
-     * @param requestBody   CustomerCaseSubmitBody
-     * @return Map<String, String>
+     * @param correlationId the correlation id
+     * @param crmId         the customer id
+     * @param requestBody   the customer search
+     * @return CustomerSearchResponse
      */
     @PostMapping(value = "/apis/customers/ecprofile")
     ResponseEntity<TmbOneServiceResponse<List<CustomerSearchResponse>>> customerSearch(
@@ -119,33 +123,35 @@ public interface CustomerServiceClient {
     );
 
     /**
-     * Get e-statement
+     * Get submit to get e-statement
      *
-     * @param crmId         customer ID
-     * @param correlationId correlationId
-     * @return
+     * @param crmId         customer id
+     * @param correlationId correlation id
+     * @return UpdateEStatmentResp
      */
     @GetMapping(value = "/apis/customers/profile/get-e-statement")
     ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> getCustomerEStatement(
             @RequestHeader(value = ProductsExpServiceConstant.X_CRMID) String crmId,
-            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId);
+            @RequestHeader(value = ProductsExpServiceConstant.HEADER_X_CORRELATION_ID) String correlationId
+    );
 
     /**
-     * Update email statment
+     * Post sumit to update email statement
      *
-     * @param requestHeaders
-     * @param statementFlag
-     * @return
+     * @param requestHeaders the request header
+     * @param statementFlag  the statement flag
+     * @return UpdateEStatmentResp
      */
     @PostMapping(value = "/apis/customers/profile/update-e-statement")
     ResponseEntity<TmbOneServiceResponse<UpdateEStatmentResp>> updateEStatement(
-            @RequestHeader Map<String, String> requestHeaders, @RequestBody StatementFlag statementFlag);
+            @RequestHeader Map<String, String> requestHeaders, @RequestBody StatementFlag statementFlag
+    );
 
     /**
-     * Post submit ekyc calculate customer risk level
+     * Post submit of ekyc calculate customer risk level
      *
-     * @param correlationId correlationId
-     * @param requestBody   EkycRiskCalculateRequest
+     * @param correlationId the correlation id
+     * @param requestBody   the ekyc risk calculation request
      * @return EkycRiskCalculateResponse
      */
     @PostMapping(value = "/apis/customers/ekyc/risk/calculate")
