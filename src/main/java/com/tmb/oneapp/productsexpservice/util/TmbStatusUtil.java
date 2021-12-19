@@ -35,4 +35,13 @@ public class TmbStatusUtil {
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
         return status;
     }
+
+    public static TmbStatus badRequestStatus() {
+        TmbStatus status = new TmbStatus();
+        status.setCode(ProductsExpServiceConstant.BAD_REQUEST_CODE);
+        status.setDescription(ProductsExpServiceConstant.BAD_REQUEST_MESSAGE);
+        status.setMessage(ProductsExpServiceConstant.BAD_REQUEST_MESSAGE);
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        return status;
+    }
 }

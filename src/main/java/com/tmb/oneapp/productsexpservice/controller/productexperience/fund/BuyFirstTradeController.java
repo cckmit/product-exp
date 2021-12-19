@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 import static com.tmb.oneapp.productsexpservice.util.TmbStatusUtil.notFoundStatus;
 
-@Api(tags = "for inquiry first trade and occupation require flag")
+@Api(tags = "For inquiry first trade and occupation require flag")
 @RequestMapping("/funds")
 @RestController
 public class BuyFirstTradeController {

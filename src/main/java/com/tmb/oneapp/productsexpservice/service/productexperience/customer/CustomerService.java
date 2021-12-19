@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * CustomerService class will get Customer Data
+ * CustomerService class will get customer data
  */
 @Service
 public class CustomerService {
@@ -40,6 +40,7 @@ public class CustomerService {
      * @param crmId         the crm id
      * @return String
      */
+    @LogAround
     public String getAccountSaving(String correlationId, String crmId) {
         try {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "accounts/saving", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.fullCrmIdFormat(crmId));
@@ -73,7 +74,7 @@ public class CustomerService {
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "ecprofile", ProductsExpServiceConstant.LOGGING_RESPONSE), response.getBody());
             return response.getBody().getData().get(0);
         } catch (Exception ex) {
-            logger.error("error fetch customerSearch : {}", ex);
+            logger.error("error fetch customer search : {}", ex);
         }
         return null;
     }

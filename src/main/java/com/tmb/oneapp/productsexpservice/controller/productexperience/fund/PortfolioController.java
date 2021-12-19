@@ -58,9 +58,6 @@ public class PortfolioController {
 
         TmbOneServiceResponse<PortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-
         PortfolioResponse portfolioResponse = portfolioService.getPortfolioList(correlationId, crmId, type);
         if (!StringUtils.isEmpty(portfolioResponse)) {
             return getTmbOneServiceResponseEntity(oneServiceResponse, portfolioResponse, ProductsExpServiceConstant.SUCCESS_CODE, ProductsExpServiceConstant.SUCCESS_MESSAGE, ResponseEntity.ok());

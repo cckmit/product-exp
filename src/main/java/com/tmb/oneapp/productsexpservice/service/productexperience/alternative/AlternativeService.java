@@ -461,15 +461,15 @@ public class AlternativeService {
     }
 
     /**
-     * Method validateAccountRedemption method to validate fund off shelf
+     * Method to validate fund off shelf
      *
-     * @param correlationId
-     * @param crmId
-     * @param status
+     * @param correlationId       the correlation id
+     * @param fundRuleRequestBody the fund rule request body
+     * @param status              the status
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateFundOffShelf(String correlationId, String crmId, FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
+    public TmbStatus validateFundOffShelf(String correlationId, FundRuleRequestBody fundRuleRequestBody, TmbStatus status) {
         try {
             Map<String, String> investmentHeaderRequest = UtilMap.createHeader(correlationId);
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "fundRule", ProductsExpServiceConstant.LOGGING_REQUEST), fundRuleRequestBody);
