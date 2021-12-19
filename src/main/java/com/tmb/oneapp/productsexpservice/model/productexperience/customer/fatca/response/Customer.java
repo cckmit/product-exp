@@ -1,0 +1,17 @@
+package com.tmb.oneapp.productsexpservice.model.productexperience.customer.fatca.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Customer {
+
+    private Fatca fatca;
+
+    private Profile profile;
+}
