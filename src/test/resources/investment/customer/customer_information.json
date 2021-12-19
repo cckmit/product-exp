@@ -25,6 +25,6 @@
   "customerLastNameTh": "TEST",
   "customerRiskLevel": "A1",
   "contactAddress": "บ้านเลขที่ ADDRESS-LINE1 ถนน ADDRESS-LINE2 เขต ADDRESS-LINE3 กรุงเทพมหานคร 10900 ประเทศ ไทย",
-  "registerAddress": "",
+  "registeredAddress": "",
   "officeAddress": ""
 }

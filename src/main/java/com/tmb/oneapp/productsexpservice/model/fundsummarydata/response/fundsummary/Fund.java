@@ -30,4 +30,6 @@ public class Fund {
     private BigDecimal accruedFee;
 
     private String nickName;
+
+    private String navDate;
 }

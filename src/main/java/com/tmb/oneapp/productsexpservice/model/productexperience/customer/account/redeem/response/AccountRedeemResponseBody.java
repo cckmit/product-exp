@@ -14,4 +14,6 @@ public class AccountRedeemResponseBody {
     private String crmId;
 
     private String accountRedeem;
+
+    private String prefAddressType;
 }

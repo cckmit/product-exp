@@ -76,4 +76,7 @@ public class CreditCard {
     @JsonAlias("product_code")
     private String productCode;
 
+    @JsonAlias("spending_flag")
+    private String spendingFlag;
+
 }

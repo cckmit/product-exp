@@ -111,8 +111,10 @@ public class CreditCardInformationService {
         CreditCardInformationResponse creditcardInformationResponse = new CreditCardInformationResponse();
         List<CreditCard> creditCardWithFilterStatusAndType = creditCards.stream()
                 .filter(t -> t.getAccountStatus()
-                        .equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ACTIVE_STATUS) &&
-                        !t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_SUP_TYPE))
+                        .equalsIgnoreCase(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_ACTIVE_STATUS) &&
+                        (t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_PRI_TYPE) || t.getCardType().equals(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_SSC_TYPE)) &&
+                        t.getSpendingFlag().equalsIgnoreCase(ProductsExpServiceConstant.INVESTMENT_CREDIT_CARD_SPENDING_FLAG_ACTIVE)
+                )
                 .collect(Collectors.toList());
 
         List<CreditCard> creditCardEligiblePurchaseMutualFund =
