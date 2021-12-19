@@ -24,6 +24,7 @@
 * [ONEAPP-25778](https://jira.tau2904.com/browse/ONEAPP-25778) UAT MF My portfolio_ Incorrect error message if PTES only customer click Sell button
 * [ONEAPP-25824](https://jira.tau2904.com/browse/ONEAPP-25824) BE - Modify /get-installment-rate return fee and vat 2 model type
 * [ONEAPP-26018](https://jira.tau2904.com/browse/ONEAPP-26018) Add logic for buy first trade fund
+* [ONEAPP-26430](https://jira.tau2904.com/browse/ONEAPP-26430) UAT MF_Open new port : System not hard block if customer has Risk Level = B3
 * [ONEAPP-26818](https://jira.tau2904.com/browse/ONEAPP-26818) Set DCA by credit card
 * [ONEAPP-26819](https://jira.tau2904.com/browse/ONEAPP-26819) filter credit card following product config
 * [ONEAPP-27207](https://jira.tau2904.com/browse/ONEAPP-27207) Card - Activate Card - System does not capture error code in the Activity Log

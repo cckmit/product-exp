@@ -187,7 +187,7 @@ public class OpenPortfolioValidationService extends TmbErrorHandle {
             return tmbOneServiceResponse;
         }
 
-        openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ipAddress, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_YES, "");
+        openPortfolioActivityLogService.openPortfolio(correlationId, crmId, ipAddress, ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_YES, "");
         return tmbOneServiceResponse;
     }
 

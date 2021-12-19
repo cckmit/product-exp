@@ -245,7 +245,7 @@ public class BuyAlternativeServiceTest {
         status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getDescription());
         status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FUND_OFF_SHELF.getMessage());
         status.setService(ProductsExpServiceConstant.SERVICE_NAME);
-        when(alternativeService.validateFundOffShelf(any(), any(), any(), any())).thenReturn(status);
+        when(alternativeService.validateFundOffShelf(anyString(), any(), any())).thenReturn(status);
 
         // When
         AlternativeBuyRequest alternativeBuyRequest = AlternativeBuyRequest

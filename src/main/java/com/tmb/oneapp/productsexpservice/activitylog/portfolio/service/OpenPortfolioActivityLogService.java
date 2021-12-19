@@ -52,7 +52,7 @@ public class OpenPortfolioActivityLogService {
     @LogAround
     public void acceptTermAndCondition(String correlationId, String crmId, String ipAddress) {
         OpenPortfolioActivityLog activityData = initialActivityLogData(correlationId, crmId, ipAddress, OpenPortfolioActivityEnums.ACCEPT_TERM_AND_CONDITION.getActivityTypeId());
-        activityData.setValue(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_OPEN_PORTFOLIO_ACCEPT_TERM_AND_CONDITION);
+        activityData.setValue(ProductsExpServiceConstant.ACTIVITY_LOG_INVESTMENT_YES);
         logActivityService.createLog(activityData);
     }
 

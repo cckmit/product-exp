@@ -13,14 +13,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.Instant;
 
 /**
  * PortfolioController will handle to call apis for getting portfolio list
@@ -57,9 +55,6 @@ public class PortfolioController {
             @Valid @RequestParam String type) throws TMBCommonException {
 
         TmbOneServiceResponse<PortfolioResponse> oneServiceResponse = new TmbOneServiceResponse<>();
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(ProductsExpServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
 
         PortfolioResponse portfolioResponse = portfolioService.getPortfolioList(correlationId, crmId, type);
         if (!StringUtils.isEmpty(portfolioResponse)) {
