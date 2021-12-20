@@ -59,7 +59,9 @@ public class PersonalLoanServiceTest {
 		cData.setAccount221Url("");
 		List<AllowCashDayOne> allowCashDay = new ArrayList<AllowCashDayOne>();
 		AllowCashDayOne modelMocl = new AllowCashDayOne();
-		modelMocl.setAllowCashDayOne("P");
+		modelMocl.setRslCode("RC01");
+		modelMocl.setFee("0.1");
+		modelMocl.setVat("7");
 		allowCashDay.add(modelMocl);
 		cData.setAllowCashDayOnes(allowCashDay);
 		listDatas.add(cData);

@@ -124,7 +124,7 @@ public class PersonalLoanService {
 
         List<AllowCashDayOne> allowCashDayOnes = commonDataList.getData().get(0).getAllowCashDayOnes();
 
-        return allowCashDayOnes.get(0).getAllowCashDayOne().contains(loanPreloadRequest.getProductCode());
+        return allowCashDayOnes.get(0).getRslCode().contains(loanPreloadRequest.getProductCode());
 
     }
 
