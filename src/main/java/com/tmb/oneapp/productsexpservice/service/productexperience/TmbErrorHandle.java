@@ -10,6 +10,7 @@ import com.tmb.oneapp.productsexpservice.constant.ResponseCode;
 import com.tmb.oneapp.productsexpservice.util.TmbStatusUtil;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -77,8 +78,10 @@ public class TmbErrorHandle {
             String responseObj = new String(responseBuffer.array(), StandardCharsets.UTF_8);
             logger.info("response msg fail {}", responseObj);
 
-            response = ((TmbOneServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
-                    TmbOneServiceResponse.class));
+            if(!StringUtils.isEmpty(responseObj)) {
+                response = ((TmbOneServiceResponse<T>) TMBUtils.convertStringToJavaObj(responseObj,
+                        TmbOneServiceResponse.class));
+            }
 
         }
         return response;
