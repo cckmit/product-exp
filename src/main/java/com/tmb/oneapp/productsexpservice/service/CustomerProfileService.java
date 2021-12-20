@@ -294,7 +294,7 @@ public class CustomerProfileService {
 			response.setIncomeBaseSalary(instandIndividual.getInTotalIncome().toString());
 		}
 
-		response.setIncomeDeclared(instandIndividual.getIncomeDeclared().toString());
+		response.setIncomeDeclared(instandIndividual.getInTotalIncome().toString());
 
 		createdIncomeCriteriaDependency(response, response.getIncomeBaseSalary());
 
