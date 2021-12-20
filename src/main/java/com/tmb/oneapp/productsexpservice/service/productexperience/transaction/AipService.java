@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -70,9 +71,12 @@ public class AipService extends TmbErrorHandle {
                 orderAIPRequestBody.setCreditCardExpiry(creditCardExpiry);
             }
 
-            Map<String, String> investmentRequestHeader = UtilMap.createHeaderWithCrmId(correlationId, crmId);
+            Map<String, String> investmentHeader = new HashMap<>();
+            investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CORRELATION_ID, correlationId);
+            investmentHeader.put(ProductsExpServiceConstant.HEADER_X_CRM_ID, crmId);
+            investmentHeader.put(ProductsExpServiceConstant.X_FORWARD_FOR,ipAddress);
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "createAipOrder", ProductsExpServiceConstant.LOGGING_REQUEST), UtilMap.convertObjectToStringJson(orderAIPRequestBody));
-            ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> oneServiceResponseResponseEntity = investmentRequestClient.createAipOrder(investmentRequestHeader, orderAIPRequestBody);
+            ResponseEntity<TmbOneServiceResponse<OrderAIPResponseBody>> oneServiceResponseResponseEntity = investmentRequestClient.createAipOrder(investmentHeader, orderAIPRequestBody);
             logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_INVESTMENT, "createAipOrder", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(oneServiceResponseResponseEntity.getBody()));
 
             tmbOneServiceResponse.setData(oneServiceResponseResponseEntity.getBody().getData());
