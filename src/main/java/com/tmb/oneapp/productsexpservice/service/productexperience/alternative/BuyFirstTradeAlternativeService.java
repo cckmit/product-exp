@@ -7,6 +7,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.enums.AlternativeBuySellSwitchDcaErrorEnums;
+import com.tmb.oneapp.productsexpservice.enums.AlternativeOpenPortfolioErrorEnums;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.BuyFlowFirstTrade;
 import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buyfirstrade.request.AlternativeBuyFirstTTradeRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.occupation.response.OccupationInquiryResponseBody;
@@ -91,7 +92,13 @@ public class BuyFirstTradeAlternativeService {
             }
 
             // validate id card expired
-            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
+            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(customerInfo.getExpiryDate(), status));
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServiceResponse;
+            }
+
+            // validate customer pass kyc (U,Blank) allow
+            tmbOneServiceResponse.setStatus(alternativeService.validateKycFlag(customerInfo.getKycLimitedFlag(), customerInfo.getIdType(), status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }

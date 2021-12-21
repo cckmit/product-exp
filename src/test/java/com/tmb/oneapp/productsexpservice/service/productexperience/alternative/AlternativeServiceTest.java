@@ -203,12 +203,25 @@ public class AlternativeServiceTest {
 
         when(productExpAsyncService.fetchCustomerProfile(anyString())).thenReturn(CompletableFuture.completedFuture(fundHolidayBody));
         // When
-        TmbStatus actual = alternativeService.validateIdCardExpired("00000018592884", TmbStatusUtil.successStatus());
+        TmbStatus actual = alternativeService.validateIdCardExpired("2021-01-01", TmbStatusUtil.successStatus());
 
         // Then
+        assertEquals("2000009", actual.getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(), actual.getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage(), actual.getMessage());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void should_return_status_code_2000045_when_call_validate_kyc_flag_invalid() throws Exception {
+        /// When
+        TmbStatus actual = alternativeService.validateKycFlag("Z", "CI", TmbStatusUtil.successStatus());
+
+        // Then
+        assertEquals("2000045", actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getCode(), actual.getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getMessage(), actual.getMessage());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getDescription(), actual.getDescription());
     }
 
     @Test
