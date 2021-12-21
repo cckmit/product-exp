@@ -87,6 +87,7 @@ public class BuyFirstTradeAlternativeServiceTest {
         when(alternativeService.validateFatcaFlagNotValid(any(), any(), anyString())).thenReturn(successStatus);
         when(alternativeService.validateIdentityAssuranceLevel(any(), any(), anyString())).thenReturn(successStatus);
         when(alternativeService.validateNationality(any(), any(), any(), any())).thenReturn(successStatus);
+        when(alternativeService.validateKycFlag(any(), any(), any())).thenReturn(successStatus);
     }
 
     @Test
@@ -146,6 +147,30 @@ public class BuyFirstTradeAlternativeServiceTest {
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode(),
                 actual.getStatus().getCode());
         assertEquals(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage(),
+                actual.getStatus().getMessage());
+    }
+
+    @Test
+    public void should_return_failed_validate_kycflag_when_call_validation_buy_given_correlation_id_and_crm_id_and_alternative_request() throws TMBCommonException, IOException {
+        // given
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
+        byPassAllAlternative();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getMessage());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+
+        when(alternativeService.validateIdCardExpired(any(), any())).thenReturn(status);
+
+        // when
+        AlternativeBuyFirstTTradeRequest alternativeBuyRequest = AlternativeBuyFirstTTradeRequest.builder().build();
+        TmbOneServiceResponse<TradeOccupationResponse> actual = buyFirstTradeAlternativeService.validationBuyFirstTrade(correlationId, crmId, alternativeBuyRequest);
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getMessage(),
                 actual.getStatus().getMessage());
     }
 

@@ -91,7 +91,13 @@ public class BuyFirstTradeAlternativeService {
             }
 
             // validate id card expired
-            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(crmId, status));
+            tmbOneServiceResponse.setStatus(alternativeService.validateIdCardExpired(customerInfo.getExpiryDate(), status));
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServiceResponse;
+            }
+
+            // validate customer pass kyc (U,Blank) allow
+            tmbOneServiceResponse.setStatus(alternativeService.validateKycFlag(customerInfo.getKycLimitedFlag(), customerInfo.getIdType(), status));
             if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
                 return tmbOneServiceResponse;
             }
