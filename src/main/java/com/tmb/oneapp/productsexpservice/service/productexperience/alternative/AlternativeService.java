@@ -42,7 +42,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -61,8 +60,6 @@ public class AlternativeService {
 
     private final InvestmentRequestClient investmentRequestClient;
 
-    private final ProductExpAsyncService productExpAsyncService;
-
     @Autowired
     public AlternativeService(
             CommonServiceClient commonServiceClient,
@@ -75,7 +72,6 @@ public class AlternativeService {
         this.customerServiceClient = customerServiceClient;
         this.accountRequestClient = accountRequestClient;
         this.investmentRequestClient = investmentRequestClient;
-        this.productExpAsyncService = productExpAsyncService;
     }
 
     /**
@@ -218,25 +214,20 @@ public class AlternativeService {
     /**
      * Method validateCustomerIdExpired to call customer-info, then get id_expire_date to verify with current date
      *
-     * @param crmId
+     * @param expiryDate
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateIdCardExpired(String crmId, TmbStatus status) {
-        CompletableFuture<CustGeneralProfileResponse> responseResponseEntity;
+    public TmbStatus validateIdCardExpired(String expiryDate, TmbStatus status) {
         try {
-            responseResponseEntity = productExpAsyncService.fetchCustomerProfile(UtilMap.halfCrmIdFormat(crmId));
-            CompletableFuture.allOf(responseResponseEntity);
-            CustGeneralProfileResponse responseData = responseResponseEntity.get();
-            logger.info(UtilMap.mfLoggingMessage(ProductsExpServiceConstant.SYSTEM_CUSTOMER, "getCustomerProfile", ProductsExpServiceConstant.LOGGING_RESPONSE), UtilMap.convertObjectToStringJson(responseData));
-            if (UtilMap.isCustIdExpired(responseData)) {
+            if (!isExpiredDateOccurAfterCurrentDate(expiryDate)) {
                 status.setCode(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getCode());
                 status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getDescription());
                 status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.ID_CARD_EXPIRED.getMessage());
                 status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             }
         } catch (Exception e) {
-            logger.error("========== investment callInvestmentFundSuitabilityService error ==========");
+            logger.error("========== validateIdCardExpired failed ==========");
             status.setCode(ProductsExpServiceConstant.SERVICE_NOT_READY);
             status.setDescription(String.format(ProductsExpServiceConstant.SERVICE_NOT_READY_DESC_MESSAGE, "validateIdCardExpired failed"));
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
@@ -323,17 +314,17 @@ public class AlternativeService {
      *
      * @param kycLimitFlag
      * @param documentType
-     * @param expireDate
+     * @param expiryDate
      * @param status
      * @return TmbStatus
      */
     @LogAround
-    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String documentType, String expireDate, TmbStatus status) {
+    public TmbStatus validateKycAndIdCardExpire(String kycLimitFlag, String documentType, String expiryDate, TmbStatus status) {
         // document type id != ci kick
         boolean isKycAndIdCardExpiredValid = false;
-        if (documentType.equals("CI") && ((kycLimitFlag != null && expireDate != null) &&
+        if (documentType.equals("CI") && ((kycLimitFlag != null && expiryDate != null) &&
                 (Stream.of("U", "S", "T").anyMatch(kycLimitFlag::equalsIgnoreCase) ||
-                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expireDate))) {
+                        kycLimitFlag.isBlank()) && isExpiredDateOccurAfterCurrentDate(expiryDate))) {
             isKycAndIdCardExpiredValid = true;
         }
 
@@ -341,6 +332,34 @@ public class AlternativeService {
             status.setCode(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getCode());
             status.setDescription(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getDescription());
             status.setMessage(AlternativeOpenPortfolioErrorEnums.FAILED_VERIFY_KYC.getMessage());
+            status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+            return status;
+        }
+        return status;
+    }
+
+    /**
+     * Method validateKycFlag method validate ekyc at buyFirstTrade Flow
+     *
+     * @param kycLimitFlag
+     * @param documentType
+     * @param status
+     * @return TmbStatus
+     */
+    @LogAround
+    public TmbStatus validateKycFlag(String kycLimitFlag, String documentType, TmbStatus status) {
+        // document type id != ci kick
+        boolean isKycAndIdCardExpiredValid = false;
+        if (documentType.equals("CI") && ((kycLimitFlag != null) &&
+                (Stream.of("U", "S", "T").anyMatch(kycLimitFlag::equalsIgnoreCase) ||
+                        kycLimitFlag.isBlank()))) {
+            isKycAndIdCardExpiredValid = true;
+        }
+
+        if (!isKycAndIdCardExpiredValid) {
+            status.setCode(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getCode());
+            status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getDescription());
+            status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.FAILED_VERIFY_KYC.getMessage());
             status.setService(ProductsExpServiceConstant.SERVICE_NAME);
             return status;
         }
