@@ -1,6 +1,7 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.AllowCashDayOne;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
@@ -20,7 +21,9 @@ import com.tmb.oneapp.productsexpservice.model.loan.AccountSaving;
 import com.tmb.oneapp.productsexpservice.model.loan.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerRequest;
 import com.tmb.oneapp.productsexpservice.model.request.loan.LoanCustomerSubmissionRequest;
-import com.tmb.oneapp.productsexpservice.model.response.loan.*;
+import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerPricing;
+import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerResponse;
+import com.tmb.oneapp.productsexpservice.model.response.loan.LoanCustomerSubmissionResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,10 +178,21 @@ public class LoanCustomerServiceTest {
         maxMinLoanSubmission.setMin("200");
         listMaxMin.add(maxMinLoanSubmission);
         cData.setMaxMinLoanday1Loansubmission(listMaxMin);
+
+        List<AllowCashDayOne> allowCashDayOnes = new ArrayList<>();
+        AllowCashDayOne allowCashDayOne = new AllowCashDayOne();
+        allowCashDayOne.setFee("0.1");
+        allowCashDayOne.setVat("7");
+        allowCashDayOne.setRslCode("RC01");
+        allowCashDayOnes.add(allowCashDayOne);
+        cData.setAllowCashDayOnes(allowCashDayOnes);
+
         listDatas.add(cData);
         list.setData(listDatas);
         return list;
     }
+
+
 
     private Facility mockFacility() {
         Facility facility = new Facility();

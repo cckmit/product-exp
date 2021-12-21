@@ -2,6 +2,7 @@ package com.tmb.oneapp.productsexpservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.AllowCashDayOne;
 import com.tmb.common.model.CommonData;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
@@ -49,9 +50,7 @@ public class LoanCustomerService {
     private static final String FEATURE_TYPE_S = "S";
     private static final String FEATURE_TYPE_C = "C";
     private static final String DROPDOWN_TENURE = "TENURE";
-
-    private static final Double VAT = 0.07;
-    private static final Double CHARGE = 0.1;
+    private static final String LENDING_SERVICE = "lending_module";
 
     public LoanCustomerResponse getCustomerProfile(String correlationId, LoanCustomerRequest request, String crmID) throws ServiceException, TMBCommonException, RemoteException {
         Facility facility = getFacility(request.getCaId());
@@ -200,8 +199,8 @@ public class LoanCustomerService {
                 }
             }
         }
-        annualInterest.setVat(VAT);
-        annualInterest.setCharge(CHARGE);
+        annualInterest.setVat(Double.parseDouble(getVatAndFee().getVat()));
+        annualInterest.setCharge(Double.parseDouble(getVatAndFee().getFee()));
         return annualInterest;
     }
 
@@ -285,11 +284,17 @@ public class LoanCustomerService {
     }
 
     private BigDecimal getRequestAmount(String value) {
-        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module");
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), LENDING_SERVICE);
         CommonData commonData = nodeTextResponse.getBody().getData().get(0);
         MaxMinLoanSubmission maxMinLoanSubmission = commonData.getMaxMinLoanday1Loansubmission().get(0);
         return value.equals("min") ? BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMin())) :
                 BigDecimal.valueOf(Long.parseLong(maxMinLoanSubmission.getMax()));
+    }
+
+    private AllowCashDayOne getVatAndFee() {
+        ResponseEntity<TmbOneServiceResponse<List<CommonData>>> nodeTextResponse = commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), LENDING_SERVICE);
+        CommonData commonData = nodeTextResponse.getBody().getData().get(0);
+        return commonData.getAllowCashDayOnes().get(0);
     }
 
 }
