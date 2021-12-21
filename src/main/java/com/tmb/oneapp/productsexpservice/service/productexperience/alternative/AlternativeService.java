@@ -60,8 +60,6 @@ public class AlternativeService {
 
     private final InvestmentRequestClient investmentRequestClient;
 
-    private final ProductExpAsyncService productExpAsyncService;
-
     @Autowired
     public AlternativeService(
             CommonServiceClient commonServiceClient,
@@ -74,7 +72,6 @@ public class AlternativeService {
         this.customerServiceClient = customerServiceClient;
         this.accountRequestClient = accountRequestClient;
         this.investmentRequestClient = investmentRequestClient;
-        this.productExpAsyncService = productExpAsyncService;
     }
 
     /**
