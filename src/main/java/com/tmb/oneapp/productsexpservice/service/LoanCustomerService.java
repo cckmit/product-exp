@@ -194,7 +194,7 @@ public class LoanCustomerService {
         if (facility.getPricings() != null) {
             for (Pricing q : facility.getPricings()) {
                 if (!q.getPricingType().equals("S")) {
-                    annualInterest.setInterest(q.getCalculatedRate().doubleValue() * 100);
+                    annualInterest.setInterest(q.getCalculatedRate().doubleValue());
                     break;
                 }
             }
