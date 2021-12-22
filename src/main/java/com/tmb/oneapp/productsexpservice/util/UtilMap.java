@@ -32,7 +32,6 @@ import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundPaymentD
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleInfoList;
 import com.tmb.oneapp.productsexpservice.model.response.fundrule.FundRuleResponse;
 import com.tmb.oneapp.productsexpservice.model.response.investment.AccountDetailResponse;
-import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementList;
 import com.tmb.oneapp.productsexpservice.model.response.stmtresponse.StatementResponse;
 import com.tmb.oneapp.productsexpservice.model.response.suitability.SuitabilityInfo;
 import org.springframework.beans.BeanUtils;
@@ -90,15 +89,9 @@ public class UtilMap {
 
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accountDetailResponse.getFundDetail(), accountDetail);
-        List<FundOrderHistory> ordersHistories = new ArrayList<>();
-        List<StatementList> statementList = statementResponse.getStatementList();
-        FundOrderHistory order;
-        for (StatementList stmt : statementList) {
-            order = new FundOrderHistory();
-            BeanUtils.copyProperties(stmt, order);
-            ordersHistories.add(order);
-        }
-        accountDetail.setOrdersHistories(ordersHistories);
+
+
+
         Collections.sort(fundRuleResponse.getFundRuleInfoList(), Comparator.comparing(FundRuleInfoList::getOrderType));
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
         fundAccountDetail.setFundRuleInfoList(fundRuleResponse.getFundRuleInfoList());

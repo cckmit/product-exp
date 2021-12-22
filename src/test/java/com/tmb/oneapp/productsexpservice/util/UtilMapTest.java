@@ -11,7 +11,6 @@ import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestB
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundOrderHistory;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
@@ -77,8 +76,10 @@ public class UtilMapTest {
         statementResponse.setStatementList(list);
 
         FundAccountResponse result = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
-        List<FundOrderHistory> ordersHistories = result.getDetails().getAccountDetail().getOrdersHistories();
-        Assert.assertEquals(true, ordersHistories.isEmpty());
+         List<FundRuleInfoList> fundRuleInfoList = result.getDetails().getFundRuleInfoList();
+        Assert.assertEquals(true, fundRuleInfoList.isEmpty());
+
+
     }
 
     @Test
