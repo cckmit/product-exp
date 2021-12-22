@@ -31,10 +31,22 @@ public class SwitchAlternativeService extends SellAndSwitchAbstractService {
 
         TmbOneServiceResponse<String> tmbOneServiceResponse = new TmbOneServiceResponse();
         try {
-            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId, crmId);
+            CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-            return validateSellAndSwitch(correlationId, customerInfo, tmbOneServiceResponse, status);
+
+            tmbOneServiceResponse = validateSellAndSwitch(correlationId,customerInfo,tmbOneServiceResponse,status);
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServiceResponse;
+            }
+
+            // validate suitability expired
+            tmbOneServiceResponse = validateSuitabilityExpired(correlationId, crmId, tmbOneServiceResponse, status);
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServiceResponse;
+            }
+
+            return tmbOneServiceResponse;
 
         } catch (Exception ex) {
             logger.error("error : {}", ex);
@@ -43,4 +55,5 @@ public class SwitchAlternativeService extends SellAndSwitchAbstractService {
             return tmbOneServiceResponse;
         }
     }
+
 }
