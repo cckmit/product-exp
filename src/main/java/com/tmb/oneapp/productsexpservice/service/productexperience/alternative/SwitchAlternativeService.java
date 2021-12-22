@@ -4,6 +4,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.oneapp.productsexpservice.constant.ProductsExpServiceConstant;
 import com.tmb.oneapp.productsexpservice.model.productexperience.customer.search.response.CustomerSearchResponse;
 import com.tmb.oneapp.productsexpservice.service.productexperience.alternative.abstractservice.SellAndSwitchAbstractService;
 import com.tmb.oneapp.productsexpservice.service.productexperience.customer.CustomerService;
@@ -27,7 +28,19 @@ public class SwitchAlternativeService extends SellAndSwitchAbstractService {
             CustomerSearchResponse customerInfo = customerService.getCustomerInfo(correlationId,crmId);
             TmbStatus status = TmbStatusUtil.successStatus();
             tmbOneServiceResponse.setStatus(status);
-            return validateSellAndSwitch(correlationId,customerInfo,tmbOneServiceResponse,status);
+
+            tmbOneServiceResponse = validateSellAndSwitch(correlationId,customerInfo,tmbOneServiceResponse,status);
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServiceResponse;
+            }
+
+            // validate suitability expired
+            tmbOneServiceResponse = validateSuitabilityExpired(correlationId, crmId, tmbOneServiceResponse, status);
+            if (!tmbOneServiceResponse.getStatus().getCode().equals(ProductsExpServiceConstant.SUCCESS_CODE)) {
+                return tmbOneServiceResponse;
+            }
+
+            return tmbOneServiceResponse;
 
         } catch (Exception ex) {
             logger.error("error : {}", ex);

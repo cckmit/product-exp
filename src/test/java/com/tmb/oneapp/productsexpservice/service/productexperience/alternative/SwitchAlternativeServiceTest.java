@@ -103,6 +103,30 @@ public class SwitchAlternativeServiceTest {
     }
 
     @Test
+    public void should_return_failed_suidtability_expired_when_call_validation_switch_given_correlation_id_and_crm_id_and_alternative_request() {
+
+        // given
+        mockCustomerInfo(AlternativeBuySellSwitchDcaErrorEnums.AGE_NOT_OVER_TWENTY);
+        byPassAllAlternative();
+        TmbStatus status = new TmbStatus();
+        status.setCode(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode());
+        status.setDescription(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getDescription());
+        status.setMessage(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage());
+        status.setService(ProductsExpServiceConstant.SERVICE_NAME);
+        when(alternativeService.validateSuitabilityExpired(any(), any(), any())).thenReturn(status);
+
+        // when
+        TmbOneServiceResponse<String> actual = switchAlternativeService.validationSwitch(correlationId, crmId);
+
+        // then
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getCode(),
+                actual.getStatus().getCode());
+        assertEquals(AlternativeBuySellSwitchDcaErrorEnums.CUSTOMER_SUIT_EXPIRED.getMessage(),
+                actual.getStatus().getMessage());
+
+    }
+
+    @Test
     public void should_return_failed_validate_age_not_over_twenty_when_call_validation_switch_given_correlation_id_and_crm_id_and_alternative_request() {
 
         // given
