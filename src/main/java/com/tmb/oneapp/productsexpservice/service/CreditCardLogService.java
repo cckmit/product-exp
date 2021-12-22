@@ -1,8 +1,11 @@
 package com.tmb.oneapp.productsexpservice.service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,6 +45,8 @@ public class CreditCardLogService {
 	private KafkaProducerService kafkaProducerService;
 	private CreditCardClient creditCardClient;
 	private CommonServiceClient commonServiceClient;
+	private SimpleDateFormat respnseformatter = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat activifyFormatter = new SimpleDateFormat("dd/MM/yyyy");
 
 	/**
 	 * constructor
@@ -189,7 +194,7 @@ public class CreditCardLogService {
 			List<CardInstallmentResponse> data) {
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			for(CardInstallmentResponse response: data) {
+			for (CardInstallmentResponse response : data) {
 				constructCardEvent(correlationId, reqHeader, response);
 			}
 		}
@@ -209,7 +214,8 @@ public class CreditCardLogService {
 
 		creditCardEvent.setCardNumber("xx" + e.getCreditCard().getAccountId().substring(21, 25));
 		creditCardEvent.setTransactionDescription(e.getCreditCard().getCardInstallment().getTransactionDescription());
-		creditCardEvent.setTransactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		creditCardEvent.setTransactionDate(formateTransactionDate(e.getCreditCard().getCardInstallment()));
+
 		populateBaseEvents(creditCardEvent, reqHeader);
 
 		CardInstallment cardInstallment = e.getCreditCard().getCardInstallment();
@@ -242,6 +248,25 @@ public class CreditCardLogService {
 		}
 		logActivity(creditCardEvent);
 
+	}
+	
+	/**
+	 * Re format post date information
+	 * @param cardInstallment
+	 * @return
+	 */
+	private String formateTransactionDate(CardInstallment cardInstallment) {
+		String formatePostedDate = null;
+
+		if (StringUtils.isNotEmpty(cardInstallment.getPostDate())) {
+			try {
+				Date postDated = respnseformatter.parse(cardInstallment.getPostDate());
+				formatePostedDate = activifyFormatter.format(postDated);
+			} catch (ParseException e) {
+				logger.error(e.toString(),e);
+			}
+		}
+		return formatePostedDate;
 	}
 
 	/**
@@ -455,22 +480,22 @@ public class CreditCardLogService {
 	private String constructProductNameInfomation(String correlationId, UpdateEStatmentRequest updateEstatementReq) {
 
 		String productCodeName = "";
-		
+
 		ResponseEntity<TmbOneServiceResponse<List<ProductConfig>>> response = commonServiceClient
 				.getProductConfig(correlationId);
 
 		List<ProductConfig> productConfigs = response.getBody().getData();
-		
-		if(StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
-			ResponseEntity<FetchCardResponse>  fetchCardRes = creditCardClient.getCreditCardDetails(correlationId, updateEstatementReq.getAccountId());
+
+		if (StringUtils.isNotEmpty(updateEstatementReq.getAccountId())) {
+			ResponseEntity<FetchCardResponse> fetchCardRes = creditCardClient.getCreditCardDetails(correlationId,
+					updateEstatementReq.getAccountId());
 			String productCode = fetchCardRes.getBody().getCreditCard().getProductId();
 			for (ProductConfig productInfo : productConfigs) {
-				if (StringUtils.isNoneBlank(productCode)
-						&& productCode.equals(productInfo.getProductCode())) {
+				if (StringUtils.isNoneBlank(productCode) && productCode.equals(productInfo.getProductCode())) {
 					productCodeName = "(" + productInfo.getProductCode() + ")  " + productInfo.getProductNameEN();
 				}
 			}
-		}else {
+		} else {
 			for (ProductConfig productInfo : productConfigs) {
 				if (CollectionUtils.isNotEmpty(updateEstatementReq.getProductType())
 						&& updateEstatementReq.getProductType().get(0).equals(productInfo.getProductCode())) {
@@ -479,7 +504,7 @@ public class CreditCardLogService {
 				}
 			}
 		}
-		
+
 		return productCodeName;
 
 	}
