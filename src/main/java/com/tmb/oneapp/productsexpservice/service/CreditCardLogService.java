@@ -263,8 +263,7 @@ public class CreditCardLogService {
 				Date postDated = respnseformatter.parse(cardInstallment.getPostDate());
 				formatePostedDate = activifyFormatter.format(postDated);
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.toString(),e);
 			}
 		}
 		return formatePostedDate;
