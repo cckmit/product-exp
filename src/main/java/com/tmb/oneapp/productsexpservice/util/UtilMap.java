@@ -90,15 +90,9 @@ public class UtilMap {
 
         AccountDetail accountDetail = new AccountDetail();
         BeanUtils.copyProperties(accountDetailResponse.getFundDetail(), accountDetail);
-        List<FundOrderHistory> ordersHistories = new ArrayList<>();
-        List<StatementList> statementList = statementResponse.getStatementList();
-        FundOrderHistory order;
-        for (StatementList stmt : statementList) {
-            order = new FundOrderHistory();
-            BeanUtils.copyProperties(stmt, order);
-            ordersHistories.add(order);
-        }
-        accountDetail.setOrdersHistories(ordersHistories);
+
+
+
         Collections.sort(fundRuleResponse.getFundRuleInfoList(), Comparator.comparing(FundRuleInfoList::getOrderType));
         FundAccountDetail fundAccountDetail = new FundAccountDetail();
         fundAccountDetail.setFundRuleInfoList(fundRuleResponse.getFundRuleInfoList());

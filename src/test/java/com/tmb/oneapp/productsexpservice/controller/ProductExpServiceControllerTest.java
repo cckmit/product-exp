@@ -158,8 +158,7 @@ public class ProductExpServiceControllerTest {
 
         FundAccountResponse newResponse = actualResult.getBody().getData();
         assertEquals(fundAccountResponse, newResponse);
-        assertEquals(fundAccountResponse.getDetails().getAccountDetail().getOrdersHistories().size(),
-                newResponse.getDetails().getAccountDetail().getOrdersHistories().size());
+
     }
 
     @Test

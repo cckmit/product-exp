@@ -7,13 +7,10 @@ import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsumm
 import com.tmb.oneapp.productsexpservice.model.fundsummarydata.response.fundsummary.FundSearch;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequestBody;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.request.FundAccountRequest;
-import com.tmb.oneapp.productsexpservice.model.productexperience.alternative.buy.request.AlternativeBuyRequest;
-import com.tmb.oneapp.productsexpservice.model.request.fundfactsheet.FundFactSheetRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.fundrule.FundRuleRequestBody;
 import com.tmb.oneapp.productsexpservice.model.request.stmtrequest.OrderStmtByPortRequest;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountDetail;
 import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundAccountResponse;
-import com.tmb.oneapp.productsexpservice.model.productexperience.accdetail.response.FundOrderHistory;
 import com.tmb.oneapp.productsexpservice.model.response.fundholiday.FundHolidayBody;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.DepositAccount;
 import com.tmb.oneapp.productsexpservice.model.response.fundpayment.FundHolidayClassList;
@@ -79,8 +76,10 @@ public class UtilMapTest {
         statementResponse.setStatementList(list);
 
         FundAccountResponse result = UtilMap.validateTMBResponse(accountDetailResponse, fundRuleResponse, statementResponse);
-        List<FundOrderHistory> ordersHistories = result.getDetails().getAccountDetail().getOrdersHistories();
-        Assert.assertEquals(true, ordersHistories.isEmpty());
+         List<FundRuleInfoList> fundRuleInfoList = result.getDetails().getFundRuleInfoList();
+        Assert.assertEquals(true, fundRuleInfoList.isEmpty());
+
+
     }
 
     @Test
